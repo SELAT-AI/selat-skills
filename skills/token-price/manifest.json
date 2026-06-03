@@ -1,0 +1,21 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "token-price",
+  "description": "Crypto spot prices by symbol via Alchemy (Circle nanopayment / Gateway-batched, DIRECT).",
+  "chain": "base",
+  "maxAmount": "0.005",
+  "params": {
+    "symbols": {
+      "required": true,
+      "description": "Comma-separated token symbols, e.g. ETH,USDC,BTC"
+    }
+  },
+  "steps": [
+    {
+      "label": "spot price — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://x402.alchemy.com/prices/v1/tokens/by-symbol?symbols=${symbols}"
+    }
+  ]
+}

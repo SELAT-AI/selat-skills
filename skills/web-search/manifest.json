@@ -1,0 +1,22 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "web-search",
+  "description": "Web search via Exa (BlockRun), routed through the SELAT Router (erc-3009).",
+  "chain": "base",
+  "maxAmount": "0.02",
+  "params": {
+    "query": {
+      "required": true,
+      "description": "Search query"
+    }
+  },
+  "steps": [
+    {
+      "label": "web search — Exa/BlockRun (erc-3009, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://blockrun.ai/api/v1/exa/search",
+      "body": { "query": "${query}" }
+    }
+  ]
+}

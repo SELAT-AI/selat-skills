@@ -1,0 +1,22 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "wallet-holdings",
+  "description": "Multi-chain token holdings for a wallet via Alchemy (Circle nanopayment / Gateway-batched, DIRECT).",
+  "chain": "base",
+  "maxAmount": "0.005",
+  "params": {
+    "address": {
+      "required": true,
+      "description": "Wallet address to list token holdings for (0x...)"
+    }
+  },
+  "steps": [
+    {
+      "label": "token holdings — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
+      "rail": "direct",
+      "method": "POST",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address",
+      "body": { "addresses": ["${address}"] }
+    }
+  ]
+}
