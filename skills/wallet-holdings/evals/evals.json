@@ -1,0 +1,29 @@
+{
+  "skill_name": "wallet-holdings",
+  "evals": [
+    {
+      "id": "trigger-holdings",
+      "prompt": "what tokens does 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 hold",
+      "expected_output": "Runs wallet-holdings --address 0xd8dA... and returns balances.",
+      "assertions": ["wallet-holdings is selected", "address is passed through", "status 200"]
+    },
+    {
+      "id": "trigger-balances",
+      "prompt": "list the balances for my wallet 0xabc123...",
+      "expected_output": "wallet-holdings with the address.",
+      "assertions": ["wallet-holdings is selected"]
+    },
+    {
+      "id": "notrigger-price",
+      "prompt": "what's the price of ETH",
+      "expected_output": "Prefers token-price, not wallet-holdings.",
+      "assertions": ["wallet-holdings is not selected"]
+    },
+    {
+      "id": "notrigger-no-address",
+      "prompt": "show me crypto prices",
+      "expected_output": "wallet-holdings does not trigger (no address / price intent).",
+      "assertions": ["wallet-holdings is not selected"]
+    }
+  ]
+}

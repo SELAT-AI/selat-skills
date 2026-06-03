@@ -1,25 +1,37 @@
 # selat-skills
 
-Skill definitions for the SELAT agent-payments ecosystem. Each skill is a
-declarative **JSON manifest** that composes one or more catalogue API endpoints
-into a named capability, paid via [`selat-pay`](https://github.com/SELAT-AI/selat-pay)
-and the SELAT Router.
+Skill definitions for the SELAT agent-payments ecosystem. Each skill composes
+one or more catalogue API endpoints into a named capability, paid via
+[`selat-pay`](https://github.com/SELAT-AI/selat-pay) and the SELAT Router.
 
-This repo holds skill **content** only. The CLI that lists, installs, and runs
+Skills follow the **Agent Skill** authoring standard — see
+[`references/agent-skill-authoring-sop.md`](references/agent-skill-authoring-sop.md).
+This repo holds skill **content** only; the CLI that lists, installs, and runs
 these skills lives in [`selat-cli`](https://github.com/SELAT-AI/selat-cli)
 (`selat skill list|install|run`).
 
-## Layout
+## Skill layout
+
+Each skill is an Agent Skill directory:
 
 ```
-skills/<name>/manifest.json   # the skill definition (inert data — no executable code)
-skills/<name>/README.md       # human docs for the skill
-index.json                    # catalog used by `selat skill list --available`
+skills/<name>/
+├── SKILL.md            # required — frontmatter + operational docs (the SOP)
+├── manifest.json       # machine-readable payment recipe (read by selat-cli)
+└── evals/
+    └── evals.json      # trigger + output-quality evals
 ```
+
+- **`SKILL.md`** makes the skill activatable and documented per the SOP
+  (frontmatter `name`/`description`/`license`/`compatibility`/`metadata`, plus
+  `When To Use`, `Workflow`, `Inputs And Outputs`, `Gotchas`, `Validation`,
+  `References`).
+- **`manifest.json`** is the inert, machine-readable recipe `selat-cli` executes
+  (no code — just steps mapped to `selat-pay` calls). It is the one skill file
+  the CLI fetches on `selat skill install <name>`.
+- **`evals/evals.json`** holds trigger and output assertions per the SOP.
 
 ## Rails
-
-Skills are tagged by payment rail:
 
 - **direct** — Circle nanopayment / Gateway-batched, paid straight to the upstream (no router hop).
 - **routed** — erc-3009 or tempo-native **MPP**, paid via the SELAT Router, which translates the agent's inbound Gateway-batched payment to the upstream's scheme.
@@ -29,11 +41,13 @@ Skills are tagged by payment rail:
 
 | Skill | Rail | Kind | What it does |
 |---|---|---|---|
-| [token-price](skills/token-price) | direct | single | Crypto spot prices by symbol (Alchemy) |
-| [wallet-holdings](skills/wallet-holdings) | direct | single | Multi-chain token holdings (Alchemy) |
-| [web-search](skills/web-search) | routed | single | Web search via Exa/BlockRun |
-| [allium-price](skills/allium-price) | routed | single | Latest token price via Allium (MPP) |
-| [market-snapshot](skills/market-snapshot) | mixed | multi | Spot price (direct) + token price (routed MPP) |
+| [token-price](skills/token-price/SKILL.md) | direct | single | Crypto spot prices by symbol (Alchemy) |
+| [wallet-holdings](skills/wallet-holdings/SKILL.md) | direct | single | Multi-chain token holdings (Alchemy) |
+| [web-search](skills/web-search/SKILL.md) | routed | single | Web search via Exa/BlockRun |
+| [allium-price](skills/allium-price/SKILL.md) | routed | single | Latest token price via Allium (MPP) |
+| [market-snapshot](skills/market-snapshot/SKILL.md) | mixed | multi | Spot price (direct) + token price (routed MPP) |
+
+The `index.json` catalog at the repo root backs `selat skill list --available`.
 
 ## Manifest format (`selat-skill/v1`)
 
@@ -62,6 +76,12 @@ Skills are tagged by payment rail:
 
 Manifests are **inert data**: installing one never executes code. Values
 substituted into `url` are URL-encoded; values in `body` are JSON-encoded.
+
+## Authoring a new skill
+
+Follow [`references/agent-skill-authoring-sop.md`](references/agent-skill-authoring-sop.md):
+scaffold `skills/<name>/` with `SKILL.md`, `manifest.json`, and `evals/evals.json`;
+keep the `name` equal to the folder; add the skill to `index.json`.
 
 ## License
 

@@ -1,0 +1,29 @@
+{
+  "skill_name": "web-search",
+  "evals": [
+    {
+      "id": "trigger-search",
+      "prompt": "search the web for recent papers on agentic payments",
+      "expected_output": "Runs web-search --query and returns ranked results.",
+      "assertions": ["web-search is selected", "query is passed through", "routed via the SELAT Router"]
+    },
+    {
+      "id": "trigger-lookup",
+      "prompt": "look up the latest news about USDC online",
+      "expected_output": "web-search with the query.",
+      "assertions": ["web-search is selected"]
+    },
+    {
+      "id": "notrigger-price",
+      "prompt": "price of ETH",
+      "expected_output": "Prefers token-price, not web-search.",
+      "assertions": ["web-search is not selected"]
+    },
+    {
+      "id": "notrigger-legal",
+      "prompt": "find the US statute on music licensing",
+      "expected_output": "A legal-search skill would be preferred over generic web-search.",
+      "assertions": ["generic web-search is not assumed to be the only option"]
+    }
+  ]
+}

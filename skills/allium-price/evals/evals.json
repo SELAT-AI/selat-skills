@@ -1,0 +1,29 @@
+{
+  "skill_name": "allium-price",
+  "evals": [
+    {
+      "id": "trigger-by-address",
+      "prompt": "get the latest Allium price for token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 on ethereum",
+      "expected_output": "Runs allium-price with the chain + address and returns the price.",
+      "assertions": ["allium-price is selected", "routed via the SELAT Router (MPP)", "status 200"]
+    },
+    {
+      "id": "trigger-onchain-price",
+      "prompt": "on-chain price by contract address please",
+      "expected_output": "allium-price is selected.",
+      "assertions": ["allium-price is selected"]
+    },
+    {
+      "id": "notrigger-symbol",
+      "prompt": "price of ETH by symbol",
+      "expected_output": "Prefers token-price (by symbol, direct), not allium-price.",
+      "assertions": ["allium-price is not selected"]
+    },
+    {
+      "id": "notrigger-weather",
+      "prompt": "is it going to rain tomorrow",
+      "expected_output": "Skill does not trigger.",
+      "assertions": ["allium-price is not selected"]
+    }
+  ]
+}
