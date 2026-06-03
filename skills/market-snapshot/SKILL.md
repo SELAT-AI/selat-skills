@@ -54,5 +54,6 @@ Outputs: Alchemy returns `{ data: [{ symbol, prices: [{ currency, value }] }] }`
 ## References
 
 - `manifest.json` — the machine-readable payment recipe this skill runs.
+- [`references/endpoints.md`](references/endpoints.md) — the catalogue endpoints this skill calls.
 - [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - selat-pay — https://github.com/SELAT-AI/selat-pay

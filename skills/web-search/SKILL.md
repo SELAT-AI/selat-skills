@@ -46,5 +46,6 @@ Output: ranked web results from Exa.
 ## References
 
 - `manifest.json` — the machine-readable payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — the catalogue endpoint(s) this skill calls.
 - [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md)
 - selat-pay — https://github.com/SELAT-AI/selat-pay

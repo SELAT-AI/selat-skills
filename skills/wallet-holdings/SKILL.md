@@ -46,5 +46,6 @@ Output: Alchemy token-holdings payload (per-chain token balances for the address
 ## References
 
 - `manifest.json` — the machine-readable payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — the catalogue endpoint(s) this skill calls.
 - [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md)
 - selat-pay — https://github.com/SELAT-AI/selat-pay

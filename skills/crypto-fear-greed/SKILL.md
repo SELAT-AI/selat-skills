@@ -54,6 +54,7 @@ Output: `{ "data": [ { "timestamp": <unix-s>, "value": <0–100>, "time": "YYYY-
 ## References
 
 - `manifest.json` — the machine-readable payment recipe this skill runs.
+- [`references/endpoints.md`](references/endpoints.md) — the catalogue endpoint(s) this skill calls.
 - [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - Upstream docs — https://x402-data-tools.prd.space.id/docs/output/v1_crypto_fear-greed-index_get.json
 - selat-pay — https://github.com/SELAT-AI/selat-pay
