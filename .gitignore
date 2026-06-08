@@ -2,3 +2,7 @@ node_modules/
 .env
 .DS_Store
 *.tgz
+
+# per-verification provenance (written by `selat skill verify`; attached to PRs
+# by `selat skill submit`, not committed as catalog content)
+skills/*/.selat/

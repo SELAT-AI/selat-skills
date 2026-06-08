@@ -79,9 +79,11 @@ substituted into `url` are URL-encoded; values in `body` are JSON-encoded.
 
 ## Authoring a new skill
 
-Follow [`references/agent-skill-authoring-sop.md`](references/agent-skill-authoring-sop.md):
-scaffold `skills/<name>/` with `SKILL.md`, `manifest.json`, and `evals/evals.json`;
-keep the `name` equal to the folder; add the skill to `index.json`.
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full flow. In short: `selat skill new <name> --dir skills`
+to scaffold, fill in the files (per the [SOP](references/agent-skill-authoring-sop.md)),
+verify the endpoint live (`selat-pay --probe-only`), add it to `index.json`, then
+`npm run validate` (or `selat skill validate ./skills/<name>`) and open a PR. CI runs
+the same validator on every PR.
 
 ## License
 

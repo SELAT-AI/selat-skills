@@ -1,0 +1,19 @@
+name: Validate skills
+
+# Validates every skill against the Agent Skill SOP + index.json consistency.
+# No dependencies — the validator is self-contained.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Validate skills
+        run: node scripts/validate-skills.mjs
