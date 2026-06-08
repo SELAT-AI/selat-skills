@@ -7,6 +7,18 @@ to the [Agent Skill SOP](references/agent-skill-authoring-sop.md).
 
 ## Flow
 
+The whole loop, end to end:
+
+```bash
+selat skill new my-skill --dir skills          # 1. scaffold
+#   …edit the files (replace every TODO)…       # 2. author
+selat skill validate ./skills/my-skill         # 3. static SOP check
+selat skill verify   ./skills/my-skill [--pay] # 4. live-402 check (the gate)
+selat skill register ./skills/my-skill         # 5. add index.json entry
+npm run validate                               # 6. whole-repo check (what CI runs)
+selat skill submit   ./skills/my-skill         # 7. open the PR
+```
+
 1. **Scaffold** the SOP layout with the CLI:
    ```bash
    selat skill new my-skill --dir skills
@@ -25,28 +37,43 @@ to the [Agent Skill SOP](references/agent-skill-authoring-sop.md).
    - **`evals/evals.json`** — a few trigger and non-trigger evals; `skill_name` must
      equal the folder.
 
-3. **Verify the endpoint is real** (the catalogue is unreliable — the live 402 is the
-   source of truth):
+3. **Validate** the SOP layout (also what CI runs per skill):
    ```bash
-   selat-pay <METHOD> "<url>" --chain base --probe-only      # confirm it quotes
-   selat-pay <METHOD> "<url>" --chain base --max-amount <cap> # confirm it settles 200
-   ```
-   Prefer **first-party** providers over proxies. Note the live price; it should match
-   `references/endpoints.md` and sit under `maxAmount`.
-
-4. **Register** — add an entry to [`index.json`](index.json):
-   ```json
-   { "name": "my-skill", "rail": "direct|routed|mixed", "kind": "single|multi", "description": "..." }
+   selat skill validate ./skills/my-skill
    ```
 
-5. **Validate** locally (both must pass):
+4. **Verify the endpoint is real** — the gate (the catalogue is unreliable; the live
+   402 is the source of truth):
    ```bash
-   selat skill validate ./skills/my-skill   # single skill (authoring)
-   npm run validate                         # whole repo + index.json consistency (what CI runs)
+   selat skill verify ./skills/my-skill          # free: probes each step's real 402 price/rail and checks it ≤ maxAmount
+   selat skill verify ./skills/my-skill --pay    # also makes a capped real paid call to confirm it settles 200
+   ```
+   For skills with required params, pass them as flags (e.g. `--symbols ETH`). This
+   writes `skills/my-skill/.selat/verify-receipt.json` — the provenance that `submit`
+   attaches to the PR and that gates merge. Prefer **first-party** providers over
+   proxies. Fix any step that's unreachable or quotes above its `maxAmount`.
+
+5. **Register** — auto-add/update the [`index.json`](index.json) entry (derived from the
+   manifest: name, rail, kind, description):
+   ```bash
+   selat skill register ./skills/my-skill
    ```
 
-6. **Open a PR.** CI runs `scripts/validate-skills.mjs`. A maintainer reviews and
-   paid-verifies the endpoint before merge.
+6. **Validate the whole repo** (exactly what CI runs):
+   ```bash
+   npm run validate            # every skill vs SOP + index.json consistency
+   ```
+
+7. **Submit** — open the PR (gated on a passing verify receipt):
+   ```bash
+   selat skill submit ./skills/my-skill --dry-run   # preview the branch/PR
+   selat skill submit ./skills/my-skill             # branch + commit + push + open PR
+   ```
+   `submit` requires a passing `verify` receipt, branches, commits `skills/my-skill/` +
+   the `index.json` entry, pushes, and opens a PR with the verification receipt in the
+   body as provenance. No write access? It prints the fork-and-PR commands to run.
+   CI (`scripts/validate-skills.mjs`) runs automatically; a maintainer paid-re-verifies
+   the endpoint before merge. On merge the skill is instantly installable.
 
 ## Rules CI enforces (errors block merge)
 
