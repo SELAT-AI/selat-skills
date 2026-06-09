@@ -5,7 +5,8 @@
   "description": "Agent Skill definitions for the SELAT ecosystem (content repo; consumed install-on-demand by selat-cli).",
   "type": "module",
   "scripts": {
-    "validate": "node scripts/validate-skills.mjs"
+    "validate": "node scripts/validate-skills.mjs",
+    "probe": "node scripts/probe-skills.mjs"
   },
   "license": "Apache-2.0",
   "repository": {

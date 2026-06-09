@@ -49,6 +49,34 @@ skills/<name>/
 
 The `index.json` catalog at the repo root backs `selat skill list --available`.
 
+## Reliability registry (`reliability.json`)
+
+[`reliability.json`](reliability.json) is an auto-generated registry of how every
+skill is *actually* behaving against its live endpoints. A scheduled CI job
+([`.github/workflows/reliability.yml`](.github/workflows/reliability.yml)) re-runs
+each skill's HTTP-402 probe with `selat-pay --probe-only` — a **free** quote that
+reads the 402 challenge but never signs or pays, so it needs no funded wallet and
+no secrets — and records per step:
+
+- **reachable** — did the endpoint return a live 402/MPP challenge?
+- **livePriceUsd** — the real quoted USDC price (not the catalogue's claim).
+- **withinCap** — is the live price within the step's `maxAmount`?
+- **mode** / **rail** / **latencyMs** / **error**.
+
+Each skill rolls up to a status: **ok** (all steps reachable and within cap),
+**degraded** (some steps failing), or **down** (no steps reachable). This is the
+scheduled half of the contribution gate: [`selat skill verify`](CONTRIBUTING.md)
+proves a skill once at submit time; this re-verifies the whole catalogue on a cron
+so reliability reflects current reality, not the day it was merged — uptime/price
+from real calls, not vanity stars.
+
+Run it locally (needs `selat-pay >= 0.3.2` on PATH; set `SELAT_ROUTER_URL` for
+routed steps):
+
+```bash
+npm run probe                      # writes reliability.json
+```
+
 ## Manifest format (`selat-skill/v1`)
 
 ```jsonc
