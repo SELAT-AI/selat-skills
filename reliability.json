@@ -1,20 +1,20 @@
 {
   "schema": "selat-reliability/v1",
-  "generatedAt": "2026-06-17T04:06:30.334Z",
+  "generatedAt": "2026-06-17T10:56:08.594Z",
   "method": "selat-pay --probe-only (free live-402 quote; no paid call)",
   "router": "https://router.selat.ai",
   "summary": {
     "skills": 7,
-    "ok": 3,
-    "degraded": 2,
-    "down": 2
+    "ok": 5,
+    "degraded": 1,
+    "down": 1
   },
   "skills": [
     {
       "name": "allium-price",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-17T04:06:30.334Z",
+      "checkedAt": "2026-06-17T10:56:08.594Z",
       "steps": [
         {
           "label": "token price — Allium (MPP / tempo-native, ROUTED via SELAT Router)",
@@ -26,8 +26,8 @@
           "reachable": false,
           "livePriceUsd": null,
           "withinCap": false,
-          "latencyMs": 2314,
-          "error": "expected 402 from router, got 403: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"
+          "latencyMs": 2748,
+          "error": "expected 402 from router, got 502: {\"error\":\"expected upstream 402 challenge, got 500\"}"
         }
       ]
     },
@@ -35,19 +35,19 @@
       "name": "crypto-fear-greed",
       "rail": "direct",
       "status": "ok",
-      "checkedAt": "2026-06-17T04:06:30.334Z",
+      "checkedAt": "2026-06-17T10:56:08.594Z",
       "steps": [
         {
           "label": "fear & greed index — Arrays (Circle nanopayment / Gateway-batched, DIRECT)",
           "rail": "direct",
           "method": "GET",
           "maxAmount": 0.01,
-          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781496390&end_time=1781669190",
+          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781520968&end_time=1781693768",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.008,
           "withinCap": true,
-          "latencyMs": 911,
+          "latencyMs": 979,
           "error": null
         }
       ]
@@ -55,20 +55,20 @@
     {
       "name": "crypto-sentiment-snapshot",
       "rail": "mixed",
-      "status": "degraded",
-      "checkedAt": "2026-06-17T04:06:30.334Z",
+      "status": "ok",
+      "checkedAt": "2026-06-17T10:56:08.594Z",
       "steps": [
         {
           "label": "market sentiment — Arrays Fear & Greed (Circle nanopayment / Gateway-batched, DIRECT)",
           "rail": "direct",
           "method": "GET",
           "maxAmount": 0.01,
-          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781496390&end_time=1781669190",
+          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781520968&end_time=1781693768",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.008,
           "withinCap": true,
-          "latencyMs": 675,
+          "latencyMs": 647,
           "error": null
         },
         {
@@ -77,12 +77,12 @@
           "method": "GET",
           "maxAmount": 0.02,
           "url": "https://pro-api.coinmarketcap.com/x402/v3/cryptocurrency/quotes/latest?symbol=BTC",
-          "mode": null,
-          "reachable": false,
-          "livePriceUsd": null,
-          "withinCap": false,
-          "latencyMs": 850,
-          "error": "expected 402 from router, got 403: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"
+          "mode": "routed-x402",
+          "reachable": true,
+          "livePriceUsd": 0.0105,
+          "withinCap": true,
+          "latencyMs": 955,
+          "error": null
         }
       ]
     },
@@ -90,7 +90,7 @@
       "name": "market-snapshot",
       "rail": "mixed",
       "status": "degraded",
-      "checkedAt": "2026-06-17T04:06:30.334Z",
+      "checkedAt": "2026-06-17T10:56:08.594Z",
       "steps": [
         {
           "label": "spot price — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
@@ -102,7 +102,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 610,
+          "latencyMs": 628,
           "error": null
         },
         {
@@ -115,8 +115,8 @@
           "reachable": false,
           "livePriceUsd": null,
           "withinCap": false,
-          "latencyMs": 1410,
-          "error": "expected 402 from router, got 403: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"
+          "latencyMs": 2247,
+          "error": "expected 402 from router, got 502: {\"error\":\"expected upstream 402 challenge, got 500\"}"
         }
       ]
     },
@@ -124,7 +124,7 @@
       "name": "token-price",
       "rail": "direct",
       "status": "ok",
-      "checkedAt": "2026-06-17T04:06:30.334Z",
+      "checkedAt": "2026-06-17T10:56:08.594Z",
       "steps": [
         {
           "label": "spot price — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
@@ -136,7 +136,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 556,
+          "latencyMs": 624,
           "error": null
         }
       ]
@@ -145,7 +145,7 @@
       "name": "wallet-holdings",
       "rail": "direct",
       "status": "ok",
-      "checkedAt": "2026-06-17T04:06:30.334Z",
+      "checkedAt": "2026-06-17T10:56:08.594Z",
       "steps": [
         {
           "label": "token holdings — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
@@ -157,7 +157,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 560,
+          "latencyMs": 646,
           "error": null
         }
       ]
@@ -165,8 +165,8 @@
     {
       "name": "web-search",
       "rail": "routed",
-      "status": "down",
-      "checkedAt": "2026-06-17T04:06:30.334Z",
+      "status": "ok",
+      "checkedAt": "2026-06-17T10:56:08.594Z",
       "steps": [
         {
           "label": "web search — Exa/BlockRun (erc-3009, ROUTED via SELAT Router)",
@@ -174,12 +174,12 @@
           "method": "POST",
           "maxAmount": 0.02,
           "url": "https://blockrun.ai/api/v1/exa/search",
-          "mode": null,
-          "reachable": false,
-          "livePriceUsd": null,
-          "withinCap": false,
-          "latencyMs": 726,
-          "error": "expected 402 from router, got 403: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"
+          "mode": "routed-x402",
+          "reachable": true,
+          "livePriceUsd": 0.0105,
+          "withinCap": true,
+          "latencyMs": 1360,
+          "error": null
         }
       ]
     }
