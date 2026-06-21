@@ -1,6 +1,6 @@
 {
   "schema": "selat-reliability/v1",
-  "generatedAt": "2026-06-21T14:10:31.721Z",
+  "generatedAt": "2026-06-21T19:40:41.680Z",
   "method": "selat-pay --probe-only (free live-402 quote; no paid call)",
   "router": "https://router.selat.ai",
   "summary": {
@@ -14,7 +14,7 @@
       "name": "allium-price",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-21T14:10:31.721Z",
+      "checkedAt": "2026-06-21T19:40:41.680Z",
       "steps": [
         {
           "label": "token price — Allium (MPP / tempo-native, ROUTED via SELAT Router)",
@@ -26,7 +26,7 @@
           "reachable": false,
           "livePriceUsd": null,
           "withinCap": false,
-          "latencyMs": 2580,
+          "latencyMs": 2906,
           "error": "expected 402 from router, got 502: {\"error\":\"expected upstream 402 challenge, got 500\"}"
         }
       ]
@@ -35,19 +35,19 @@
       "name": "crypto-fear-greed",
       "rail": "direct",
       "status": "ok",
-      "checkedAt": "2026-06-21T14:10:31.721Z",
+      "checkedAt": "2026-06-21T19:40:41.680Z",
       "steps": [
         {
           "label": "fear & greed index — Arrays (Circle nanopayment / Gateway-batched, DIRECT)",
           "rail": "direct",
           "method": "GET",
           "maxAmount": 0.01,
-          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781878231&end_time=1782051031",
+          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781898041&end_time=1782070841",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.008,
           "withinCap": true,
-          "latencyMs": 1041,
+          "latencyMs": 1110,
           "error": null
         }
       ]
@@ -56,19 +56,19 @@
       "name": "crypto-sentiment-snapshot",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-06-21T14:10:31.721Z",
+      "checkedAt": "2026-06-21T19:40:41.680Z",
       "steps": [
         {
           "label": "market sentiment — Arrays Fear & Greed (Circle nanopayment / Gateway-batched, DIRECT)",
           "rail": "direct",
           "method": "GET",
           "maxAmount": 0.01,
-          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781878231&end_time=1782051031",
+          "url": "https://x402-data-tools.prd.arrays.org/api/v1/crypto/fear-greed-index?start_time=1781898041&end_time=1782070841",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.008,
           "withinCap": true,
-          "latencyMs": 555,
+          "latencyMs": 798,
           "error": null
         },
         {
@@ -81,7 +81,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 824,
+          "latencyMs": 780,
           "error": null
         }
       ]
@@ -90,7 +90,7 @@
       "name": "market-snapshot",
       "rail": "mixed",
       "status": "degraded",
-      "checkedAt": "2026-06-21T14:10:31.721Z",
+      "checkedAt": "2026-06-21T19:40:41.680Z",
       "steps": [
         {
           "label": "spot price — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
@@ -102,7 +102,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 610,
+          "latencyMs": 560,
           "error": null
         },
         {
@@ -115,7 +115,7 @@
           "reachable": false,
           "livePriceUsd": null,
           "withinCap": false,
-          "latencyMs": 3202,
+          "latencyMs": 2321,
           "error": "expected 402 from router, got 502: {\"error\":\"expected upstream 402 challenge, got 500\"}"
         }
       ]
@@ -124,7 +124,7 @@
       "name": "token-price",
       "rail": "direct",
       "status": "ok",
-      "checkedAt": "2026-06-21T14:10:31.721Z",
+      "checkedAt": "2026-06-21T19:40:41.680Z",
       "steps": [
         {
           "label": "spot price — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
@@ -136,7 +136,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 606,
+          "latencyMs": 553,
           "error": null
         }
       ]
@@ -145,7 +145,7 @@
       "name": "wallet-holdings",
       "rail": "direct",
       "status": "ok",
-      "checkedAt": "2026-06-21T14:10:31.721Z",
+      "checkedAt": "2026-06-21T19:40:41.680Z",
       "steps": [
         {
           "label": "token holdings — Alchemy (Circle nanopayment / Gateway-batched, DIRECT)",
@@ -157,7 +157,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 600,
+          "latencyMs": 556,
           "error": null
         }
       ]
@@ -166,7 +166,7 @@
       "name": "web-search",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-21T14:10:31.721Z",
+      "checkedAt": "2026-06-21T19:40:41.680Z",
       "steps": [
         {
           "label": "web search — Exa/BlockRun (erc-3009, ROUTED via SELAT Router)",
@@ -178,7 +178,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1079,
+          "latencyMs": 971,
           "error": null
         }
       ]
