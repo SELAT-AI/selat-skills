@@ -1,60 +1,63 @@
 # Submitting a skill to the hub
 
-Run from the `selat-skills` repo root with your new skill in `skills/<name>/`.
+Use the official `selat skill` CLI from the `selat-skills` repo root. This is the
+canonical submission flow; the repo-level [`CONTRIBUTING.md`](../../CONTRIBUTING.md)
+is a quick-reference pointer to it.
 
-## 1. Validate (the contribution gate)
-
-```bash
-node scripts/validate-skills.mjs
-```
-
-Must report **0 errors**. It checks: `manifest.json` schema/name/steps/url,
-`SKILL.md` frontmatter name == folder + description + no `TODO`,
-`evals/evals.json` present, and that the skill is listed in `index.json`.
-
-## 2. Probe for reliability (free)
+## The command sequence
 
 ```bash
-SELAT_ROUTER_URL=https://router.selat.ai node scripts/probe-skills.mjs
+selat skill new my-skill --dir skills          # 1. scaffold
+#   …edit the files (replace every TODO)…       # 2. author
+selat skill validate ./skills/my-skill         # 3. static SOP check
+selat skill verify   ./skills/my-skill [--pay] # 4. live-402 check (the gate)
+selat skill register ./skills/my-skill         # 5. add index.json entry
+npm run validate                               # 6. whole-repo check (what CI runs)
+selat skill submit   ./skills/my-skill         # 7. open the PR
 ```
 
-Regenerates `reliability.json` by firing `selat-pay --probe-only` at every step
-(free live-402 quote; no wallet, no payment). Open `reliability.json` and confirm
-your skill is `ok` (every step `reachable`, `withinCap`). Fix or drop unreachable
-steps (see `endpoint-discovery.md`). `degraded`/`down` is *recorded data*, not a
-hard gate — but ship `ok`.
+## What each step does
 
-## 3. Register in `index.json`
+1. **`selat skill new`** — scaffolds `skills/my-skill/` (`manifest.json`,
+   `SKILL.md`, `references/endpoints.md`, `evals/evals.json`). Offline equivalent:
+   `node meta/skill-creator/scripts/new-skill.mjs my-skill`.
+2. **Author** — replace every `TODO`. Wire steps to the catalogue `serviceUrl`
+   (not the provider host); POST params in `body`; `maxAmount` with headroom.
+3. **`selat skill validate ./skills/my-skill`** — static SOP check (schema, name ==
+   folder, no `TODO`, evals present). Same check CI runs per skill.
+4. **`selat skill verify ./skills/my-skill`** — **the gate.** Probes each step's
+   real 402 price/rail (free, no wallet) and checks it ≤ `maxAmount`. Add `--pay`
+   to make a capped real call confirming a settled 200. Pass required params as
+   flags (e.g. `--symbols ETH`). Writes `skills/my-skill/.selat/verify-receipt.json`
+   — the provenance that `submit` attaches and that gates merge. Fix unreachable or
+   over-cap steps; prefer first-party providers over proxies.
+5. **`selat skill register ./skills/my-skill`** — auto-adds/updates the
+   `index.json` entry (name, rail, kind, description derived from the manifest).
+6. **`npm run validate`** — whole-repo SOP + `index.json` consistency (exactly what
+   CI runs).
+7. **`selat skill submit ./skills/my-skill`** — preview with `--dry-run` first.
+   Requires a passing verify receipt; then branches, commits `skills/my-skill` + the
+   `index.json` entry, pushes, and opens a PR with the receipt in the body. No write
+   access? It prints the fork-and-PR commands. CI re-runs the validator; a
+   maintainer paid-re-verifies before merge.
 
-Add one row (keep the existing entries):
+## CI errors that block merge
 
-```json
-{ "name": "my-skill", "rail": "routed", "kind": "multi", "description": "What it does. Routed (MPP) via the SELAT Router." }
-```
+- `manifest.json` valid `selat-skill/v1`; `name` == folder; non-empty `steps[]`
+  with valid methods + URLs.
+- `SKILL.md` present with frontmatter `name` (== folder) and `description`; **no
+  `TODO`**.
+- `evals/evals.json` valid JSON; `skill_name` == folder.
+- The skill is listed in `index.json`, and every entry has a folder.
 
-## 4. Open the PR
+## Pre-submit checklist
 
-```bash
-git checkout -b add-my-skill
-git add skills/my-skill index.json reliability.json
-git commit -m "Add my-skill (<rail>)"
-git push -u origin add-my-skill
-gh pr create --base main --title "Add my-skill" --body "..."
-```
-
-In the PR body, note the rail, the merchants used, and the probe result. A
-scheduled CI job re-runs `probe-skills.mjs` so `reliability.json` reflects current
-reality after merge.
-
-## Pre-PR checklist
-
-- [ ] Folder, `manifest.name`, and `SKILL.md` `name` all match (kebab-case).
+- [ ] Folder, `manifest.name`, `SKILL.md` `name`, `evals` `skill_name` all match (kebab-case).
 - [ ] Every step uses the catalogue `serviceUrl`, not the provider `url`.
-- [ ] POST/PUT params are in `body`; GET params in the query string.
-- [ ] Params have real defaults.
-- [ ] `maxAmount` set as a generous filter (not the exact price).
-- [ ] `validate-skills.mjs` → 0 errors.
-- [ ] `probe-skills.mjs` → skill `ok`.
+- [ ] POST/PUT params in `body`; GET params in the query string.
+- [ ] Params have real defaults; `maxAmount` set as a generous filter.
+- [ ] First-party provider chosen over a proxy where equivalent.
+- [ ] `selat skill validate` passes; `selat skill verify` produces a passing receipt.
+- [ ] `npm run validate` → 0 errors.
 - [ ] No `TODO`, secrets, or `orth`/CLI/`subprocess` calls.
-- [ ] Listed in `index.json`.
 - [ ] Did **not** copy the authoring SOP into the skill's `references/`.

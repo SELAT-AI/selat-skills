@@ -42,12 +42,22 @@
     },
     {
       "id": "submission-flow",
-      "prompt": "My skill validates and probes ok. How do I submit it?",
-      "expected_output": "Add an index.json row, branch, commit skills/<name> + index.json + reliability.json, push, and open a PR noting rail/merchants/probe result; CI re-probes on a cron.",
+      "prompt": "My skill validates. How do I submit it?",
+      "expected_output": "Use the official selat skill flow: `selat skill verify` to produce a passing receipt, `selat skill register` to add the index.json entry, `npm run validate`, then `selat skill submit` (gated on the verify receipt) to open the PR.",
       "assertions": [
-        "Mentions adding the skill to index.json",
-        "Describes the branch + PR flow",
-        "Notes CI re-probes reliability after merge"
+        "Mentions `selat skill verify` produces the receipt that gates submit",
+        "Mentions `selat skill register` for the index.json entry",
+        "Mentions `selat skill submit` opens the PR"
+      ]
+    },
+    {
+      "id": "verify-is-the-gate",
+      "prompt": "What does `selat skill verify` do and why does it matter?",
+      "expected_output": "Explains verify probes each step's live 402 (free; --pay for a real settled call), checks price <= maxAmount, and writes a verify-receipt.json that submit attaches to the PR and that gates merge — the live 402 is the source of truth over the catalogue.",
+      "assertions": [
+        "Says verify checks the live 402 price/rail per step",
+        "Says it writes a receipt that gates submit/merge",
+        "Notes the live 402 is authoritative over catalogue prices"
       ]
     },
     {
