@@ -1,0 +1,67 @@
+{
+  "skill_name": "lead-enrichment",
+  "evals": [
+    {
+      "id": "full-pipeline-named-lead",
+      "prompt": "Enrich this lead: John Doe at Stripe (stripe.com), LinkedIn https://linkedin.com/in/johndoe. Find and verify their work email, get a phone number, and pull company and LinkedIn details.",
+      "expected_output": "Runs the lead-enrichment skill end-to-end: finds an email (Hunter), verifies it (Hunter), enriches the lead (Sixtyfour), finds a phone (Sixtyfour), enriches the company (Hunter), and fetches the LinkedIn profile (Fiber), with a per-step status summary.",
+      "assertions": [
+        "All six steps use rail \"routed\" via the SELAT Router",
+        "Steps target hunter.io, api.sixtyfour.ai, and api.fiber.ai hosts",
+        "The run cap does not exceed maxAmount 0.50",
+        "The output references both an email-finder and an email-verifier step",
+        "No 'orth' or 'orth run' command appears in the workflow"
+      ]
+    },
+    {
+      "id": "email-find-and-verify-only",
+      "prompt": "Find the work email for Jane Smith at Acme (acme.com) and confirm it is deliverable.",
+      "expected_output": "Uses the Hunter Email Finder step (POST /hunter/email-finder) then the Hunter Email Verifier step (POST /hunter/email-verifier) from the lead-enrichment skill.",
+      "assertions": [
+        "Email finder step posts to https://hunter.io/hunter/email-finder with domain, first_name, last_name",
+        "Verifier step posts to https://hunter.io/hunter/email-verifier with an email field",
+        "Both steps are routed MPP"
+      ]
+    },
+    {
+      "id": "phone-discovery",
+      "prompt": "I need a phone number for Maria Lopez at Datadog.",
+      "expected_output": "Invokes the Sixtyfour Find Phone step (POST /find-phone) with the lead's first_name, last_name, and company.",
+      "assertions": [
+        "Find-phone step posts to https://api.sixtyfour.ai/find-phone",
+        "The body includes a lead object with first_name, last_name, and company",
+        "Step maxAmount is 0.30"
+      ]
+    },
+    {
+      "id": "company-enrichment",
+      "prompt": "Enrich the company at the domain figma.com.",
+      "expected_output": "Invokes the Hunter Company Enrichment step (POST /hunter/company-enrichment) with the domain.",
+      "assertions": [
+        "Company step posts to https://hunter.io/hunter/company-enrichment with a domain field",
+        "The step is routed MPP",
+        "Step maxAmount is 0.013"
+      ]
+    },
+    {
+      "id": "linkedin-live-profile",
+      "prompt": "Pull a fresh LinkedIn profile for https://linkedin.com/in/satyanadella.",
+      "expected_output": "Invokes the Fiber LinkedIn live-fetch step (POST /v1/linkedin-live-fetch/profile/single) with the LinkedIn URL as identifier.",
+      "assertions": [
+        "Fiber step posts to https://api.fiber.ai/v1/linkedin-live-fetch/profile/single",
+        "The body uses an identifier field set to the LinkedIn URL",
+        "Step maxAmount is 0.04"
+      ]
+    },
+    {
+      "id": "probe-only-validation",
+      "prompt": "Before I pay, probe the lead-enrichment endpoints to confirm they return 402.",
+      "expected_output": "Runs the selat-pay --probe-only commands listed in the skill Validation section against each MPP endpoint without paying.",
+      "assertions": [
+        "Each probe uses selat-pay with --probe-only and --chain base",
+        "Probes cover all six endpoints (hunter email-finder, hunter email-verifier, sixtyfour enrich-lead, sixtyfour find-phone, hunter company-enrichment, fiber profile)",
+        "No payment is sent during probing"
+      ]
+    }
+  ]
+}

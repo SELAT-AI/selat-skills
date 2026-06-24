@@ -1,0 +1,67 @@
+{
+  "skill_name": "email-campaign",
+  "evals": [
+    {
+      "id": "full-pipeline-stripe",
+      "prompt": "Build an email campaign for stripe.com targeting John Doe at Stripe, and verify john@stripe.com.",
+      "expected_output": "A 7-step routed run that finds companies, pulls domain emails, finds the person's email, verifies and bounce-checks it, enriches the lead, and pulls brand context.",
+      "assertions": [
+        "The run uses the email-campaign skill manifest",
+        "All seven steps have rail 'routed'",
+        "Step calls hunter.io/hunter/domain-search, hunter.io/hunter/email-finder, and hunter.io/hunter/email-verifier via POST",
+        "The total cap does not exceed maxAmount 0.21",
+        "No step references 'orth', 'orth run', or api.orth.sh"
+      ]
+    },
+    {
+      "id": "verify-only",
+      "prompt": "I just want to check whether jane@acme.com is deliverable before I send.",
+      "expected_output": "Verification routed through Hunter email-verifier and/or Fiber validate-email, with the email param set to jane@acme.com.",
+      "assertions": [
+        "The email param is bound to jane@acme.com",
+        "The Hunter email-verifier step targets hunter.io/hunter/email-verifier with a JSON body containing email",
+        "The Fiber bounce check targets api.fiber.ai/v1/validate-email/single"
+      ]
+    },
+    {
+      "id": "find-person-email",
+      "prompt": "Find the work email for Maria Lopez at notion.so.",
+      "expected_output": "Hunter email-finder routed step with domain=notion.so, first_name=Maria, last_name=Lopez.",
+      "assertions": [
+        "The domain param is bound to notion.so",
+        "firstName resolves to Maria and lastName resolves to Lopez",
+        "The email-finder step is POST to hunter.io/hunter/email-finder"
+      ]
+    },
+    {
+      "id": "enrich-for-personalization",
+      "prompt": "Enrich a lead named Sam Carter at Figma so I can personalize my outreach.",
+      "expected_output": "Sixtyfour enrich-lead routed step with the lead's name and company, returning enrichment fields.",
+      "assertions": [
+        "The Sixtyfour step targets api.sixtyfour.ai/enrich-lead via POST",
+        "The body includes lead_info with first_name, last_name, and company",
+        "The enrich-lead step cap is 0.1"
+      ]
+    },
+    {
+      "id": "company-discovery",
+      "prompt": "Find SaaS companies with 50-500 employees to start an outreach list.",
+      "expected_output": "Fiber company-search routed step filtered by industry SaaS and employee count 50-500.",
+      "assertions": [
+        "The Fiber company-search step targets api.fiber.ai/v1/company-search via POST",
+        "The body searchParams includes the industry and employee_count_min/max filters",
+        "industry resolves to SaaS"
+      ]
+    },
+    {
+      "id": "brand-context",
+      "prompt": "Get the brand colors and description for stripe.com for my outreach template.",
+      "expected_output": "Brand.dev brand/retrieve routed GET with domain=stripe.com.",
+      "assertions": [
+        "The Brand.dev step is GET to api.brand.dev/v1/brand/retrieve",
+        "The domain is passed as a query parameter bound to stripe.com",
+        "The step rail is 'routed'"
+      ]
+    }
+  ]
+}

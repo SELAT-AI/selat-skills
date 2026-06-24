@@ -1,0 +1,224 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "comprehensive-enrichment",
+  "description": "Comprehensive person + company enrichment across many MPP-routed data providers (Fiber, Nyne, Sixtyfour, Hunter, Tomba, Brand.dev, Linkup, ScrapeGraphAI, Exa). Resolves contact info, verified emails, phone, social profiles, company overview, leadership, funding, products, and competitors. All steps are routed through the SELAT Router (MPP / tempo-native).",
+  "chain": "base",
+  "maxAmount": "5.00",
+  "params": {
+    "email": {
+      "required": false,
+      "default": "test@stripe.com",
+      "description": "Person work email, e.g. john@stripe.com. Drives person enrichment and email-based lookups."
+    },
+    "firstName": {
+      "required": false,
+      "default": "John",
+      "description": "Person first name, e.g. John."
+    },
+    "lastName": {
+      "required": false,
+      "default": "Doe",
+      "description": "Person last name, e.g. Doe."
+    },
+    "company": {
+      "required": false,
+      "default": "Stripe",
+      "description": "Company name, e.g. Stripe."
+    },
+    "domain": {
+      "required": false,
+      "default": "stripe.com",
+      "description": "Company domain, e.g. stripe.com. Drives company enrichment and domain-based email lookups."
+    },
+    "linkedinUrl": {
+      "required": false,
+      "default": "https://linkedin.com/in/williamhgates",
+      "description": "LinkedIn person profile URL, e.g. https://linkedin.com/in/johndoe."
+    },
+    "pricingUrl": {
+      "required": false,
+      "default": "",
+      "description": "A company page to scrape for products/pricing, e.g. https://stripe.com/pricing."
+    }
+  },
+  "steps": [
+    {
+      "label": "person deep search — Nyne (work history, education, social)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/nyne/person/search",
+      "body": {
+        "query": "${firstName} ${lastName} ${company}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "person AI enrichment — Sixtyfour enrich-lead (emails, title, bio)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "body": {
+        "lead_info": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}",
+          "linkedin_url": "${linkedinUrl}"
+        },
+        "struct": {
+          "work_email": "Work email",
+          "personal_email": "Personal email (Gmail, etc.)",
+          "phone": "Phone number",
+          "title": "Job title",
+          "bio": "Short bio"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "email enrich — Tomba enrich (all known emails for the person)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/enrich?email=${email}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "find work email — Hunter email-finder",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
+      "body": {
+        "domain": "${domain}",
+        "first_name": "${firstName}",
+        "last_name": "${lastName}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "verify email — Hunter email-verifier",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
+      "body": {
+        "email": "${email}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "verify email — Tomba email-verifier",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/email-verifier?email=${email}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "verify email — Fiber validate-email",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/validate-email/single",
+      "body": {
+        "email": "${email}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "phone — Sixtyfour find-phone",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/find-phone",
+      "body": {
+        "lead": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "person research — Linkup deep search (personalization angles)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/linkup/search",
+      "body": {
+        "q": "${firstName} ${lastName} ${company} recent news interviews talks",
+        "depth": "deep",
+        "outputType": "sourcedAnswer"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company overview — Brand.dev retrieve by domain",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company emails — Hunter domain-search",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
+      "body": {
+        "domain": "${domain}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "funding history — Nyne company/funding",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/nyne/company/funding",
+      "body": {
+        "company_name": "${company}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "investors — Nyne company/funders",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/nyne/company/funders",
+      "body": {
+        "company_domain": "${domain}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "pricing/features — ScrapeGraphAI extract",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/scrapegraphai/api/extract",
+      "body": {
+        "url": "${pricingUrl}",
+        "prompt": "Extract all products, pricing tiers, and features"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "competitors — Exa findSimilar",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://exa.mpp.tempo.xyz/findSimilar",
+      "body": {
+        "url": "https://${domain}",
+        "numResults": 10,
+        "contents": {
+          "text": true
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company research — Linkup deep search (news, partnerships)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/linkup/search",
+      "body": {
+        "q": "${company} recent news funding announcements partnerships press releases",
+        "depth": "deep",
+        "outputType": "sourcedAnswer"
+      },
+      "maxAmount": "5.00"
+    }
+  ]
+}

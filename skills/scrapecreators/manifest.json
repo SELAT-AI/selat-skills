@@ -1,0 +1,140 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "scrapecreators",
+  "description": "Social media scraping via Scrape Creators (MPP, ROUTED via the SELAT Router): Instagram, TikTok, LinkedIn, and X/Twitter profiles, posts, and content. Each capability is a routed tempo-native MPP payment compiled by the selat CLI.",
+  "chain": "base",
+  "maxAmount": "5.00",
+  "params": {
+    "handle": {
+      "required": false,
+      "default": "openai",
+      "description": "Social handle without @ (used by Twitter, Instagram, and TikTok profile lookups)."
+    },
+    "tweetUrl": {
+      "required": false,
+      "default": "https://x.com/OpenAI/status/123456",
+      "description": "Tweet URL for the X/Twitter tweet-details lookup."
+    },
+    "linkedinUrl": {
+      "required": false,
+      "default": "https://linkedin.com/in/satyanadella",
+      "description": "LinkedIn profile URL."
+    },
+    "linkedinPostUrl": {
+      "required": false,
+      "default": "https://linkedin.com/posts/somepost",
+      "description": "LinkedIn post URL."
+    },
+    "linkedinCompanyUrl": {
+      "required": false,
+      "default": "https://linkedin.com/company/anthropic",
+      "description": "LinkedIn company page URL."
+    },
+    "instagramUserId": {
+      "required": false,
+      "default": "12345",
+      "description": "Instagram numeric user ID for the basic-profile lookup."
+    },
+    "instagramPostUrl": {
+      "required": false,
+      "default": "https://instagram.com/p/abc123",
+      "description": "Instagram post or reel URL."
+    },
+    "hashtag": {
+      "required": false,
+      "default": "tech",
+      "description": "TikTok hashtag to search for, without #."
+    },
+    "region": {
+      "required": false,
+      "default": "US",
+      "description": "Region code for the TikTok trending feed proxy, e.g. US."
+    }
+  },
+  "steps": [
+    {
+      "label": "X/Twitter profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "X/Twitter user tweets — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "X/Twitter tweet details — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/tweet?url=${tweetUrl}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "LinkedIn profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "LinkedIn post — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/post?url=${linkedinPostUrl}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "LinkedIn company page — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/company?url=${linkedinCompanyUrl}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "Instagram profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/instagram/profile?handle=${handle}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "Instagram basic profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/instagram/basic-profile?userId=${instagramUserId}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "Instagram post/reel — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/instagram/post?url=${instagramPostUrl}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "TikTok profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/profile?handle=${handle}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "TikTok hashtag search — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/search/hashtag?hashtag=${hashtag}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "TikTok trending feed — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/get-trending-feed?region=${region}",
+      "maxAmount": "5.00"
+    }
+  ]
+}

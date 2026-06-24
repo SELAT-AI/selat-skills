@@ -1,0 +1,67 @@
+{
+  "skill_name": "find-twitter-influencers",
+  "evals": [
+    {
+      "id": "fintech-list-basic",
+      "prompt": "Find 20 fintech Twitter influencers we could partner with for Acme Pay (acme.com).",
+      "expected_output": "A ranked markdown table of Twitter/X influencers with name, handle URL, followers, engagement rate, fit reason, top tweet, and contact info, produced by running the routed MPP pipeline.",
+      "assertions": [
+        "Brand.dev is used to resolve the company before discovery",
+        "Exa search/findSimilar are used to discover curated listicles (not direct x.com search)",
+        "Scrape Creators profile and user-tweets endpoints are used for engagement metrics",
+        "The final output is a ranked table with at least one contact-enrichment column (email or LinkedIn)",
+        "Every paid call is routed MPP via the SELAT Router"
+      ]
+    },
+    {
+      "id": "domain-provided",
+      "prompt": "Build an influencer outreach list for the brand at vercel.com in the developer-tools niche.",
+      "expected_output": "The skill resolves the brand by domain via Brand.dev retrieve, then discovers and ranks dev-tools creators on X.",
+      "assertions": [
+        "Brand.dev /v1/brand/retrieve is called with the supplied domain",
+        "The query/niche context is threaded into Exa and Fiber discovery",
+        "Output ranks candidates by relevance and engagement"
+      ]
+    },
+    {
+      "id": "contact-enrichment",
+      "prompt": "I have a shortlist of creators with their LinkedIn URLs — find emails for them.",
+      "expected_output": "The skill runs the contact-enrichment waterfall (Fiber kitchen-sink by LinkedIn URL, Hunter email-finder, Tomba linkedin-to-email) and returns emails plus LinkedIn URLs.",
+      "assertions": [
+        "Fiber kitchen-sink is called with profileIdentifier set to a LinkedIn URL",
+        "Hunter email-finder is called as a POST with first_name, last_name, and domain",
+        "Tomba /v1/linkedin is used to resolve a LinkedIn URL to an email"
+      ]
+    },
+    {
+      "id": "cost-cap",
+      "prompt": "What does a single full run of this skill cost at most?",
+      "expected_output": "A full run is capped at $0.22, the sum of the per-step maxAmount caps rounded up.",
+      "assertions": [
+        "Top-level maxAmount in manifest.json equals \"0.22\"",
+        "The sum of per-step maxAmount values is 0.213",
+        "Each step declares its own maxAmount cap"
+      ]
+    },
+    {
+      "id": "routed-rail-only",
+      "prompt": "Which payment rail does the influencer-finder skill use?",
+      "expected_output": "Every step is routed MPP through the SELAT Router; there are no direct Circle-nanopayment steps.",
+      "assertions": [
+        "Every step in manifest.json has rail \"routed\"",
+        "metadata.rail in SKILL.md is \"routed\"",
+        "The skill notes it requires a reachable SELAT Router (SELAT_ROUTER_URL)"
+      ]
+    },
+    {
+      "id": "probe-only-validation",
+      "prompt": "How do I validate the endpoints without paying?",
+      "expected_output": "Use selat-pay --probe-only to send free 402 probes against each endpoint.",
+      "assertions": [
+        "The validation guidance uses selat-pay with the --probe-only flag",
+        "Probe commands cover Brand.dev, Exa, Scrape Creators, Hunter, and Tomba",
+        "No probe command performs an actual payment"
+      ]
+    }
+  ]
+}

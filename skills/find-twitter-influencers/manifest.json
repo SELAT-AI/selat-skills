@@ -1,0 +1,140 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "find-twitter-influencers",
+  "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the brand (Brand.dev), discovers curated listicles (Exa) and LinkedIn-heavy professionals (Fiber), pulls Twitter profiles and engagement (Scrape Creators), and enriches contacts (Fiber kitchen-sink, Hunter, Tomba). Every step is MPP-routed via the SELAT Router.",
+  "chain": "base",
+  "maxAmount": "5.00",
+  "params": {
+    "company": {
+      "required": true,
+      "default": "Stripe",
+      "description": "Company or brand name to find influencers for (used for Brand.dev retrieve-by-name)."
+    },
+    "domain": {
+      "required": false,
+      "default": "stripe.com",
+      "description": "Company domain (e.g. acme.com). When provided, Brand.dev retrieve-by-domain is used for richer context."
+    },
+    "query": {
+      "required": false,
+      "default": "best fintech Twitter accounts to follow",
+      "description": "Exa search query for curated influencer listicles in the target niche."
+    },
+    "similarUrl": {
+      "required": false,
+      "default": "https://example.com/top-fintech-twitter-influencers",
+      "description": "A strong listicle URL to expand from via Exa findSimilar."
+    },
+    "nlQuery": {
+      "required": false,
+      "default": "fintech thought leader content creator with Twitter presence",
+      "description": "Natural-language query for Fiber profile search (catches LinkedIn-heavy professionals)."
+    },
+    "handle": {
+      "required": false,
+      "default": "examplehandle",
+      "description": "Twitter/X handle (no @) to fetch a profile and recent tweets for."
+    },
+    "linkedinUrl": {
+      "required": false,
+      "default": "https://linkedin.com/in/janesmith",
+      "description": "LinkedIn profile URL for Fiber kitchen-sink and Tomba contact enrichment."
+    },
+    "firstName": {
+      "required": false,
+      "default": "Jane",
+      "description": "First name for Hunter email-finder."
+    },
+    "lastName": {
+      "required": false,
+      "default": "Smith",
+      "description": "Last name for Hunter email-finder."
+    },
+    "contactDomain": {
+      "required": false,
+      "default": "janesmithcreative.com",
+      "description": "Personal/company domain for Hunter email-finder."
+    }
+  },
+  "steps": [
+    {
+      "label": "resolve company by name — Brand.dev (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve-by-name?name=${company}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "resolve company by domain — Brand.dev (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "discover curated influencer listicles — Exa search (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://exa.mpp.tempo.xyz/search",
+      "body": {
+        "query": "${query}",
+        "numResults": 10,
+        "contents": {
+          "text": {
+            "maxCharacters": 5000
+          }
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "expand from a strong listicle — Exa findSimilar (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://exa.mpp.tempo.xyz/findSimilar",
+      "body": {
+        "url": "${similarUrl}",
+        "numResults": 5,
+        "contents": {
+          "text": {
+            "maxCharacters": 5000
+          }
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "fetch Twitter profile + counts — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "fetch top tweets + engagement — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "find email by name + domain — Hunter email-finder (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
+      "body": {
+        "domain": "${contactDomain}",
+        "first_name": "${firstName}",
+        "last_name": "${lastName}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "LinkedIn-to-email — Tomba (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/linkedin?url=${linkedinUrl}",
+      "maxAmount": "5.00"
+    }
+  ]
+}

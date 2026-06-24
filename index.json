@@ -1,12 +1,119 @@
 {
   "schema": "selat-skills-index/v1",
   "skills": [
-    { "name": "token-price",     "rail": "direct", "kind": "single", "description": "Crypto spot prices by symbol (Alchemy, Circle nanopayment)." },
-    { "name": "wallet-holdings", "rail": "direct", "kind": "single", "description": "Multi-chain token holdings for a wallet (Alchemy, Circle nanopayment)." },
-    { "name": "web-search",      "rail": "routed", "kind": "single", "description": "Web search via Exa (BlockRun), routed (erc-3009)." },
-    { "name": "allium-price",    "rail": "routed", "kind": "single", "description": "Latest token price via Allium, routed (tempo-native MPP)." },
-    { "name": "market-snapshot", "rail": "mixed",  "kind": "multi",  "description": "Crypto spot price (DIRECT) + token price (ROUTED MPP) — exercises both rails." },
-    { "name": "crypto-fear-greed", "rail": "direct", "kind": "single", "description": "Crypto Fear & Greed Index time series via Arrays (Circle nanopayment, DIRECT)." },
-    { "name": "crypto-sentiment-snapshot", "rail": "mixed", "kind": "multi", "description": "Market sentiment (Arrays, DIRECT) + a coin price quote (CoinMarketCap, ROUTED-x402) — both rails in one run." }
+    {
+      "name": "token-price",
+      "rail": "direct",
+      "kind": "single",
+      "description": "Crypto spot prices by symbol (Alchemy, Circle nanopayment)."
+    },
+    {
+      "name": "wallet-holdings",
+      "rail": "direct",
+      "kind": "single",
+      "description": "Multi-chain token holdings for a wallet (Alchemy, Circle nanopayment)."
+    },
+    {
+      "name": "web-search",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Web search via Exa (BlockRun), routed (erc-3009)."
+    },
+    {
+      "name": "allium-price",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Latest token price via Allium, routed (tempo-native MPP)."
+    },
+    {
+      "name": "market-snapshot",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Crypto spot price (DIRECT) + token price (ROUTED MPP) — exercises both rails."
+    },
+    {
+      "name": "crypto-fear-greed",
+      "rail": "direct",
+      "kind": "single",
+      "description": "Crypto Fear & Greed Index time series via Arrays (Circle nanopayment, DIRECT)."
+    },
+    {
+      "name": "crypto-sentiment-snapshot",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Market sentiment (Arrays, DIRECT) + a coin price quote (CoinMarketCap, ROUTED-x402) — both rails in one run."
+    },
+    {
+      "name": "enrich-waterfall",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Cheapest-first B2B person+company enrichment waterfall across 14 MPP merchants. Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "comprehensive-enrichment",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Deep multi-source person+company enrichment (Fiber, Hunter, Tomba, Sixtyfour, Brand.dev, Exa…). Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "lead-enrichment",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Lead enrichment via Hunter + Sixtyfour + Fiber. Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "person-lookup",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Person lookup via Nyne. Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "gtm-enrichment-smart",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Smart GTM enrichment (Apollo, Tomba, Brand.dev, Sixtyfour, Scrape Creators). Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "gtm-enrichment-deep",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Deep GTM enrichment (Apollo + Sixtyfour). Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "sales-prospecting",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Sales prospecting list-build + enrich (Fiber, Hunter, Sixtyfour, Brand.dev). Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "email-campaign",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Email-campaign prospect + verify pipeline (Fiber, Hunter, Sixtyfour, Brand.dev). Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "recent-funding-rounds",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Recent funding rounds via Fundable. Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "find-twitter-influencers",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Find Twitter/X influencers (Scrape Creators, Fiber, Exa, Brand.dev, Hunter, Tomba). Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "twitter-profile-lookup",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Twitter/X profile + recent tweets via Scrape Creators. Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "scrapecreators",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Social data via Scrape Creators (Twitter/IG/LinkedIn). Routed (MPP) via the SELAT Router."
+    }
   ]
 }
