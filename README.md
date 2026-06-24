@@ -113,6 +113,12 @@ verify the endpoint live (`selat-pay --probe-only`), add it to `index.json`, the
 `npm run validate` (or `selat skill validate ./skills/<name>`) and open a PR. CI runs
 the same validator on every PR.
 
+The **[`meta/skill-creator`](meta/skill-creator/SKILL.md)** skill walks a contributor
+through this whole process interactively — define → scaffold → discover endpoints →
+manifest → SKILL.md → evals → validate → probe → PR — and ships a
+[`new-skill.mjs`](meta/skill-creator/scripts/new-skill.mjs) scaffolder. It lives under
+`meta/` (not `skills/`) because it is a guidance skill with no payment manifest.
+
 ## License
 
 Apache-2.0.
