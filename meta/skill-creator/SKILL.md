@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Use this skill when a contributor wants to build, author, scaffold, verify, or submit a new skill to the SELAT skill hub (selat-skills) — e.g. "create a skill", "build a selat skill", "add a skill to the hub", "contribute a skill", "how do I write a manifest.json", "verify my skill", "submit my skill", "wrap an MPP endpoint as a skill". Guides you through the official `selat skill` flow: new → author → validate → verify → register → submit, and encodes the gotchas that make a skill actually pay.
+description: Use this skill when a contributor wants to build, author, scaffold, verify, or submit a new skill to the SELAT skill hub (selat-skills) — e.g. "create a skill", "build a selat skill", "add a skill to the hub", "contribute a skill", "how do I write a manifest.json", "verify my skill", "submit my skill", "wrap an MPP endpoint as a skill". Guides you through the official `selat skill` flow (new → author → validate → verify → register → submit) and encodes the gotchas that make a skill actually pay.
 license: Apache-2.0
 compatibility: Requires Node.js 18+, the selat CLI, and selat-pay >= 0.7.0 on PATH. Verifying routed skills needs SELAT_ROUTER_URL set; `selat skill verify` (without --pay) is free and needs no funded wallet.
 metadata:

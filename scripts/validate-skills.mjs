@@ -35,6 +35,29 @@ function validateManifest(name, m) {
   if (m.params && typeof m.params !== "object") err(name, "manifest.params must be an object");
 }
 
+// Dependency-free guard for the frontmatter YAML failures that render-break on
+// GitHub. We don't full-parse YAML (no deps in this repo), but we catch the
+// classes that have actually bitten us: tabs in indentation, and an unquoted
+// top-level scalar whose value contains ": " (a colon-space, which YAML reads as
+// a nested mapping → "mapping values are not allowed here").
+function lintFrontmatter(name, fm) {
+  const lines = fm.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\t|^ *\t/.test(line)) { err(name, `SKILL.md frontmatter line ${i + 1}: uses a tab; YAML requires spaces`); continue; }
+    // top-level "key: value" (no indentation) with a scalar value
+    const m = line.match(/^([A-Za-z0-9_-]+):[ \t]+(\S.*)$/);
+    if (!m) continue;
+    const [, key, raw] = m;
+    const v = raw.trim();
+    // quoted / block / flow values are safe
+    if (/^["'|>[{]/.test(v)) continue;
+    if (/:[ \t]/.test(v)) {
+      err(name, `SKILL.md frontmatter "${key}" has an unquoted ": " — quote the value or remove the colon (GitHub YAML renders it as a mapping otherwise)`);
+    }
+  }
+}
+
 function validateSkill(name) {
   const dir = join(SKILLS, name);
   // manifest.json (required)
@@ -54,6 +77,8 @@ function validateSkill(name) {
     if (!nm) err(name, "SKILL.md missing YAML frontmatter name");
     else if (nm[1].trim() !== name) err(name, `SKILL.md frontmatter name "${nm[1].trim()}" must equal folder "${name}"`);
     if (!/^description:\s*\S/m.test(md)) err(name, "SKILL.md frontmatter missing description");
+    if (!fm) err(name, "SKILL.md missing YAML frontmatter (--- ... --- at top)");
+    else lintFrontmatter(name, fm[1]);
     for (const s of REQUIRED_SECTIONS) if (!new RegExp(`^##\\s+${s}\\s*$`, "m").test(md)) warn(name, `SKILL.md missing section: ## ${s}`);
     if (/\bTODO\b/.test(md)) err(name, "SKILL.md still contains TODO placeholders");
   }
@@ -84,6 +109,19 @@ for (const name of dirs) {
   if (!indexNames.includes(name)) err(name, "not listed in index.json");
 }
 for (const n of indexNames) if (!dirs.includes(n)) err(n, `listed in index.json but has no skills/${n}/ folder`);
+
+// Lint frontmatter of guidance skills under meta/ too (they render on GitHub but
+// aren't payment skills, so they skip the per-skill checks above).
+const META_DIR = join(ROOT, "meta");
+if (existsSync(META_DIR)) {
+  for (const d of readdirSync(META_DIR, { withFileTypes: true }).filter((x) => x.isDirectory())) {
+    const p = join(META_DIR, d.name, "SKILL.md");
+    if (!existsSync(p)) continue;
+    const fm = readFileSync(p, "utf8").match(/^---\n([\s\S]*?)\n---/);
+    if (!fm) err(`meta/${d.name}`, "SKILL.md missing YAML frontmatter");
+    else lintFrontmatter(`meta/${d.name}`, fm[1]);
+  }
+}
 
 console.log(`\n${errors ? "✗" : "✓"} validated ${dirs.length} skills against ${SCHEMA} — ${errors} error(s), ${warnings} warning(s)`);
 process.exit(errors ? 1 : 0);
