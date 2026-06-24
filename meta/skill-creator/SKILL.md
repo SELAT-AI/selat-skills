@@ -13,8 +13,9 @@ metadata:
 
 Author a new skill for the **selat-skills** hub and get it merged, using the
 official `selat skill` CLI. A skill is a declarative directory the `selat` CLI
-executes — **never code that calls `selat-pay` itself**. This skill mirrors
-[`CONTRIBUTING.md`](../../CONTRIBUTING.md); keep it open while you build.
+executes — **never code that calls `selat-pay` itself**. This is the hub's
+contribution guide ([`CONTRIBUTING.md`](../../CONTRIBUTING.md) points here); keep
+it open while you build.
 
 ## When To Use
 
@@ -128,7 +129,7 @@ selat-pay POST "https://mpp.orthogonal.com/<merchant>/<path>" \
 
 ## References
 
-- [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — the canonical contribution flow this skill follows.
+- [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — repo-level quick reference that points back to this skill.
 - `references/manifest-reference.md` — `selat-skill/v1` manifest schema, params, rails, examples.
 - `references/endpoint-discovery.md` — finding endpoints in the catalogue and the `serviceUrl` rule.
 - `references/submission-checklist.md` — the `selat skill` command sequence + pre-PR checklist.

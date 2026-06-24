@@ -1,7 +1,8 @@
 # Submitting a skill to the hub
 
-This mirrors [`CONTRIBUTING.md`](../../CONTRIBUTING.md). Use the official
-`selat skill` CLI from the `selat-skills` repo root.
+Use the official `selat skill` CLI from the `selat-skills` repo root. This is the
+canonical submission flow; the repo-level [`CONTRIBUTING.md`](../../CONTRIBUTING.md)
+is a quick-reference pointer to it.
 
 ## The command sequence
 
