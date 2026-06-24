@@ -42,8 +42,10 @@ challenge" and a `down` skill. This is the single most common authoring mistake.
 
 ## Confirm an endpoint is live before you wire it
 
-The catalogue can list endpoints the gateway no longer serves (drift). Probe each
-candidate — free, no wallet:
+The catalogue can list endpoints the gateway no longer serves (drift). Once the
+skill exists, `selat skill verify ./skills/<name>` runs this probe across every
+step and gates submission. While discovering, probe a single candidate
+directly — free, no wallet:
 
 ```bash
 # GET endpoint: params in the query
