@@ -1,66 +1,79 @@
 ---
 name: skill-creator
-description: Use this skill when a contributor wants to build, author, scaffold, or submit a new skill to the SELAT skill hub (selat-skills) — e.g. "create a skill", "build a selat skill", "add a skill to the hub", "contribute a skill", "how do I write a manifest.json", "submit my skill", "wrap an MPP endpoint as a skill", "turn this paid API into a skill". Guides you through define → scaffold → wire endpoints → write SKILL.md → evals → validate → probe → open a PR, and encodes the gotchas that make a skill actually pay.
+description: Use this skill when a contributor wants to build, author, scaffold, verify, or submit a new skill to the SELAT skill hub (selat-skills) — e.g. "create a skill", "build a selat skill", "add a skill to the hub", "contribute a skill", "how do I write a manifest.json", "verify my skill", "submit my skill", "wrap an MPP endpoint as a skill". Guides you through the official `selat skill` flow: new → author → validate → verify → register → submit, and encodes the gotchas that make a skill actually pay.
 license: Apache-2.0
-compatibility: Requires Node.js 18+, the selat CLI, and selat-pay >= 0.7.0 on PATH. Probing routed skills needs SELAT_ROUTER_URL set; it does NOT need a funded wallet (probe-only is free).
+compatibility: Requires Node.js 18+, the selat CLI, and selat-pay >= 0.7.0 on PATH. Verifying routed skills needs SELAT_ROUTER_URL set; `selat skill verify` (without --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   kind: guidance
 ---
 
 # skill-creator
 
-Author a new skill for the **selat-skills** hub and get it merged. A skill is a
-declarative directory the `selat` CLI executes — **never code that calls
-`selat-pay` itself**. Keep this open while you build; it carries the procedure
-and the non-obvious failure modes.
+Author a new skill for the **selat-skills** hub and get it merged, using the
+official `selat skill` CLI. A skill is a declarative directory the `selat` CLI
+executes — **never code that calls `selat-pay` itself**. This skill mirrors
+[`CONTRIBUTING.md`](../../CONTRIBUTING.md); keep it open while you build.
 
 ## When To Use
 
 Use when someone wants to add a capability to the hub by composing one or more
 paid **federated-catalogue** endpoints into a named skill, or asks how the
-manifest/SKILL.md/evals fit together, how to find a payable endpoint, or how to
-submit. Not for editing the CLI or router — this is skill *content* only.
+manifest/SKILL.md/evals fit together, how to find a payable endpoint, how to
+verify it, or how to submit. Not for editing the CLI or router — this is skill
+*content* only.
 
 ## Workflow
 
-Follow these in order. Each later step assumes the earlier ones passed.
+The whole loop (matches `CONTRIBUTING.md`):
 
-1. **Define one reusable unit of work.** One skill = one coherent capability
-   (e.g. "enrich a person from an email"), not a department. Pick the **rail**:
-   - `direct` — Circle nanopayment / Gateway-batched, paid straight to the upstream.
-   - `routed` — erc-3009 or tempo-native **MPP**, paid via the SELAT Router. Most
-     catalogue merchants are routed.
-   - `mixed` — both in one run.
-2. **Scaffold the directory:**
-   `node scripts/new-skill.mjs <kebab-name> --rail routed --kind multi`
-   This writes `<name>/{manifest.json, SKILL.md, evals/evals.json, references/endpoints.md}`.
-3. **Discover endpoints in the federated catalogue.** For each capability, find
-   the merchant's endpoint and record its **`serviceUrl`** (NOT the descriptive
-   provider `url`), `method`, path, and price. See
-   `references/endpoint-discovery.md`. This is where most skills go wrong — read it.
-4. **Fill `manifest.json`.** One step per endpoint: `rail`, `method`,
-   `url` = `serviceUrl` + path with `${param}` placeholders, `body` (real JSON for
-   POST/PUT — see Gotchas), and a `maxAmount` cap. Define `params` with **real
-   defaults**. See `references/manifest-reference.md`.
-5. **Write `SKILL.md`.** Concise, procedural, per the SOP sections (When To Use,
-   Workflow, Inputs And Outputs, Gotchas, Validation, References). Trigger-rich
-   `description` under 1024 chars. No `TODO` left behind (it fails validation).
-6. **Write `evals/evals.json`.** ~6 output evals plus trigger evals (8–10 that
-   should fire, 8–10 that should not).
-7. **Validate:** `node <hub>/scripts/validate-skills.mjs` — must be **0 errors**.
-8. **Probe (free):** `node <hub>/scripts/probe-skills.mjs` then read
-   `reliability.json`. Every step should be `reachable`. Drop or fix steps that
-   aren't — see Gotchas. Aim for skill status `ok`.
-9. **Submit.** Add a `{name, rail, kind, description}` row to `index.json`, open a
-   PR. CI re-probes on a cron; `degraded`/`down` is recorded data, not a gate, but
-   ship `ok` when you can. See `references/submission-checklist.md`.
+```bash
+selat skill new my-skill --dir skills           # 1. scaffold
+#   …edit the files (replace every TODO)…        # 2. author
+selat skill validate ./skills/my-skill          # 3. static SOP check
+selat skill verify   ./skills/my-skill [--pay]  # 4. live-402 check (THE GATE)
+selat skill register ./skills/my-skill          # 5. add index.json entry
+npm run validate                                # 6. whole-repo check (what CI runs)
+selat skill submit   ./skills/my-skill          # 7. open the PR
+```
+
+1. **Define + scaffold.** One skill = one coherent capability; pick the **rail**
+   (`direct` Circle nanopayment / `routed` MPP via the SELAT Router / `mixed`).
+   Then `selat skill new <name> --dir skills` writes `skills/<name>/` with
+   `manifest.json`, `SKILL.md`, `references/endpoints.md`, `evals/evals.json`.
+   (No CLI handy? `scripts/new-skill.mjs` does the same scaffolding offline.)
+2. **Discover endpoints** in the federated catalogue and record each merchant's
+   **`serviceUrl`** (NOT the descriptive provider `url`), method, path, price.
+   See `references/endpoint-discovery.md` — this is where most skills break.
+3. **Author** — replace every `TODO`:
+   - `manifest.json` — `name` (== folder), `chain`, `maxAmount` (cap *with
+     headroom*, a filter not a price), `params` (real defaults), `steps[]` with
+     `url` = `serviceUrl` + path, `${param}` substitution, `body` for POST.
+   - `SKILL.md` — frontmatter + sections (When To Use, Workflow, Inputs And
+     Outputs, Gotchas, Validation, References). No `TODO` may remain.
+   - `references/endpoints.md` and `evals/evals.json` (`skill_name` == folder).
+4. **Validate (static):** `selat skill validate ./skills/<name>`.
+5. **Verify (the gate):** `selat skill verify ./skills/<name>` probes each step's
+   real 402 price/rail (free) and checks it ≤ `maxAmount`; `--pay` makes a capped
+   real call to confirm it settles 200. Pass required params as flags. This writes
+   `skills/<name>/.selat/verify-receipt.json` — the provenance `submit` attaches to
+   the PR and that **gates merge**. Fix any step that's unreachable or over cap;
+   prefer **first-party** providers over proxies.
+6. **Register:** `selat skill register ./skills/<name>` auto-adds/updates the
+   `index.json` entry from the manifest.
+7. **Whole-repo check:** `npm run validate` (exactly what CI runs).
+8. **Submit:** `selat skill submit ./skills/<name>` (use `--dry-run` first). It
+   requires a passing verify receipt, then branches, commits `skills/<name>` + the
+   `index.json` entry, pushes, and opens a PR with the receipt as provenance. No
+   write access? It prints fork-and-PR commands. A maintainer paid-re-verifies
+   before merge.
 
 ## Available Scripts
 
-- `scripts/new-skill.mjs <name> [--rail direct|routed|mixed] [--kind single|multi] [--dir <skills/>]`
-  — scaffolds a complete skill skeleton. Non-interactive; `--help` for usage.
+- `scripts/new-skill.mjs <name> [--rail …] [--kind …] [--dir skills]` — offline
+  scaffolder equivalent to `selat skill new`, for environments without the CLI.
+  Non-interactive; `--help` for usage.
 
 ## Inputs And Outputs
 
@@ -70,46 +83,42 @@ Follow these in order. Each later step assumes the earlier ones passed.
 | Endpoints | Catalogue `serviceUrl` + path + method + price per step |
 | Params | Named inputs with sensible defaults |
 
-Output: a skill directory that validates, probes `ok`, and is ready for a PR.
+Output: a skill that passes `validate`, has a passing `verify` receipt, and is
+ready for `submit`.
 
 ## Gotchas
 
-These are the failure modes that cost the most time. Internalize them.
-
-- **Wire steps to the catalogue `serviceUrl`, NOT the provider `url`.** A
-  catalogue record has a *descriptive* `url` (e.g. `https://api.tomba.io`) and a
-  *payable* `serviceUrl` (e.g. `https://mpp.orthogonal.com/tomba`). The 402
-  challenge is served **only** at the `serviceUrl`. Wiring the provider host
-  yields "no x402/MPP challenge" and a `down` skill.
-- **POST/PUT endpoints want params in the `body`, not the query string.** A POST
-  with `?key=val` often returns no challenge; move those into `body` as real JSON.
-- **`maxAmount` is a spending *filter*, not the price.** Set it to what you're
-  willing to pay per call (e.g. `"5.00"`); the live 402 quote is the real price.
-  Live prices run a few percent above the catalogue (gateway markup) — leave
-  headroom or `withinCap` flips the skill to `degraded`.
-- **Give params real defaults** (`email` → a sample address, `domain` →
-  `stripe.com`). Empty defaults break body/path substitution so the probe (and
-  users) can't exercise the step.
-- **Probe before you submit, and trust the probe over the catalogue.** The
-  catalogue lists endpoints the live gateway may not currently serve (drift). If a
-  correctly-wired step still returns no challenge, the gateway isn't serving it —
-  omit it and re-add later. Never ship a step you haven't seen return a quote.
-- **The authoring SOP lives only at the repo root** `references/agent-skill-authoring-sop.md`.
-  Do not copy it into your skill's `references/`.
-- **`name` must equal the folder name**, kebab-case, and match across
-  `manifest.json`, `SKILL.md` frontmatter, and the folder.
+- **Wire steps to the catalogue `serviceUrl`, NOT the provider `url`.** A record
+  has a *descriptive* `url` (`https://api.tomba.io`) and a *payable* `serviceUrl`
+  (`https://mpp.orthogonal.com/tomba`). The 402 is served only at the `serviceUrl`;
+  the provider host yields "no challenge" and a failed verify.
+- **POST/PUT params go in `body`, not the query string** — a POST with `?k=v`
+  often returns no challenge.
+- **`maxAmount` is a spending filter, not the price.** Set it with headroom over
+  the live quote (gateway prices run a few percent above the catalogue) or `verify`
+  flags the step as over-cap.
+- **Give params real defaults** so `verify` (and users) can exercise each step.
+- **`verify` is the gate, and the live 402 is the source of truth.** The catalogue
+  lists endpoints the gateway may no longer serve. Never submit a step that doesn't
+  verify; omit it and re-add when it's served.
+- **Prefer first-party providers over proxies** when equivalent — cheaper/equal,
+  with real identity and recourse.
+- **The authoring SOP lives only at the repo root** `references/agent-skill-authoring-sop.md`;
+  don't copy it into your skill.
+- **`name` == folder**, kebab-case, consistent across folder, `manifest.json`, and
+  `SKILL.md` frontmatter; `evals.json` `skill_name` == folder too.
 
 ## Validation
 
-Before opening a PR, all of these must hold:
+Before `submit`, all must hold:
 
-- `node <hub>/scripts/validate-skills.mjs` → 0 errors, 0 warnings.
-- `manifest.json` and `evals/evals.json` are valid JSON.
-- Every manifest step probes `reachable` (`selat-pay --probe-only`); skill status `ok`.
-- No `orth`/CLI/`subprocess` calls anywhere — the skill is purely declarative.
-- No `TODO`, secrets, tokens, or local-only paths in any file.
+- `selat skill validate ./skills/<name>` → passes (also the per-skill CI check).
+- `selat skill verify ./skills/<name>` → every step reachable and ≤ `maxAmount`
+  (writes the verify receipt). `--pay` confirms a real settled 200.
+- `npm run validate` → 0 errors (whole-repo + `index.json` consistency).
+- No `TODO`, secrets, or `orth`/CLI/`subprocess` calls — the skill is declarative.
 
-Quick single-step probe (free, no wallet):
+Underlying free single-step probe (what `verify` runs per step):
 
 ```bash
 selat-pay POST "https://mpp.orthogonal.com/<merchant>/<path>" \
@@ -119,7 +128,8 @@ selat-pay POST "https://mpp.orthogonal.com/<merchant>/<path>" \
 
 ## References
 
+- [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — the canonical contribution flow this skill follows.
 - `references/manifest-reference.md` — `selat-skill/v1` manifest schema, params, rails, examples.
-- `references/endpoint-discovery.md` — finding endpoints in the federated catalogue and the `serviceUrl` rule.
-- `references/submission-checklist.md` — validate → probe → `index.json` → PR.
-- `../../references/agent-skill-authoring-sop.md` — the canonical authoring standard (read once).
+- `references/endpoint-discovery.md` — finding endpoints in the catalogue and the `serviceUrl` rule.
+- `references/submission-checklist.md` — the `selat skill` command sequence + pre-PR checklist.
+- [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — the authoring standard.
