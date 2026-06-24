@@ -1,0 +1,35 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "twitter-profile-lookup",
+  "description": "Look up a Twitter/X profile and recent tweets via Scrape Creators, routed through the SELAT Router (tempo-native MPP). Returns bio, follower/following counts, verified status, and recent tweet engagement for a public handle.",
+  "chain": "base",
+  "maxAmount": "5.00",
+  "params": {
+    "handle": {
+      "required": true,
+      "default": "openai",
+      "description": "Twitter/X handle without the @ (e.g. openai, sama, AnthropicAI)"
+    },
+    "trim": {
+      "required": false,
+      "default": "false",
+      "description": "Set to \"true\" for a trimmed tweets response (less payload)"
+    }
+  },
+  "steps": [
+    {
+      "label": "profile — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "recent tweets — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}&trim=${trim}",
+      "maxAmount": "5.00"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "person-lookup",
+  "description": "Look up a person — work history, education, social profiles, and contact info — via Nyne.ai's async person search, routed through the SELAT Router (tempo-native MPP).",
+  "chain": "base",
+  "maxAmount": "5.00",
+  "params": {
+    "query": {
+      "required": true,
+      "default": "AI startups",
+      "description": "Search query combining person name with company, role, or geography for disambiguation, e.g. \"Dario Amodei Anthropic CEO\"."
+    }
+  },
+  "steps": [
+    {
+      "label": "person search — Nyne.ai (async, MPP / tempo-native, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/nyne/person/search",
+      "body": {
+        "query": "${query}"
+      },
+      "maxAmount": "5.00"
+    }
+  ]
+}

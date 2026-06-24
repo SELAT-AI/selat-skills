@@ -1,0 +1,92 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "sales-prospecting",
+  "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-routed via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Sixtyfour), verifies deliverability (Fiber), and enriches with company data (Brand.dev).",
+  "chain": "base",
+  "maxAmount": "5.00",
+  "params": {
+    "companyQuery": {
+      "required": false,
+      "default": "B2B SaaS startups in San Francisco with 50-200 employees Series A or B funded",
+      "description": "Free-form natural-language description of the target companies (ICP) for the Fiber company search."
+    },
+    "jobTitles": {
+      "required": false,
+      "default": "CTO,VP Engineering,Head of Engineering",
+      "description": "Comma-separated decision-maker job titles for the Fiber people search."
+    },
+    "companyNames": {
+      "required": false,
+      "default": "Stripe,Figma,Notion",
+      "description": "Comma-separated company names to scope the Fiber people search."
+    },
+    "locations": {
+      "required": false,
+      "default": "San Francisco",
+      "description": "Comma-separated locations to scope the Fiber people search."
+    },
+    "domain": {
+      "required": true,
+      "default": "stripe.com",
+      "description": "Company domain used for Hunter domain-search, the Sixtyfour email lookup, and the Brand.dev enrichment."
+    },
+    "firstName": {
+      "required": false,
+      "default": "Sarah",
+      "description": "First name of the specific contact whose email Sixtyfour should find."
+    },
+    "lastName": {
+      "required": false,
+      "default": "Chen",
+      "description": "Last name of the specific contact whose email Sixtyfour should find."
+    },
+    "email": {
+      "required": false,
+      "default": "sarah@stripe.com",
+      "description": "Email address to verify for deliverability via Fiber before adding to a sequence."
+    }
+  },
+  "steps": [
+    {
+      "label": "all emails for domain — Hunter domain search (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
+      "body": {
+        "domain": "${domain}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "find specific contact email — Sixtyfour find-email (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/find-email",
+      "body": {
+        "lead": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "domain": "${domain}"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "verify email deliverability — Fiber single email validation (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/validate-email/single",
+      "body": {
+        "email": "${email}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "enrich with company data — Brand.dev retrieve (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "maxAmount": "5.00"
+    }
+  ]
+}

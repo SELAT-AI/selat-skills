@@ -1,0 +1,64 @@
+{
+  "skill_name": "scrapecreators",
+  "evals": [
+    {
+      "id": "twitter-profile",
+      "prompt": "Scrape the X/Twitter profile for the handle openai using Scrape Creators.",
+      "expected_output": "The skill runs the routed Scrape Creators twitter/profile step and returns the profile JSON (bio, follower counts).",
+      "assertions": [
+        "The skill triggers (scrapecreators) for a social profile scrape request",
+        "The twitter/profile step targets https://api.scrapecreators.com/v1/twitter/profile?handle=openai",
+        "The step rail is routed with maxAmount 0.02"
+      ]
+    },
+    {
+      "id": "tiktok-trending",
+      "prompt": "Show me TikTok's trending feed for the US region.",
+      "expected_output": "The routed tiktok/get-trending-feed step runs with region=US and returns trending videos.",
+      "assertions": [
+        "The skill triggers for a trending-feed request",
+        "The step URL is https://api.scrapecreators.com/v1/tiktok/get-trending-feed?region=US",
+        "The step is rail routed"
+      ]
+    },
+    {
+      "id": "linkedin-company",
+      "prompt": "Pull the LinkedIn company page data for https://linkedin.com/company/anthropic.",
+      "expected_output": "The routed linkedin/company step runs with the supplied company URL and returns size, industry, locations, specialties.",
+      "assertions": [
+        "The linkedinCompanyUrl param is used in the linkedin/company step URL",
+        "The step method is GET and rail routed",
+        "The host is api.scrapecreators.com"
+      ]
+    },
+    {
+      "id": "instagram-post",
+      "prompt": "Get the data for this Instagram reel: https://instagram.com/p/abc123",
+      "expected_output": "The routed instagram/post step runs with the supplied post URL and returns the post/reel JSON.",
+      "assertions": [
+        "The instagramPostUrl param flows into the instagram/post step",
+        "The step targets https://api.scrapecreators.com/v1/instagram/post",
+        "The step rail is routed with maxAmount 0.02"
+      ]
+    },
+    {
+      "id": "full-run-cap",
+      "prompt": "Run the full scrapecreators skill with defaults.",
+      "expected_output": "All 12 routed steps run and the run cost is capped at the manifest maxAmount.",
+      "assertions": [
+        "manifest.json parses as valid JSON",
+        "Top-level maxAmount is 0.24 (sum of 12 steps at 0.02)",
+        "Every step has rail routed and host api.scrapecreators.com"
+      ]
+    },
+    {
+      "id": "no-trigger-weather",
+      "prompt": "What's the weather forecast for Lisbon this weekend?",
+      "expected_output": "The scrapecreators skill does NOT trigger; this is unrelated to social media scraping.",
+      "assertions": [
+        "The scrapecreators skill is not selected",
+        "No Scrape Creators endpoint is called"
+      ]
+    }
+  ]
+}

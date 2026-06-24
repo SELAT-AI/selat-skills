@@ -1,0 +1,71 @@
+{
+  "skill_name": "comprehensive-enrichment",
+  "evals": [
+    {
+      "id": "enrich-by-email",
+      "prompt": "Enrich john@stripe.com — give me everything you can find on the person and their company.",
+      "expected_output": "Runs comprehensive-enrichment with email=john@stripe.com and domain=stripe.com, fans out across person and company providers, and returns a summary card (contact, verified emails, bio) plus a company snapshot.",
+      "assertions": [
+        "The skill comprehensive-enrichment is selected",
+        "The email param is set to john@stripe.com and domain is derived as stripe.com",
+        "Person steps (Fiber kitchen-sink person, Sixtyfour enrich-lead) and email verifier steps run",
+        "Company steps (Brand.dev retrieve, Nyne funding) run because the employer domain is known"
+      ]
+    },
+    {
+      "id": "enrich-by-name-and-company",
+      "prompt": "Look up John Doe at Stripe and find his work email and phone.",
+      "expected_output": "Runs the skill with firstName=John, lastName=Doe, company=Stripe; finds and verifies email; returns phone from Sixtyfour find-phone.",
+      "assertions": [
+        "firstName=John, lastName=Doe, company=Stripe params are set",
+        "Hunter email-finder and the email verifier steps run",
+        "Sixtyfour find-phone step runs",
+        "Output labels each email as work or personal with a verification status"
+      ]
+    },
+    {
+      "id": "company-only-by-domain",
+      "prompt": "Research stripe.com — overview, leadership, funding, and competitors.",
+      "expected_output": "Runs the company branch with domain=stripe.com: Brand.dev overview, Fiber leadership search, Nyne funding/funders, Exa findSimilar competitors.",
+      "assertions": [
+        "domain param is set to stripe.com",
+        "Brand.dev retrieve, Fiber natural-language-search/profiles, and Nyne funding steps run",
+        "Exa findSimilar runs for competitors",
+        "Person-only steps are skipped or return empty when no person identifier is given"
+      ]
+    },
+    {
+      "id": "all-routed-rail",
+      "prompt": "Enrich the lead at https://linkedin.com/in/johndoe.",
+      "expected_output": "Runs with linkedinUrl set; every executed step is rail=routed (MPP via SELAT Router); no direct-rail or non-MPP calls.",
+      "assertions": [
+        "linkedinUrl param is set to https://linkedin.com/in/johndoe",
+        "Every step in the run reports rail=routed",
+        "Fiber LinkedIn profile/single and profile-posts steps run",
+        "No step uses the direct rail"
+      ]
+    },
+    {
+      "id": "cost-cap-respected",
+      "prompt": "Enrich acme.com but keep it cheap — skip the expensive funding lookups.",
+      "expected_output": "Runs company steps for acme.com, and the user can drop the Nyne funding/funders steps; total spend stays under the $3.20 run cap.",
+      "assertions": [
+        "domain param is set to acme.com",
+        "The total run respects the manifest maxAmount of 3.20",
+        "Each executed step's spend is bounded by its per-step maxAmount",
+        "The two Nyne steps ($0.578 and $1.44) are identified as the most expensive and skippable"
+      ]
+    },
+    {
+      "id": "probe-only-validation",
+      "prompt": "Before paying, probe the enrichment endpoints for stripe.com to confirm they answer with a 402.",
+      "expected_output": "Uses selat-pay --probe-only against the skill's endpoints (e.g. Brand.dev retrieve, Tomba enrich) to confirm 402 challenges without paying.",
+      "assertions": [
+        "The validation uses selat-pay with the --probe-only flag",
+        "At least one probe targets a host+path from references/endpoints.md",
+        "No payment is sent during probing",
+        "The skill is not run in pay mode during validation"
+      ]
+    }
+  ]
+}

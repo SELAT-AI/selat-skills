@@ -1,0 +1,554 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "enrich-waterfall",
+  "description": "Cheapest-first B2B enrichment waterfall, fully routed via the SELAT Router (MPP). Resolves a person and anchors their company with sub-cent calls first, layers in tech / company signals / social, escalates to premium contact reveals (ContactOut, PDL identify, Sixtyfour phone) only on gaps, and verifies the email last. 65 routed Orthogonal-merchant steps across Tomba, Apollo, Coresignal, Ocean.io, People Data Labs, ContactOut, Hunter, Sixtyfour, Fiber, Brand.dev, BuiltWith, PredictLeads, Company Enrich and Aviato.",
+  "chain": "base",
+  "maxAmount": "5.00",
+  "params": {
+    "email": {
+      "required": false,
+      "default": "test@stripe.com",
+      "description": "Person work email (primary resolve key for Tomba / Apollo / PDL / Ocean.io / Fiber reverse lookup)."
+    },
+    "name": {
+      "required": false,
+      "default": "John Doe",
+      "description": "Full name; used by ContactOut/Ocean.io/PDL people enrich and Fiber social-profile search."
+    },
+    "firstName": {
+      "required": false,
+      "default": "John",
+      "description": "First name; used by Tomba/Hunter/Sixtyfour email-finder and Apollo/Ocean.io/PDL match."
+    },
+    "lastName": {
+      "required": false,
+      "default": "Doe",
+      "description": "Last name; paired with firstName + domain for email-finder and match calls."
+    },
+    "domain": {
+      "required": false,
+      "default": "stripe.com",
+      "description": "Company domain (e.g. stripe.com); primary key for every company-anchor, tech and signals call."
+    },
+    "company": {
+      "required": false,
+      "default": "Stripe",
+      "description": "Company name; fallback anchor when no domain, and an input to people-match / lead-enrich calls."
+    },
+    "linkedinUrl": {
+      "required": false,
+      "default": "https://linkedin.com/in/williamhgates",
+      "description": "Person or company LinkedIn/profile URL; used by Coresignal, ContactOut, Fiber and Aviato profile calls (URL-encoded into Coresignal path)."
+    }
+  },
+  "steps": [
+    {
+      "label": "person resolve — Tomba enrich by email",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/enrich?email=${email}",
+      "maxAmount": "5.00",
+      "tier": "resolve"
+    },
+    {
+      "label": "person resolve — Tomba people find by email",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/people/find?email=${email}",
+      "maxAmount": "5.00",
+      "tier": "resolve"
+    },
+    {
+      "label": "person resolve — Tomba combined person+company find by email",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/combined/find?email=${email}",
+      "maxAmount": "5.00",
+      "tier": "resolve"
+    },
+    {
+      "label": "person resolve — Apollo people match (enrich by email / LinkedIn / name+company)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/apollo/api/v1/people/match",
+      "body": {
+        "email": "${email}",
+        "first_name": "${firstName}",
+        "last_name": "${lastName}",
+        "organization_name": "${company}",
+        "domain": "${domain}",
+        "linkedin_url": "${linkedinUrl}"
+      },
+      "maxAmount": "5.00",
+      "tier": "resolve"
+    },
+    {
+      "label": "person resolve — Coresignal employee enrich by professional-network profile URL",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/coresignal/v2/employee_clean/collect/${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "person resolve — Coresignal multi-source employee enrich by profile URL",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/coresignal/v2/employee_multi_source/collect/${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "person resolve — People Data Labs person enrich",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/peopledatalabs/v5/person/enrich?email=${email}&first_name=${firstName}&last_name=${lastName}&company=${company}&profile=${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company anchor — Apollo organization enrich (by domain)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/apollo/api/v1/organizations/enrich?domain=${domain}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company anchor — Coresignal company_clean enrich (by domain)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/coresignal/v2/company_clean/enrich?website=${domain}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company anchor — Company Enrich enrich (by domain)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company anchor — Company Enrich enrich (by name / LinkedIn, no domain)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich",
+      "body": {
+        "name": "${company}",
+        "linkedinUrl": "${linkedinUrl}"
+      },
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company anchor — Ocean.io company enrich (match + enrich)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/ocean-io/v2/enrich/company",
+      "body": {
+        "domain": "${domain}",
+        "name": "${company}"
+      },
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company anchor — PredictLeads company profile (by domain)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "email find by name — Hunter email-finder",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
+      "maxAmount": "5.00",
+      "tier": "anchor",
+      "body": {
+        "domain": "${domain}",
+        "first_name": "${firstName}",
+        "last_name": "${lastName}"
+      }
+    },
+    {
+      "label": "email enrichment — Hunter email-enrichment",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
+      "maxAmount": "5.00",
+      "tier": "anchor",
+      "body": {
+        "email": "${email}"
+      }
+    },
+    {
+      "label": "email find by name — Sixtyfour find-email",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/find-email",
+      "body": {
+        "lead": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}",
+          "domain": "${domain}"
+        }
+      },
+      "tier": "anchor",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company enrich — Company Enrich enrich by domain",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company enrich (no domain) — Company Enrich enrich by name/LinkedIn",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich",
+      "body": {
+        "name": "${company}",
+        "linkedinUrl": "${linkedinUrl}"
+      },
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company profile — PredictLeads company by domain",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "company enrich — Aviato enrich by website/LinkedIn/id",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/aviato/company/enrich?website=${domain}&linkedinURL=${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "anchor"
+    },
+    {
+      "label": "person resolve — Tomba email from LinkedIn URL",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/linkedin?url=${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "social"
+    },
+    {
+      "label": "person resolve — ContactOut full LinkedIn profile enrich",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/contactout/v1/linkedin/enrich?profile=${linkedinUrl}",
+      "tier": "social",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "social → LinkedIn reveal — Fiber Twitter-handle-to-LinkedIn",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/twitter-handle-to-linkedin/single",
+      "body": {
+        "handle": "${name}"
+      },
+      "maxAmount": "5.00",
+      "tier": "social"
+    },
+    {
+      "label": "Twitter profile — Fiber Twitter profile lookup",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/twitter/profile",
+      "body": {
+        "handle": "${name}"
+      },
+      "maxAmount": "5.00",
+      "tier": "social"
+    },
+    {
+      "label": "Instagram profile — Fiber Instagram profile lookup",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/instagram/profile",
+      "body": {
+        "handle": "${name}"
+      },
+      "maxAmount": "5.00",
+      "tier": "social"
+    },
+    {
+      "label": "TikTok profile — Fiber TikTok profile lookup",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/tiktok/profile",
+      "body": {
+        "handle": "${name}"
+      },
+      "maxAmount": "5.00",
+      "tier": "social"
+    },
+    {
+      "label": "LinkedIn person posts — Aviato person LinkedIn posts",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/aviato/social/person/posts?linkedinUrl=${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "social"
+    },
+    {
+      "label": "LinkedIn company posts — Aviato company LinkedIn posts",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/aviato/social/company/posts?linkedinUrl=${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "social"
+    },
+    {
+      "label": "lead enrich (contact + social + company) — Sixtyfour enrich-lead",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "body": {
+        "lead_info": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}"
+        },
+        "struct": {
+          "email": "Work email"
+        }
+      },
+      "maxAmount": "5.00",
+      "tier": "signals"
+    },
+    {
+      "label": "workforce signals — Company Enrich headcount insights",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/workforce?domain=${domain}",
+      "maxAmount": "5.00",
+      "tier": "signals"
+    },
+    {
+      "label": "financing events — PredictLeads funding signals for company",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}/financing_events",
+      "maxAmount": "5.00",
+      "tier": "signals"
+    },
+    {
+      "label": "news events — PredictLeads company news signals",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}/news_events",
+      "maxAmount": "5.00",
+      "tier": "signals"
+    },
+    {
+      "label": "job openings — PredictLeads hiring signals for company",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}/job_openings",
+      "maxAmount": "5.00",
+      "tier": "signals"
+    },
+    {
+      "label": "connections — PredictLeads business connections for company",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}/connections",
+      "maxAmount": "5.00",
+      "tier": "signals"
+    },
+    {
+      "label": "tech detect — Tomba technology lookup by domain",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/technology?domain=${domain}",
+      "maxAmount": "5.00",
+      "tier": "tech"
+    },
+    {
+      "label": "tech detect — PredictLeads technology stack detections for a company domain",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}/technology_detections",
+      "maxAmount": "5.00",
+      "tier": "tech"
+    },
+    {
+      "label": "tech profile — Brand.dev brand/industry data by domain",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "maxAmount": "5.00",
+      "tier": "tech"
+    },
+    {
+      "label": "tech NAICS — Brand.dev NAICS industry classification by domain",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/naics?input=${domain}",
+      "maxAmount": "5.00",
+      "tier": "tech"
+    },
+    {
+      "label": "technology detections — PredictLeads tech stack for company",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/predictleads/v3/companies/${domain}/technology_detections",
+      "maxAmount": "5.00",
+      "tier": "tech"
+    },
+    {
+      "label": "person resolve — ContactOut profile from email",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/contactout/v1/email/enrich?email=${email}&include=work_email",
+      "maxAmount": "5.00",
+      "tier": "escalate"
+    },
+    {
+      "label": "person resolve — ContactOut contact details for LinkedIn profile (with phone)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/contactout/v1/people/linkedin?profile=${linkedinUrl}&include_phone=true",
+      "tier": "escalate",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "person resolve — ContactOut multi-datapoint people enrich (reveal work/personal email + phone)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/contactout/v1/people/enrich",
+      "body": {
+        "full_name": "${name}",
+        "company": [
+          "${company}"
+        ],
+        "email": "${email}",
+        "linkedin_url": "${linkedinUrl}",
+        "include": [
+          "work_email",
+          "personal_email",
+          "phone"
+        ]
+      },
+      "maxAmount": "5.00",
+      "tier": "escalate"
+    },
+    {
+      "label": "person resolve — People Data Labs person identify (partial-info candidate matches)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/peopledatalabs/v5/person/identify?name=${name}&email=${email}&company=${company}&profile=${linkedinUrl}",
+      "maxAmount": "5.00",
+      "tier": "escalate"
+    },
+    {
+      "label": "company anchor — Coresignal company_multi_source enrich (by domain, comprehensive)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/coresignal/v2/company_multi_source/enrich?website=${domain}",
+      "maxAmount": "5.00",
+      "tier": "escalate"
+    },
+    {
+      "label": "phone find — Sixtyfour find-phone",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/find-phone",
+      "body": {
+        "lead": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}"
+        }
+      },
+      "maxAmount": "5.00",
+      "tier": "escalate"
+    },
+    {
+      "label": "contact details from LinkedIn — ContactOut people/linkedin",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/contactout/v1/people/linkedin?profile=${linkedinUrl}&include_phone=true",
+      "tier": "escalate",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "full LinkedIn profile enrich — ContactOut linkedin/enrich",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/contactout/v1/linkedin/enrich?profile=${linkedinUrl}",
+      "tier": "escalate",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "profile details from email — ContactOut email/enrich",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/contactout/v1/email/enrich?email=${email}&include=work_email",
+      "maxAmount": "5.00",
+      "tier": "escalate"
+    },
+    {
+      "label": "person reveal (name + company) — ContactOut people/enrich",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/contactout/v1/people/enrich",
+      "body": {
+        "full_name": "${name}",
+        "company": [
+          "${company}"
+        ],
+        "company_domain": [
+          "${domain}"
+        ],
+        "linkedin_url": "${linkedinUrl}",
+        "email": "${email}",
+        "include": [
+          "work_email",
+          "personal_email",
+          "phone"
+        ]
+      },
+      "maxAmount": "5.00",
+      "tier": "escalate"
+    },
+    {
+      "label": "email verify — Hunter email-verifier",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
+      "maxAmount": "5.00",
+      "tier": "verify",
+      "body": {
+        "email": "${email}"
+      }
+    },
+    {
+      "label": "email deliverability validate — Fiber validate-email single",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/validate-email/single",
+      "body": {
+        "email": "${email}"
+      },
+      "maxAmount": "5.00",
+      "tier": "verify"
+    }
+  ]
+}
