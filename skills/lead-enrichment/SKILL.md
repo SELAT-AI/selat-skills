@@ -2,7 +2,7 @@
 name: lead-enrichment
 description: Use this skill when the user wants to enrich a sales lead or contact across multiple data sources — e.g. "enrich this lead", "find and verify their work email", "get a phone number for this prospect", "enrich the company", "pull their LinkedIn profile", "complete contact data for John Doe at Stripe". Chains six routed MPP merchants (Hunter for email find/verify and company enrichment, Sixtyfour for lead + phone enrichment, Fiber for live LinkedIn) in a single run, all paid through the SELAT Router (routed MPP rail).
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet on Base. Every step is a routed MPP payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the whole run.
+compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a routed MPP payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the whole run.
 metadata:
   author: SELAT-AI
   version: "1.0"

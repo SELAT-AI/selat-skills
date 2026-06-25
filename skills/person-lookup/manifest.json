@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "person-lookup",
   "description": "Look up a person — work history, education, social profiles, and contact info — via Nyne.ai's async person search, routed through the SELAT Router (tempo-native MPP).",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "query": {

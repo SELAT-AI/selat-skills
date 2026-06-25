@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "sales-prospecting",
   "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-routed via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Sixtyfour), verifies deliverability (Fiber), and enriches with company data (Brand.dev).",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "companyQuery": {

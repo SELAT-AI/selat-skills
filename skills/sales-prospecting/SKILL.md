@@ -2,7 +2,7 @@
 name: sales-prospecting
 description: Use this skill when the user wants to build a B2B prospect or lead list with verified contact info — e.g. "build a prospect list", "find decision makers at these companies", "get verified emails for this domain", "find the CTO's email and verify it", "sales prospecting", "lead enrichment for outreach". Runs a routed MPP pipeline — company search (Fiber), people search (Fiber), domain email lookup (Hunter), specific-contact email (Sixtyfour), email verification (Fiber), and company enrichment (Brand.dev), all paid through the SELAT Router.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay, and a funded Circle Agent Wallet on Base. Every step is a routed MPP call, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the whole run.
+compatibility: Requires the selat CLI, selat-pay, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a routed MPP call, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the whole run.
 metadata:
   author: SELAT-AI
   version: "1.0"

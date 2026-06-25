@@ -2,7 +2,7 @@
 name: enrich-waterfall
 description: Use this skill when the user wants to enrich a person or company from a partial identifier — e.g. "enrich this email", "find the work email and phone for X at Y", "who is this person", "build a lead profile for stripe.com", "company enrichment for this domain", "find their LinkedIn / Twitter", "get me funding and hiring signals", "waterfall enrichment", "verify this email". Runs a cheapest-first B2B enrichment waterfall — resolve the person sub-cent, anchor the company, fan out to tech / signals / social, escalate to premium contact reveals (ContactOut, People Data Labs identify, Sixtyfour phone) only on gaps, then verify the email. Every step is paid routed (MPP) through the SELAT Router; the selat CLI compiles each manifest step into a payment.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet on Base. Every step is routed, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for all calls.
+compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is routed, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for all calls.
 metadata:
   author: SELAT-AI
   version: "1.0"

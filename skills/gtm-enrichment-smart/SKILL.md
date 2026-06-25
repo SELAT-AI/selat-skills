@@ -2,7 +2,7 @@
 name: gtm-enrichment-smart
 description: Use this skill when the user wants to enrich a sales lead or GTM prospect from an email address — e.g. "enrich this lead", "who is jane@acme.com", "look up this prospect", "GTM enrichment", "find the person and company behind this email", "qualify this lead with buying signals". Runs a cost-efficient multi-provider waterfall (Apollo, Tomba, Brand.dev, Sixtyfour, Scrape Creators) fully routed via the SELAT Router (MPP) to return person + company data, funding, AI/B2B classification, and buying signals with confidence scoring.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet on Base. All steps are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for every step.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for every step.
 metadata:
   author: SELAT-AI
   version: "1.0"

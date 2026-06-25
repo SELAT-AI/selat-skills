@@ -2,7 +2,7 @@
 name: recent-funding-rounds
 description: Use this skill when the user asks about companies that raised funding recently — "what companies raised funding this week?", "recent seed rounds", "latest Series A deals", "what fintech companies recently raised", "this month's funding rounds", or weekly/monthly deal flow. Searches recent funding deals by date range, round type, deal size, and industry via Fundable, routed through the SELAT Router over the MPP rail.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet on Base. The single routed step requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound payment into an outbound MPP payment to Fundable.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). The single routed step requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound payment into an outbound MPP payment to Fundable.
 metadata:
   author: SELAT-AI
   version: "1.0"

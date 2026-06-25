@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-deep",
   "description": "Deep GTM lead enrichment from an email (+ optional name). Sixtyfour AI agents are the primary source for person + company data, funding, and AI/B2B classification; Apollo is the routed fallback for LinkedIn match and organization funding. All steps are routed MPP via the SELAT Router.",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "email": {

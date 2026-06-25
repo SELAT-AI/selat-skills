@@ -2,7 +2,7 @@
 name: person-lookup
 description: Use this skill when the user wants to look up a specific person — e.g. "who is [name]?", "look up [name]", "find info about [name]", "what's [name]'s background?", "find [name]'s work history / social profiles / contact info". Runs an async person search via Nyne.ai (work history, education, social profiles, location, contact info), routed through the SELAT Router as a tempo-native MPP payment.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay, and a funded Circle Agent Wallet on Base. This is a routed MPP skill — it also requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound Gateway-batched payment into an outbound MPP/tempo payment to Nyne.ai.
+compatibility: Requires the selat CLI, selat-pay, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). This is a routed MPP skill — it also requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound Gateway-batched payment into an outbound MPP/tempo payment to Nyne.ai.
 metadata:
   author: SELAT-AI
   version: "1.0"

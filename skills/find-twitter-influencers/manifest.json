@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "find-twitter-influencers",
   "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the brand (Brand.dev), discovers curated listicles (Exa) and LinkedIn-heavy professionals (Fiber), pulls Twitter profiles and engagement (Scrape Creators), and enriches contacts (Fiber kitchen-sink, Hunter, Tomba). Every step is MPP-routed via the SELAT Router.",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "company": {

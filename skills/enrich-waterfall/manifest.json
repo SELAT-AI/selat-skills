@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "enrich-waterfall",
   "description": "Cheapest-first B2B enrichment waterfall, fully routed via the SELAT Router (MPP). Resolves a person and anchors their company with sub-cent calls first, layers in tech / company signals / social, escalates to premium contact reveals (ContactOut, PDL identify, Sixtyfour phone) only on gaps, and verifies the email last. 65 routed Orthogonal-merchant steps across Tomba, Apollo, Coresignal, Ocean.io, People Data Labs, ContactOut, Hunter, Sixtyfour, Fiber, Brand.dev, BuiltWith, PredictLeads, Company Enrich and Aviato.",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "email": {

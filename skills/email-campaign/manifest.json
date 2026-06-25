@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "email-campaign",
   "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company brand context — all via MPP merchants routed through the SELAT Router (tempo-native).",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "industry": {

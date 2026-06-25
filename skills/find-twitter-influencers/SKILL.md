@@ -2,7 +2,7 @@
 name: find-twitter-influencers
 description: Use this skill when the user wants to find Twitter/X influencers to promote a product or brand — e.g. "find influencers for Acme", "discover Twitter accounts for partnerships", "build an influencer outreach list", "who are the top fintech creators on X", "identify creators in our niche". Resolves the brand, discovers curated listicles and LinkedIn-heavy professionals, pulls Twitter profiles and engagement, scores candidates, and enriches contacts (email + LinkedIn). All steps are MPP-routed through the SELAT Router.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet on Base. Every step is routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required.
+compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required.
 metadata:
   author: SELAT-AI
   version: "1.0"

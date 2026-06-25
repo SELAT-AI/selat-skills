@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-smart",
   "description": "Multi-provider waterfall lead enrichment, fully routed via the SELAT Router (MPP/tempo). Takes an email (+ optional name) and returns person + company data by cross-referencing cheap routed APIs first (Apollo, Tomba, Brand.dev) and reaching expensive AI agents (Sixtyfour) only as fallback, with buying-signal and social-proof gap-fills.",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "email": {
