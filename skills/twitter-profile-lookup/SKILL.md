@@ -2,7 +2,7 @@
 name: twitter-profile-lookup
 description: Use this skill when the user wants to look up a Twitter/X account — e.g. "who is @username on Twitter?", "show me OpenAI's recent tweets", "what has Sam Altman been posting on X?", "pull this person's X profile and engagement", or social-media due diligence on a public figure or company. Fetches profile metadata (bio, followers, verified status) and recent tweets via Scrape Creators, routed through the SELAT Router as a tempo-native MPP payment.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet on Base. Routed steps require a reachable SELAT Router (SELAT_ROUTER_URL) for MPP settlement.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Routed steps require a reachable SELAT Router (SELAT_ROUTER_URL) for MPP settlement.
 metadata:
   author: SELAT-AI
   version: "1.0"

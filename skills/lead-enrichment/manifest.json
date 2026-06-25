@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "lead-enrichment",
   "description": "Multi-source lead enrichment, fully routed through the SELAT Router (MPP / tempo-native). Finds and verifies a work email (Hunter), enriches the lead and discovers a phone number (Sixtyfour), enriches the company (Hunter), and fetches a live LinkedIn profile (Fiber). One run chains six paid MPP merchants.",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "firstName": {

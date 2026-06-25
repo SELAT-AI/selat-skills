@@ -2,7 +2,7 @@
 name: gtm-enrichment-deep
 description: Use this skill when the user wants deep GTM lead enrichment from an email address — e.g. "enrich this lead", "who is jane@acme.com", "get me funding and company data for this contact", "enrich jane@acme.com with LinkedIn and funding", "deep enrichment for a prospect". Runs Sixtyfour AI agents as the primary enrichment source (person + company data, funding history, AI/B2B classification) with Apollo as the routed fallback for LinkedIn match and organization funding. All calls are routed MPP payments via the SELAT Router. Cost ≈ $0.20–$0.22 per lead.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet on Base. All steps are routed MPP and require a reachable SELAT Router (SELAT_ROUTER_URL) for the Sixtyfour (tempo) and Apollo (tempo) merchants.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps are routed MPP and require a reachable SELAT Router (SELAT_ROUTER_URL) for the Sixtyfour (tempo) and Apollo (tempo) merchants.
 metadata:
   author: SELAT-AI
   version: "1.0"

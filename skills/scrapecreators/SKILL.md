@@ -2,7 +2,7 @@
 name: scrapecreators
 description: Use this skill when the user wants to scrape or pull social media data — Instagram, TikTok, LinkedIn, or X/Twitter profiles, posts, tweets, company pages, hashtags, or trending feeds. Triggers on "scrape creators", "social scraper", "get this TikTok profile", "pull a LinkedIn profile", "fetch tweets for", "Instagram profile data", "trending TikToks", "influencer research", "social listening", "competitor social analysis". Runs Scrape Creators endpoints as routed tempo-native MPP payments through the SELAT Router, each compiled into a selat-pay call by the selat CLI.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet on Base. All steps are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the SELAT Router to translate the inbound Gateway-batched payment into an outbound tempo-native MPP payment to Scrape Creators.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the SELAT Router to translate the inbound Gateway-batched payment into an outbound tempo-native MPP payment to Scrape Creators.
 metadata:
   author: SELAT-AI
   version: "1.0"

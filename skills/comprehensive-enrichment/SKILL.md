@@ -2,7 +2,7 @@
 name: comprehensive-enrichment
 description: Use this skill when the user wants to enrich, look up, or research a lead, contact, person, or company — from an email, name, LinkedIn URL, domain, or company name. Triggers on "enrich this lead", "look up John at Stripe", "who is john@stripe.com", "research stripe.com", "profile this company", "find emails and phone for", "company funding and competitors". Resolves contact info, verified work + personal emails, phone, social profiles, company overview, leadership, funding, products, and competitors across many MPP data providers (Fiber, Nyne, Sixtyfour, Hunter, Tomba, Brand.dev, Linkup, ScrapeGraphAI, Exa). Every provider call is routed through the SELAT Router (MPP / tempo-native).
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet on Base. All steps are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required.
 metadata:
   author: SELAT-AI
   version: "1.0"

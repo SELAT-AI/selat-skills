@@ -2,7 +2,7 @@
 name: email-campaign
 description: Use this skill when the user wants to build a verified cold-email or outreach list — e.g. "build an email campaign", "find and verify emails for a domain", "find someone's work email", "verify these emails before I send", "enrich a lead for personalized outreach", "get company brand context for outreach". Runs a 7-step pipeline across MPP merchants (Fiber company search, Hunter domain/email lookup + verification, Fiber bounce check, Sixtyfour lead enrichment, Brand.dev company context), all routed through the SELAT Router.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet on Base. Every step is a routed MPP payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the run.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a routed MPP payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the run.
 metadata:
   author: SELAT-AI
   version: "1.0"

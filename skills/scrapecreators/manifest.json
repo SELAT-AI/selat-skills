@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "scrapecreators",
   "description": "Social media scraping via Scrape Creators (MPP, ROUTED via the SELAT Router): Instagram, TikTok, LinkedIn, and X/Twitter profiles, posts, and content. Each capability is a routed tempo-native MPP payment compiled by the selat CLI.",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "handle": {

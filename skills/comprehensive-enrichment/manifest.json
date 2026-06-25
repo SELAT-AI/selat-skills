@@ -2,7 +2,6 @@
   "schema": "selat-skill/v1",
   "name": "comprehensive-enrichment",
   "description": "Comprehensive person + company enrichment across many MPP-routed data providers (Fiber, Nyne, Sixtyfour, Hunter, Tomba, Brand.dev, Linkup, ScrapeGraphAI, Exa). Resolves contact info, verified emails, phone, social profiles, company overview, leadership, funding, products, and competitors. All steps are routed through the SELAT Router (MPP / tempo-native).",
-  "chain": "base",
   "maxAmount": "5.00",
   "params": {
     "email": {
