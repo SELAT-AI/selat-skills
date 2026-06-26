@@ -72,6 +72,12 @@
       "rail": "routed",
       "kind": "multi",
       "description": "Social data via Scrape Creators (Twitter/IG/LinkedIn). Routed (MPP) via the SELAT Router."
+    },
+    {
+      "name": "social-intel",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over multiple x402 rails (direct x402 + MPP-routed) via selat-pay."
     }
   ]
 }

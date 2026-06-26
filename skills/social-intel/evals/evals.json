@@ -1,0 +1,33 @@
+{
+  "skill_name": "social-intel",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "What's the social sentiment on agent payments right now — scan Reddit and Twitter and give me a brief with web context?",
+      "expected_output": "Runs social-intel across Exa + Tavily (web) and Scrape Creators Reddit + X steps, then fuses a cross-platform sentiment brief with citations.",
+      "assertions": [
+        "social-intel is selected",
+        "calls both a direct x402 step (Exa or Tavily) and a routed MPP step (Scrape Creators)",
+        "output fuses web + Reddit + X signal into a sentiment/themes brief with source URLs"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Do social listening on the @OpenAI account and the r/ethereum community around 'restaking'.",
+      "expected_output": "Runs social-intel with --topic restaking --handle OpenAI --subreddit ethereum, pulling the X profile + tweets and the subreddit top posts plus topic search.",
+      "assertions": [
+        "social-intel is selected",
+        "handle, subreddit, and topic params are passed through",
+        "X/Twitter profile + tweets and subreddit posts are retrieved and summarized"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Write me a Python function that reverses a linked list.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "social-intel is not selected"
+      ]
+    }
+  ]
+}
