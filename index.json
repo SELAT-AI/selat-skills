@@ -75,9 +75,9 @@
     },
     {
       "name": "social-intel",
-      "rail": "mixed",
+      "rail": "routed",
       "kind": "multi",
-      "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over multiple x402 rails (direct x402 + MPP-routed) via selat-pay."
+      "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC on Base)."
     }
   ]
 }

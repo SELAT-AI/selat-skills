@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "social-intel",
-  "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over multiple x402 rails (direct x402 + MPP-routed) via selat-pay.",
+  "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC on Base).",
   "chain": "base",
   "maxAmount": "0.50",
   "params": {
@@ -23,8 +23,8 @@
   },
   "steps": [
     {
-      "label": "web context — Exa search (DIRECT x402, native on Base)",
-      "rail": "direct",
+      "label": "web context — Exa search (routed x402 via SELAT Router)",
+      "rail": "routed",
       "method": "POST",
       "url": "https://api.exa.ai/search",
       "body": {
@@ -35,8 +35,8 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "web corroboration — Tavily search (DIRECT x402, native on Base)",
-      "rail": "direct",
+      "label": "web corroboration — Tavily search (routed x402 via SELAT Router)",
+      "rail": "routed",
       "method": "POST",
       "url": "https://x402.tavily.com/search",
       "body": {

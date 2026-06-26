@@ -7,7 +7,7 @@
       "expected_output": "Runs social-intel across Exa + Tavily (web) and Scrape Creators Reddit + X steps, then fuses a cross-platform sentiment brief with citations.",
       "assertions": [
         "social-intel is selected",
-        "calls both a direct x402 step (Exa or Tavily) and a routed MPP step (Scrape Creators)",
+        "calls both a routed x402 step (Exa or Tavily) and a routed MPP step (Scrape Creators)",
         "output fuses web + Reddit + X signal into a sentiment/themes brief with source URLs"
       ]
     },

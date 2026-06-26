@@ -1,19 +1,20 @@
 ---
 name: social-intel
-description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit + X/Twitter signal (Scrape Creators, MPP-routed) with grounded web context (Exa + Tavily, direct x402). Pays per call over multiple x402 rails via selat-pay (USDC on Base), no API keys.
+description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit + X/Twitter signal (Scrape Creators, MPP) with grounded web context (Exa + Tavily, x402) — all routed via the SELAT Router. Pays per call via selat-pay (USDC on Base), no API keys.
 license: Apache-2.0
 compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet on Base. The routed steps need a reachable SELAT Router (SELAT_ROUTER_URL); `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.0"
-  rail: mixed
+  rail: routed
   kind: multi
 ---
 
 # social-intel
 
 Cross-platform social intelligence on any topic, brand, or account. The skill
-gathers paid signal from **two different x402 rails** and the agent fuses it into
+gathers paid signal over **two x402 protocols (x402 + MPP), both routed via the
+SELAT Router**, and the agent fuses it into
 a brief — what the web says, what Reddit says, and what an X/Twitter account is
 posting — with citations.
 
@@ -29,13 +30,14 @@ around the paid data.
 
 ## Rails
 
-This skill deliberately spans **multiple x402 rails** from the federated catalogue:
+This skill spans **two x402 protocols**, both **routed** through the SELAT Router
+(`rail: routed`):
 
-- **Direct x402** (native on Base, paid to the provider): Exa, Tavily.
-- **Routed MPP** (via the SELAT Router): Scrape Creators (Reddit + X/Twitter).
+- **x402** (sourced from the Agentic/MPP catalogue): Exa, Tavily web search —
+  resolve as `routed-x402` on Base.
+- **MPP**: Scrape Creators (Reddit + X/Twitter) — resolves as `routed-mpp`.
 
-`rail: mixed`. The `selat` CLI auto-detects each step's protocol at call time; the
-manifest just declares the intended rail per step.
+The `selat` CLI auto-detects each step's protocol at call time.
 
 ## Workflow
 
@@ -46,8 +48,8 @@ manifest just declares the intended rail per step.
 
 Recommended agent procedure (cheapest-first; stop early when a side is conclusive):
 
-1. **Ground the topic on the web** — Exa `POST /search` (direct x402, ~$0.007).
-2. **Corroborate the web read** — Tavily `POST /search` (direct x402, ~$0.011).
+1. **Ground the topic on the web** — Exa `POST /search` (routed x402, ~$0.007).
+2. **Corroborate the web read** — Tavily `POST /search` (routed x402, ~$0.011).
    Cross-reference against Exa; flag claims only one source makes.
 3. **Read the Reddit conversation** — Scrape Creators `GET /v1/reddit/search`
    (routed MPP, ~$0.021); rank hits by engagement.
@@ -76,9 +78,9 @@ fuses into a cross-platform intelligence brief.
 
 ## Gotchas
 
-- **Multi-rail by design.** Direct-x402 steps (Exa, Tavily) settle x402-native on
-  Base to the provider; routed steps (Scrape Creators) settle MPP through the
-  SELAT Router. A reachable `SELAT_ROUTER_URL` is required for the routed steps.
+- **Two protocols, both routed.** The web steps (Exa, Tavily) settle `routed-x402`
+  and the Scrape Creators steps settle `routed-mpp` — all through the SELAT Router,
+  so a reachable `SELAT_ROUTER_URL` is required for every step.
 - **GET params in the query, POST params in `body`.** Exa/Tavily are POST — their
   query goes in the body; the Scrape Creators steps are GET — `?query=`/`?handle=`/
   `?subreddit=` in the URL.
