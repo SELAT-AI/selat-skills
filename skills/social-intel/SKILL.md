@@ -37,9 +37,12 @@ This skill spans **two x402 protocols**, both **routed** through the SELAT Route
   resolve as `routed-x402` on Base.
 - **MPP**: Scrape Creators (Reddit + X/Twitter) — resolves as `routed-mpp`.
 
-x402-on-Base settles **routed** via the SELAT Router unless the endpoint is sourced
-from the Circle marketplace (which would settle `direct`); none of these are, so
-every step is routed. The `selat` CLI auto-detects each step's protocol at call time.
+All steps settle **routed** via the SELAT Router. The `direct` rail is a different
+payment mechanism — **Circle Gateway nanopayments**, supported only by endpoints
+sourced from the Circle marketplace — and is *not* the same as x402-on-Base. None
+of these endpoints offer Gateway nanopayments, so every step is routed (`routed-x402`
+for the web steps, `routed-mpp` for Scrape Creators). The `selat` CLI auto-detects
+each step's protocol at call time.
 
 ## Workflow
 
@@ -82,8 +85,9 @@ fuses into a cross-platform intelligence brief.
 
 - **Two protocols, both routed.** The web steps (Exa, Tavily) settle `routed-x402`
   and the Scrape Creators steps settle `routed-mpp` — all through the SELAT Router,
-  so a reachable `SELAT_ROUTER_URL` is required for every step. (x402-on-Base only
-  settles `direct` when sourced from the Circle marketplace; these are not.)
+  so a reachable `SELAT_ROUTER_URL` is required for every step. The `direct` rail is
+  separate — Circle Gateway nanopayments, offered only by Circle-marketplace
+  endpoints, distinct from x402-on-Base — and none of these endpoints use it.
 - **GET params in the query, POST params in `body`.** Exa/Tavily are POST — their
   query goes in the body; the Scrape Creators steps are GET — `?query=`/`?handle=`/
   `?subreddit=` in the URL.
