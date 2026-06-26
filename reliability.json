@@ -1,6 +1,6 @@
 {
   "schema": "selat-reliability/v1",
-  "generatedAt": "2026-06-26T14:24:06.218Z",
+  "generatedAt": "2026-06-26T19:47:47.395Z",
   "method": "selat-pay --probe-only (free live-402 quote; no paid call)",
   "router": "https://router.selat.ai",
   "summary": {
@@ -14,7 +14,7 @@
       "name": "comprehensive-enrichment",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "person deep search — Nyne (work history, education, social)",
@@ -230,7 +230,7 @@
       "name": "email-campaign",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "emails by domain — Hunter (MPP, ROUTED via SELAT Router)",
@@ -316,7 +316,7 @@
       "name": "enrich-waterfall",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "person resolve — Tomba enrich by email",
@@ -987,7 +987,7 @@
       "name": "find-twitter-influencers",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "resolve company by name — Brand.dev (MPP, ROUTED via SELAT Router)",
@@ -1099,7 +1099,7 @@
       "name": "gtm-enrichment-deep",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "enrich lead — Sixtyfour AI agent (MPP, ROUTED via SELAT Router)",
@@ -1159,7 +1159,7 @@
       "name": "gtm-enrichment-smart",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "person enrich — Apollo people/match (MPP, ROUTED via SELAT Router)",
@@ -1284,7 +1284,7 @@
       "name": "lead-enrichment",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "find email — Hunter Email Finder (MPP, ROUTED via SELAT Router)",
@@ -1357,7 +1357,7 @@
       "name": "person-lookup",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "person search — Nyne.ai (async, MPP / tempo-native, ROUTED via SELAT Router)",
@@ -1378,7 +1378,7 @@
       "name": "recent-funding-rounds",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "recent funding rounds — Fundable /companies search (MPP, ROUTED via SELAT Router)",
@@ -1399,7 +1399,7 @@
       "name": "sales-prospecting",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "all emails for domain — Hunter domain search (ROUTED MPP via SELAT Router)",
@@ -1459,7 +1459,7 @@
       "name": "scrapecreators",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "X/Twitter profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
@@ -1623,7 +1623,7 @@
       "name": "twitter-profile-lookup",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T14:24:06.218Z",
+      "checkedAt": "2026-06-26T19:47:47.395Z",
       "steps": [
         {
           "label": "profile — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
