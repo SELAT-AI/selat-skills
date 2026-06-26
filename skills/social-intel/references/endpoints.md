@@ -20,10 +20,7 @@ Full-run cap (`maxAmount`): **$0.50**; per-step cap **$0.05**. Live total ≈ $0
 
 ## Rails & providers
 
-Both protocols settle **routed** through the SELAT Router. The `direct` rail is a
-distinct payment mechanism — **Circle Gateway nanopayments**, offered only by
-endpoints sourced from the **Circle marketplace** — and is *not* the same as
-x402-on-Base. None of these endpoints offer Gateway nanopayments, so every step is routed.
+Both protocols settle **routed** through the SELAT Router.
 
 - **routed x402** — Exa (`api.exa.ai`) and Tavily (`x402.tavily.com`) serve a
   native x402 challenge; the router settles it on Base (`mode=routed-x402`).
