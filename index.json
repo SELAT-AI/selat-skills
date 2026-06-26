@@ -1,12 +1,53 @@
 {
   "schema": "selat-skills-index/v1",
   "skills": [
-    { "name": "token-price",     "rail": "direct", "kind": "single", "description": "Crypto spot prices by symbol (Alchemy, Circle nanopayment)." },
-    { "name": "wallet-holdings", "rail": "direct", "kind": "single", "description": "Multi-chain token holdings for a wallet (Alchemy, Circle nanopayment)." },
-    { "name": "web-search",      "rail": "routed", "kind": "single", "description": "Web search via Exa (BlockRun), routed (erc-3009)." },
-    { "name": "allium-price",    "rail": "routed", "kind": "single", "description": "Latest token price via Allium, routed (tempo-native MPP)." },
-    { "name": "market-snapshot", "rail": "mixed",  "kind": "multi",  "description": "Crypto spot price (DIRECT) + token price (ROUTED MPP) — exercises both rails." },
-    { "name": "crypto-fear-greed", "rail": "direct", "kind": "single", "description": "Crypto Fear & Greed Index time series via Arrays (Circle nanopayment, DIRECT)." },
-    { "name": "crypto-sentiment-snapshot", "rail": "mixed", "kind": "multi", "description": "Market sentiment (Arrays, DIRECT) + a coin price quote (CoinMarketCap, ROUTED-x402) — both rails in one run." }
+    {
+      "name": "token-price",
+      "rail": "direct",
+      "kind": "single",
+      "description": "Crypto spot prices by symbol (Alchemy, Circle nanopayment)."
+    },
+    {
+      "name": "wallet-holdings",
+      "rail": "direct",
+      "kind": "single",
+      "description": "Multi-chain token holdings for a wallet (Alchemy, Circle nanopayment)."
+    },
+    {
+      "name": "web-search",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Web search via Exa (BlockRun), routed (erc-3009)."
+    },
+    {
+      "name": "allium-price",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Latest token price via Allium, routed (tempo-native MPP)."
+    },
+    {
+      "name": "market-snapshot",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Crypto spot price (DIRECT) + token price (ROUTED MPP) — exercises both rails."
+    },
+    {
+      "name": "crypto-fear-greed",
+      "rail": "direct",
+      "kind": "single",
+      "description": "Crypto Fear & Greed Index time series via Arrays (Circle nanopayment, DIRECT)."
+    },
+    {
+      "name": "crypto-sentiment-snapshot",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Market sentiment (Arrays, DIRECT) + a coin price quote (CoinMarketCap, ROUTED-x402) — both rails in one run."
+    },
+    {
+      "name": "social-intel",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over multiple x402 rails (direct x402 + MPP-routed) via selat-pay."
+    }
   ]
 }

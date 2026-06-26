@@ -1,0 +1,78 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "social-intel",
+  "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over multiple x402 rails (direct x402 + MPP-routed) via selat-pay.",
+  "chain": "base",
+  "maxAmount": "0.50",
+  "params": {
+    "topic": {
+      "required": true,
+      "default": "agent payments",
+      "description": "Keyword/topic to listen for across the web and Reddit (used as ${topic} in search bodies/queries)."
+    },
+    "handle": {
+      "required": false,
+      "default": "OpenAI",
+      "description": "X/Twitter handle (no @) to pull a profile and recent tweets for."
+    },
+    "subreddit": {
+      "required": false,
+      "default": "ethereum",
+      "description": "Subreddit (no r/) to scan the top posts of for community signal."
+    }
+  },
+  "steps": [
+    {
+      "label": "web context — Exa search (DIRECT x402, native on Base)",
+      "rail": "direct",
+      "method": "POST",
+      "url": "https://api.exa.ai/search",
+      "body": {
+        "query": "${topic}",
+        "numResults": 10,
+        "contents": { "text": { "maxCharacters": 4000 } }
+      },
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "web corroboration — Tavily search (DIRECT x402, native on Base)",
+      "rail": "direct",
+      "method": "POST",
+      "url": "https://x402.tavily.com/search",
+      "body": {
+        "query": "${topic}",
+        "search_depth": "advanced",
+        "max_results": 10
+      },
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "Reddit keyword search — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/reddit/search?query=${topic}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "Reddit subreddit top posts — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/reddit/subreddit?subreddit=${subreddit}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "X/Twitter profile + counts — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "X/Twitter recent tweets + engagement — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "maxAmount": "0.05"
+    }
+  ]
+}
