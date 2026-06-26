@@ -1,0 +1,74 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "recent-funding-rounds",
+  "description": "Find companies that raised funding recently via Fundable (MPP, ROUTED via SELAT Router). Search recent deals by date range, round type, deal size, industry, and sort order — all through the SELAT routed payment rail.",
+  "maxAmount": "5.00",
+  "params": {
+    "dateStart": {
+      "required": true,
+      "default": "2026-06-16",
+      "description": "Start of the funding-deal window (ISO 8601 YYYY-MM-DD). For 'last week' use 7 days before today; for 'last month' use 30 days before."
+    },
+    "dateEnd": {
+      "required": true,
+      "default": "2026-06-23",
+      "description": "End of the funding-deal window (ISO 8601 YYYY-MM-DD). Typically today."
+    },
+    "financingType": {
+      "required": false,
+      "default": "SEED",
+      "description": "Round type to filter on, e.g. SEED, SERIES_A through SERIES_M, SAFE, CONVERTIBLE_NOTE, EQUITY, GRANT, FUNDING_ROUND."
+    },
+    "sizeMin": {
+      "required": false,
+      "default": 1000000,
+      "description": "Minimum deal size in USD."
+    },
+    "industry": {
+      "required": false,
+      "default": "artificial-intelligence",
+      "description": "Industry permalink to filter companies, e.g. artificial-intelligence, fintech-e067."
+    },
+    "sortBy": {
+      "required": false,
+      "default": "most_recent_raise",
+      "description": "Sort order: most_recent_raise, largest_total_raise, most_funding_rounds, most_investors."
+    },
+    "pageSize": {
+      "required": false,
+      "default": 25,
+      "description": "Results per page, 1-100. Larger pages cost more credits."
+    }
+  },
+  "steps": [
+    {
+      "label": "recent funding rounds — Fundable /companies search (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fundable/companies",
+      "body": {
+        "latest_deal": {
+          "date_start": "${dateStart}",
+          "date_end": "${dateEnd}",
+          "financing_types": [
+            {
+              "type": "${financingType}"
+            }
+          ],
+          "size_min": "${sizeMin}"
+        },
+        "company": {
+          "industries": [
+            "${industry}"
+          ],
+          "ipo_status": [
+            "private"
+          ]
+        },
+        "sort_by": "${sortBy}",
+        "page_size": "${pageSize}"
+      },
+      "maxAmount": "5.00"
+    }
+  ]
+}

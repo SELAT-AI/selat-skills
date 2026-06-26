@@ -107,11 +107,16 @@ substituted into `url` are URL-encoded; values in `body` are JSON-encoded.
 
 ## Authoring a new skill
 
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full flow. In short: `selat skill new <name> --dir skills`
-to scaffold, fill in the files (per the [SOP](references/agent-skill-authoring-sop.md)),
-verify the endpoint live (`selat-pay --probe-only`), add it to `index.json`, then
-`npm run validate` (or `selat skill validate ./skills/<name>`) and open a PR. CI runs
-the same validator on every PR.
+The full guide is the **[`meta/skill-creator`](meta/skill-creator/SKILL.md)** skill —
+it walks a contributor through the whole loop (define → scaffold → discover endpoints
+→ author → validate → verify → register → submit), encodes the gotchas, and ships a
+[`new-skill.mjs`](meta/skill-creator/scripts/new-skill.mjs) scaffolder. It lives under
+`meta/` (not `skills/`) because it is a guidance skill with no payment manifest.
+**[CONTRIBUTING.md](CONTRIBUTING.md)** is the repo-level quick reference that points to it.
+
+In short: `selat skill new <name> --dir skills` to scaffold, fill in the files (per the
+[SOP](references/agent-skill-authoring-sop.md)), `selat skill verify` the endpoints live
+(the gate), `selat skill register`, `npm run validate`, then `selat skill submit`.
 
 ## License
 

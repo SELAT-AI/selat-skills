@@ -1,0 +1,105 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "lead-enrichment",
+  "description": "Multi-source lead enrichment, fully routed through the SELAT Router (MPP / tempo-native). Finds and verifies a work email (Hunter), enriches the lead and discovers a phone number (Sixtyfour), enriches the company (Hunter), and fetches a live LinkedIn profile (Fiber). One run chains six paid MPP merchants.",
+  "maxAmount": "5.00",
+  "params": {
+    "firstName": {
+      "required": true,
+      "default": "John",
+      "description": "Lead first name, e.g. John"
+    },
+    "lastName": {
+      "required": true,
+      "default": "Doe",
+      "description": "Lead last name, e.g. Doe"
+    },
+    "company": {
+      "required": true,
+      "default": "Stripe",
+      "description": "Lead company name, e.g. Stripe"
+    },
+    "domain": {
+      "required": true,
+      "default": "stripe.com",
+      "description": "Company domain used for email finding and company enrichment, e.g. stripe.com"
+    },
+    "email": {
+      "required": false,
+      "default": "test@stripe.com",
+      "description": "Known work email to verify; if omitted, supply the email returned by the Hunter Email Finder step"
+    },
+    "linkedinUrl": {
+      "required": false,
+      "default": "https://linkedin.com/in/williamhgates",
+      "description": "LinkedIn profile URL for the live profile fetch, e.g. https://linkedin.com/in/johndoe"
+    }
+  },
+  "steps": [
+    {
+      "label": "find email — Hunter Email Finder (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
+      "body": {
+        "domain": "${domain}",
+        "first_name": "${firstName}",
+        "last_name": "${lastName}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "verify email — Hunter Email Verifier (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
+      "body": {
+        "email": "${email}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "enrich lead — Sixtyfour Enrich Lead (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "body": {
+        "lead_info": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}",
+          "linkedin_url": "${linkedinUrl}"
+        },
+        "struct": {
+          "email": "Work email",
+          "phone": "Phone number"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "find phone — Sixtyfour Find Phone (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/find-phone",
+      "body": {
+        "lead": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "enrich company — Hunter Company Enrichment (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
+      "body": {
+        "domain": "${domain}"
+      },
+      "maxAmount": "5.00"
+    }
+  ]
+}

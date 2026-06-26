@@ -1,0 +1,107 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "email-campaign",
+  "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company brand context — all via MPP merchants routed through the SELAT Router (tempo-native).",
+  "maxAmount": "5.00",
+  "params": {
+    "industry": {
+      "required": false,
+      "default": "SaaS",
+      "description": "Industry filter for the Fiber company-search step"
+    },
+    "domain": {
+      "required": true,
+      "default": "stripe.com",
+      "description": "Target company domain for Hunter domain-search, email-finder, and Brand.dev brand retrieve"
+    },
+    "firstName": {
+      "required": false,
+      "default": "John",
+      "description": "First name for the Hunter email-finder lookup and Sixtyfour enrichment"
+    },
+    "lastName": {
+      "required": false,
+      "default": "Doe",
+      "description": "Last name for the Hunter email-finder lookup and Sixtyfour enrichment"
+    },
+    "company": {
+      "required": false,
+      "default": "Stripe",
+      "description": "Company name for the Sixtyfour enrich-lead step"
+    },
+    "email": {
+      "required": true,
+      "default": "john@stripe.com",
+      "description": "Email address to verify with Hunter email-verifier and validate with Fiber"
+    }
+  },
+  "steps": [
+    {
+      "label": "emails by domain — Hunter (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
+      "body": {
+        "domain": "${domain}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "find person email — Hunter (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
+      "body": {
+        "domain": "${domain}",
+        "first_name": "${firstName}",
+        "last_name": "${lastName}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "verify deliverability — Hunter (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
+      "body": {
+        "email": "${email}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "bounce check — Fiber (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/validate-email/single",
+      "body": {
+        "email": "${email}"
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "enrich lead — Sixtyfour (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "body": {
+        "lead_info": {
+          "first_name": "${firstName}",
+          "last_name": "${lastName}",
+          "company": "${company}"
+        },
+        "struct": {
+          "email": "Work email",
+          "phone": "Phone number"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company brand context — Brand.dev (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "maxAmount": "5.00"
+    }
+  ]
+}

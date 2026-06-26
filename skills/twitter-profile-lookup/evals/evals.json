@@ -1,0 +1,64 @@
+{
+  "skill_name": "twitter-profile-lookup",
+  "evals": [
+    {
+      "id": "profile-openai",
+      "prompt": "Who is @openai on Twitter?",
+      "expected_output": "Profile summary for the openai handle with bio, follower/following counts, and verified status.",
+      "assertions": [
+        "The run calls GET https://api.scrapecreators.com/v1/twitter/profile with handle=openai",
+        "The output reports follower and following counts",
+        "The output reports verified status",
+        "Both steps use rail routed via the SELAT Router"
+      ]
+    },
+    {
+      "id": "recent-tweets-sama",
+      "prompt": "Show me Sam Altman's recent tweets on X.",
+      "expected_output": "A list of recent tweets for handle sama with engagement metrics.",
+      "assertions": [
+        "The run calls GET https://api.scrapecreators.com/v1/twitter/user-tweets with handle=sama",
+        "The output includes tweet text and like/retweet/reply counts",
+        "The handle is passed without a leading @"
+      ]
+    },
+    {
+      "id": "company-posting",
+      "prompt": "What has Anthropic been posting on Twitter lately?",
+      "expected_output": "Recent tweets for handle AnthropicAI plus profile context.",
+      "assertions": [
+        "The run resolves the handle to AnthropicAI",
+        "The user-tweets step is invoked",
+        "Per-step maxAmount is 0.02 and full-run maxAmount is 0.04"
+      ]
+    },
+    {
+      "id": "trim-flag",
+      "prompt": "Pull a trimmed feed of recent tweets for handle nasa.",
+      "expected_output": "Trimmed tweets response for handle nasa.",
+      "assertions": [
+        "The user-tweets URL includes trim=true",
+        "The user-tweets URL includes handle=nasa"
+      ]
+    },
+    {
+      "id": "private-account-gotcha",
+      "prompt": "Look up the protected/private X account @someprivateuser.",
+      "expected_output": "An explanation that protected/private accounts cannot be scraped and the run returns an error with no workaround.",
+      "assertions": [
+        "The output states private/protected accounts cannot be accessed",
+        "No claim of successful private-data retrieval is made"
+      ]
+    },
+    {
+      "id": "probe-only-validation",
+      "prompt": "Do a free 402 probe of the twitter profile endpoint without paying.",
+      "expected_output": "A selat-pay --probe-only command against the Scrape Creators twitter/profile endpoint that returns 402 details without settling payment.",
+      "assertions": [
+        "The command uses selat-pay GET with --probe-only",
+        "The probed URL is https://api.scrapecreators.com/v1/twitter/profile",
+        "No payment is settled during the probe"
+      ]
+    }
+  ]
+}

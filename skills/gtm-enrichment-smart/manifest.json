@@ -1,0 +1,126 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "gtm-enrichment-smart",
+  "description": "Multi-provider waterfall lead enrichment, fully routed via the SELAT Router (MPP/tempo). Takes an email (+ optional name) and returns person + company data by cross-referencing cheap routed APIs first (Apollo, Tomba, Brand.dev) and reaching expensive AI agents (Sixtyfour) only as fallback, with buying-signal and social-proof gap-fills.",
+  "maxAmount": "5.00",
+  "params": {
+    "email": {
+      "required": true,
+      "default": "test@stripe.com",
+      "description": "The lead's email address, e.g. jane@acme.com. Used by the people-match, combined-find, email-verifier, tomba-enrich, and sixtyfour-lead steps."
+    },
+    "domain": {
+      "required": false,
+      "default": "stripe.com",
+      "description": "Company domain extracted from the email (e.g. acme.com). Used by Brand.dev retrieve, Apollo org enrich, Brand.dev AI products, and Sixtyfour company steps."
+    },
+    "organizationId": {
+      "required": false,
+      "default": "",
+      "description": "Apollo organization id captured from the people-match step; required for the job-postings buying-signal step."
+    },
+    "twitterHandle": {
+      "required": false,
+      "default": "elonmusk",
+      "description": "Twitter/X handle discovered in Brand.dev socials or Apollo data; used by the Scrape Creators social-proof step."
+    }
+  },
+  "steps": [
+    {
+      "label": "person enrich — Apollo people/match (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/apollo/api/v1/people/match",
+      "body": {
+        "email": "${email}",
+        "reveal_personal_emails": true
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "person + company combined — Tomba combined/find (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/combined/find?email=${email}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "email deliverability — Tomba email-verifier (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/email-verifier?email=${email}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company brand — Brand.dev retrieve (MPP, ROUTED via SELAT Router; skip for free email)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company gap-fill — Apollo organizations/enrich (MPP, ROUTED via SELAT Router; only if funding missing)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/apollo/api/v1/organizations/enrich?domain=${domain}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "person tie-breaker — Tomba enrich (MPP, ROUTED via SELAT Router; only if sources conflict)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/tomba/v1/enrich?email=${email}",
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "person fallback — Sixtyfour enrich-lead (MPP, ROUTED via SELAT Router; only if person not found)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "body": {
+        "lead_info": {
+          "email": "${email}",
+          "domain": "${domain}"
+        },
+        "struct": {
+          "full_name": "Full legal name of this person",
+          "title": "Current job title",
+          "linkedin_url": "LinkedIn profile URL (full URL)",
+          "city": "City",
+          "state": "State or region",
+          "country": "Country"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "company fallback — Sixtyfour enrich-company (MPP, ROUTED via SELAT Router; only if major gaps + >500 employees)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-company",
+      "body": {
+        "target_company": {
+          "domain": "${domain}"
+        },
+        "struct": {
+          "company_name": "Official company name",
+          "description": "One-paragraph description",
+          "linkedin_url": "LinkedIn company page URL",
+          "employee_count": "Number of employees",
+          "total_funding_usd": "Total funding raised in USD",
+          "latest_funding_date": "Most recent funding round date",
+          "latest_funding_stage": "Most recent round stage",
+          "latest_funding_amount_usd": "Most recent round amount"
+        }
+      },
+      "maxAmount": "5.00"
+    },
+    {
+      "label": "social proof — Scrape Creators twitter/profile (MPP, ROUTED via SELAT Router; only if Twitter handle found)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${twitterHandle}",
+      "maxAmount": "5.00"
+    }
+  ]
+}

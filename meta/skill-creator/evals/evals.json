@@ -1,0 +1,72 @@
+{
+  "skill_name": "skill-creator",
+  "evals": [
+    {
+      "id": "scaffold-new-skill",
+      "prompt": "I want to add a new skill to the hub that looks up a company's funding from a domain.",
+      "expected_output": "Guides the contributor: define the capability and rail, scaffold with new-skill.mjs, find the funding endpoint's serviceUrl in the catalogue, fill manifest.json, write SKILL.md + evals, validate, probe, and open a PR.",
+      "assertions": [
+        "Recommends running scripts/new-skill.mjs to scaffold",
+        "Tells the contributor to use the catalogue serviceUrl, not the provider url",
+        "Mentions validate-skills.mjs and probe-skills.mjs before submitting"
+      ]
+    },
+    {
+      "id": "down-skill-debug",
+      "prompt": "My skill probes as 'down' with 'no x402 or MPP challenge' — what did I do wrong?",
+      "expected_output": "Diagnoses the most likely cause: the manifest points at the provider host instead of the catalogue serviceUrl; secondarily, a POST sending params as query instead of body, or an endpoint the gateway no longer serves.",
+      "assertions": [
+        "Identifies serviceUrl-vs-provider-url as the top cause",
+        "Mentions POST body vs query params",
+        "Mentions gateway drift / probing to confirm"
+      ]
+    },
+    {
+      "id": "manifest-shape",
+      "prompt": "What goes in a selat-skill manifest.json and how do I express a multi-step waterfall?",
+      "expected_output": "Explains schema selat-skill/v1, name/description/chain/maxAmount/params/steps, ${param} substitution, rails, and that conditional waterfall logic lives in SKILL.md Workflow while the manifest lists linear steps cheapest-first.",
+      "assertions": [
+        "States schema is selat-skill/v1",
+        "Explains steps are linear and waterfall logic goes in SKILL.md",
+        "Describes params with defaults and ${param} substitution"
+      ]
+    },
+    {
+      "id": "cap-meaning",
+      "prompt": "What should I set maxAmount to?",
+      "expected_output": "Explains maxAmount is a spending filter (a cap you're willing to pay), not the price; set it with headroom over the live quote because gateway prices run a few percent above the catalogue.",
+      "assertions": [
+        "Says maxAmount is a filter/cap, not the live price",
+        "Advises leaving headroom over the quoted price"
+      ]
+    },
+    {
+      "id": "submission-flow",
+      "prompt": "My skill validates. How do I submit it?",
+      "expected_output": "Use the official selat skill flow: `selat skill verify` to produce a passing receipt, `selat skill register` to add the index.json entry, `npm run validate`, then `selat skill submit` (gated on the verify receipt) to open the PR.",
+      "assertions": [
+        "Mentions `selat skill verify` produces the receipt that gates submit",
+        "Mentions `selat skill register` for the index.json entry",
+        "Mentions `selat skill submit` opens the PR"
+      ]
+    },
+    {
+      "id": "verify-is-the-gate",
+      "prompt": "What does `selat skill verify` do and why does it matter?",
+      "expected_output": "Explains verify probes each step's live 402 (free; --pay for a real settled call), checks price <= maxAmount, and writes a verify-receipt.json that submit attaches to the PR and that gates merge — the live 402 is the source of truth over the catalogue.",
+      "assertions": [
+        "Says verify checks the live 402 price/rail per step",
+        "Says it writes a receipt that gates submit/merge",
+        "Notes the live 402 is authoritative over catalogue prices"
+      ]
+    },
+    {
+      "id": "negative-not-triggered",
+      "prompt": "Run the enrich-waterfall skill on jane@acme.com.",
+      "expected_output": "Does NOT trigger skill-creator — this is running an existing skill, not authoring a new one.",
+      "assertions": [
+        "skill-creator does not activate for running an existing skill"
+      ]
+    }
+  ]
+}
