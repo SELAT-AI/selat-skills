@@ -1,6 +1,6 @@
 ---
 name: social-intel
-description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit + X/Twitter signal (Scrape Creators, MPP) with grounded web context (Exa + Tavily, x402) — all routed via the SELAT Router. Pays per call via selat-pay (USDC on Base), no API keys.
+description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit + X/Twitter signal (Scrape Creators, MPP) with grounded web context (Exa + Parallel) — all routed via the SELAT Router. Pays per call via selat-pay (USDC on Base), no API keys.
 license: Apache-2.0
 compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet on Base. The routed steps need a reachable SELAT Router (SELAT_ROUTER_URL); `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
@@ -33,9 +33,8 @@ around the paid data.
 This skill spans **two x402 protocols**, both **routed** through the SELAT Router
 (`rail: routed`):
 
-- **x402** (sourced from the Agentic/MPP catalogue): Exa, Tavily web search —
-  resolve as `routed-x402` on Base.
-- **MPP**: Scrape Creators (Reddit + X/Twitter) — resolves as `routed-mpp`.
+- **x402**: Exa web search — resolves as `routed-x402` on Base.
+- **MPP**: Parallel web search + Scrape Creators (Reddit + X/Twitter) — resolve as `routed-mpp`.
 
 The `selat` CLI auto-detects each step's protocol at call time.
 
@@ -49,7 +48,7 @@ The `selat` CLI auto-detects each step's protocol at call time.
 Recommended agent procedure (cheapest-first; stop early when a side is conclusive):
 
 1. **Ground the topic on the web** — Exa `POST /search` (routed x402, ~$0.007).
-2. **Corroborate the web read** — Tavily `POST /search` (routed x402, ~$0.011).
+2. **Corroborate the web read** — Parallel `POST /api/search` (routed MPP, ~$0.011).
    Cross-reference against Exa; flag claims only one source makes.
 3. **Read the Reddit conversation** — Scrape Creators `GET /v1/reddit/search`
    (routed MPP, ~$0.021); rank hits by engagement.
@@ -78,17 +77,17 @@ fuses into a cross-platform intelligence brief.
 
 ## Gotchas
 
-- **Two protocols, both routed.** The web steps (Exa, Tavily) settle `routed-x402`
-  and the Scrape Creators steps settle `routed-mpp` — all through the SELAT Router,
-  so a reachable `SELAT_ROUTER_URL` is required for every step.
-- **GET params in the query, POST params in `body`.** Exa/Tavily are POST — their
+- **Two protocols, both routed.** Exa settles `routed-x402`; Parallel and the
+  Scrape Creators steps settle `routed-mpp` — all through the SELAT Router, so a
+  reachable `SELAT_ROUTER_URL` is required for every step.
+- **GET params in the query, POST params in `body`.** Exa/Parallel are POST — their
   query goes in the body; the Scrape Creators steps are GET — `?query=`/`?handle=`/
   `?subreddit=` in the URL.
 - **`maxAmount` is a guardrail, not the price.** Per-step cap is `$0.05` (live
-  quotes: Exa ~$0.007, Tavily ~$0.011, each Scrape Creators call ~$0.021); the
+  quotes: Exa ~$0.007, Parallel ~$0.011, each Scrape Creators call ~$0.021); the
   full-run cap is `$0.50`.
 - **Pass `--handle` / `--subreddit`** to retarget the X and Reddit-community steps;
-  the topic-search steps (Exa, Tavily, Reddit search) key off `--topic`.
+  the topic-search steps (Exa, Parallel, Reddit search) key off `--topic`.
 - **The live 402 is the source of truth.** If a step stops serving a challenge,
   `selat skill verify` flags it — omit it and re-add when the gateway serves it.
 
