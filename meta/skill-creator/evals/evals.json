@@ -24,7 +24,7 @@
     {
       "id": "manifest-shape",
       "prompt": "What goes in a selat-skill manifest.json and how do I express a multi-step waterfall?",
-      "expected_output": "Explains schema selat-skill/v1, name/description/chain/maxAmount/params/steps, ${param} substitution, rails, and that conditional waterfall logic lives in SKILL.md Workflow while the manifest lists linear steps cheapest-first.",
+      "expected_output": "Explains schema selat-skill/v1, name/description/maxAmount/params/steps, ${param} substitution, rails, that chain is not a manifest field (settlement chain is resolved at runtime from the funded Gateway balance), and that conditional waterfall logic lives in SKILL.md Workflow while the manifest lists linear steps cheapest-first.",
       "assertions": [
         "States schema is selat-skill/v1",
         "Explains steps are linear and waterfall logic goes in SKILL.md",

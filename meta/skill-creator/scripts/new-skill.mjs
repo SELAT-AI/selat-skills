@@ -116,6 +116,8 @@ Outputs: TODO describe the returned shape.
 
 ## Validation
 
+> \`--chain base\` below is only the flag \`selat-pay\` requires for a probe — probing reads a free, chain-independent quote and never settles. A paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 - Probe without paying: \`selat-pay GET "<serviceUrl>/<path>?..." --chain base --probe-only\`
 - A successful run prints \`status=200\` per step and an ✓ summary.
 

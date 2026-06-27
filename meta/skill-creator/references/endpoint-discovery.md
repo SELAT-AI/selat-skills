@@ -57,6 +57,10 @@ selat-pay POST "https://mpp.orthogonal.com/nyne/company/search" \
   --body '{"query":"Stripe"}' --chain base --probe-only
 ```
 
+`--chain base` is just the flag the probe requires — probing is free and
+chain-independent and never settles. A paid run resolves the settlement chain at
+runtime from the funded Gateway balance, so it's not a manifest field.
+
 A served endpoint prints `detected ... mpp=yes`, `mode=routed-mpp`, and a
 `price=$X`. If it returns "no challenge" even when called correctly, the gateway
 isn't serving it — don't include it.
