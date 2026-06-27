@@ -1,12 +1,12 @@
 {
   "schema": "selat-reliability/v1",
-  "generatedAt": "2026-06-26T23:52:47.488Z",
+  "generatedAt": "2026-06-27T00:17:29.417Z",
   "method": "selat-pay --probe-only (free live-402 quote; no paid call)",
   "router": "https://router.selat.ai",
   "summary": {
     "skills": 13,
-    "ok": 0,
-    "degraded": 1,
+    "ok": 1,
+    "degraded": 0,
     "down": 12
   },
   "skills": [
@@ -14,7 +14,7 @@
       "name": "comprehensive-enrichment",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "person deep search — Nyne (work history, education, social)",
@@ -230,7 +230,7 @@
       "name": "email-campaign",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "emails by domain — Hunter (MPP, ROUTED via SELAT Router)",
@@ -316,7 +316,7 @@
       "name": "enrich-waterfall",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "person resolve — Tomba enrich by email",
@@ -987,7 +987,7 @@
       "name": "find-twitter-influencers",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "resolve company by name — Brand.dev (MPP, ROUTED via SELAT Router)",
@@ -1099,7 +1099,7 @@
       "name": "gtm-enrichment-deep",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "enrich lead — Sixtyfour AI agent (MPP, ROUTED via SELAT Router)",
@@ -1159,7 +1159,7 @@
       "name": "gtm-enrichment-smart",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "person enrich — Apollo people/match (MPP, ROUTED via SELAT Router)",
@@ -1284,7 +1284,7 @@
       "name": "lead-enrichment",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "find email — Hunter Email Finder (MPP, ROUTED via SELAT Router)",
@@ -1357,7 +1357,7 @@
       "name": "person-lookup",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "person search — Nyne.ai (async, MPP / tempo-native, ROUTED via SELAT Router)",
@@ -1378,7 +1378,7 @@
       "name": "recent-funding-rounds",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "recent funding rounds — Fundable /companies search (MPP, ROUTED via SELAT Router)",
@@ -1399,7 +1399,7 @@
       "name": "sales-prospecting",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "all emails for domain — Hunter domain search (ROUTED MPP via SELAT Router)",
@@ -1459,7 +1459,7 @@
       "name": "scrapecreators",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "X/Twitter profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
@@ -1622,8 +1622,8 @@
     {
       "name": "social-intel",
       "rail": "routed",
-      "status": "degraded",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "status": "ok",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "web context — Exa search (routed x402 via SELAT Router)",
@@ -1635,21 +1635,21 @@
           "reachable": true,
           "livePriceUsd": 0.00735,
           "withinCap": true,
-          "latencyMs": 1105,
+          "latencyMs": 1024,
           "error": null
         },
         {
-          "label": "web corroboration — Tavily search (routed x402 via SELAT Router)",
+          "label": "web corroboration — Parallel search (routed MPP via SELAT Router)",
           "rail": "routed",
           "method": "POST",
           "maxAmount": 0.05,
-          "url": "https://x402.tavily.com/search",
-          "mode": null,
-          "reachable": false,
-          "livePriceUsd": null,
-          "withinCap": false,
-          "latencyMs": 2745,
-          "error": "Cannot convert 0.016 to a BigInt"
+          "url": "https://parallelmpp.dev/api/search",
+          "mode": "routed-mpp",
+          "reachable": true,
+          "livePriceUsd": 0.0105,
+          "withinCap": true,
+          "latencyMs": 4750,
+          "error": null
         },
         {
           "label": "Reddit keyword search — Scrape Creators (ROUTED MPP via SELAT Router)",
@@ -1661,7 +1661,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 2761,
+          "latencyMs": 2768,
           "error": null
         },
         {
@@ -1674,7 +1674,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 806,
+          "latencyMs": 1202,
           "error": null
         },
         {
@@ -1687,7 +1687,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 2986,
+          "latencyMs": 1050,
           "error": null
         },
         {
@@ -1700,7 +1700,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 798,
+          "latencyMs": 940,
           "error": null
         }
       ]
@@ -1709,7 +1709,7 @@
       "name": "twitter-profile-lookup",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-26T23:52:47.488Z",
+      "checkedAt": "2026-06-27T00:17:29.417Z",
       "steps": [
         {
           "label": "profile — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
