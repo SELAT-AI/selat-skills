@@ -1,8 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "social-intel",
-  "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC on Base).",
-  "chain": "base",
+  "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC via Circle Gateway).",
   "maxAmount": "0.50",
   "params": {
     "topic": {

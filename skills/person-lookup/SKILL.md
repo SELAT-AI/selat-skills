@@ -45,6 +45,8 @@ Outputs: comprehensive person data — full name and current title, current empl
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 - Probe without paying (free 402 probe):
   - `selat-pay POST "https://api.nyne.ai/person/search" --body '{"query":"Dario Amodei Anthropic CEO"}' --chain base --probe-only`
 - A successful run prints `status=200` and a ✓ summary for the routed step.

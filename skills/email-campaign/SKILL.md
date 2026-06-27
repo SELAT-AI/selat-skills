@@ -56,6 +56,8 @@ Outputs: Hunter returns email lists / verification status; Fiber returns matchin
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 Probe each endpoint for a free 402 challenge (no payment sent) with `--probe-only`:
 
 - `selat-pay POST "https://api.fiber.ai/v1/company-search" --body '{"searchParams":{"industries":["SaaS"],"employee_count_min":50,"employee_count_max":500}}' --chain base --probe-only`

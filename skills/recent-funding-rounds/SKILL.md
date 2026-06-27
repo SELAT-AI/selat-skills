@@ -52,6 +52,8 @@ Outputs: `{ success, data: { companies: [{ id, name, domain, total_raised, num_f
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 - Probe without paying (free 402 probe):
   - `selat-pay POST "https://tryfundable.ai/companies" --body '{"latest_deal":{"date_start":"2026-06-16","date_end":"2026-06-23"},"sort_by":"most_recent_raise","page_size":25}' --chain base --probe-only`
 - A successful run prints `status=200` and a ✓ summary for the routed rail.

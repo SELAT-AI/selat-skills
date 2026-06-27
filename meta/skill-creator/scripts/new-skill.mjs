@@ -60,7 +60,6 @@ const manifest = {
   schema: "selat-skill/v1",
   name: o.name,
   description: `TODO one line — what ${o.name} does (${railNote}).`,
-  chain: "base",
   maxAmount: "5.00",
   params: {
     example: { required: false, default: "stripe.com", description: "TODO describe this input" },

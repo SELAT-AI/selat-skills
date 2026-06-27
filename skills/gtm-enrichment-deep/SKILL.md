@@ -53,6 +53,8 @@ Outputs: a merged JSON object with `person` (full_name, title, linkedin_url, loc
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 - Free 402 probes (no payment) per repo convention:
   - `selat-pay POST "https://api.sixtyfour.ai/enrich-lead" --body '{"lead_info":{"email":"jane@acme.com","domain":"acme.com"}}' --chain base --probe-only`
   - `selat-pay POST "https://api.sixtyfour.ai/enrich-company" --body '{"target_company":{"domain":"acme.com"}}' --chain base --probe-only`

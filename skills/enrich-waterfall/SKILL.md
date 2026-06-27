@@ -114,6 +114,8 @@ the canonical result, and ship only an email that passed the verify tier.
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 - Probe any step for free with `selat-pay`'s `--probe-only` (sends the 402 preflight,
   pays nothing):
   - `selat-pay GET "https://api.tomba.io/v1/enrich?email=test@stripe.com" --chain base --probe-only`

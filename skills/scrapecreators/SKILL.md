@@ -51,6 +51,8 @@ Outputs: each step returns the Scrape Creators JSON payload for that endpoint (p
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 - Probe without paying (free 402 probe per repo convention):
   - `selat-pay GET "https://api.scrapecreators.com/v1/twitter/profile?handle=openai" --chain base --probe-only`
   - `selat-pay GET "https://api.scrapecreators.com/v1/tiktok/get-trending-feed?region=US" --chain base --probe-only`
