@@ -35,13 +35,13 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "web corroboration — Tavily search (routed x402 via SELAT Router)",
+      "label": "web corroboration — Parallel search (routed MPP via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://x402.tavily.com/search",
+      "url": "https://parallelmpp.dev/api/search",
       "body": {
-        "query": "${topic}",
-        "search_depth": "advanced",
+        "objective": "${topic}",
+        "search_queries": [ "${topic}" ],
         "max_results": 10
       },
       "maxAmount": "0.05"
