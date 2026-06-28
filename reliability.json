@@ -1,6 +1,6 @@
 {
   "schema": "selat-reliability/v1",
-  "generatedAt": "2026-06-28T13:45:31.299Z",
+  "generatedAt": "2026-06-28T18:34:00.231Z",
   "method": "selat-pay --probe-only (free live-402 quote; no paid call)",
   "router": "https://router.selat.ai",
   "summary": {
@@ -14,7 +14,7 @@
       "name": "comprehensive-enrichment",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "person deep search — Nyne (work history, education, social)",
@@ -230,7 +230,7 @@
       "name": "email-campaign",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "emails by domain — Hunter (MPP, ROUTED via SELAT Router)",
@@ -316,7 +316,7 @@
       "name": "enrich-waterfall",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "person resolve — Tomba enrich by email",
@@ -987,7 +987,7 @@
       "name": "find-twitter-influencers",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "resolve company by name — Brand.dev (MPP, ROUTED via SELAT Router)",
@@ -1099,7 +1099,7 @@
       "name": "gtm-enrichment-deep",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "enrich lead — Sixtyfour AI agent (MPP, ROUTED via SELAT Router)",
@@ -1159,7 +1159,7 @@
       "name": "gtm-enrichment-smart",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "person enrich — Apollo people/match (MPP, ROUTED via SELAT Router)",
@@ -1284,7 +1284,7 @@
       "name": "lead-enrichment",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "find email — Hunter Email Finder (MPP, ROUTED via SELAT Router)",
@@ -1357,7 +1357,7 @@
       "name": "person-lookup",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "person search — Nyne.ai (async, MPP / tempo-native, ROUTED via SELAT Router)",
@@ -1378,7 +1378,7 @@
       "name": "recent-funding-rounds",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "recent funding rounds — Fundable /companies search (MPP, ROUTED via SELAT Router)",
@@ -1399,7 +1399,7 @@
       "name": "sales-prospecting",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "all emails for domain — Hunter domain search (ROUTED MPP via SELAT Router)",
@@ -1459,7 +1459,7 @@
       "name": "scrapecreators",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "X/Twitter profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
@@ -1621,9 +1621,9 @@
     },
     {
       "name": "social-intel",
-      "rail": "routed",
+      "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "web context — Exa search (routed x402 via SELAT Router)",
@@ -1635,7 +1635,7 @@
           "reachable": true,
           "livePriceUsd": 0.00735,
           "withinCap": true,
-          "latencyMs": 1658,
+          "latencyMs": 1114,
           "error": null
         },
         {
@@ -1648,7 +1648,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 4765,
+          "latencyMs": 4927,
           "error": null
         },
         {
@@ -1661,7 +1661,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 948,
+          "latencyMs": 3132,
           "error": null
         },
         {
@@ -1674,33 +1674,33 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 734,
+          "latencyMs": 1175,
           "error": null
         },
         {
-          "label": "X/Twitter profile + counts — Scrape Creators (ROUTED MPP via SELAT Router)",
-          "rail": "routed",
+          "label": "X/Twitter profile + counts — AIsa (direct x402, Circle Gateway-batched)",
+          "rail": "direct",
           "method": "GET",
           "maxAmount": 0.05,
-          "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=OpenAI",
-          "mode": "routed-mpp",
+          "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=OpenAI",
+          "mode": "direct",
           "reachable": true,
-          "livePriceUsd": 0.021,
+          "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 760,
+          "latencyMs": 1489,
           "error": null
         },
         {
-          "label": "X/Twitter recent tweets + engagement — Scrape Creators (ROUTED MPP via SELAT Router)",
-          "rail": "routed",
+          "label": "X/Twitter recent tweets + engagement — AIsa (direct x402, Circle Gateway-batched)",
+          "rail": "direct",
           "method": "GET",
           "maxAmount": 0.05,
-          "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=OpenAI",
-          "mode": "routed-mpp",
+          "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=OpenAI",
+          "mode": "direct",
           "reachable": true,
-          "livePriceUsd": 0.021,
+          "livePriceUsd": 0.0036,
           "withinCap": true,
-          "latencyMs": 728,
+          "latencyMs": 1237,
           "error": null
         }
       ]
@@ -1709,7 +1709,7 @@
       "name": "twitter-profile-lookup",
       "rail": "routed",
       "status": "down",
-      "checkedAt": "2026-06-28T13:45:31.299Z",
+      "checkedAt": "2026-06-28T18:34:00.231Z",
       "steps": [
         {
           "label": "profile — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
