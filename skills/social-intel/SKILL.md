@@ -93,6 +93,8 @@ fuses into a cross-platform intelligence brief.
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 - Static: `selat skill validate ./skills-scaffold/social-intel`
 - Live gate (free): `selat skill verify ./skills-scaffold/social-intel --topic "agent payments" --handle OpenAI --subreddit ethereum`
 - Paid confirm (settles real 200s): add `--pay` to the verify command.

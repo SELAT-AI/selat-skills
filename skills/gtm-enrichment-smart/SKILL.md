@@ -59,6 +59,8 @@ Outputs: a merged JSON object with `person` (name, title, linkedin_url, location
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 Probe each endpoint for free (402 challenge, no payment) before a paid run:
 
 - `selat-pay POST "https://api.apollo.io/api/v1/people/match" --body '{"email":"jane@acme.com","reveal_personal_emails":true}' --chain base --probe-only`

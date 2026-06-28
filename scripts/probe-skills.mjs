@@ -33,6 +33,14 @@ const TIMEOUT_MS = Number(process.env.SELAT_PROBE_TIMEOUT_MS || 30000);
 const HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 const BODY_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
 
+// Settlement chain is meaningless to a probe (see compileStep): probing reads a
+// free, chain-independent 402 quote and never touches a wallet or Gateway
+// balance. PROBE_CHAIN is only the token handed to selat-pay's required --chain
+// flag — the SELAT Router accepts every Gateway chain at an identical price, so
+// it changes neither reachability nor the quoted price. Override only if a probe
+// target ever stops offering the default.
+const PROBE_CHAIN = process.env.SELAT_PROBE_CHAIN || "base";
+
 // ── param resolution for unattended probing ─────────────────────────────────
 // Use each param's `default`; for required params without one, pick a sane
 // placeholder. The 402 challenge precedes upstream param validation, so a
@@ -81,12 +89,13 @@ function substituteDeep(value, params) {
 function compileStep(manifest, step, params) {
   const method = String(step.method).toUpperCase();
   if (!HTTP_METHODS.includes(method)) throw new Error(`unsupported method: ${step.method}`);
-  const chain = step.chain ?? manifest.chain;
   const maxAmount = step.maxAmount ?? manifest.maxAmount;
-  if (!chain) throw new Error("no chain set");
   if (maxAmount == null) throw new Error("no maxAmount set");
   const url = substitute(step.url, params, true);
-  const argv = [method, url, "--chain", String(chain), "--max-amount", String(maxAmount)];
+  // No chain comes from the manifest — settlement chain isn't a skill property.
+  // Probing reads a free, chain-independent quote, so PROBE_CHAIN only satisfies
+  // selat-pay's required --chain flag (see its definition above).
+  const argv = [method, url, "--chain", PROBE_CHAIN, "--max-amount", String(maxAmount)];
   if (step.body != null && BODY_METHODS.includes(method)) {
     const body = typeof step.body === "string"
       ? substitute(step.body, params, false)

@@ -8,7 +8,6 @@ The manifest is the **inert payment recipe** the `selat` CLI compiles into
   "schema": "selat-skill/v1",
   "name": "my-skill",                 // MUST equal the folder name (kebab-case)
   "description": "One line; what it does and which rail.",
-  "chain": "base",                    // settlement chain
   "maxAmount": "5.00",                // full-run spending cap (a filter, not a price)
   "params": {
     "email":  { "required": false, "default": "test@stripe.com", "description": "Person email" },
@@ -44,6 +43,12 @@ The manifest is the **inert payment recipe** the `selat` CLI compiles into
   it for that call. Treat as a guardrail; set with headroom over the live quote.
 - **`rail`** — `direct` (Circle nanopayment, paid to the upstream), `routed` (MPP
   via the SELAT Router), or `mixed` (a multi-step skill using both).
+- **`chain` — optional, normally omitted.** Settlement chain is resolved at
+  runtime from where the agent wallet's Circle Gateway balance actually sits (an
+  emergent property of the deposit flow), so a paid call settles on a funded
+  chain the Router accepts. Pin `"chain": "<key>"` at the top level only if the
+  skill *must* settle on a fixed chain. Probing ignores chain entirely (it reads
+  a free, chain-independent quote).
 - **`kind`** (in `SKILL.md` frontmatter `metadata`, not the manifest) — `single`
   (one merchant) or `multi`.
 

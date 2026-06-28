@@ -55,6 +55,8 @@ Outputs: Hunter returns email/verification/company JSON; Sixtyfour returns enric
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 Run free 402 probes (no payment) before a paid run, per the repo convention:
 
 - `selat-pay POST "https://hunter.io/hunter/email-finder" --body '{"domain":"stripe.com","first_name":"John","last_name":"Doe"}' --chain base --probe-only`

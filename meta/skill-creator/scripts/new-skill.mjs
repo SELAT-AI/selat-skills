@@ -60,7 +60,6 @@ const manifest = {
   schema: "selat-skill/v1",
   name: o.name,
   description: `TODO one line — what ${o.name} does (${railNote}).`,
-  chain: "base",
   maxAmount: "5.00",
   params: {
     example: { required: false, default: "stripe.com", description: "TODO describe this input" },
@@ -116,6 +115,8 @@ Outputs: TODO describe the returned shape.
 - \`maxAmount\` is a spending filter, not the price.
 
 ## Validation
+
+> \`--chain base\` below is only the flag \`selat-pay\` requires for a probe — probing reads a free, chain-independent quote and never settles. A paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
 
 - Probe without paying: \`selat-pay GET "<serviceUrl>/<path>?..." --chain base --probe-only\`
 - A successful run prints \`status=200\` per step and an ✓ summary.

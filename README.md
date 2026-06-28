@@ -84,7 +84,9 @@ npm run probe                      # writes reliability.json
   "schema": "selat-skill/v1",
   "name": "<kebab-id matching the folder>",
   "description": "<one line>",
-  "chain": "base",            // default payment chain for all steps
+  // chain is NOT declared here — the settlement chain is resolved at runtime
+  // from your funded Circle Gateway balance. Pin "chain": "<key>" only if the
+  // skill must settle on a fixed chain.
   "maxAmount": "0.03",        // default USD cap for all steps
   "params": {                  // user inputs, substituted as ${name}
     "<key>": { "required": true, "default": "...", "description": "..." }

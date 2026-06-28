@@ -67,6 +67,8 @@ Outputs (per step): Brand.dev returns brand/domain/industry/description; Exa ret
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 Free 402 probes (no payment) per the selat-pay repo convention:
 
 - `selat-pay GET "https://api.brand.dev/v1/brand/retrieve-by-name?name=Acme" --chain base --probe-only`

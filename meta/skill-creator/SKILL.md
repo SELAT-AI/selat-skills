@@ -48,7 +48,7 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
    **`serviceUrl`** (NOT the descriptive provider `url`), method, path, price.
    See `references/endpoint-discovery.md` — this is where most skills break.
 3. **Author** — replace every `TODO`:
-   - `manifest.json` — `name` (== folder), `chain`, `maxAmount` (cap *with
+   - `manifest.json` — `name` (== folder), `maxAmount` (cap *with
      headroom*, a filter not a price), `params` (real defaults), `steps[]` with
      `url` = `serviceUrl` + path, `${param}` substitution, `body` for POST.
    - `SKILL.md` — frontmatter + sections (When To Use, Workflow, Inputs And
@@ -126,6 +126,11 @@ selat-pay POST "https://mpp.orthogonal.com/<merchant>/<path>" \
   --body '{"<param>":"<value>"}' --chain base --probe-only
 # success prints: detected mpp=yes, mode=routed-mpp, price=$X on eip155:8453
 ```
+
+`--chain base` is only the flag the probe requires — probing reads a free,
+chain-independent quote and never settles. The settlement chain for a paid run
+is resolved at runtime from the wallet's funded Gateway balance, so a manifest
+does not declare one.
 
 ## References
 

@@ -58,6 +58,8 @@ Outputs: each step returns its provider's JSON (profile objects, email verificat
 
 ## Validation
 
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
 Probe any endpoint for free (sends the 402 challenge, never pays) with `--probe-only`:
 
 - `selat-pay POST "https://api.fiber.ai/v1/kitchen-sink/person" --body '{"emailAddress":"john@stripe.com"}' --chain base --probe-only`
