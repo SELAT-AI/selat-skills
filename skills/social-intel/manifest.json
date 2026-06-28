@@ -61,17 +61,17 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "X/Twitter profile + counts — Scrape Creators (ROUTED MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "X/Twitter profile + counts — AIsa (DIRECT x402, native on Base)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
       "maxAmount": "0.05"
     },
     {
-      "label": "X/Twitter recent tweets + engagement — Scrape Creators (ROUTED MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "X/Twitter recent tweets + engagement — AIsa (DIRECT x402, native on Base)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "0.05"
     }
   ]
