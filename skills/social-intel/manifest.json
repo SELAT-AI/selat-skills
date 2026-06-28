@@ -72,6 +72,13 @@
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "0.05"
+    },
+    {
+      "label": "X/Twitter topic search — AIsa advanced_search (direct x402, Circle Gateway-batched)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=${topic}&queryType=Latest",
+      "maxAmount": "0.05"
     }
   ]
 }

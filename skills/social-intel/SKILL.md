@@ -59,6 +59,10 @@ Recommended agent procedure (cheapest-first; stop early when a side is conclusiv
    (direct x402, Gateway-batched, ~$0.0004) for follower counts + bio.
 6. **Read its recent posts** — AIsa `GET /v2/twitter/user/last_tweets?userName=`
    (direct x402, Gateway-batched, ~$0.004); surface the breakout post and engagement trend.
+7. **Search Twitter by topic** — AIsa `GET /v2/twitter/tweet/advanced_search?query=`
+   (direct x402, Gateway-batched, ~$0.002); runs `${topic}` (`queryType=Latest`) as a
+   Twitter archive query for cross-account chatter the handle timeline misses. Twitter
+   advanced-search operators work here (e.g. `from:<handle> <term>`, quoted phrases).
 
 Then synthesize: a sentiment read, the dominant themes, the breakout
 post/thread per platform, and where the web context confirms or contradicts the
@@ -68,13 +72,14 @@ social chatter — with source URLs.
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `topic` | yes | `agent payments` | Keyword/topic to listen for (web + Reddit search). |
+| `topic` | yes | `agent payments` | Keyword/topic to listen for (web + Reddit search + Twitter `advanced_search`). |
 | `handle` | no | `OpenAI` | X/Twitter handle (no `@`) to profile and pull tweets for. |
 | `subreddit` | no | `ethereum` | Subreddit (no `r/`) to scan top posts of. |
 
 Output: per-step JSON (web results with text snippets + URLs, Reddit posts with
-scores/comments, an X profile, and recent tweets with engagement) that the agent
-fuses into a cross-platform intelligence brief.
+scores/comments, an X profile, the account's recent tweets, and topic-wide Twitter
+search hits — all with engagement) that the agent fuses into a cross-platform
+intelligence brief.
 
 ## Gotchas
 
@@ -87,9 +92,12 @@ fuses into a cross-platform intelligence brief.
   GET — `?query=`/`?subreddit=`/`?userName=` in the URL.
 - **`maxAmount` is a guardrail, not the price.** Per-step cap is `$0.05` (live
   quotes: Exa ~$0.007, Parallel ~$0.011, each Scrape Creators Reddit call ~$0.021,
-  AIsa profile ~$0.0004, AIsa tweets ~$0.004); the full-run cap is `$0.50`.
-- **Pass `--handle` / `--subreddit`** to retarget the X and Reddit-community steps;
-  the topic-search steps (Exa, Parallel, Reddit search) key off `--topic`.
+  AIsa profile ~$0.0004, AIsa tweets ~$0.004, AIsa topic search ~$0.002); the
+  full-run cap is `$0.50`.
+- **Handle-scoped vs topic-scoped Twitter.** Steps 5–6 follow `--handle` (one
+  account); step 7 (`advanced_search`) follows `--topic` for cross-account chatter.
+- **Pass `--handle` / `--subreddit`** to retarget the account + Reddit-community steps;
+  the topic-search steps (Exa, Parallel, Reddit search, Twitter `advanced_search`) key off `--topic`.
 - **The live 402 is the source of truth.** If a step stops serving a challenge,
   `selat skill verify` flags it — omit it and re-add when the gateway serves it.
 
