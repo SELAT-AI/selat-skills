@@ -61,14 +61,14 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "X/Twitter profile + counts — AIsa (DIRECT x402, native on Base)",
+      "label": "X/Twitter profile + counts — AIsa (direct x402, Circle Gateway-batched)",
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
       "maxAmount": "0.05"
     },
     {
-      "label": "X/Twitter recent tweets + engagement — AIsa (DIRECT x402, native on Base)",
+      "label": "X/Twitter recent tweets + engagement — AIsa (direct x402, Circle Gateway-batched)",
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
