@@ -13,8 +13,9 @@ metadata:
 # social-intel
 
 Cross-platform social intelligence on any topic, brand, or account. The skill
-gathers paid signal over **two x402 protocols (x402 + MPP), both routed via the
-SELAT Router**, and the agent fuses it into
+gathers paid signal over both x402 protocols — **web search + Reddit routed via the
+SELAT Router (x402 + MPP), X/Twitter as a direct x402 call to AIsa (Gateway-batched)** —
+and the agent fuses it into
 a brief — what the web says, what Reddit says, and what an X/Twitter account is
 posting — with citations.
 
@@ -77,15 +78,16 @@ fuses into a cross-platform intelligence brief.
 
 ## Gotchas
 
-- **Two protocols, both routed.** Exa settles `routed-x402`; Parallel and the
-  Scrape Creators steps settle `routed-mpp` — all through the SELAT Router, so a
-  reachable `SELAT_ROUTER_URL` is required for every step.
+- **Mixed rails.** Exa settles `routed-x402`; Parallel and the Scrape Creators
+  (Reddit) steps settle `routed-mpp` through the SELAT Router (so a reachable
+  `SELAT_ROUTER_URL` is required for those); the AIsa (X/Twitter) steps are a
+  **direct** x402 call settling `GatewayWalletBatched` (`mode=direct`, no router hop).
 - **GET params in the query, POST params in `body`.** Exa/Parallel are POST — their
-  query goes in the body; the Scrape Creators steps are GET — `?query=`/`?handle=`/
-  `?subreddit=` in the URL.
+  query goes in the body; the Scrape Creators (Reddit) and AIsa (Twitter) steps are
+  GET — `?query=`/`?subreddit=`/`?userName=` in the URL.
 - **`maxAmount` is a guardrail, not the price.** Per-step cap is `$0.05` (live
-  quotes: Exa ~$0.007, Parallel ~$0.011, each Scrape Creators call ~$0.021); the
-  full-run cap is `$0.50`.
+  quotes: Exa ~$0.007, Parallel ~$0.011, each Scrape Creators Reddit call ~$0.021,
+  AIsa profile ~$0.0004, AIsa tweets ~$0.004); the full-run cap is `$0.50`.
 - **Pass `--handle` / `--subreddit`** to retarget the X and Reddit-community steps;
   the topic-search steps (Exa, Parallel, Reddit search) key off `--topic`.
 - **The live 402 is the source of truth.** If a step stops serving a challenge,
