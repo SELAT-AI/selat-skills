@@ -1,6 +1,6 @@
 ---
 name: social-intel
-description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit + X/Twitter signal (Scrape Creators, MPP) with grounded web context (Exa + Parallel) — all routed via the SELAT Router. Pays per call via selat-pay (USDC on Base), no API keys.
+description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit signal (Scrape Creators, routed MPP) + X/Twitter signal (AIsa, direct x402, Gateway-batched) with grounded web context (Exa + Parallel). Pays per call via selat-pay (USDC), no API keys.
 license: Apache-2.0
 compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet on Base. The routed steps need a reachable SELAT Router (SELAT_ROUTER_URL); `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
@@ -13,8 +13,9 @@ metadata:
 # social-intel
 
 Cross-platform social intelligence on any topic, brand, or account. The skill
-gathers paid signal over **two x402 protocols (x402 + MPP), both routed via the
-SELAT Router**, and the agent fuses it into
+gathers paid signal over both x402 protocols — **web search + Reddit routed via the
+SELAT Router (x402 + MPP), X/Twitter as a direct x402 call to AIsa (Gateway-batched)** —
+and the agent fuses it into
 a brief — what the web says, what Reddit says, and what an X/Twitter account is
 posting — with citations.
 
@@ -30,11 +31,11 @@ around the paid data.
 
 ## Rails
 
-This skill spans **two x402 protocols**, both **routed** through the SELAT Router
-(`rail: routed`):
+This skill spans both x402 protocols and two settlement paths:
 
-- **x402**: Exa web search — resolves as `routed-x402` on Base.
-- **MPP**: Parallel web search + Scrape Creators (Reddit + X/Twitter) — resolve as `routed-mpp`.
+- **routed x402**: Exa web search — resolves as `routed-x402`.
+- **routed MPP**: Parallel web search + Scrape Creators (Reddit) — resolve as `routed-mpp`.
+- **direct x402 (Gateway-batched)**: AIsa (X/Twitter) — called directly, settles `GatewayWalletBatched` (`mode=direct`).
 
 The `selat` CLI auto-detects each step's protocol at call time.
 
@@ -54,10 +55,10 @@ Recommended agent procedure (cheapest-first; stop early when a side is conclusiv
    (routed MPP, ~$0.021); rank hits by engagement.
 4. **Add community context** — Scrape Creators `GET /v1/reddit/subreddit`
    (routed MPP, ~$0.021) for the named subreddit's current top posts.
-5. **Profile the account** — Scrape Creators `GET /v1/twitter/profile`
-   (routed MPP, ~$0.021) for follower counts + bio.
-6. **Read its recent posts** — Scrape Creators `GET /v1/twitter/user-tweets`
-   (routed MPP, ~$0.021); surface the breakout post and engagement trend.
+5. **Profile the account** — AIsa `GET /v2/twitter/user/info?userName=`
+   (direct x402, Gateway-batched, ~$0.0004) for follower counts + bio.
+6. **Read its recent posts** — AIsa `GET /v2/twitter/user/last_tweets?userName=`
+   (direct x402, Gateway-batched, ~$0.004); surface the breakout post and engagement trend.
 
 Then synthesize: a sentiment read, the dominant themes, the breakout
 post/thread per platform, and where the web context confirms or contradicts the
@@ -77,15 +78,16 @@ fuses into a cross-platform intelligence brief.
 
 ## Gotchas
 
-- **Two protocols, both routed.** Exa settles `routed-x402`; Parallel and the
-  Scrape Creators steps settle `routed-mpp` — all through the SELAT Router, so a
-  reachable `SELAT_ROUTER_URL` is required for every step.
+- **Mixed rails.** Exa settles `routed-x402`; Parallel and the Scrape Creators
+  (Reddit) steps settle `routed-mpp` through the SELAT Router (so a reachable
+  `SELAT_ROUTER_URL` is required for those); the AIsa (X/Twitter) steps are a
+  **direct** x402 call settling `GatewayWalletBatched` (`mode=direct`, no router hop).
 - **GET params in the query, POST params in `body`.** Exa/Parallel are POST — their
-  query goes in the body; the Scrape Creators steps are GET — `?query=`/`?handle=`/
-  `?subreddit=` in the URL.
+  query goes in the body; the Scrape Creators (Reddit) and AIsa (Twitter) steps are
+  GET — `?query=`/`?subreddit=`/`?userName=` in the URL.
 - **`maxAmount` is a guardrail, not the price.** Per-step cap is `$0.05` (live
-  quotes: Exa ~$0.007, Parallel ~$0.011, each Scrape Creators call ~$0.021); the
-  full-run cap is `$0.50`.
+  quotes: Exa ~$0.007, Parallel ~$0.011, each Scrape Creators Reddit call ~$0.021,
+  AIsa profile ~$0.0004, AIsa tweets ~$0.004); the full-run cap is `$0.50`.
 - **Pass `--handle` / `--subreddit`** to retarget the X and Reddit-community steps;
   the topic-search steps (Exa, Parallel, Reddit search) key off `--topic`.
 - **The live 402 is the source of truth.** If a step stops serving a challenge,
