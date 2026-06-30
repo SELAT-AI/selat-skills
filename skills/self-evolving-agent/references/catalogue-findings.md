@@ -35,11 +35,40 @@ for the budgeted economic-agent definition.
 
 ## Execution Gap
 
-The catalogue search surfaced useful read-only intelligence and infrastructure
-planning endpoints, but no suitable direct live-trade execution endpoint was
-selected for the manifest. That is intentional: live trading should be wired
-only after the user approves venue, risk policy, position sizing, and compliance
+The catalogue search surfaced trade-capable endpoints, but no live-trade
+execution endpoint was selected for the manifest. That is intentional: these
+endpoints are **available but locked behind policy** and must not be called
+until the user approves venue, risk policy, position sizing, and compliance
 constraints.
+
+Gated execution candidates found in the catalogue:
+
+- Otto AI `POST https://x402.ottoai.services/trade-perpetuals` for opening
+  Hyperliquid perpetual positions with optional TP/SL trigger orders.
+- Otto AI `POST https://x402.ottoai.services/close-position` for full or
+  partial Hyperliquid position closes.
+- Otto AI `POST https://x402.ottoai.services/modify-hl-order` for modifying or
+  cancelling TP/SL trigger orders and limit orders.
+- Otto AI `POST https://x402.ottoai.services/update-position-margin` for
+  changing leverage or adding/removing margin.
+- Otto AI `POST https://x402.ottoai.services/hl-deposit-withdraw` for
+  Hyperliquid USDC deposit or withdrawal flows.
+- Otto AI `POST https://x402.ottoai.services/swap` for same-chain token swaps
+  through Odos routing.
+- Otto AI `POST https://x402.ottoai.services/withdraw` for withdrawing tokens
+  from an Otto AI Safe.
+- Otto AI `POST https://x402.ottoai.services/deposit` for building deposit
+  transactions into yield protocols; treat unsigned transaction payloads as
+  execution-adjacent and still policy-gated.
+
+Useful supporting read-only candidates:
+
+- Otto AI `GET https://x402.ottoai.services/hyperliquid-account` for account,
+  position, margin, collateral, and active trigger-order context.
+- Otto AI `GET https://x402.ottoai.services/transaction-history` for trade and
+  transaction history.
+- Otto AI `GET https://x402.ottoai.services/supported-tokens` for swap
+  preflight.
 
 ## Manifest Choice
 

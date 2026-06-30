@@ -172,6 +172,14 @@ AgentMail inbox creation is intentionally not in the manifest because it is an
 identity-provisioning action with a live catalogue price near `$2.00`; perform it
 only during the identity bootstrap with explicit user approval.
 
+Trade-capable catalogue endpoints may be referenced as **available but locked
+behind policy**. Do not add live execution endpoints to the manifest or call
+them until the user has approved the venue, asset universe, treasury allocation,
+position sizing, leverage policy, loss limits, monitoring, and emergency stop.
+Known gated candidates include Otto AI Hyperliquid position endpoints and Otto
+same-chain token swap endpoints; see `references/endpoints.md` and
+`references/risk-policy.md`.
+
 Live 402 verification remains the submission gate; see
 `references/verification.md`.
 

@@ -29,6 +29,9 @@ Requires separate explicit trading approval:
 - live order placement;
 - exchange or broker API use;
 - wallet funding for trading;
+- trade-capable SELAT catalogue endpoints, including Hyperliquid perpetuals,
+  token swaps, margin updates, deposits, withdrawals, or unsigned transaction
+  builders;
 - position sizing;
 - leverage;
 - derivatives;
@@ -91,6 +94,12 @@ Before live trading, require:
 - leverage policy;
 - paper-trading evidence;
 - monitoring and emergency stop path.
+
+Trade-capable catalogue endpoints are available but locked behind policy. Do
+not call `trade-perpetuals`, `close-position`, `modify-hl-order`,
+`update-position-margin`, `hl-deposit-withdraw`, `swap`, `withdraw`, or
+`deposit` endpoints unless all trading controls are complete and the user has
+approved the specific run or a standing autonomy policy.
 
 Trading outputs should be phrased as research, hypotheses, or execution logs,
 not guaranteed returns or personalized recommendations.
