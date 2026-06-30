@@ -1,0 +1,33 @@
+{
+  "skill_name": "financial-intel",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Give me a full financial intelligence brief on ETH right now — price, market data, on-chain smart money, fundamentals, and the latest news.",
+      "expected_output": "Runs financial-intel across Alchemy (price), CoinGecko (market data), Nansen (smart money), Messari (funding), and Exa (news), then fuses a multi-signal brief with citations.",
+      "assertions": [
+        "financial-intel is selected",
+        "calls the Alchemy spot-price step plus at least one routed signal (CoinGecko, Nansen, Messari, or Exa)",
+        "output fuses price + market + on-chain + news signal into a single intelligence brief with source URLs"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Fuse macro + crypto intel on SOL — pull the AAPL equity quote for risk context, smart-money holdings on solana, and recent solana ETF news.",
+      "expected_output": "Runs financial-intel with --symbol SOL --coin solana --ticker AAPL --chain solana --query 'solana ETF', pulling the spot price, equity quote, smart-money holdings, and news.",
+      "assertions": [
+        "financial-intel is selected",
+        "symbol, ticker, chain, and query params are passed through",
+        "the Alpha Vantage equity quote, Nansen smart-money holdings, and Exa news are retrieved and summarized"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Write me a Python function that reverses a linked list.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "financial-intel is not selected"
+      ]
+    }
+  ]
+}

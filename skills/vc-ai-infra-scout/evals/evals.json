@@ -1,0 +1,35 @@
+{
+  "skill_name": "vc-ai-infra-scout",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Scout emerging AI inference infrastructure startups for my thesis — pull new launches off Hacker News and Product Hunt, scan Twitter for founders shipping in public, then enrich the most promising lead and flag who hasn't raised yet so I can pre-empt the round.",
+      "expected_output": "Runs vc-ai-infra-scout: discovers via Serper HN, Serper Product Hunt, Exa web context, and Fiber Twitter; dedupes and ranks; enriches the top lead via Apollo people-search + org-enrichment; outputs a ranked shortlist with links, a raised-vs-not flag, and a suggested-outreach note.",
+      "assertions": [
+        "vc-ai-infra-scout is selected",
+        "calls the Serper HN and Serper Product Hunt discovery steps plus at least one of Exa or Fiber",
+        "enriches the top lead (Apollo people-search / org-enrichment) and explicitly flags who has NOT raised yet",
+        "output is a deduped, ranked shortlist with source URLs plus a suggested-outreach note"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "What pre-seed and seed rounds are people announcing in AI infra and crypto-AI on Twitter and LinkedIn right now, and what's the thesis behind them? Pull the recent raise announcements off both, figure out which funds are leading them, summarize those investors' tweets to distill the live thesis, and tell me which teams to back. Run with --thesis 'AI infra' --fundraisingQuery 'AI infra crypto AI raised seed pre-seed round' --investorQuery 'AI infra seed fund partner'.",
+      "expected_output": "Runs vc-ai-infra-scout with the fundraisingQuery and investorQuery params, searching fundraising news on Twitter/X (Fiber twitter/search) and LinkedIn (Serper site:linkedin.com/posts), identifying the lead funds named in those announcements, then running the Fiber lead-investor twitter/search step and summarizing those tweets into a distilled thesis plus a ranked shortlist.",
+      "assertions": [
+        "vc-ai-infra-scout is selected",
+        "thesis, fundraisingQuery, and investorQuery params are passed through",
+        "both the Twitter fundraising search (Fiber) and the LinkedIn fundraising search (Serper site:linkedin.com) are retrieved, plus the Fiber lead-investor twitter/search step",
+        "output distills a thesis from the lead funds' tweets and produces a ranked deal shortlist"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Write me a Python function that reverses a linked list.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "vc-ai-infra-scout is not selected"
+      ]
+    }
+  ]
+}
