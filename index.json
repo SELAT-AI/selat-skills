@@ -78,6 +78,12 @@
       "rail": "routed",
       "kind": "multi",
       "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC on Base)."
+    },
+    {
+      "name": "self-evolving-agent",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Budgeted economic agent preflight for social sentiment, market context, and domain availability before infrastructure, monetization, or trading decisions."
     }
   ]
 }
