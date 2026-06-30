@@ -1,6 +1,6 @@
 {
   "schema": "selat-reliability/v1",
-  "generatedAt": "2026-06-30T01:11:32.609Z",
+  "generatedAt": "2026-06-30T03:37:41.228Z",
   "method": "selat-pay --probe-only (free live-402 quote; no paid call)",
   "router": "https://router.selat.ai",
   "summary": {
@@ -14,7 +14,7 @@
       "name": "comprehensive-enrichment",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "person deep search — Nyne (work history, education, social)",
@@ -26,7 +26,7 @@
           "reachable": true,
           "livePriceUsd": 0.380992,
           "withinCap": true,
-          "latencyMs": 1709,
+          "latencyMs": 3462,
           "error": null
         },
         {
@@ -39,7 +39,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 1389,
+          "latencyMs": 3041,
           "error": null
         },
         {
@@ -52,7 +52,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1152,
+          "latencyMs": 3244,
           "error": null
         },
         {
@@ -65,7 +65,7 @@
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 992,
+          "latencyMs": 933,
           "error": null
         },
         {
@@ -78,7 +78,7 @@
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 728,
+          "latencyMs": 725,
           "error": null
         },
         {
@@ -91,7 +91,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 978,
+          "latencyMs": 1017,
           "error": null
         },
         {
@@ -104,7 +104,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 960,
+          "latencyMs": 971,
           "error": null
         },
         {
@@ -117,7 +117,7 @@
           "reachable": true,
           "livePriceUsd": 0.315,
           "withinCap": true,
-          "latencyMs": 948,
+          "latencyMs": 1185,
           "error": null
         },
         {
@@ -130,7 +130,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1028,
+          "latencyMs": 1086,
           "error": null
         },
         {
@@ -143,7 +143,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 1078,
+          "latencyMs": 1161,
           "error": null
         },
         {
@@ -156,7 +156,7 @@
           "reachable": true,
           "livePriceUsd": 0.10815,
           "withinCap": true,
-          "latencyMs": 875,
+          "latencyMs": 810,
           "error": null
         },
         {
@@ -169,7 +169,7 @@
           "reachable": true,
           "livePriceUsd": 0.6069,
           "withinCap": true,
-          "latencyMs": 934,
+          "latencyMs": 1035,
           "error": null
         },
         {
@@ -182,7 +182,7 @@
           "reachable": true,
           "livePriceUsd": 1.512,
           "withinCap": true,
-          "latencyMs": 904,
+          "latencyMs": 1050,
           "error": null
         },
         {
@@ -195,7 +195,7 @@
           "reachable": true,
           "livePriceUsd": 0.02625,
           "withinCap": true,
-          "latencyMs": 1006,
+          "latencyMs": 1008,
           "error": null
         },
         {
@@ -208,7 +208,7 @@
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 3615,
+          "latencyMs": 3648,
           "error": null
         },
         {
@@ -221,7 +221,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 943,
+          "latencyMs": 1009,
           "error": null
         }
       ]
@@ -230,7 +230,7 @@
       "name": "email-campaign",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "emails by domain — Hunter (MPP, ROUTED via SELAT Router)",
@@ -242,7 +242,7 @@
           "reachable": true,
           "livePriceUsd": 0.10815,
           "withinCap": true,
-          "latencyMs": 845,
+          "latencyMs": 812,
           "error": null
         },
         {
@@ -255,7 +255,7 @@
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 721,
+          "latencyMs": 725,
           "error": null
         },
         {
@@ -268,7 +268,7 @@
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 710,
+          "latencyMs": 715,
           "error": null
         },
         {
@@ -281,7 +281,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 926,
+          "latencyMs": 1042,
           "error": null
         },
         {
@@ -294,7 +294,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 882,
+          "latencyMs": 956,
           "error": null
         },
         {
@@ -307,7 +307,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 871,
+          "latencyMs": 1171,
           "error": null
         }
       ]
@@ -316,7 +316,7 @@
       "name": "enrich-waterfall",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "person resolve — Tomba enrich by email",
@@ -328,7 +328,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 891,
+          "latencyMs": 1048,
           "error": null
         },
         {
@@ -341,7 +341,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 889,
+          "latencyMs": 1041,
           "error": null
         },
         {
@@ -354,7 +354,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 866,
+          "latencyMs": 1004,
           "error": null
         },
         {
@@ -367,7 +367,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 983,
+          "latencyMs": 1144,
           "error": null
         },
         {
@@ -380,7 +380,7 @@
           "reachable": true,
           "livePriceUsd": 0.0441,
           "withinCap": true,
-          "latencyMs": 977,
+          "latencyMs": 1163,
           "error": null
         },
         {
@@ -393,7 +393,7 @@
           "reachable": true,
           "livePriceUsd": 0.0882,
           "withinCap": true,
-          "latencyMs": 877,
+          "latencyMs": 1009,
           "error": null
         },
         {
@@ -406,7 +406,7 @@
           "reachable": true,
           "livePriceUsd": 0.3675,
           "withinCap": true,
-          "latencyMs": 947,
+          "latencyMs": 1120,
           "error": null
         },
         {
@@ -419,7 +419,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 933,
+          "latencyMs": 989,
           "error": null
         },
         {
@@ -432,7 +432,7 @@
           "reachable": true,
           "livePriceUsd": 0.0441,
           "withinCap": true,
-          "latencyMs": 924,
+          "latencyMs": 949,
           "error": null
         },
         {
@@ -445,7 +445,7 @@
           "reachable": true,
           "livePriceUsd": 0.012862,
           "withinCap": true,
-          "latencyMs": 940,
+          "latencyMs": 1299,
           "error": null
         },
         {
@@ -458,7 +458,7 @@
           "reachable": true,
           "livePriceUsd": 0.012862,
           "withinCap": true,
-          "latencyMs": 6643,
+          "latencyMs": 1035,
           "error": null
         },
         {
@@ -471,7 +471,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1214,
+          "latencyMs": 926,
           "error": null
         },
         {
@@ -484,7 +484,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1048,
+          "latencyMs": 1226,
           "error": null
         },
         {
@@ -497,7 +497,7 @@
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 841,
+          "latencyMs": 829,
           "error": null
         },
         {
@@ -510,7 +510,7 @@
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 730,
+          "latencyMs": 712,
           "error": null
         },
         {
@@ -523,7 +523,7 @@
           "reachable": true,
           "livePriceUsd": 0.0525,
           "withinCap": true,
-          "latencyMs": 3328,
+          "latencyMs": 1002,
           "error": null
         },
         {
@@ -536,7 +536,7 @@
           "reachable": true,
           "livePriceUsd": 0.012862,
           "withinCap": true,
-          "latencyMs": 1041,
+          "latencyMs": 968,
           "error": null
         },
         {
@@ -549,7 +549,7 @@
           "reachable": true,
           "livePriceUsd": 0.012862,
           "withinCap": true,
-          "latencyMs": 1099,
+          "latencyMs": 1061,
           "error": null
         },
         {
@@ -562,7 +562,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1097,
+          "latencyMs": 1076,
           "error": null
         },
         {
@@ -575,7 +575,7 @@
           "reachable": true,
           "livePriceUsd": 0.126,
           "withinCap": true,
-          "latencyMs": 1150,
+          "latencyMs": 1208,
           "error": null
         },
         {
@@ -588,7 +588,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1188,
+          "latencyMs": 1038,
           "error": null
         },
         {
@@ -601,7 +601,7 @@
           "reachable": true,
           "livePriceUsd": 0.5775,
           "withinCap": true,
-          "latencyMs": 1127,
+          "latencyMs": 946,
           "error": null
         },
         {
@@ -614,7 +614,7 @@
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 1129,
+          "latencyMs": 1153,
           "error": null
         },
         {
@@ -627,7 +627,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1108,
+          "latencyMs": 1019,
           "error": null
         },
         {
@@ -640,7 +640,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1035,
+          "latencyMs": 1014,
           "error": null
         },
         {
@@ -653,7 +653,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 2904,
+          "latencyMs": 1046,
           "error": null
         },
         {
@@ -666,7 +666,7 @@
           "reachable": true,
           "livePriceUsd": 0.084,
           "withinCap": true,
-          "latencyMs": 1009,
+          "latencyMs": 996,
           "error": null
         },
         {
@@ -679,7 +679,7 @@
           "reachable": true,
           "livePriceUsd": 0.084,
           "withinCap": true,
-          "latencyMs": 1022,
+          "latencyMs": 1047,
           "error": null
         },
         {
@@ -692,7 +692,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 1173,
+          "latencyMs": 1018,
           "error": null
         },
         {
@@ -705,7 +705,7 @@
           "reachable": true,
           "livePriceUsd": 0.064312,
           "withinCap": true,
-          "latencyMs": 1071,
+          "latencyMs": 1025,
           "error": null
         },
         {
@@ -718,7 +718,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1059,
+          "latencyMs": 1002,
           "error": null
         },
         {
@@ -731,7 +731,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1030,
+          "latencyMs": 1226,
           "error": null
         },
         {
@@ -744,7 +744,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1046,
+          "latencyMs": 1011,
           "error": null
         },
         {
@@ -757,7 +757,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1009,
+          "latencyMs": 1055,
           "error": null
         },
         {
@@ -770,7 +770,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1139,
+          "latencyMs": 1006,
           "error": null
         },
         {
@@ -783,7 +783,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 1009,
+          "latencyMs": 938,
           "error": null
         },
         {
@@ -796,7 +796,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 1398,
+          "latencyMs": 1061,
           "error": null
         },
         {
@@ -809,7 +809,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 1002,
+          "latencyMs": 958,
           "error": null
         },
         {
@@ -822,7 +822,7 @@
           "reachable": true,
           "livePriceUsd": 0.042,
           "withinCap": true,
-          "latencyMs": 927,
+          "latencyMs": 1021,
           "error": null
         },
         {
@@ -835,7 +835,7 @@
           "reachable": true,
           "livePriceUsd": 0.3465,
           "withinCap": true,
-          "latencyMs": 1027,
+          "latencyMs": 1154,
           "error": null
         },
         {
@@ -848,7 +848,7 @@
           "reachable": true,
           "livePriceUsd": 0.5775,
           "withinCap": true,
-          "latencyMs": 1359,
+          "latencyMs": 1091,
           "error": null
         },
         {
@@ -861,7 +861,7 @@
           "reachable": true,
           "livePriceUsd": 0.5775,
           "withinCap": true,
-          "latencyMs": 955,
+          "latencyMs": 974,
           "error": null
         },
         {
@@ -874,7 +874,7 @@
           "reachable": true,
           "livePriceUsd": 0.735,
           "withinCap": true,
-          "latencyMs": 1202,
+          "latencyMs": 1124,
           "error": null
         },
         {
@@ -887,7 +887,7 @@
           "reachable": true,
           "livePriceUsd": 0.0882,
           "withinCap": true,
-          "latencyMs": 1123,
+          "latencyMs": 992,
           "error": null
         },
         {
@@ -900,7 +900,7 @@
           "reachable": true,
           "livePriceUsd": 0.315,
           "withinCap": true,
-          "latencyMs": 945,
+          "latencyMs": 1236,
           "error": null
         },
         {
@@ -913,7 +913,7 @@
           "reachable": true,
           "livePriceUsd": 0.5775,
           "withinCap": true,
-          "latencyMs": 1022,
+          "latencyMs": 911,
           "error": null
         },
         {
@@ -926,7 +926,7 @@
           "reachable": true,
           "livePriceUsd": 0.5775,
           "withinCap": true,
-          "latencyMs": 1232,
+          "latencyMs": 1020,
           "error": null
         },
         {
@@ -939,7 +939,7 @@
           "reachable": true,
           "livePriceUsd": 0.3465,
           "withinCap": true,
-          "latencyMs": 931,
+          "latencyMs": 1089,
           "error": null
         },
         {
@@ -965,7 +965,7 @@
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 979,
+          "latencyMs": 934,
           "error": null
         },
         {
@@ -978,7 +978,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 889,
+          "latencyMs": 902,
           "error": null
         }
       ]
@@ -987,7 +987,7 @@
       "name": "find-twitter-influencers",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "resolve company by name — Brand.dev (MPP, ROUTED via SELAT Router)",
@@ -999,7 +999,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 994,
+          "latencyMs": 992,
           "error": null
         },
         {
@@ -1012,7 +1012,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 1076,
+          "latencyMs": 1043,
           "error": null
         },
         {
@@ -1025,7 +1025,7 @@
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 2179,
+          "latencyMs": 1004,
           "error": null
         },
         {
@@ -1038,7 +1038,7 @@
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 801,
+          "latencyMs": 857,
           "error": null
         },
         {
@@ -1051,7 +1051,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1003,
+          "latencyMs": 1121,
           "error": null
         },
         {
@@ -1064,7 +1064,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1043,
+          "latencyMs": 1111,
           "error": null
         },
         {
@@ -1077,7 +1077,7 @@
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 852,
+          "latencyMs": 865,
           "error": null
         },
         {
@@ -1090,7 +1090,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 924,
+          "latencyMs": 985,
           "error": null
         }
       ]
@@ -1099,7 +1099,7 @@
       "name": "gtm-enrichment-deep",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "enrich lead — Sixtyfour AI agent (MPP, ROUTED via SELAT Router)",
@@ -1111,7 +1111,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 1035,
+          "latencyMs": 994,
           "error": null
         },
         {
@@ -1124,7 +1124,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 1050,
+          "latencyMs": 1034,
           "error": null
         },
         {
@@ -1137,7 +1137,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1274,
+          "latencyMs": 1026,
           "error": null
         },
         {
@@ -1150,7 +1150,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1015,
+          "latencyMs": 1005,
           "error": null
         }
       ]
@@ -1159,7 +1159,7 @@
       "name": "gtm-enrichment-smart",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "person enrich — Apollo people/match (MPP, ROUTED via SELAT Router)",
@@ -1171,7 +1171,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 931,
+          "latencyMs": 972,
           "error": null
         },
         {
@@ -1184,7 +1184,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1028,
+          "latencyMs": 930,
           "error": null
         },
         {
@@ -1197,7 +1197,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1020,
+          "latencyMs": 1084,
           "error": null
         },
         {
@@ -1210,7 +1210,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 1013,
+          "latencyMs": 993,
           "error": null
         },
         {
@@ -1223,7 +1223,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1031,
+          "latencyMs": 920,
           "error": null
         },
         {
@@ -1236,7 +1236,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1025,
+          "latencyMs": 909,
           "error": null
         },
         {
@@ -1249,7 +1249,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 1014,
+          "latencyMs": 1024,
           "error": null
         },
         {
@@ -1262,7 +1262,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 1225,
+          "latencyMs": 1027,
           "error": null
         },
         {
@@ -1275,7 +1275,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1010,
+          "latencyMs": 1157,
           "error": null
         }
       ]
@@ -1284,7 +1284,7 @@
       "name": "lead-enrichment",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "find email — Hunter Email Finder (MPP, ROUTED via SELAT Router)",
@@ -1296,7 +1296,7 @@
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 809,
+          "latencyMs": 830,
           "error": null
         },
         {
@@ -1309,7 +1309,7 @@
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 708,
+          "latencyMs": 728,
           "error": null
         },
         {
@@ -1322,7 +1322,7 @@
           "reachable": true,
           "livePriceUsd": 0.105,
           "withinCap": true,
-          "latencyMs": 923,
+          "latencyMs": 881,
           "error": null
         },
         {
@@ -1335,7 +1335,7 @@
           "reachable": true,
           "livePriceUsd": 0.315,
           "withinCap": true,
-          "latencyMs": 1022,
+          "latencyMs": 898,
           "error": null
         },
         {
@@ -1348,7 +1348,7 @@
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 743,
+          "latencyMs": 720,
           "error": null
         }
       ]
@@ -1357,7 +1357,7 @@
       "name": "person-lookup",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "person search — Nyne.ai (async, MPP / tempo-native, ROUTED via SELAT Router)",
@@ -1369,7 +1369,7 @@
           "reachable": true,
           "livePriceUsd": 0.380992,
           "withinCap": true,
-          "latencyMs": 1043,
+          "latencyMs": 1038,
           "error": null
         }
       ]
@@ -1378,7 +1378,7 @@
       "name": "recent-funding-rounds",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "recent funding rounds — Fundable /companies search (MPP, ROUTED via SELAT Router)",
@@ -1390,7 +1390,7 @@
           "reachable": true,
           "livePriceUsd": 1.7325,
           "withinCap": true,
-          "latencyMs": 1103,
+          "latencyMs": 996,
           "error": null
         }
       ]
@@ -1399,7 +1399,7 @@
       "name": "sales-prospecting",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "all emails for domain — Hunter domain search (ROUTED MPP via SELAT Router)",
@@ -1411,7 +1411,7 @@
           "reachable": true,
           "livePriceUsd": 0.10815,
           "withinCap": true,
-          "latencyMs": 730,
+          "latencyMs": 754,
           "error": null
         },
         {
@@ -1424,7 +1424,7 @@
           "reachable": true,
           "livePriceUsd": 0.0525,
           "withinCap": true,
-          "latencyMs": 956,
+          "latencyMs": 954,
           "error": null
         },
         {
@@ -1437,7 +1437,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1361,
+          "latencyMs": 950,
           "error": null
         },
         {
@@ -1450,7 +1450,7 @@
           "reachable": true,
           "livePriceUsd": 0.0315,
           "withinCap": true,
-          "latencyMs": 908,
+          "latencyMs": 1106,
           "error": null
         }
       ]
@@ -1459,7 +1459,7 @@
       "name": "scrapecreators",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "X/Twitter profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
@@ -1471,7 +1471,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1112,
+          "latencyMs": 1015,
           "error": null
         },
         {
@@ -1484,7 +1484,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1131,
+          "latencyMs": 1065,
           "error": null
         },
         {
@@ -1497,7 +1497,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1411,
+          "latencyMs": 1233,
           "error": null
         },
         {
@@ -1510,7 +1510,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1003,
+          "latencyMs": 972,
           "error": null
         },
         {
@@ -1523,7 +1523,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1031,
+          "latencyMs": 1025,
           "error": null
         },
         {
@@ -1536,7 +1536,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1034,
+          "latencyMs": 1047,
           "error": null
         },
         {
@@ -1549,7 +1549,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1052,
+          "latencyMs": 1034,
           "error": null
         },
         {
@@ -1562,7 +1562,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1093,
+          "latencyMs": 1023,
           "error": null
         },
         {
@@ -1575,7 +1575,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 986,
+          "latencyMs": 2919,
           "error": null
         },
         {
@@ -1588,7 +1588,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1004,
+          "latencyMs": 1016,
           "error": null
         },
         {
@@ -1601,7 +1601,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1042,
+          "latencyMs": 1212,
           "error": null
         },
         {
@@ -1614,7 +1614,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 991,
+          "latencyMs": 980,
           "error": null
         }
       ]
@@ -1623,7 +1623,7 @@
       "name": "social-intel",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "web context — Exa search (routed x402 via SELAT Router)",
@@ -1635,7 +1635,7 @@
           "reachable": true,
           "livePriceUsd": 0.00735,
           "withinCap": true,
-          "latencyMs": 982,
+          "latencyMs": 927,
           "error": null
         },
         {
@@ -1648,7 +1648,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 5585,
+          "latencyMs": 5116,
           "error": null
         },
         {
@@ -1661,7 +1661,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1055,
+          "latencyMs": 1011,
           "error": null
         },
         {
@@ -1674,7 +1674,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 930,
+          "latencyMs": 945,
           "error": null
         },
         {
@@ -1687,7 +1687,7 @@
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1701,
+          "latencyMs": 1407,
           "error": null
         },
         {
@@ -1700,7 +1700,7 @@
           "reachable": true,
           "livePriceUsd": 0.0036,
           "withinCap": true,
-          "latencyMs": 1292,
+          "latencyMs": 1365,
           "error": null
         },
         {
@@ -1713,7 +1713,7 @@
           "reachable": true,
           "livePriceUsd": 0.0022,
           "withinCap": true,
-          "latencyMs": 1301,
+          "latencyMs": 1260,
           "error": null
         }
       ]
@@ -1722,7 +1722,7 @@
       "name": "twitter-profile-lookup",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-06-30T01:11:32.609Z",
+      "checkedAt": "2026-06-30T03:37:41.228Z",
       "steps": [
         {
           "label": "profile — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
@@ -1734,7 +1734,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1009,
+          "latencyMs": 959,
           "error": null
         },
         {
@@ -1747,7 +1747,7 @@
           "reachable": true,
           "livePriceUsd": 0.021,
           "withinCap": true,
-          "latencyMs": 1133,
+          "latencyMs": 957,
           "error": null
         }
       ]
