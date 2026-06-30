@@ -15,8 +15,15 @@ Gateway-batched**. Paid per call via selat-pay (USDC), no API keys.
 | 4 | Reddit subreddit top posts — Scrape Creators | GET | `https://mpp.orthogonal.com/scrapecreators/v1/reddit/subreddit?subreddit=${subreddit}` | routed MPP | $0.021 |
 | 5 | X/Twitter profile — AIsa | GET | `https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}` | direct x402 (Gateway-batched) | $0.0004 |
 | 6 | X/Twitter recent tweets — AIsa | GET | `https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}` | direct x402 (Gateway-batched) | $0.004 |
+| 7 | X/Twitter topic search — AIsa advanced_search | GET | `https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=${topic}&queryType=Latest` | direct x402 (Gateway-batched) | $0.002 |
 
-Full-run cap (`maxAmount`): **$0.50**; per-step cap **$0.05**. Live total ≈ $0.06.
+Full-run cap (`maxAmount`): **$0.50**; per-step cap **$0.05**. Live total ≈ $0.07.
+
+Steps 5–6 are **handle-scoped** (`${handle}` → a single account's profile + recent
+timeline); step 7 is **topic-scoped** — AIsa `advanced_search` runs `${topic}` as a
+Twitter archive query (`queryType=Latest`), surfacing cross-account chatter the
+bounded `user/last_tweets` timeline misses. Twitter advanced-search operators work
+in `${topic}` (e.g. `from:cuysheffield x402`).
 
 ## Rails & providers
 
@@ -30,7 +37,8 @@ Full-run cap (`maxAmount`): **$0.50**; per-step cap **$0.05**. Live total ≈ $0
   (no MPP router hop); selat-pay detects the native x402 challenge and settles it
   **Circle Gateway-batched** (`GatewayWalletBatched` scheme, `mode=direct`) against
   the unified cross-chain Gateway balance. Sourced from the Circle x402 catalog.
-  `${handle}` maps to AIsa's `userName` query param.
+  `${handle}` maps to AIsa's `userName` query param (steps 5–6); `${topic}` maps to
+  the `advanced_search` `query` param (step 7).
 
 ## Live probes (free; no wallet)
 
@@ -49,6 +57,8 @@ selat-pay GET "https://mpp.orthogonal.com/scrapecreators/v1/reddit/search?query=
 selat-pay GET "https://api.aisa.one/apis/v2/twitter/user/info?userName=OpenAI" \
   --chain base --probe-only
 selat-pay GET "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=OpenAI" \
+  --chain base --probe-only
+selat-pay GET "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=x402&queryType=Latest" \
   --chain base --probe-only
 ```
 
