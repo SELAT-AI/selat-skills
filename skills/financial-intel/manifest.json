@@ -1,0 +1,92 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "financial-intel",
+  "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + fundamentals/funding + market news into one brief, paid per call across three rails (direct nanopayment + MPP + x402 on Base) via selat-pay (USDC via Circle Gateway).",
+  "maxAmount": "1.00",
+  "params": {
+    "symbol": {
+      "required": true,
+      "default": "ETH",
+      "description": "Token symbol (no $) for the Alchemy spot-price lookup (used as ${symbol})."
+    },
+    "coin": {
+      "required": false,
+      "default": "ethereum",
+      "description": "CoinGecko coin id (lowercase slug) for token market data (used as ${coin})."
+    },
+    "ticker": {
+      "required": false,
+      "default": "AAPL",
+      "description": "Equity ticker for the Alpha Vantage global-quote macro/equities pull (used as ${ticker})."
+    },
+    "chain": {
+      "required": false,
+      "default": "ethereum",
+      "description": "Chain name for the Nansen smart-money holdings query (used as ${chain})."
+    },
+    "query": {
+      "required": false,
+      "default": "ethereum ETF flows",
+      "description": "Free-text search for the Exa market-news/context step (used as ${query})."
+    }
+  },
+  "steps": [
+    {
+      "label": "spot price — Alchemy (direct nanopayment, Circle Gateway-batched)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://x402.alchemy.com/prices/v1/tokens/by-symbol?symbols=${symbol}",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "token market data — CoinGecko coins-markets (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://coingecko.mpp.paywithlocus.com/coingecko/coins-markets",
+      "body": {
+        "vs_currency": "usd",
+        "ids": "${coin}"
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "equities / macro quote — Alpha Vantage global-quote (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote",
+      "body": {
+        "symbol": "${ticker}"
+      },
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "on-chain smart-money holdings — Nansen (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.nansen.ai/api/v1/smart-money/holdings",
+      "body": {
+        "chain": "${chain}"
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "fundamentals / funding rounds — Messari (routed x402 on Base via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://api.messari.io/funding/v1/rounds",
+      "maxAmount": "0.25"
+    },
+    {
+      "label": "market news / context — Exa search (routed x402 on Base via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.exa.ai/search",
+      "body": {
+        "query": "${query}",
+        "numResults": 8,
+        "contents": { "text": { "maxCharacters": 3000 } }
+      },
+      "maxAmount": "0.05"
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "vc-ai-infra-scout",
+  "description": "Deal-sourcing scout for a VC running an AI-infrastructure thesis spanning crypto-AI / decentralized-AI, robotics / embodied-AI, and agentic payments (inference/serving, GPU & compute, training stacks, vector/data infra, agent infra, eval/observability, model-ops; decentralized compute/GPU, on-chain AI agents, DePIN-for-AI; robotics foundation models, humanoid/embodied-AI, sim-to-real, actuation/sensor stacks; agentic-payment rails, agent commerce, x402/stablecoin agent settlement). Discovers emerging companies and founders from Hacker News, Product Hunt, the web, and Twitter/X; searches recent pre-seed/seed fundraising news on Twitter/X and LinkedIn and summarizes the tweets of the investors at the funds leading those rounds to distill the live thesis; then dedupes, ranks, flags who has NOT raised yet, and enriches the top lead. Paid per call across two rails (routed MPP + routed x402 on Base) via selat-pay (USDC via Circle Gateway), no API keys.",
+  "maxAmount": "0.40",
+  "params": {
+    "thesis": {
+      "required": true,
+      "default": "AI inference infrastructure",
+      "description": "The sub-thesis keyword for HN/PH/web discovery and the founder shortlist — AI-infra, crypto-AI, robotics/embodied-AI, or agentic payments (e.g. 'humanoid robotics foundation models', 'agentic payment rails') (used as ${thesis})."
+    },
+    "twitterQuery": {
+      "required": false,
+      "default": "AI inference infra founder",
+      "description": "Twitter/X keyword search for FOUNDER buzz; defaults conceptually to the thesis if the VC doesn't override (used as ${twitterQuery})."
+    },
+    "fundraisingQuery": {
+      "required": false,
+      "default": "AI infrastructure startup raised seed pre-seed funding round",
+      "description": "Keyword query for FUNDRAISING NEWS — used by both the Twitter and the LinkedIn fundraising searches to surface recent pre-seed/seed raises in AI-infra & crypto-AI (used as ${fundraisingQuery})."
+    },
+    "investorQuery": {
+      "required": false,
+      "default": "AI infra seed fund partner thesis",
+      "description": "Twitter/X keyword search for INVESTOR/fund chatter — set it to the funds leading the rounds surfaced by the fundraising searches to pull the tweets the agent summarizes into a thesis (used as ${investorQuery})."
+    },
+    "domain": {
+      "required": false,
+      "default": "modal.com",
+      "description": "That company's domain for the enrichment step (used as ${domain})."
+    }
+  },
+  "steps": [
+    {
+      "label": "Hacker News discovery — Serper Google search scoped to HN (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/serper/search",
+      "body": {
+        "q": "${thesis} site:news.ycombinator.com"
+      },
+      "maxAmount": "0.02"
+    },
+    {
+      "label": "Product Hunt discovery — Serper Google search scoped to Product Hunt (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/serper/search",
+      "body": {
+        "q": "${thesis} site:producthunt.com"
+      },
+      "maxAmount": "0.02"
+    },
+    {
+      "label": "launch + funding web context — Exa search (routed x402 on Base via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.exa.ai/search",
+      "body": {
+        "query": "${thesis} startup launch funding",
+        "numResults": 10,
+        "contents": { "text": { "maxCharacters": 3000 } }
+      },
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "Twitter/X founder & buzz search — Fiber AI twitter/search (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/twitter/search",
+      "body": {
+        "query": "${twitterQuery}"
+      },
+      "maxAmount": "0.08"
+    },
+    {
+      "label": "fundraising news on Twitter/X — Fiber AI twitter/search for recent pre-seed/seed raises (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/twitter/search",
+      "body": {
+        "query": "${fundraisingQuery}"
+      },
+      "maxAmount": "0.08"
+    },
+    {
+      "label": "fundraising news on LinkedIn — Serper search scoped to LinkedIn posts (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/serper/search",
+      "body": {
+        "q": "${fundraisingQuery} site:linkedin.com/posts"
+      },
+      "maxAmount": "0.02"
+    },
+    {
+      "label": "lead-investor thesis tweets — Fiber AI twitter/search over the funds leading those rounds (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/fiber/v1/twitter/search",
+      "body": {
+        "query": "${investorQuery}"
+      },
+      "maxAmount": "0.08"
+    },
+    {
+      "label": "founder shortlist — Apollo people-search (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
+      "body": {
+        "q_keywords": "${thesis} founder",
+        "person_titles": ["Founder", "Co-Founder", "CEO", "CTO"]
+      },
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "company enrichment — Apollo org-enrichment (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
+      "body": {
+        "domain": "${domain}"
+      },
+      "maxAmount": "0.05"
+    }
+  ]
+}
