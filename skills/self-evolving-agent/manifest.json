@@ -1,0 +1,54 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "self-evolving-agent",
+  "description": "Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability signals before infrastructure, monetization, or trading decisions.",
+  "maxAmount": "0.035",
+  "params": {
+    "mission": {
+      "required": true,
+      "default": "sustain agent expenses from social and financial intelligence",
+      "description": "The economic objective or niche the agent is evaluating."
+    },
+    "budget_usd": {
+      "required": true,
+      "default": "100",
+      "description": "Starting budget for planning and caps. This value is for analysis, not automatic spend."
+    },
+    "asset_universe": {
+      "required": false,
+      "default": "crypto majors and prediction markets",
+      "description": "Markets or assets to research."
+    },
+    "domain_candidate": {
+      "required": false,
+      "default": "agent-alpha-research.com",
+      "description": "Domain candidate to check before any purchase."
+    }
+  },
+  "steps": [
+    {
+      "label": "Social alpha - Otto KOL sentiment",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/kol-sentiment",
+      "maxAmount": "0.010"
+    },
+    {
+      "label": "Financial context - Otto Hyperliquid market",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/hyperliquid-market",
+      "maxAmount": "0.010"
+    },
+    {
+      "label": "Infrastructure quote - StableDomains availability",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://stabledomains.dev/api/check",
+      "body": {
+        "domain": "${domain_candidate}"
+      },
+      "maxAmount": "0.015"
+    }
+  ]
+}
