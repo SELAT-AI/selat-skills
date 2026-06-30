@@ -23,6 +23,17 @@
       ]
     },
     {
+      "id": "trigger-agentmail-wallet-identity",
+      "prompt": "Let the self-evolving agent register an AgentMail address, use it to sign up for its Circle agent wallet, and retrieve the OTP from AgentMail when it logs in.",
+      "expected_output": "The skill triggers and produces an identity bootstrap plan that uses an agent-owned AgentMail inbox for Circle Agent Wallet authentication while requiring approval for paid inbox creation, Gateway funding, and any OTP retrieval.",
+      "assertions": [
+        "The response uses an agent-owned AgentMail inbox rather than a human personal mailbox.",
+        "The response requires explicit approval before paid inbox creation or wallet funding.",
+        "The response allows OTP retrieval only for the agent's own Circle wallet login flow.",
+        "The response says OTPs must not be printed, logged, stored, or reused."
+      ]
+    },
+    {
       "id": "notrigger-simple-search",
       "prompt": "Search the web for today's weather in San Francisco.",
       "expected_output": "Skill does not trigger.",

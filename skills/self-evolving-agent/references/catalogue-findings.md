@@ -22,6 +22,11 @@ for the budgeted economic-agent definition.
 
 ## Infrastructure
 
+- AgentMail inbox creation:
+  `https://x402.api.agentmail.to/v0/inboxes` at about `$2.00`.
+- AgentMail inbox listing:
+  `https://x402.api.agentmail.to/v0/inboxes` at `$0.00`.
+- AgentMail threads and webhooks for receiving operational email and Circle OTPs.
 - StableDomains availability:
   `https://stabledomains.dev/api/check`
 - Modal sandbox execution:
@@ -41,3 +46,7 @@ constraints.
 The manifest uses one social signal, one financial signal, and one domain quote
 because those map directly to the user's definition while keeping the preflight
 cheap and reversible.
+
+AgentMail inbox creation is not in the manifest because it is an identity
+bootstrap action, not an intelligence preflight. It should be quoted and run only
+after the user approves the mailbox address, provider, and spend cap.

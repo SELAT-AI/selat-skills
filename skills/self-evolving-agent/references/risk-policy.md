@@ -15,6 +15,8 @@ Allowed without additional approval:
 
 Requires explicit approval and a maximum spend:
 
+- AgentMail inbox creation or renewal;
+- Circle Agent Wallet setup using the agent-owned mailbox;
 - paid intelligence calls;
 - paid compute;
 - paid hosting;
@@ -36,6 +38,8 @@ Requires separate explicit trading approval:
 
 Conservative defaults until the user says otherwise:
 
+- no paid mailbox creation until the user approves provider, address purpose,
+  and quoted price;
 - no more than 5% of starting budget committed to infrastructure before first
   revenue;
 - no more than 10% of starting budget spent on intelligence experiments before
@@ -57,7 +61,22 @@ Pause the agent when any condition is true:
 - a live venue, API, or payment rail behaves unexpectedly;
 - the task would require private, hacked, leaked, or non-public information;
 - the task would create personalized financial advice without proper controls;
+- the agent is asked to retrieve an OTP from any inbox other than its own
+  AgentMail address;
+- a Circle wallet login was not initiated by the agent's current approved flow;
 - the user has not approved the next paid step.
+
+## OTP Controls
+
+OTP retrieval is allowed only for the agent's own AgentMail inbox and only for
+the agent's own Circle Agent Wallet login. The OTP is a transient credential:
+
+- verify recipient, sender, subject, and timestamp;
+- use the newest matching code only;
+- keep the code in memory only;
+- never print, log, persist, or summarize the code;
+- discard the code immediately after the login attempt;
+- pause if the mailbox contains unexpected account-security alerts.
 
 ## Trading Controls
 
