@@ -83,7 +83,7 @@
       "name": "fifa-stadium-hotel-planner",
       "rail": "routed",
       "kind": "multi",
-      "description": "FIFA World Cup 26 U.S. stadium hotel planner: find nearby hotels, collect map coordinates/reviews, compute stadium-to-hotel travel distance, and produce Google Map pins. Routed via SELAT Router."
+      "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins."
     }
   ]
 }

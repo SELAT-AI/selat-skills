@@ -1,9 +1,44 @@
 {
   "schema": "selat-skill/v1",
   "name": "fifa-stadium-hotel-planner",
-  "description": "FIFA World Cup 26 U.S. stadium hotel planner: find nearby hotels, collect map coordinates/reviews, compute stadium-to-hotel travel distance, and produce Google Map pins. Routed via SELAT Router.",
-  "maxAmount": "0.50",
+  "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins.",
+  "maxAmount": "0.90",
   "params": {
+    "match_date": {
+      "required": false,
+      "default": "2026-07-19",
+      "description": "FIFA match date to enrich with Fanfare World Cup context."
+    },
+    "team": {
+      "required": false,
+      "default": "",
+      "description": "Optional FIFA team filter for the Fanfare World Cup bundle."
+    },
+    "origin_iata": {
+      "required": false,
+      "default": "SFO",
+      "description": "Optional origin airport IATA code for Fanfare flight enrichment."
+    },
+    "check_in": {
+      "required": false,
+      "default": "2026-07-18",
+      "description": "Hotel check-in date for trip and hotel offer enrichment."
+    },
+    "check_out": {
+      "required": false,
+      "default": "2026-07-20",
+      "description": "Hotel check-out date for trip and hotel offer enrichment."
+    },
+    "passengers": {
+      "required": false,
+      "default": "1",
+      "description": "Passenger count for Fanfare flight enrichment."
+    },
+    "guests": {
+      "required": false,
+      "default": "1",
+      "description": "Guest count for hotel enrichment."
+    },
     "venue_query": {
       "required": true,
       "default": "MetLife Stadium East Rutherford NJ",
@@ -51,6 +86,13 @@
     }
   },
   "steps": [
+    {
+      "label": "FIFA match and trip bundle - Fanfare (routed x402)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://fanfare.run/v1/world-cup-bundle?date=${match_date}&team=${team}&origin=${origin_iata}&check_in=${check_in}&check_out=${check_out}&passengers=${passengers}&guests=${guests}",
+      "maxAmount": "0.30"
+    },
     {
       "label": "hotel candidates with coordinates - Serper Maps (routed MPP)",
       "rail": "routed",

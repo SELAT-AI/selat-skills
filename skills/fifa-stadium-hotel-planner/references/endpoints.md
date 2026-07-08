@@ -1,12 +1,14 @@
 # Endpoints - fifa-stadium-hotel-planner
 
-Core workflow: find hotels near a FIFA World Cup 26 U.S. stadium, collect
-ratings/reviews and coordinates, score travel friction, and create map-ready pins.
+Core workflow: use routed x402 for FIFA World Cup 26 trip context, then routed
+MPP for hotels near a U.S. stadium, ratings/reviews, travel friction, and
+map-ready pins.
 
 ## Runnable manifest steps
 
 | Step | Method | URL | Rail | Purpose | ~Price / cap |
 |---|---|---|---|---|---|
+| World Cup trip context | GET | `https://fanfare.run/v1/world-cup-bundle` | routed x402 | FIFA World Cup 2026 schedule, 16-host-city venue intel, transit tips, airport IATA, weather, Duffel flights, and Duffel hotels. | catalog price $0.25; cap $0.30 |
 | Hotel candidates | POST | `https://mpp.orthogonal.com/serper/maps` | routed MPP | Google Maps-style hotel listings with addresses, ratings, review counts, and lat/lng where available. | catalog shows about $0.006; cap $0.02 |
 | Hotel place details | POST | `https://mpp.orthogonal.com/serper/places` | routed MPP | Local place search fallback for hotel listings and business metadata. | cap $0.02 |
 | Selected hotel reviews | POST | `https://mpp.orthogonal.com/serper/reviews` | routed MPP | Google review snippets for a selected hotel/place query. | catalog service min about $0.002; cap $0.02 |
@@ -18,6 +20,10 @@ ratings/reviews and coordinates, score travel friction, and create map-ready pin
 
 ```bash
 selat skill run fifa-stadium-hotel-planner \
+  --match-date 2026-07-19 \
+  --origin-iata SFO \
+  --check-in 2026-07-18 \
+  --check-out 2026-07-20 \
   --venue-query "MetLife Stadium East Rutherford NJ" \
   --hotel-query "hotels near MetLife Stadium East Rutherford NJ" \
   --hotel-address "Hyatt Place Secaucus Meadowlands, Secaucus, NJ" \
@@ -26,6 +32,19 @@ selat skill run fifa-stadium-hotel-planner \
   --hotel-lat 40.7892 \
   --hotel-lng -74.0555
 ```
+
+## Rail showcase
+
+This skill intentionally mixes routed payment protocols:
+
+- **Routed x402**: Fanfare `GET /v1/world-cup-bundle`, quoted at `$0.25` in the
+  Agentic/Circle catalog and routed through SELAT as an x402 call.
+- **Routed MPP**: Serper and Google Maps steps are paid through the SELAT Router,
+  with MPP settlement handled by their gateway service URLs.
+
+Use this skill when you want to demo SELAT choosing the right payment rail per
+capability: first-party sports/trip intelligence through routed x402, then routed
+local-search/maps providers for the granular itinerary work.
 
 ## Optional Apify deep scrapers
 
@@ -48,6 +67,7 @@ against the actor URL. Do not run these without confirming spend with the user.
 
 | Need | Endpoints to consider | Use |
 |---|---|---|
+| World Cup schedule + host-city trip bundle | Fanfare routed x402 `/v1/world-cup-bundle` | Pull schedule, venue intel, transit tips, airport IATA, weather, flights, and hotels in one routed x402 call. |
 | Flight search and booking | StableTravel `/api/flights/search`, `/api/flights/price`, SerpApi `/search` for Google Flights | Find arrival/departure options and monitor prices. |
 | Flight status and disruption | StableTravel FlightAware endpoints, AviationStack `/v1/flights`, FlightAPI tracking, GoFlightLabs delay endpoints | Warn users about airport delays, cancellations, or late arrivals. |
 | Hotels and availability | StableTravel `/api/hotels/list/by-geocode`, `/api/hotels/search`, `/api/hotels/offer`; Apify Google Hotels/Booking/Agoda actors | Compare hotel options around venues and dates. |
@@ -61,6 +81,7 @@ against the actor URL. Do not run these without confirming spend with the user.
 
 ## Payment notes
 
+- Fanfare is routed x402 at `https://fanfare.run`, not routed MPP.
 - Serper runs through `https://mpp.orthogonal.com/serper`, not the provider host.
 - Google Maps runs through `https://googlemaps.mpp.tempo.xyz`, not
   `https://maps.googleapis.com`.

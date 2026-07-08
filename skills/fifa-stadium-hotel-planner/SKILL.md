@@ -1,6 +1,6 @@
 ---
 name: fifa-stadium-hotel-planner
-description: "Use this skill when the user wants a FIFA World Cup 26 U.S. trip-planning workflow around stadiums and hotels: find hotels near U.S. host stadiums, collect hotel ratings/reviews/coordinates, compute stadium-to-hotel distance or walking time, create Google Maps pins or importable map files, and brainstorm extra paid endpoints for flights, weather, restaurants, activities, safety, and fan logistics. Pays routed MPP calls through the SELAT Router."
+description: "Use this skill when the user wants a FIFA World Cup 26 U.S. trip-planning workflow around stadiums and hotels: get match/trip context from routed x402 Fanfare, find hotels near U.S. host stadiums with routed MPP maps/search, collect ratings/reviews/coordinates, compute stadium-to-hotel distance or walking time, create Google Maps pins or importable map files, and brainstorm extra paid endpoints for flights, weather, restaurants, activities, safety, and fan logistics. Showcases SELAT routed x402 plus routed MPP execution."
 license: Apache-2.0
 compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a reachable SELAT Router. Live paid runs need a funded Circle Gateway balance; `selat skill verify` without `--pay` is free.
 metadata:
@@ -15,7 +15,9 @@ metadata:
 Plan hotel intelligence around FIFA World Cup 26 U.S. venues. The skill finds
 nearby hotels, pulls ratings and review snippets, computes travel friction from
 stadium to hotel, and creates Google Map pin outputs the user can inspect or
-import into Google My Maps.
+import into Google My Maps. It intentionally mixes routed payment protocols:
+**routed x402** for the Fanfare World Cup trip bundle, plus **routed MPP** for
+Serper and Google Maps hotel search, reviews, routes, and map previews.
 
 ## When To Use
 
@@ -29,20 +31,33 @@ stadium context, hotel quality signals, distance/travel time, and map-ready pins
 1. Install: `selat skill install fifa-stadium-hotel-planner`
 2. Start with the venue list in `references/us-venues.md`.
 3. For one venue, run:
-   `selat skill run fifa-stadium-hotel-planner --venue-query "<stadium city state>" --hotel-query "hotels near <stadium city state>" --venue-lat <lat> --venue-lng <lng>`
+   `selat skill run fifa-stadium-hotel-planner --match-date <YYYY-MM-DD> --origin-iata <IATA> --check-in <YYYY-MM-DD> --check-out <YYYY-MM-DD> --venue-query "<stadium city state>" --hotel-query "hotels near <stadium city state>" --venue-lat <lat> --venue-lng <lng>`
 4. For all U.S. venues, loop through the venue table and run the skill once per
    venue. Keep the first pass cheap: use Serper Maps/Places to collect candidates
    and coordinates, then run review and distance steps only for shortlisted hotels.
-5. Rank hotels with a simple score:
+5. Start the synthesis with the Fanfare routed x402 result: match schedule,
+   host-city venue intel, transit tips, airport IATA, weather, flights, and hotel
+   offer context when a single match/date is selected.
+6. Rank hotels with a simple score:
    - distance or walking/transit time from stadium
    - rating and review count
    - recent review sentiment and recurring complaints
    - airport/transit convenience
    - price/availability when a hotel-offers endpoint is used
-6. Produce three outputs:
+7. Produce three outputs:
    - a venue-by-venue hotel shortlist table
    - a map pin file (`CSV` or `GeoJSON`) with stadium and hotel coordinates
    - a Google Maps link or Static Maps preview for each stadium/hotel cluster
+
+## Rails
+
+- **Routed x402**: Fanfare `GET /v1/world-cup-bundle` at `https://fanfare.run`
+  returns World Cup 2026 match schedule, host-city venue intel, transit tips,
+  weather, flights, and hotels. This is the showcase rail for routed x402.
+- **Routed MPP**: Serper runs through `https://mpp.orthogonal.com/serper` and
+  Google Maps runs through `https://googlemaps.mpp.tempo.xyz`. These calls cover
+  hotel discovery, reviews, distance scoring, and map previews through the SELAT
+  Router.
 
 ## Map Output
 
@@ -69,6 +84,11 @@ My Maps import is the cleaner path.
 
 | Param | Required | Default | Description |
 |---|---|---|---|
+| `match_date` | no | `2026-07-19` | FIFA match date for Fanfare World Cup context. |
+| `team` | no | empty | Optional FIFA team filter for Fanfare. |
+| `origin_iata` | no | `SFO` | Origin airport for flight enrichment. |
+| `check_in` / `check_out` | no | `2026-07-18` / `2026-07-20` | Stay dates for Fanfare trip/hotel enrichment. |
+| `passengers` / `guests` | no | `1` / `1` | Counts for Fanfare trip enrichment. |
 | `venue_query` | yes | `MetLife Stadium East Rutherford NJ` | Stadium plus city/state for search labels. |
 | `hotel_query` | no | `hotels near MetLife Stadium East Rutherford NJ` | Query for nearby hotel candidates. |
 | `hotel_address` | no | `Hyatt Place Secaucus Meadowlands, Secaucus, NJ` | Selected hotel for reviews and route scoring. |
@@ -77,14 +97,16 @@ My Maps import is the cleaner path.
 | `radius_meters` | no | `5000` | Nearby-search radius around the stadium. |
 | `map_zoom` | no | `13` | Static map zoom level. |
 
-Output: paid-call JSON from Serper and Google Maps, plus an agent-synthesized
-hotel shortlist, ranked recommendation, and map-ready CSV/GeoJSON pins.
+Output: paid-call JSON from Fanfare, Serper, and Google Maps, plus an
+agent-synthesized trip brief, hotel shortlist, ranked recommendation, and
+map-ready CSV/GeoJSON pins.
 
 ## Endpoint Brainstorm
 
 Read `references/endpoints.md` when the user asks what else could power a FIFA
 trip planner. The highest-value additions are:
 
+- World Cup trip bundle: Fanfare routed x402 `v1/world-cup-bundle`
 - flights and airport disruption: StableTravel, FlightAware, AviationStack,
   FlightAPI, GoFlightLabs, SerpApi Google Flights
 - hotels and inventory: StableTravel hotel list/search, Google Hotels actors,
@@ -106,6 +128,9 @@ trip planner. The highest-value additions are:
   `references/us-venues.md` to pair official FIFA labels with common names.
 - Some match dates may already be in the past after July 8, 2026. State whether
   the report covers all U.S. host venues or only remaining matches.
+- Fanfare enriches most deeply when the filters return exactly one match. Use
+  `match_date`, `team`, or a specific match ID when the user wants flights/hotels
+  from that routed x402 bundle.
 - Do not buy or run Apify prepaid-token actors without explicit user approval.
   List them as optional deep scrapers first, then confirm spend.
 - Serper Maps/Places is usually the cheap first pass. Use hotel-specific review
@@ -124,7 +149,7 @@ trip planner. The highest-value additions are:
 
 - Static: `selat skill validate ./skills/fifa-stadium-hotel-planner`
 - Live gate (free):
-  `selat skill verify ./skills/fifa-stadium-hotel-planner --venue-query "MetLife Stadium East Rutherford NJ" --hotel-query "hotels near MetLife Stadium East Rutherford NJ" --venue-lat 40.8135 --venue-lng -74.0745`
+  `selat skill verify ./skills/fifa-stadium-hotel-planner --match-date 2026-07-19 --origin-iata SFO --check-in 2026-07-18 --check-out 2026-07-20 --venue-query "MetLife Stadium East Rutherford NJ" --hotel-query "hotels near MetLife Stadium East Rutherford NJ" --venue-lat 40.8135 --venue-lng -74.0745`
 - Single-step probe (no pay):
   `selat-pay POST "https://mpp.orthogonal.com/serper/maps" --body '{"q":"hotels near MetLife Stadium East Rutherford NJ","gl":"us","hl":"en","num":20}' --chain base --probe-only`
 
