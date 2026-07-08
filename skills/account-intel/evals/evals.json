@@ -1,0 +1,33 @@
+{
+  "skill_name": "account-intel",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Build me a cross-platform footprint and reputation brief on the @OpenAI account — who are they, how present are they on Twitter, YouTube, and the web, and are they credible?",
+      "expected_output": "Runs account-intel with --handle OpenAI --name OpenAI across the Scrape Creators X + YouTube steps, Brave news, and Exa citations, then fuses a per-platform presence map + credibility read with source URLs.",
+      "assertions": [
+        "account-intel is selected (not social-intel)",
+        "calls the X/Twitter profile + tweets steps and at least one web step (Exa or Brave) and the YouTube step",
+        "output fuses X + YouTube + web signal into an entity footprint/reputation brief with source URLs"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Profile the brand 'Anthropic' across platforms — pull their Twitter, YouTube presence, and recent press, and tell me where they show up most.",
+      "expected_output": "Runs account-intel with --handle Anthropic --name Anthropic, retrieving the X profile + tweets, YouTube search, and Brave news, then summarizes the strongest channel.",
+      "assertions": [
+        "account-intel is selected",
+        "handle and name params are passed through",
+        "X/Twitter profile + tweets, YouTube presence, and web news are retrieved and summarized into a per-platform footprint"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "What's the overall social sentiment on agent payments right now across the crowd?",
+      "expected_output": "account-intel does not trigger (this is topic/keyword listening — social-intel's job, not entity profiling).",
+      "assertions": [
+        "account-intel is not selected"
+      ]
+    }
+  ]
+}

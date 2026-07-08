@@ -80,6 +80,30 @@
       "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC on Base)."
     },
     {
+      "name": "self-evolving-agent",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Budgeted economic agent preflight for social sentiment, market context, and domain availability before infrastructure, monetization, or trading decisions."
+    },
+    {
+      "name": "financial-intel",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + fundamentals/funding + market news into one brief, paid per call across three rails (direct nanopayment + MPP + x402 on Base) via selat-pay (USDC via Circle Gateway)."
+    },
+    {
+      "name": "account-intel",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans three rails (direct Circle nanopayment + MPP + x402 on Base), paid per call over selat-pay (USDC via Circle Gateway), no API keys."
+    },
+    {
+      "name": "vc-ai-infra-scout",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Deal-sourcing scout for a VC running an AI-infrastructure thesis spanning crypto-AI / decentralized-AI, robotics / embodied-AI, and agentic payments (inference/serving, GPU & compute, training stacks, vector/data infra, agent infra, eval/observability, model-ops; decentralized compute/GPU, on-chain AI agents, DePIN-for-AI; robotics foundation models, humanoid/embodied-AI, sim-to-real, actuation/sensor stacks; agentic-payment rails, agent commerce, x402/stablecoin agent settlement). Discovers emerging companies and founders from Hacker News, Product Hunt, the web, and Twitter/X; searches recent pre-seed/seed fundraising news on Twitter/X and LinkedIn and summarizes the tweets of the investors at the funds leading those rounds to distill the live thesis; then dedupes, ranks, flags who has NOT raised yet, and enriches the top lead. Paid per call across two rails (routed MPP + routed x402 on Base) via selat-pay (USDC via Circle Gateway), no API keys."
+    },
+    {
       "name": "fifa-stadium-hotel-planner",
       "rail": "routed",
       "kind": "multi",

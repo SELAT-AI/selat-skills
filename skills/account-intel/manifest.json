@@ -1,0 +1,78 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "account-intel",
+  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans three rails (direct Circle nanopayment + MPP + x402 on Base), paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
+  "maxAmount": "0.50",
+  "params": {
+    "handle": {
+      "required": false,
+      "default": "OpenAI",
+      "description": "X/Twitter handle (no @) to pull a profile and recent tweets for (used as ${handle})."
+    },
+    "name": {
+      "required": true,
+      "default": "OpenAI",
+      "description": "Display name of the person/brand/entity to search YouTube + web news + citations for (used as ${name})."
+    },
+    "query": {
+      "required": false,
+      "default": "OpenAI",
+      "description": "Free-text query reserved for additional entity searches (used as ${query})."
+    },
+    "address": {
+      "required": false,
+      "default": "0x0000000000000000000000000000000000000000",
+      "description": "EVM contract/token address to pull on-chain asset footprint for any token associated with the entity (used as ${address})."
+    }
+  },
+  "steps": [
+    {
+      "label": "X/Twitter profile — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "X/Twitter recent tweets — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "YouTube presence — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=${name}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "Web reputation / news — Brave news-search (ROUTED MPP via Locus, SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
+      "body": { "q": "${name}" },
+      "maxAmount": "0.06"
+    },
+    {
+      "label": "Web context / citations — Exa search (routed x402 on Base via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.exa.ai/search",
+      "body": {
+        "query": "${name}",
+        "numResults": 8,
+        "contents": { "text": { "maxCharacters": 3000 } }
+      },
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "On-chain token footprint — Alchemy token-by-address (DIRECT x402, Circle Gateway-batched on Base)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
+      "maxAmount": "0.02"
+    }
+  ]
+}
