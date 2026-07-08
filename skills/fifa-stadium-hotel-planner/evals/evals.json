@@ -1,0 +1,54 @@
+{
+  "skill_name": "fifa-stadium-hotel-planner",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Find hotels near the FIFA World Cup stadiums in the US this summer and put the best options on a Google Map.",
+      "expected_output": "Uses fifa-stadium-hotel-planner, loops through U.S. World Cup 26 venues, gathers nearby hotels with coordinates/reviews, and outputs a map-ready CSV or GeoJSON plus hotel shortlist.",
+      "assertions": [
+        "fifa-stadium-hotel-planner is selected",
+        "uses the U.S. venue table or equivalent venue list",
+        "returns hotel candidates with coordinates and review/rating signals",
+        "produces Google Maps or Google My Maps-ready pin output"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "For the World Cup final at MetLife, show me nearby hotel options, reviews, walking distance, and a map preview.",
+      "expected_output": "Runs the skill for MetLife Stadium / New York New Jersey Stadium, calls hotel search, review, distance, and map steps, then summarizes the best hotels.",
+      "assertions": [
+        "venue_query is set to MetLife Stadium East Rutherford NJ or equivalent",
+        "calls Serper Maps or Places for hotel candidates",
+        "calls a review endpoint for selected hotels",
+        "uses distance or route data to score convenience"
+      ]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "Brainstorm endpoints for a FIFA trip planner: flights, hotels, weather, restaurant discovery, and stadium commute planning.",
+      "expected_output": "Uses the endpoint brainstorm reference and groups endpoints by flights, lodging, maps/routes, weather, local discovery, reviews, and social/event pulse.",
+      "assertions": [
+        "fifa-stadium-hotel-planner is selected",
+        "mentions StableTravel or flight endpoints",
+        "mentions Google Maps/Mapbox routing endpoints",
+        "mentions review or hotel scraping endpoints"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Write a React component for a login form with email and password validation.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "fifa-stadium-hotel-planner is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Summarize today's ETH price action and on-chain wallet flows.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "fifa-stadium-hotel-planner is not selected"
+      ]
+    }
+  ]
+}
