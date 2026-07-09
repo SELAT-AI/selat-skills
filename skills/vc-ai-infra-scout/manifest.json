@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "vc-ai-infra-scout",
-  "description": "Deal-sourcing scout for a VC running an AI-infrastructure thesis spanning crypto-AI / decentralized-AI, robotics / embodied-AI, and agentic payments (inference/serving, GPU & compute, training stacks, vector/data infra, agent infra, eval/observability, model-ops; decentralized compute/GPU, on-chain AI agents, DePIN-for-AI; robotics foundation models, humanoid/embodied-AI, sim-to-real, actuation/sensor stacks; agentic-payment rails, agent commerce, x402/stablecoin agent settlement). Discovers emerging companies and founders from Hacker News, Product Hunt, the web, and Twitter/X; searches recent pre-seed/seed fundraising news on Twitter/X and LinkedIn and summarizes the tweets of the investors at the funds leading those rounds to distill the live thesis; then dedupes, ranks, flags who has NOT raised yet, and enriches the top lead. Paid per call across two rails (routed MPP + routed x402 on Base) via selat-pay (USDC via Circle Gateway), no API keys.",
+  "description": "Deal-sourcing scout for a VC running an AI-infrastructure thesis spanning crypto-AI / decentralized-AI, robotics / embodied-AI, and agentic payments (inference/serving, GPU & compute, training stacks, vector/data infra, agent infra, eval/observability, model-ops; decentralized compute/GPU, on-chain AI agents, DePIN-for-AI; robotics foundation models, humanoid/embodied-AI, sim-to-real, actuation/sensor stacks; agentic-payment rails, agent commerce, x402/stablecoin agent settlement). Discovers emerging companies and founders from Hacker News, Product Hunt, the web, and Twitter/X; searches recent pre-seed/seed fundraising news on Twitter/X and LinkedIn and summarizes the tweets of the investors at the funds leading those rounds to distill the live thesis; then dedupes, ranks, flags who has NOT raised yet, and enriches the top lead. Paid per call across mixed rails (direct Circle x402 + routed MPP + routed x402 on Base) via selat-pay (USDC via Circle Gateway), no API keys.",
   "maxAmount": "0.40",
   "params": {
     "thesis": {
@@ -32,24 +32,29 @@
   },
   "steps": [
     {
-      "label": "Hacker News discovery — Serper Google search scoped to HN (routed MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "Hacker News discovery — Tavily advanced search scoped to HN (direct x402, Circle registry)",
+      "rail": "direct",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/serper/search",
+      "url": "https://x402.tavily.com/search",
       "body": {
-        "q": "${thesis} site:news.ycombinator.com"
+        "query": "${thesis} site:news.ycombinator.com",
+        "search_depth": "advanced",
+        "max_results": 10,
+        "topic": "general"
       },
       "maxAmount": "0.02"
     },
     {
-      "label": "Product Hunt discovery — Serper Google search scoped to Product Hunt (routed MPP via SELAT Router)",
+      "label": "Product Hunt discovery — Parallel web search (routed MPP via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/serper/search",
+      "url": "https://parallelmpp.dev/api/search",
       "body": {
-        "q": "${thesis} site:producthunt.com"
+        "objective": "${thesis} Product Hunt launches",
+        "search_queries": [ "${thesis} site:producthunt.com" ],
+        "max_results": 10
       },
-      "maxAmount": "0.02"
+      "maxAmount": "0.05"
     },
     {
       "label": "launch + funding web context — Exa search (routed x402 on Base via SELAT Router)",
@@ -64,44 +69,38 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "Twitter/X founder & buzz search — Fiber AI twitter/search (routed MPP via SELAT Router)",
-      "rail": "routed",
-      "method": "POST",
-      "url": "https://mpp.orthogonal.com/fiber/v1/twitter/search",
-      "body": {
-        "query": "${twitterQuery}"
-      },
-      "maxAmount": "0.08"
+      "label": "Twitter/X founder & buzz search — AIsa advanced_search (direct x402, Circle registry)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=${twitterQuery}&queryType=Latest",
+      "maxAmount": "0.05"
     },
     {
-      "label": "fundraising news on Twitter/X — Fiber AI twitter/search for recent pre-seed/seed raises (routed MPP via SELAT Router)",
-      "rail": "routed",
-      "method": "POST",
-      "url": "https://mpp.orthogonal.com/fiber/v1/twitter/search",
-      "body": {
-        "query": "${fundraisingQuery}"
-      },
-      "maxAmount": "0.08"
+      "label": "fundraising news on Twitter/X — AIsa advanced_search for recent pre-seed/seed raises (direct x402, Circle registry)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=${fundraisingQuery}&queryType=Latest",
+      "maxAmount": "0.05"
     },
     {
-      "label": "fundraising news on LinkedIn — Serper search scoped to LinkedIn posts (routed MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "fundraising news on LinkedIn — Tavily advanced search scoped to LinkedIn posts (direct x402, Circle registry)",
+      "rail": "direct",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/serper/search",
+      "url": "https://x402.tavily.com/search",
       "body": {
-        "q": "${fundraisingQuery} site:linkedin.com/posts"
+        "query": "${fundraisingQuery} site:linkedin.com/posts",
+        "search_depth": "advanced",
+        "max_results": 10,
+        "topic": "general"
       },
       "maxAmount": "0.02"
     },
     {
-      "label": "lead-investor thesis tweets — Fiber AI twitter/search over the funds leading those rounds (routed MPP via SELAT Router)",
-      "rail": "routed",
-      "method": "POST",
-      "url": "https://mpp.orthogonal.com/fiber/v1/twitter/search",
-      "body": {
-        "query": "${investorQuery}"
-      },
-      "maxAmount": "0.08"
+      "label": "lead-investor thesis tweets — AIsa advanced_search over the funds leading those rounds (direct x402, Circle registry)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=${investorQuery}&queryType=Latest",
+      "maxAmount": "0.05"
     },
     {
       "label": "founder shortlist — Apollo people-search (routed MPP via SELAT Router)",

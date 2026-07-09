@@ -1,73 +1,68 @@
-# Endpoints — vc-ai-infra-scout
+# Endpoints - vc-ai-infra-scout
 
-VC deal-sourcing across **two x402 protocols** from the SELAT federated catalogue,
-both **routed** through the SELAT Router: **routed MPP** (Serper, Fiber, Apollo) +
-**routed x402 on Base** (Exa). Discovers AI-infra + crypto-AI companies and
-founders, searches recent pre-seed/seed fundraising news on Twitter/X and LinkedIn
-and the lead funds' tweets to distill the thesis, then enriches the top lead. Paid
-per call via selat-pay (USDC via Circle Gateway), no API keys.
+VC deal-sourcing across mixed SELAT payment rails: direct Circle x402, routed MPP,
+and routed x402 on Base. The skill discovers AI-infra + crypto-AI companies and
+founders, searches recent pre-seed/seed fundraising news on Twitter/X and
+LinkedIn, distills the lead funds' thesis from tweets, then enriches the top lead.
+Paid per call via selat-pay (USDC via Circle Gateway), no API keys.
 
-## Endpoints used
+## Endpoints Used
 
-| # | Step | Method | URL | Rail | ~Price |
+| # | Step | Method | URL | Rail | Cap |
 |---|---|---|---|---|---|
-| 1 | Hacker News discovery — Serper | POST | `https://mpp.orthogonal.com/serper/search` | routed MPP | $0.0021 |
-| 2 | Product Hunt discovery — Serper | POST | `https://mpp.orthogonal.com/serper/search` | routed MPP | $0.0021 |
-| 3 | Launch + web context — Exa | POST | `https://api.exa.ai/search` | routed x402 (Base) | $0.0073 |
-| 4 | Twitter/X founder & buzz — Fiber | POST | `https://mpp.orthogonal.com/fiber/v1/twitter/search` | routed MPP | $0.042 |
-| 5 | Fundraising news on Twitter/X — Fiber | POST | `https://mpp.orthogonal.com/fiber/v1/twitter/search` | routed MPP | $0.042 |
-| 6 | Fundraising news on LinkedIn — Serper (`site:linkedin.com/posts`) | POST | `https://mpp.orthogonal.com/serper/search` | routed MPP | $0.0021 |
-| 7 | Lead-investor thesis tweets — Fiber | POST | `https://mpp.orthogonal.com/fiber/v1/twitter/search` | routed MPP | $0.042 |
-| 8 | Founder shortlist — Apollo people-search | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-search` | routed MPP | $0.00525 |
-| 9 | Company enrichment — Apollo org-enrichment | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | routed MPP | $0.0084 |
+| 1 | Hacker News discovery - Tavily advanced search | POST | `https://x402.tavily.com/search` | direct x402 | $0.02 |
+| 2 | Product Hunt discovery - Parallel web search | POST | `https://parallelmpp.dev/api/search` | routed MPP | $0.05 |
+| 3 | Launch + web context - Exa | POST | `https://api.exa.ai/search` | routed x402 (Base) | $0.05 |
+| 4 | Twitter/X founder & buzz - AIsa advanced_search | GET | `https://api.aisa.one/apis/v2/twitter/tweet/advanced_search` | direct x402 | $0.05 |
+| 5 | Fundraising news on Twitter/X - AIsa advanced_search | GET | `https://api.aisa.one/apis/v2/twitter/tweet/advanced_search` | direct x402 | $0.05 |
+| 6 | Fundraising news on LinkedIn - Tavily advanced search | POST | `https://x402.tavily.com/search` | direct x402 | $0.02 |
+| 7 | Lead-investor thesis tweets - AIsa advanced_search | GET | `https://api.aisa.one/apis/v2/twitter/tweet/advanced_search` | direct x402 | $0.05 |
+| 8 | Founder shortlist - Apollo people-search | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-search` | routed MPP | $0.05 |
+| 9 | Company enrichment - Apollo org-enrichment | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | routed MPP | $0.05 |
 
-Full-run cap (`maxAmount`): **$0.40**; per-step caps range **$0.02–$0.08**. Live total ≈ $0.15.
+Full-run cap (`maxAmount`): **$0.40**. Per-step caps range **$0.02-$0.05**.
+The live 402 challenge is the source of truth for the actual price.
 
-## Rails & providers
+## Rails & Providers
 
-This skill spans two routed protocols (`rail: routed`); both settle through the SELAT Router.
+- **Direct Circle x402** - Tavily advanced search for HN/LinkedIn scoped web
+  discovery, plus AIsa advanced_search for Twitter/X founder buzz, fundraising
+  announcements, and investor/fund thesis tweets.
+- **Routed MPP** - Parallel for Product Hunt discovery, Apollo for people-search
+  and org-enrichment.
+- **Routed x402 on Base** - Exa web search for launch and funding context.
 
-- **routed MPP** — Serper (`mpp.orthogonal.com/serper`, used 3× with different
-  `site:` queries for HN, Product Hunt, and LinkedIn), Fiber
-  (`mpp.orthogonal.com/fiber`, twitter/search used 3× — founder buzz, fundraising
-  news, lead-investor tweets), and Apollo (`apollo.mpp.paywithlocus.com`,
-  people-search + org-enrichment) settle `mode=routed-mpp`. Sourced from the MPP catalog.
-- **routed x402 on Base** — Exa (`api.exa.ai`) serves a native x402 challenge; the
-  router settles it on Base (`mode=routed-x402`). Sourced from the Agentic Market /
-  x402 catalogs.
+There are intentionally no `mpp.orthogonal.com` endpoints and no Otto Twitter
+endpoint in this skill. Twitter/X comes from AIsa's Circle-registry advanced
+search endpoint.
 
-There is no dedicated Hacker News, Product Hunt, or LinkedIn merchant — all three
-are reached via Serper's `site:` operator. Twitter/X is reached via Fiber's native
-keyword search. There is no direct (Circle Gateway-batched nanopayment) rail in
-this skill (the earlier crypto-AI token-price steps that carried it were removed).
-Fundable was intentionally dropped — fundraising signal now comes from social
-(Twitter/X + LinkedIn) search rather than a structured rounds database.
-
-## Live probes (free; no wallet)
+## Live Probes
 
 ```bash
-# routed MPP — HN, Product Hunt, and LinkedIn via the same Serper endpoint (site:-scoped queries)
-selat-pay POST "https://mpp.orthogonal.com/serper/search" \
-  --body '{"q":"AI inference infrastructure site:news.ycombinator.com"}' --chain base --probe-only
-selat-pay POST "https://mpp.orthogonal.com/serper/search" \
-  --body '{"q":"AI inference infrastructure site:producthunt.com"}' --chain base --probe-only
-selat-pay POST "https://mpp.orthogonal.com/serper/search" \
-  --body '{"q":"AI infrastructure startup raised seed funding site:linkedin.com/posts"}' --chain base --probe-only
+# direct x402 - HN via Tavily
+selat-pay POST "https://x402.tavily.com/search" \
+  --body '{"query":"AI inference infrastructure site:news.ycombinator.com","search_depth":"advanced","max_results":10,"topic":"general"}' \
+  --chain base --probe-only
 
-# routed x402 on Base — Exa web context
+# routed MPP - Product Hunt via Parallel
+selat-pay POST "https://parallelmpp.dev/api/search" \
+  --body '{"objective":"AI inference infrastructure Product Hunt launches","search_queries":["AI inference infrastructure site:producthunt.com"],"max_results":10}' \
+  --chain base --probe-only
+
+# routed x402 - Exa web context
 selat-pay POST "https://api.exa.ai/search" \
-  --body '{"query":"AI inference infrastructure startup launch funding","numResults":10}' --chain base --probe-only
+  --body '{"query":"AI inference infrastructure startup launch funding","numResults":10}' \
+  --chain base --probe-only
 
-# routed MPP — Fiber twitter keyword search (founder buzz, fundraising news, lead-investor tweets)
-selat-pay POST "https://mpp.orthogonal.com/fiber/v1/twitter/search" \
-  --body '{"query":"AI infrastructure startup raised seed pre-seed round"}' --chain base --probe-only
+# direct x402 - Twitter/X via AIsa advanced_search
+selat-pay GET "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=AI%20inference%20infra%20founder&queryType=Latest" \
+  --chain base --probe-only
 
-# routed MPP — enrich the top lead
+# routed MPP - enrich the top lead
 selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-search" \
-  --body '{"q_keywords":"AI inference infrastructure founder","person_titles":["Founder","Co-Founder","CEO","CTO"]}' --chain base --probe-only
+  --body '{"q_keywords":"AI inference infrastructure founder","person_titles":["Founder","Co-Founder","CEO","CTO"]}' \
+  --chain base --probe-only
 selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment" \
-  --body '{"domain":"modal.com"}' --chain base --probe-only
+  --body '{"domain":"modal.com"}' \
+  --chain base --probe-only
 ```
-
-A served endpoint prints `detected ... price=$X on eip155:8453`. Serper (×3), Fiber
-(×3), and Apollo (×2) show `mode=routed-mpp`; Exa shows `mode=routed-x402`.
