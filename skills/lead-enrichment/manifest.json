@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "lead-enrichment",
-  "description": "Multi-source lead enrichment, fully routed through the SELAT Router (MPP / tempo-native). Finds and verifies a work email (Hunter), enriches the lead and discovers a phone number (Sixtyfour), enriches the company (Hunter), and fetches a live LinkedIn profile (Fiber). One run chains six paid MPP merchants.",
+  "description": "Multi-source lead enrichment, fully routed through the SELAT Router (MPP). Finds and verifies a work email (Hunter), enriches the lead (Apollo), discovers a phone number and contact details (Clado), and enriches the company (Hunter). One run chains three paid MPP merchants across five steps.",
   "maxAmount": "5.00",
   "params": {
     "firstName": {
@@ -17,7 +17,7 @@
     "company": {
       "required": true,
       "default": "Stripe",
-      "description": "Lead company name, e.g. Stripe"
+      "description": "Lead company name (sent to Apollo as organization_name), e.g. Stripe"
     },
     "domain": {
       "required": true,
@@ -32,7 +32,7 @@
     "linkedinUrl": {
       "required": false,
       "default": "https://linkedin.com/in/williamhgates",
-      "description": "LinkedIn profile URL for the live profile fetch, e.g. https://linkedin.com/in/johndoe"
+      "description": "LinkedIn profile URL, e.g. https://linkedin.com/in/johndoe — used by Apollo people-enrichment and required for the Clado contacts (phone) step"
     }
   },
   "steps": [
@@ -59,35 +59,25 @@
       "maxAmount": "5.00"
     },
     {
-      "label": "enrich lead — Sixtyfour Enrich Lead (MPP, ROUTED via SELAT Router)",
+      "label": "enrich lead — Apollo People Enrichment (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
-        "lead_info": {
-          "first_name": "${firstName}",
-          "last_name": "${lastName}",
-          "company": "${company}",
-          "linkedin_url": "${linkedinUrl}"
-        },
-        "struct": {
-          "email": "Work email",
-          "phone": "Phone number"
-        }
+        "first_name": "${firstName}",
+        "last_name": "${lastName}",
+        "organization_name": "${company}",
+        "linkedin_url": "${linkedinUrl}"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "find phone — Sixtyfour Find Phone (MPP, ROUTED via SELAT Router)",
+      "label": "find phone — Clado Contacts (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/sixtyfour/find-phone",
+      "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
       "body": {
-        "lead": {
-          "first_name": "${firstName}",
-          "last_name": "${lastName}",
-          "company": "${company}"
-        }
+        "linkedin_url": "${linkedinUrl}"
       },
       "maxAmount": "5.00"
     },

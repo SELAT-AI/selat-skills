@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "email-campaign",
-  "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company brand context — all via MPP merchants routed through the SELAT Router (tempo-native).",
+  "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company firmographic context — all via MPP merchants (Hunter, Apollo, Abstract Company Enrichment via Locus) routed through the SELAT Router.",
   "maxAmount": "5.00",
   "params": {
     "industry": {
@@ -12,27 +12,27 @@
     "domain": {
       "required": true,
       "default": "stripe.com",
-      "description": "Target company domain for Hunter domain-search, email-finder, and Brand.dev brand retrieve"
+      "description": "Target company domain for Hunter domain-search, email-finder, and the Abstract Company Enrichment lookup"
     },
     "firstName": {
       "required": false,
       "default": "John",
-      "description": "First name for the Hunter email-finder lookup and Sixtyfour enrichment"
+      "description": "First name for the Hunter email-finder lookup and Apollo people-enrichment"
     },
     "lastName": {
       "required": false,
       "default": "Doe",
-      "description": "Last name for the Hunter email-finder lookup and Sixtyfour enrichment"
+      "description": "Last name for the Hunter email-finder lookup and Apollo people-enrichment"
     },
     "company": {
       "required": false,
       "default": "Stripe",
-      "description": "Company name for the Sixtyfour enrich-lead step"
+      "description": "Company name (sent as organization_name) for the Apollo people-enrichment step"
     },
     "email": {
       "required": true,
       "default": "john@stripe.com",
-      "description": "Email address to verify with Hunter email-verifier and validate with Fiber"
+      "description": "Email address to verify (deliverability + bounce check) with Hunter email-verifier"
     }
   },
   "steps": [
@@ -69,38 +69,35 @@
       "maxAmount": "5.00"
     },
     {
-      "label": "bounce check — Fiber (MPP, ROUTED via SELAT Router)",
+      "label": "bounce check — Hunter (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/fiber/v1/validate-email/single",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
         "email": "${email}"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "enrich lead — Sixtyfour (MPP, ROUTED via SELAT Router)",
+      "label": "enrich lead — Apollo (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
-        "lead_info": {
-          "first_name": "${firstName}",
-          "last_name": "${lastName}",
-          "company": "${company}"
-        },
-        "struct": {
-          "email": "Work email",
-          "phone": "Phone number"
-        }
+        "first_name": "${firstName}",
+        "last_name": "${lastName}",
+        "organization_name": "${company}"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "company brand context — Brand.dev (MPP, ROUTED via SELAT Router)",
+      "label": "company context — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "method": "POST",
+      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
+      "body": {
+        "domain": "${domain}"
+      },
       "maxAmount": "5.00"
     }
   ]

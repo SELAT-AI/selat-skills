@@ -32,9 +32,8 @@ The live 402 challenge is the source of truth for the actual price.
   and org-enrichment.
 - **Routed x402 on Base** - Exa web search for launch and funding context.
 
-There are intentionally no `mpp.orthogonal.com` endpoints and no Otto Twitter
-endpoint in this skill. Twitter/X comes from AIsa's Circle-registry advanced
-search endpoint.
+There is intentionally no third-party Twitter-scraper merchant in this skill.
+Twitter/X comes from AIsa's Circle-registry advanced search endpoint.
 
 ## Live Probes
 

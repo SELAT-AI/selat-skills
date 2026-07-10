@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "person-lookup",
-  "description": "Look up a person — work history, education, social profiles, and contact info — via Nyne.ai's async person search, routed through the SELAT Router (tempo-native MPP).",
+  "description": "Look up a person — work history, education, social profiles, and contact info — via Clado's natural-language people search, routed through the SELAT Router (MPP via Locus).",
   "maxAmount": "5.00",
   "params": {
     "query": {
@@ -12,10 +12,10 @@
   },
   "steps": [
     {
-      "label": "person search — Nyne.ai (async, MPP / tempo-native, ROUTED via SELAT Router)",
+      "label": "person search — Clado (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/nyne/person/search",
+      "url": "https://clado.mpp.paywithlocus.com/clado/search",
       "body": {
         "query": "${query}"
       },

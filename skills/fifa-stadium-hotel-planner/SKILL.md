@@ -17,7 +17,7 @@ nearby hotels, pulls ratings and review snippets, computes travel friction from
 stadium to hotel, and creates Google Map pin outputs the user can inspect or
 import into Google My Maps. It intentionally mixes routed payment protocols:
 **routed x402** for the Fanfare World Cup trip bundle, plus **routed MPP** for
-Serper and Google Maps hotel search, reviews, routes, and map previews.
+Google Maps hotel search, place details, reviews, routes, and map previews.
 
 ## When To Use
 
@@ -33,8 +33,11 @@ stadium context, hotel quality signals, distance/travel time, and map-ready pins
 3. For one venue, run:
    `selat skill run fifa-stadium-hotel-planner --match-date <YYYY-MM-DD> --origin-iata <IATA> --check-in <YYYY-MM-DD> --check-out <YYYY-MM-DD> --venue-query "<stadium city state>" --hotel-query "hotels near <stadium city state>" --venue-lat <lat> --venue-lng <lng>`
 4. For all U.S. venues, loop through the venue table and run the skill once per
-   venue. Keep the first pass cheap: use Serper Maps/Places to collect candidates
-   and coordinates, then run review and distance steps only for shortlisted hotels.
+   venue. Keep the first pass cheap: use Google Maps Places Text Search to collect
+   candidates with coordinates, ratings, and `place_id`s, then run the
+   place-details, review, and distance steps only for shortlisted hotels. The
+   place-details and review steps key on `place_id` — take it from the text-search
+   results and pass it as `--place-id`.
 5. Start the synthesis with the Fanfare routed x402 result: match schedule,
    host-city venue intel, transit tips, airport IATA, weather, flights, and hotel
    offer context when a single match/date is selected.
@@ -54,10 +57,10 @@ stadium context, hotel quality signals, distance/travel time, and map-ready pins
 - **Routed x402**: Fanfare `GET /v1/world-cup-bundle` at `https://fanfare.run`
   returns World Cup 2026 match schedule, host-city venue intel, transit tips,
   weather, flights, and hotels. This is the showcase rail for routed x402.
-- **Routed MPP**: Serper runs through `https://mpp.orthogonal.com/serper` and
-  Google Maps runs through `https://googlemaps.mpp.tempo.xyz`. These calls cover
-  hotel discovery, reviews, distance scoring, and map previews through the SELAT
-  Router.
+- **Routed MPP**: Google Maps runs through `https://googlemaps.mpp.tempo.xyz`
+  (Google Maps via Tempo, ROUTED via SELAT Router). These calls cover hotel
+  discovery, place details, reviews, distance scoring, and map previews through
+  the SELAT Router.
 
 ## Map Output
 
@@ -91,13 +94,14 @@ My Maps import is the cleaner path.
 | `passengers` / `guests` | no | `1` / `1` | Counts for Fanfare trip enrichment. |
 | `venue_query` | yes | `MetLife Stadium East Rutherford NJ` | Stadium plus city/state for search labels. |
 | `hotel_query` | no | `hotels near MetLife Stadium East Rutherford NJ` | Query for nearby hotel candidates. |
-| `hotel_address` | no | `Hyatt Place Secaucus Meadowlands, Secaucus, NJ` | Selected hotel for reviews and route scoring. |
+| `hotel_address` | no | `Hyatt Place Secaucus Meadowlands, Secaucus, NJ` | Selected hotel for labels and route scoring. |
+| `place_id` | no | empty | Google Maps `place_id` for the selected hotel, from the text-search results; drives the place-details and review steps. |
 | `venue_lat` / `venue_lng` | no | `40.8135` / `-74.0745` | Stadium coordinates. |
 | `hotel_lat` / `hotel_lng` | no | `40.7892` / `-74.0555` | Selected hotel coordinates. |
 | `radius_meters` | no | `5000` | Nearby-search radius around the stadium. |
 | `map_zoom` | no | `13` | Static map zoom level. |
 
-Output: paid-call JSON from Fanfare, Serper, and Google Maps, plus an
+Output: paid-call JSON from Fanfare and Google Maps, plus an
 agent-synthesized trip brief, hotel shortlist, ranked recommendation, and
 map-ready CSV/GeoJSON pins.
 
@@ -111,14 +115,14 @@ trip planner. The highest-value additions are:
   FlightAPI, GoFlightLabs, SerpApi Google Flights
 - hotels and inventory: StableTravel hotel list/search, Google Hotels actors,
   Booking/Agoda actors
-- local discovery: Google Maps Places, Serper Maps/Places, Openmart, Mapbox
-- reviews: Serper Reviews, Google Maps reviews actors, Booking/Agoda/Tripadvisor
-  review actors
+- local discovery: Google Maps Places, Openmart, Mapbox
+- reviews: Google Place Details reviews, Google Maps reviews actors,
+  Booking/Agoda/Tripadvisor review actors
 - weather and air quality: Google Weather, OpenWeather, Google Air Quality
 - routes and commute friction: Google Distance Matrix/Routes, Mapbox Directions,
   Mapbox Isochrone
-- restaurants, bars, fan zones, activities: Serper Maps/Places, StableTravel
-  activities, Google Places
+- restaurants, bars, fan zones, activities: Google Places, StableTravel
+  activities
 - social/event pulse: Scrape Creators and web search endpoints for fan sentiment,
   queues, closures, or safety chatter
 
@@ -133,8 +137,10 @@ trip planner. The highest-value additions are:
   from that routed x402 bundle.
 - Do not buy or run Apify prepaid-token actors without explicit user approval.
   List them as optional deep scrapers first, then confirm spend.
-- Serper Maps/Places is usually the cheap first pass. Use hotel-specific review
-  actors only after choosing hotels worth deeper review extraction.
+- Google Maps Places Text Search is usually the first pass. The place-details
+  review step returns at most the 5 most-relevant Google reviews; use
+  hotel-specific review actors only after choosing hotels worth deeper review
+  extraction.
 - Static map images are previews, not editable trip plans. Give the user CSV or
   GeoJSON when they need a real map with many pins.
 - The live 402 quote is the source of truth. If verify says an endpoint is over
@@ -151,7 +157,7 @@ trip planner. The highest-value additions are:
 - Live gate (free):
   `selat skill verify ./skills/fifa-stadium-hotel-planner --match-date 2026-07-19 --origin-iata SFO --check-in 2026-07-18 --check-out 2026-07-20 --venue-query "MetLife Stadium East Rutherford NJ" --hotel-query "hotels near MetLife Stadium East Rutherford NJ" --venue-lat 40.8135 --venue-lng -74.0745`
 - Single-step probe (no pay):
-  `selat-pay POST "https://mpp.orthogonal.com/serper/maps" --body '{"q":"hotels near MetLife Stadium East Rutherford NJ","gl":"us","hl":"en","num":20}' --chain base --probe-only`
+  `selat-pay GET "https://googlemaps.mpp.tempo.xyz/maps/place/textsearch/json?query=hotels%20near%20MetLife%20Stadium%20East%20Rutherford%20NJ" --chain base --probe-only`
 
 ## References
 

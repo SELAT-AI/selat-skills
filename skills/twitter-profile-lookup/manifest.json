@@ -1,33 +1,28 @@
 {
   "schema": "selat-skill/v1",
   "name": "twitter-profile-lookup",
-  "description": "Look up a Twitter/X profile and recent tweets via Scrape Creators, routed through the SELAT Router (tempo-native MPP). Returns bio, follower/following counts, verified status, and recent tweet engagement for a public handle.",
+  "description": "Look up a Twitter/X profile and recent tweets via the AIsa Twitter API (Circle x402 catalog), paid directly with Circle Gateway-batched x402. Returns bio, follower/following counts, verified status, and recent tweet engagement for a public handle.",
   "maxAmount": "5.00",
   "params": {
     "handle": {
       "required": true,
       "default": "openai",
       "description": "Twitter/X handle without the @ (e.g. openai, sama, AnthropicAI)"
-    },
-    "trim": {
-      "required": false,
-      "default": "false",
-      "description": "Set to \"true\" for a trimmed tweets response (less payload)"
     }
   },
   "steps": [
     {
-      "label": "profile — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "profile — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
       "maxAmount": "5.00"
     },
     {
-      "label": "recent tweets — Scrape Creators (MPP / tempo-native, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "recent tweets — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}&trim=${trim}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "5.00"
     }
   ]

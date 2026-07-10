@@ -1,57 +1,52 @@
 # enrich-waterfall — endpoints
 
-Every endpoint below is probe-verified live-payable over MPP via the SELAT Router (`selat-pay --probe-only`). Caps are a 5 USDC spending filter, not the live price.
+Every endpoint below is probe-verified live-payable (2026-07-10) with
+`selat-pay --probe-only`. All steps are routed over MPP via the SELAT Router
+except the AIsa step, which is a direct Circle x402 call (Circle Gateway-batched).
+Caps are a 5 USDC spending filter, not the live price. Live prices are the
+router quote on the probe date.
 
-| Merchant | Endpoint | Live price |
-|---|---|---|
-| tomba | `GET mpp.orthogonal.com/tomba/v1/enrich` | ~ |
-| tomba | `GET mpp.orthogonal.com/tomba/v1/people/find` | ~ |
-| tomba | `GET mpp.orthogonal.com/tomba/v1/combined/find` | ~ |
-| apollo | `POST mpp.orthogonal.com/apollo/api/v1/people/match` | $0.0105 |
-| coresignal | `GET mpp.orthogonal.com/coresignal/v2/employee_clean/collect/${linkedinUrl}` | ~ |
-| coresignal | `GET mpp.orthogonal.com/coresignal/v2/employee_multi_source/collect/${linkedinUrl}` | ~ |
-| peopledatalabs | `GET mpp.orthogonal.com/peopledatalabs/v5/person/enrich` | ~ |
-| apollo | `GET mpp.orthogonal.com/apollo/api/v1/organizations/enrich` | ~ |
-| coresignal | `GET mpp.orthogonal.com/coresignal/v2/company_clean/enrich` | ~ |
-| company-enrich | `GET mpp.orthogonal.com/company-enrich/companies/enrich` | $0.012862 |
-| company-enrich | `POST mpp.orthogonal.com/company-enrich/companies/enrich` | $0.012862 |
-| ocean-io | `POST mpp.orthogonal.com/ocean-io/v2/enrich/company` | $0.0105 |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}` | ~ |
-| hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-finder` | $0.01365 |
-| hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-enrichment` | $0.01365 |
-| sixtyfour | `POST mpp.orthogonal.com/sixtyfour/find-email` | $0.0525 |
-| company-enrich | `GET mpp.orthogonal.com/company-enrich/companies/enrich` | $0.012862 |
-| company-enrich | `POST mpp.orthogonal.com/company-enrich/companies/enrich` | $0.012862 |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}` | ~ |
-| aviato | `GET mpp.orthogonal.com/aviato/company/enrich` | ~ |
-| tomba | `GET mpp.orthogonal.com/tomba/v1/linkedin` | ~ |
-| contactout | `GET mpp.orthogonal.com/contactout/v1/linkedin/enrich` | ~ |
-| fiber | `POST mpp.orthogonal.com/fiber/v1/twitter-handle-to-linkedin/single` | $0.063 |
-| fiber | `POST mpp.orthogonal.com/fiber/v1/twitter/profile` | $0.042 |
-| fiber | `POST mpp.orthogonal.com/fiber/v1/instagram/profile` | $0.042 |
-| fiber | `POST mpp.orthogonal.com/fiber/v1/tiktok/profile` | $0.042 |
-| aviato | `GET mpp.orthogonal.com/aviato/social/person/posts` | ~ |
-| aviato | `GET mpp.orthogonal.com/aviato/social/company/posts` | ~ |
-| sixtyfour | `POST mpp.orthogonal.com/sixtyfour/enrich-lead` | $0.105 |
-| company-enrich | `GET mpp.orthogonal.com/company-enrich/companies/workforce` | ~ |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}/financing_events` | ~ |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}/news_events` | ~ |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}/job_openings` | ~ |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}/connections` | ~ |
-| tomba | `GET mpp.orthogonal.com/tomba/v1/technology` | ~ |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}/technology_detections` | ~ |
-| brand-dev | `GET mpp.orthogonal.com/brand-dev/v1/brand/retrieve` | ~ |
-| brand-dev | `GET mpp.orthogonal.com/brand-dev/v1/brand/naics` | ~ |
-| predictleads | `GET mpp.orthogonal.com/predictleads/v3/companies/${domain}/technology_detections` | ~ |
-| contactout | `GET mpp.orthogonal.com/contactout/v1/email/enrich` | ~ |
-| contactout | `GET mpp.orthogonal.com/contactout/v1/people/linkedin` | ~ |
-| contactout | `POST mpp.orthogonal.com/contactout/v1/people/enrich` | $0.5775 |
-| peopledatalabs | `GET mpp.orthogonal.com/peopledatalabs/v5/person/identify` | ~ |
-| coresignal | `GET mpp.orthogonal.com/coresignal/v2/company_multi_source/enrich` | ~ |
-| sixtyfour | `POST mpp.orthogonal.com/sixtyfour/find-phone` | $0.315 |
-| contactout | `GET mpp.orthogonal.com/contactout/v1/people/linkedin` | ~ |
-| contactout | `GET mpp.orthogonal.com/contactout/v1/linkedin/enrich` | ~ |
-| contactout | `GET mpp.orthogonal.com/contactout/v1/email/enrich` | ~ |
-| contactout | `POST mpp.orthogonal.com/contactout/v1/people/enrich` | $0.5775 |
-| hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | $0.0084 |
-| fiber | `POST mpp.orthogonal.com/fiber/v1/validate-email/single` | $0.021 |
+| Tier | Merchant | Endpoint | Live price |
+|---|---|---|---|
+| resolve | apollo (Locus) | `POST apollo.mpp.paywithlocus.com/apollo/people-enrichment` | $0.0084 |
+| resolve | hunter (Locus) | `POST hunter.mpp.paywithlocus.com/hunter/email-enrichment` | $0.01365 |
+| resolve | clado (Locus) | `POST clado.mpp.paywithlocus.com/clado/linkedin-profile` | $0.01365 |
+| resolve | hunter (Locus) | `POST hunter.mpp.paywithlocus.com/hunter/combined-enrichment` | $0.02415 |
+| anchor | apollo (Locus) | `POST apollo.mpp.paywithlocus.com/apollo/org-search` | $0.00525 |
+| anchor | abstract (Locus) | `POST abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup` | $0.0063 |
+| anchor | apollo (Locus) | `POST apollo.mpp.paywithlocus.com/apollo/org-enrichment` | $0.0084 |
+| anchor | hunter (Locus) | `POST hunter.mpp.paywithlocus.com/hunter/company-enrichment` | $0.01365 |
+| anchor | hunter (Locus) | `POST hunter.mpp.paywithlocus.com/hunter/email-finder` | $0.01365 |
+| social | aisa (Circle x402, direct) | `GET api.aisa.one/apis/v2/twitter/user/info?userName=` | $0.00044 |
+| social | clado (Locus) | `POST clado.mpp.paywithlocus.com/clado/scrape` | $0.02415 |
+| social | stablesocial (MPP direct merchant) | `POST stablesocial.dev/api/instagram/profile` | $0.063 |
+| social | stablesocial (MPP direct merchant) | `POST stablesocial.dev/api/tiktok/profile` | $0.063 |
+| signals | apollo (Locus) | `POST apollo.mpp.paywithlocus.com/apollo/job-postings` | $0.00525 |
+| signals | brave (Locus) | `POST brave.mpp.paywithlocus.com/brave/news-search` (`q="${company} news"`) | $0.03675 |
+| signals | brave (Locus) | `POST brave.mpp.paywithlocus.com/brave/news-search` (`q="${company} funding round"`) | $0.03675 |
+| signals | diffbot-kg (Locus) | `POST diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance` | $0.03675 |
+| escalate | clado (Locus) | `POST clado.mpp.paywithlocus.com/clado/contacts` | $0.04515 |
+| escalate | clado (Locus) | `POST clado.mpp.paywithlocus.com/clado/search` | $0.31815 |
+| verify | hunter (Locus) | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | $0.0084 |
+
+Sum of live prices if every step fires: ≈ $0.74. Manifest top-level cap: $5.00.
+
+## Coverage notes
+
+- **Tech stack and headcount** no longer have a dedicated tier: Apollo
+  `org-enrichment` returns `technology_names` and headcount fields, and the
+  Abstract lookup returns industry/SIC classification, so tech/workforce signals
+  ride along with the company anchor calls.
+- **Apollo `job-postings` needs `organization_id`**, which comes from the Apollo
+  `org-enrichment` or `org-search` response — run one of those anchor steps
+  first and pass the id through as `organizationId`.
+- **Funding, news and business connections** come from Brave news search
+  (query-based) and the Diffbot KG organization record (funding rounds and
+  investors are in the same `enhance` response — one call covers both).
+- **Company anchor by name (no domain)** uses Apollo `org-search`
+  (`q_organization_name`); a company LinkedIn URL is no longer an input to the
+  company anchor — anchor by domain or name instead.
+- **Clado `search` is synchronous** — no job polling; the natural-language
+  people search returns results in one paid call.
+- **No YouTube/Reddit/single-post steps** in this skill; profile-level
+  Instagram/TikTok lookups go by handle via StableSocial.

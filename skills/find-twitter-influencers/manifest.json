@@ -1,18 +1,18 @@
 {
   "schema": "selat-skill/v1",
   "name": "find-twitter-influencers",
-  "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the brand (Brand.dev), discovers curated listicles (Exa) and LinkedIn-heavy professionals (Fiber), pulls Twitter profiles and engagement (Scrape Creators), and enriches contacts (Fiber kitchen-sink, Hunter, Tomba). Every step is MPP-routed via the SELAT Router.",
+  "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the company (Apollo org search, Abstract Company Enrichment), discovers curated listicles (Exa), pulls Twitter profiles and engagement (AIsa, Circle x402 catalog), and enriches contacts (Hunter, Clado). Mixed rail: most steps are MPP-routed via the SELAT Router; the AIsa Twitter steps are direct Circle x402 calls.",
   "maxAmount": "5.00",
   "params": {
     "company": {
       "required": true,
       "default": "Stripe",
-      "description": "Company or brand name to find influencers for (used for Brand.dev retrieve-by-name)."
+      "description": "Company or brand name to find influencers for (used for Apollo org search)."
     },
     "domain": {
       "required": false,
       "default": "stripe.com",
-      "description": "Company domain (e.g. acme.com). When provided, Brand.dev retrieve-by-domain is used for richer context."
+      "description": "Company domain (e.g. acme.com). When provided, Abstract Company Enrichment lookup is used for richer context."
     },
     "query": {
       "required": false,
@@ -24,20 +24,15 @@
       "default": "https://example.com/top-fintech-twitter-influencers",
       "description": "A strong listicle URL to expand from via Exa findSimilar."
     },
-    "nlQuery": {
-      "required": false,
-      "default": "fintech thought leader content creator with Twitter presence",
-      "description": "Natural-language query for Fiber profile search (catches LinkedIn-heavy professionals)."
-    },
     "handle": {
       "required": false,
       "default": "examplehandle",
-      "description": "Twitter/X handle (no @) to fetch a profile and recent tweets for."
+      "description": "Twitter/X handle (no @) to fetch a profile and recent tweets for (AIsa userName query param)."
     },
     "linkedinUrl": {
       "required": false,
       "default": "https://linkedin.com/in/janesmith",
-      "description": "LinkedIn profile URL for Fiber kitchen-sink and Tomba contact enrichment."
+      "description": "LinkedIn profile URL for Clado contact enrichment (email + phone)."
     },
     "firstName": {
       "required": false,
@@ -57,17 +52,23 @@
   },
   "steps": [
     {
-      "label": "resolve company by name — Brand.dev (MPP, ROUTED via SELAT Router)",
+      "label": "resolve company by name — Apollo org search (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve-by-name?name=${company}",
+      "method": "POST",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
+      "body": {
+        "q_organization_name": "${company}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "resolve company by domain — Brand.dev (MPP, ROUTED via SELAT Router)",
+      "label": "resolve company by domain — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
+      "method": "POST",
+      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
+      "body": {
+        "domain": "${domain}"
+      },
       "maxAmount": "5.00"
     },
     {
@@ -103,17 +104,17 @@
       "maxAmount": "5.00"
     },
     {
-      "label": "fetch Twitter profile + counts — Scrape Creators (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "fetch Twitter profile + counts — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
       "maxAmount": "5.00"
     },
     {
-      "label": "fetch top tweets + engagement — Scrape Creators (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "fetch top tweets + engagement — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "5.00"
     },
     {
@@ -129,10 +130,13 @@
       "maxAmount": "5.00"
     },
     {
-      "label": "LinkedIn-to-email — Tomba (MPP, ROUTED via SELAT Router)",
+      "label": "LinkedIn-to-contact (email + phone) — Clado contacts (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/tomba/v1/linkedin?url=${linkedinUrl}",
+      "method": "POST",
+      "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
+      "body": {
+        "linkedin_url": "${linkedinUrl}"
+      },
       "maxAmount": "5.00"
     }
   ]

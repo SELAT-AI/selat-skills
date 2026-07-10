@@ -8,7 +8,7 @@
       "assertions": [
         "fifa-stadium-hotel-planner is selected",
         "calls or references routed x402 Fanfare World Cup context",
-        "calls routed MPP Serper or Google Maps steps",
+        "calls routed MPP Google Maps steps",
         "uses the U.S. venue table or equivalent venue list",
         "returns hotel candidates with coordinates and review/rating signals",
         "produces Google Maps or Google My Maps-ready pin output"
@@ -21,7 +21,7 @@
       "assertions": [
         "venue_query is set to MetLife Stadium East Rutherford NJ or equivalent",
         "Fanfare routed x402 is part of the plan",
-        "calls Serper Maps or Places for hotel candidates",
+        "calls Google Maps Places Text Search for hotel candidates",
         "calls a review endpoint for selected hotels",
         "uses distance or route data to score convenience"
       ]
