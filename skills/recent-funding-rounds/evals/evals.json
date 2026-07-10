@@ -4,56 +4,56 @@
     {
       "id": "recent-raises-this-week",
       "prompt": "What companies raised funding this week?",
-      "expected_output": "A routed Fundable /companies search over a 7-day date window returning recently funded companies with their latest deal.",
+      "expected_output": "A routed Brave Search news-search for recent funding-round announcements, returning news articles about recently funded companies.",
       "assertions": [
-        "The skill issues a single routed (MPP) step to https://tryfundable.ai/companies",
-        "The request body sets latest_deal.date_start to ~7 days before today and latest_deal.date_end to today",
-        "The output lists companies with their latest funding round (type, size, date)"
+        "The skill issues a single routed (MPP) step to https://brave.mpp.paywithlocus.com/brave/news-search",
+        "The request body sets q to a query like '<sector> startup funding round announced'",
+        "The output lists recent news articles announcing funding rounds (title, source, date, URL), not structured deal records"
       ]
     },
     {
       "id": "seed-rounds-this-month",
       "prompt": "Show me seed rounds from the last month.",
-      "expected_output": "A routed Fundable search filtered to financing_types SEED over a ~30-day window.",
+      "expected_output": "A routed Brave news-search whose query wording biases toward seed rounds, since news-search has no structured round-type filter.",
       "assertions": [
-        "The body includes latest_deal.financing_types with type SEED",
-        "date_start is ~30 days before date_end",
+        "The body's q includes a seed-round phrasing (e.g. 'seed' in the sector wording)",
+        "No date_start/date_end or financing_types fields are sent — recency comes from the news index",
         "The step rail is routed and method is POST"
       ]
     },
     {
       "id": "series-a-fintech",
       "prompt": "What fintech companies recently raised a Series A?",
-      "expected_output": "A routed Fundable search with financingType SERIES_A and a fintech industry permalink.",
+      "expected_output": "A routed Brave news-search with a query combining fintech and Series A wording.",
       "assertions": [
-        "The body includes latest_deal.financing_types with type SERIES_A",
-        "The body includes company.industries with a fintech permalink",
-        "The call targets https://tryfundable.ai/companies"
+        "The body's q mentions fintech and Series A",
+        "The call targets https://brave.mpp.paywithlocus.com/brave/news-search",
+        "Company names and deal details are extracted from the returned articles rather than structured fields"
       ]
     },
     {
       "id": "large-raises-cap",
       "prompt": "List the biggest funding rounds over $10M from the past week.",
-      "expected_output": "A routed Fundable search with size_min 10000000 and sort_by largest_total_raise or most_recent_raise.",
+      "expected_output": "A routed Brave news-search; deal-size filtering happens client-side by reading the articles, since news-search has no size_min filter.",
       "assertions": [
-        "The body includes latest_deal.size_min set to 10000000",
-        "The per-step maxAmount is 0.066 and is not exceeded",
+        "No size_min field is sent; size filtering is done from article text",
+        "The per-step maxAmount of 5.00 comfortably covers the $0.03675 live price and is not exceeded",
         "The skill uses only the routed rail with no direct or x402 step"
       ]
     },
     {
       "id": "probe-only-no-charge",
       "prompt": "Validate the recent funding rounds endpoint without paying.",
-      "expected_output": "A free 402 probe against the Fundable /companies endpoint via selat-pay --probe-only.",
+      "expected_output": "A free 402 probe against the Brave Search news-search endpoint via selat-pay --probe-only.",
       "assertions": [
-        "The validation command uses selat-pay POST https://tryfundable.ai/companies with --probe-only",
+        "The validation command uses selat-pay POST https://brave.mpp.paywithlocus.com/brave/news-search with --probe-only",
         "No payment is broadcast during the probe",
         "The output reflects the 402 payment requirements rather than a 200 data response"
       ]
     },
     {
       "id": "no-orth-cli",
-      "prompt": "How does this skill call Fundable under the hood?",
+      "prompt": "How does this skill call Brave Search under the hood?",
       "expected_output": "The skill is declarative: the selat CLI compiles the manifest step into a payment; it never shells out to orth or api.orth.sh.",
       "assertions": [
         "The manifest contains no orth, orth run, or api.orth.sh references",

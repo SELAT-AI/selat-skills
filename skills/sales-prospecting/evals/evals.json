@@ -4,32 +4,32 @@
     {
       "id": "full-pipeline-stripe",
       "prompt": "Build me a prospect list of CTOs at SaaS startups and get verified emails for stripe.com.",
-      "expected_output": "The skill runs the full routed pipeline (company search, people search, Hunter domain emails, Sixtyfour find-email, Fiber email verification, Brand.dev enrichment) and returns a per-step summary with the prospect data and a deliverability verdict.",
+      "expected_output": "The skill runs the full routed pipeline (company search, people search, Hunter domain emails, Hunter email finder, Hunter email verification, Abstract Company Enrichment) and returns a per-step summary with the prospect data and a deliverability verdict.",
       "assertions": [
         "All six steps use rail \"routed\"",
-        "The Hunter step is a POST to https://hunter.io/hunter/domain-search with domain in the body",
-        "The email verification step calls https://api.fiber.ai/v1/validate-email/single",
-        "The run respects the top-level maxAmount cap of 0.26"
+        "The Hunter step is a POST to https://hunter.mpp.paywithlocus.com/hunter/domain-search with domain in the body",
+        "The email verification step calls https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
+        "The run respects the top-level maxAmount cap of 5.00"
       ]
     },
     {
       "id": "domain-emails-only-intent",
       "prompt": "Get me all the emails at notion.so.",
-      "expected_output": "The skill runs with domain=notion.so; the Hunter domain-search step returns the emails found at the domain, and the Brand.dev step enriches the company.",
+      "expected_output": "The skill runs with domain=notion.so; the Hunter domain-search step returns the emails found at the domain, and the Abstract Company Enrichment step enriches the company.",
       "assertions": [
         "The domain param is set to notion.so",
-        "The Hunter domain-search step host is hunter.io",
+        "The Hunter domain-search step host is hunter.mpp.paywithlocus.com",
         "No step references 'orth' or 'api.orth.sh'"
       ]
     },
     {
       "id": "specific-contact-email",
       "prompt": "Find Sarah Chen's email at stripe.com and verify it.",
-      "expected_output": "The Sixtyfour find-email step uses first_name=Sarah, last_name=Chen, domain=stripe.com; the Fiber validate-email step verifies the resulting address.",
+      "expected_output": "The Hunter email-finder step uses first_name=Sarah, last_name=Chen, domain=stripe.com; the Hunter email-verifier step verifies the resulting address.",
       "assertions": [
-        "The Sixtyfour step posts to https://api.sixtyfour.ai/find-email with a lead object",
-        "firstName and lastName params flow into the find-email body",
-        "The verification step runs after the find-email step"
+        "The email-finder step posts to https://hunter.mpp.paywithlocus.com/hunter/email-finder with domain, first_name, and last_name in the body",
+        "firstName and lastName params flow into the email-finder body",
+        "The verification step runs after the email-finder step"
       ]
     },
     {
@@ -45,17 +45,17 @@
     {
       "id": "routed-rail-and-caps",
       "prompt": "How much could a full sales-prospecting run cost and which payment rail does it use?",
-      "expected_output": "Explains that every step is routed MPP via the SELAT Router and the run is capped at 0.26 USDC, summing per-step caps of 0.04, 0.04, 0.023, 0.10, 0.02, and 0.03.",
+      "expected_output": "Explains that every step is routed MPP via the SELAT Router, the run is capped at 5.00 USDC (a loose spending filter), and the live prices (probe-verified 2026-07-10) are $0.10815 domain-search, $0.01365 email-finder, $0.0084 email-verifier, and $0.0063 company-enrichment lookup.",
       "assertions": [
         "The answer states all steps are routed (MPP via SELAT Router)",
-        "The answer cites the 0.26 top-level maxAmount cap",
+        "The answer cites the 5.00 top-level maxAmount cap as a loose filter, distinct from the live prices",
         "No direct-rail step is claimed"
       ]
     },
     {
       "id": "probe-only-validation",
       "prompt": "I want to check the sales-prospecting endpoints are payable before spending anything.",
-      "expected_output": "Recommends running selat-pay --probe-only against the Fiber, Hunter, Sixtyfour, and Brand.dev endpoints to get the 402 payment requirements without paying.",
+      "expected_output": "Recommends running selat-pay --probe-only against the Fiber, Hunter, and Abstract Company Enrichment endpoints to get the 402 payment requirements without paying.",
       "assertions": [
         "The guidance uses selat-pay with --probe-only",
         "Probe commands target the same hosts as the manifest steps",

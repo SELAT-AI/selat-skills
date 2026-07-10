@@ -27,24 +27,24 @@
   },
   "steps": [
     {
-      "label": "X/Twitter profile — Scrape Creators (ROUTED MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "X/Twitter profile — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
       "maxAmount": "0.05"
     },
     {
-      "label": "X/Twitter recent tweets — Scrape Creators (ROUTED MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "X/Twitter recent tweets — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "0.05"
     },
     {
-      "label": "YouTube presence — Scrape Creators (ROUTED MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "YouTube presence — AIsa YouTube API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=${name}",
+      "url": "https://api.aisa.one/apis/v2/youtube/search?query=${name}",
       "maxAmount": "0.05"
     },
     {

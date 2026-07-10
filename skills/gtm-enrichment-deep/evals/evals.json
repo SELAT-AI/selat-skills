@@ -4,11 +4,11 @@
     {
       "id": "basic-email-enrich",
       "prompt": "Enrich the lead jane@acme.com — I want their LinkedIn, title, and the company's funding.",
-      "expected_output": "A merged enrichment JSON with person (full_name, title, linkedin_url) and company (name, domain, funding) sourced primarily from Sixtyfour, derived domain acme.com.",
+      "expected_output": "A merged enrichment JSON with person (full_name, title, linkedin_url) from Apollo and company (name, domain, funding) from Hunter, derived domain acme.com.",
       "assertions": [
         "The skill derives domain acme.com from the email",
-        "Step 1 calls https://api.sixtyfour.ai/enrich-lead as a routed POST",
-        "Step 2 calls https://api.sixtyfour.ai/enrich-company as a routed POST",
+        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a routed POST",
+        "Step 2 calls https://hunter.mpp.paywithlocus.com/hunter/company-enrichment as a routed POST",
         "The output includes person.linkedin_url and company.funding fields",
         "meta.total_cost reflects the executed steps"
       ]
@@ -16,41 +16,41 @@
     {
       "id": "name-hints-improve-match",
       "prompt": "Deep-enrich jane@acme.com, her name is Jane Doe and the company is Acme.",
-      "expected_output": "Enrichment run where firstName=Jane, lastName=Doe, and company=Acme are passed into the Sixtyfour enrich-lead body to improve match rate.",
+      "expected_output": "Enrichment run where firstName=Jane, lastName=Doe, and company=Acme are passed into the Apollo people-enrichment body to improve match rate.",
       "assertions": [
-        "The enrich-lead body lead_info includes first_name Jane, last_name Doe, and company Acme",
-        "The enrich-lead body lead_info includes email jane@acme.com and domain acme.com",
+        "The people-enrichment body includes first_name Jane, last_name Doe, and organization_name Acme",
+        "The people-enrichment body includes email jane@acme.com and domain acme.com",
         "All steps use rail routed"
       ]
     },
     {
-      "id": "linkedin-fallback-conditional",
-      "prompt": "Enrich jane@acme.com but Sixtyfour came back with no LinkedIn URL — what happens?",
-      "expected_output": "The Apollo /api/v1/people/match fallback (Step 3) runs only because the LinkedIn URL was missing, adding $0.01.",
+      "id": "person-step-merged",
+      "prompt": "Enrich jane@acme.com — is there a separate LinkedIn-match fallback step for the person?",
+      "expected_output": "No. Person identity and LinkedIn match are one Apollo people-enrichment call; the former separate fallback hit the same endpoint with the same match params and was merged into Step 1.",
       "assertions": [
-        "Apollo people/match runs only when Sixtyfour returns no LinkedIn URL",
-        "Step 3 calls https://api.apollo.io/api/v1/people/match as a routed POST with email and reveal_personal_emails true",
-        "The person.source for LinkedIn is marked apollo with medium confidence"
+        "There is exactly one person-enrichment step in the manifest",
+        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a routed POST with email and reveal_personal_emails true",
+        "person.source is marked apollo"
       ]
     },
     {
       "id": "funding-fallback-conditional",
-      "prompt": "Run deep enrichment for jane@acme.com; Sixtyfour didn't return funding data.",
-      "expected_output": "The Apollo organizations/enrich fallback (Step 4) runs because funding data was missing, querying by domain.",
+      "prompt": "Run deep enrichment for jane@acme.com; Hunter didn't return funding data.",
+      "expected_output": "The Apollo org-enrichment fallback (Step 3) runs because funding data was missing, posting the domain in the JSON body.",
       "assertions": [
-        "Apollo organizations/enrich runs only when Sixtyfour returns no funding data",
-        "Step 4 calls https://api.apollo.io/api/v1/organizations/enrich with a GET and domain query param",
+        "Apollo org-enrichment runs only when Hunter returns no funding data",
+        "Step 3 calls https://apollo.mpp.paywithlocus.com/apollo/org-enrichment with a POST and domain in the JSON body",
         "company.funding.source reflects apollo for the filled fields"
       ]
     },
     {
       "id": "cost-cap-faithful",
       "prompt": "What does a full gtm-enrichment-deep run cost and what is the cap?",
-      "expected_output": "Per-step caps $0.10 + $0.10 + $0.01 + $0.01; a full run is about $0.22 and the manifest maxAmount is $0.25.",
+      "expected_output": "Live prices are $0.0084 (Apollo people-enrichment) + $0.01365 (Hunter company-enrichment) + $0.0084 (Apollo org-enrichment fallback); a full run is about $0.03 and each step carries a loose 5.00 USDC maxAmount spending filter.",
       "assertions": [
-        "The manifest maxAmount is 0.25",
-        "Step maxAmount values are 0.10, 0.10, 0.01, 0.01 in order",
-        "The sum of step caps is 0.22"
+        "The manifest maxAmount is 5.00",
+        "Each of the three steps has maxAmount 5.00",
+        "A full run with the fallback costs about $0.03 at live prices"
       ]
     },
     {
@@ -58,7 +58,7 @@
       "prompt": "Which payment rail does gtm-enrichment-deep use?",
       "expected_output": "Every step is routed MPP via the SELAT Router; there is no direct rail in this skill.",
       "assertions": [
-        "All four steps have rail routed",
+        "All three steps have rail routed",
         "The skill notes SELAT_ROUTER_URL must be set",
         "No step uses the direct rail"
       ]

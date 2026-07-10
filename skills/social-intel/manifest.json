@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "social-intel",
   "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC via Circle Gateway).",
-  "maxAmount": "0.50",
+  "maxAmount": "0.70",
   "params": {
     "topic": {
       "required": true,
@@ -46,18 +46,20 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "Reddit keyword search — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "label": "Reddit keyword search — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/reddit/search?query=${topic}",
-      "maxAmount": "0.05"
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/reddit/search",
+      "body": { "query": "${topic}" },
+      "maxAmount": "0.20"
     },
     {
-      "label": "Reddit subreddit top posts — Scrape Creators (ROUTED MPP via SELAT Router)",
+      "label": "Reddit subreddit top posts — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/reddit/subreddit?subreddit=${subreddit}",
-      "maxAmount": "0.05"
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/reddit/subreddit",
+      "body": { "subreddit": "${subreddit}" },
+      "maxAmount": "0.20"
     },
     {
       "label": "X/Twitter profile + counts — AIsa (direct x402, Circle Gateway-batched)",

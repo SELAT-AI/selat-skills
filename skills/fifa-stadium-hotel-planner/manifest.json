@@ -52,7 +52,12 @@
     "hotel_address": {
       "required": false,
       "default": "Hyatt Place Secaucus Meadowlands, Secaucus, NJ",
-      "description": "Selected hotel name/address for review lookup and route scoring."
+      "description": "Selected hotel name/address for labels and route scoring."
+    },
+    "place_id": {
+      "required": false,
+      "default": "",
+      "description": "Google Maps place_id for the selected hotel, taken from the text-search step results; drives the place-details and review steps."
     },
     "venue_lat": {
       "required": false,
@@ -94,43 +99,25 @@
       "maxAmount": "0.30"
     },
     {
-      "label": "hotel candidates with coordinates - Serper Maps (routed MPP)",
+      "label": "hotel candidates with coordinates — Google Maps (MPP/Tempo, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "POST",
-      "url": "https://mpp.orthogonal.com/serper/maps",
-      "body": {
-        "q": "${hotel_query}",
-        "gl": "us",
-        "hl": "en",
-        "num": 20
-      },
-      "maxAmount": "0.02"
+      "method": "GET",
+      "url": "https://googlemaps.mpp.tempo.xyz/maps/place/textsearch/json?query=${hotel_query}",
+      "maxAmount": "0.11"
     },
     {
-      "label": "hotel place details - Serper Places (routed MPP)",
+      "label": "hotel place details — Google Maps (MPP/Tempo, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "POST",
-      "url": "https://mpp.orthogonal.com/serper/places",
-      "body": {
-        "q": "${hotel_query}",
-        "gl": "us",
-        "hl": "en",
-        "num": 20
-      },
-      "maxAmount": "0.02"
+      "method": "GET",
+      "url": "https://googlemaps.mpp.tempo.xyz/maps/place/details/json?place_id=${place_id}",
+      "maxAmount": "0.06"
     },
     {
-      "label": "selected hotel reviews - Serper Reviews (routed MPP)",
+      "label": "selected hotel reviews — Google Maps (MPP/Tempo, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "POST",
-      "url": "https://mpp.orthogonal.com/serper/reviews",
-      "body": {
-        "q": "${hotel_address} hotel reviews",
-        "gl": "us",
-        "hl": "en",
-        "num": 10
-      },
-      "maxAmount": "0.02"
+      "method": "GET",
+      "url": "https://googlemaps.mpp.tempo.xyz/maps/place/details/json?place_id=${place_id}&fields=name,rating,reviews",
+      "maxAmount": "0.06"
     },
     {
       "label": "lodging near stadium - Google Places Nearby Search (routed MPP)",

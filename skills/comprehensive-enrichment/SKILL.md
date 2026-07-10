@@ -1,6 +1,6 @@
 ---
 name: comprehensive-enrichment
-description: Use this skill when the user wants to enrich, look up, or research a lead, contact, person, or company — from an email, name, LinkedIn URL, domain, or company name. Triggers on "enrich this lead", "look up John at Stripe", "who is john@stripe.com", "research stripe.com", "profile this company", "find emails and phone for", "company funding and competitors". Resolves contact info, verified work + personal emails, phone, social profiles, company overview, leadership, funding, products, and competitors across many MPP data providers (Fiber, Nyne, Sixtyfour, Hunter, Tomba, Brand.dev, Linkup, ScrapeGraphAI, Exa). Every provider call is routed through the SELAT Router (MPP / tempo-native).
+description: Use this skill when the user wants to enrich, look up, or research a lead, contact, person, or company — from an email, name, LinkedIn URL, domain, or company name. Triggers on "enrich this lead", "look up John at Stripe", "who is john@stripe.com", "research stripe.com", "profile this company", "find emails and phone for", "company funding and competitors". Resolves contact info, verified work emails, phone, social profiles, company overview, funding, products, and competitors across many MPP data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Every provider call is routed through the SELAT Router (MPP).
 license: Apache-2.0
 compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required.
 metadata:
@@ -14,9 +14,9 @@ metadata:
 
 ## When To Use
 
-Use when the user wants maximum data plus correctness on a person and/or company — from any single identifier (email, name + company, LinkedIn URL, domain, or company name). The skill fans out across many data providers, cross-references them, and lets the user compile a full profile. Person enrichment naturally cascades into company enrichment: once an employer domain is known, the company steps fill in overview, leadership, funding, products, and competitors.
+Use when the user wants maximum data plus correctness on a person and/or company — from any single identifier (email, name + company, LinkedIn URL, domain, or company name). The skill fans out across many data providers, cross-references them, and lets the user compile a full profile. Person enrichment naturally cascades into company enrichment: once an employer domain is known, the company steps fill in overview, funding, products, and competitors.
 
-All provider calls are **routed MPP** (tempo-native) through the SELAT Router. There is no direct rail in this skill.
+All provider calls are **routed MPP** through the SELAT Router. There is no direct rail in this skill.
 
 ## Workflow
 
@@ -28,33 +28,33 @@ Provide only the params you have — leave the rest empty. Person-only inputs (e
 
 Step groups (in manifest order):
 
-- **Person** — Fiber kitchen-sink person; Nyne person/search; Sixtyfour enrich-lead; Tomba enrich; Hunter email-finder; Hunter + Tomba + Fiber email verifiers; Sixtyfour find-phone; Fiber LinkedIn profile + posts; Linkup person research.
-- **Company** — Brand.dev retrieve; Hunter domain-search; Fiber kitchen-sink company; Fiber leadership profile search; Nyne funding + funders; Brand.dev AI products; ScrapeGraphAI extract; Exa findSimilar; Linkup company research.
+- **Person** — Clado search (natural-language people search, synchronous — no polling); Apollo people-enrichment; Hunter email-enrichment; Hunter email-finder; Hunter email-verifier; Clado contacts (phone, by LinkedIn URL); Exa person research.
+- **Company** — Abstract Company Enrichment lookup; Hunter domain-search; Diffbot KG enhance (funding + investors in one Organization record); Firecrawl extract; Exa findSimilar; Exa company research.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `email` | no | "" | Person work email (drives email-based lookups + verifiers) |
+| `email` | no | "" | Person work email (drives email-based lookups + the verifier) |
 | `firstName` | no | "" | Person first name |
 | `lastName` | no | "" | Person last name |
 | `company` | no | "" | Company name |
 | `domain` | no | "" | Company domain (drives company + domain email lookups) |
-| `linkedinUrl` | no | "" | LinkedIn person profile URL |
+| `linkedinUrl` | no | "" | LinkedIn person profile URL (required for the phone step — Clado contacts enriches by LinkedIn URL) |
 | `pricingUrl` | no | "" | Company page to scrape for products/pricing |
 
-Outputs: each step returns its provider's JSON (profile objects, email verification verdicts, phone, LinkedIn posts, brand overview, funding rounds, products, similar companies, sourced research). Merge across steps, keep both values with source labels when providers disagree, and present a summary card first, then full details.
+Outputs: each step returns its provider's JSON (profile objects, email verification verdicts, phone, company overview, funding rounds + investors, products, similar companies, sourced research). Merge across steps, keep both values with source labels when providers disagree, and present a summary card first, then full details.
 
 ## Gotchas
 
 - **All steps are routed**: every step needs `SELAT_ROUTER_URL` set and the router reachable. There is no direct fallback.
-- **Per-run cap is $3.20** (sum of per-step caps). The two priciest steps are Nyne funders ($1.44) and Nyne funding ($0.578); skip them for public megacorps to save cost.
+- **Manifest cap is $5.00**; the sum of live prices (probe-verified 2026-07-10) is ~$0.58 per full run. The priciest steps are Clado search ($0.31815), Hunter domain-search ($0.10815), and Clado contacts ($0.04515); skip Clado search for public megacorps to save cost.
 - **Provide matching params**: a verifier step with an empty `email`, or a domain step with an empty `domain`, will return little of value — pass the identifiers you actually have.
-- **Hunter is POST** at `hunter.io/hunter/*` with a JSON body (not GET query params).
-- **Tomba is GET** at `api.tomba.io/v1/*` with query params encoded in the URL.
-- **ScrapeGraphAI extract** needs a real `pricingUrl`; without one, skip that step.
+- **Phone needs a LinkedIn URL**: the phone step is Clado contacts, which enriches by `linkedinUrl` — without it, there is no phone lookup.
+- **Funding + investors are one step**: the Diffbot KG enhance Organization record includes both, so don't look for a separate investors step.
+- **Firecrawl extract** needs a real `pricingUrl`; without one, skip that step.
 - **Steps run independently** (continue-across-steps): one provider can fail while others succeed — check the per-step summary.
-- **Verify every email** (work + personal) with all three verifiers (Hunter, Tomba, Fiber) and take consensus.
+- **Email verification is a single Hunter email-verifier call** — there is no multi-provider consensus fan-out.
 
 ## Validation
 
@@ -62,11 +62,11 @@ Outputs: each step returns its provider's JSON (profile objects, email verificat
 
 Probe any endpoint for free (sends the 402 challenge, never pays) with `--probe-only`:
 
-- `selat-pay POST "https://api.fiber.ai/v1/kitchen-sink/person" --body '{"emailAddress":"john@stripe.com"}' --chain base --probe-only`
-- `selat-pay GET "https://api.tomba.io/v1/enrich?email=john@stripe.com" --chain base --probe-only`
-- `selat-pay POST "https://hunter.io/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --probe-only`
-- `selat-pay GET "https://api.brand.dev/v1/brand/retrieve?domain=stripe.com" --chain base --probe-only`
-- `selat-pay POST "https://api.nyne.ai/company/funding" --body '{"company_name":"Stripe"}' --chain base --probe-only`
+- `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" --body '{"first_name":"John","last_name":"Doe","organization_name":"Stripe"}' --chain base --probe-only`
+- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --probe-only`
+- `selat-pay POST "https://clado.mpp.paywithlocus.com/clado/contacts" --body '{"linkedin_url":"https://linkedin.com/in/johndoe"}' --chain base --probe-only`
+- `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"stripe.com"}' --chain base --probe-only`
+- `selat-pay POST "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance" --body '{"type":"Organization","name":"Stripe"}' --chain base --probe-only`
 
 A successful paid run prints `status=200` and a ✓ for each executed step.
 
@@ -77,4 +77,4 @@ A successful paid run prints `status=200` and a ✓ for each executed step.
 - [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
 
-> Third-party API names (Fiber, Nyne, Sixtyfour, Hunter, Tomba, Brand.dev, Linkup, ScrapeGraphAI, Exa) are trademarks of their respective owners; this skill only routes payments to their MPP endpoints.
+> Third-party API names (Apollo, Hunter, Clado, Abstract, Diffbot, Exa, Firecrawl) are trademarks of their respective owners; this skill only routes payments to their MPP endpoints.

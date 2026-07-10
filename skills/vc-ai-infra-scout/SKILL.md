@@ -146,8 +146,8 @@ note for the top pick.
 - **The live 402 is the source of truth.** If a step stops serving a challenge,
   `selat skill verify` flags the drift — omit it and re-add when the gateway
   serves it again.
-- **No Otto or Orthogonal endpoints.** Twitter/X comes from AIsa advanced_search;
-  site-scoped search comes from Tavily and Parallel.
+- **No third-party Twitter-scraper merchants.** Twitter/X comes from AIsa
+  advanced_search; site-scoped search comes from Tavily and Parallel.
 
 ## Validation
 

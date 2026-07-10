@@ -8,28 +8,28 @@
       "assertions": [
         "The skill comprehensive-enrichment is selected",
         "The email param is set to john@stripe.com and domain is derived as stripe.com",
-        "Person steps (Fiber kitchen-sink person, Sixtyfour enrich-lead) and email verifier steps run",
-        "Company steps (Brand.dev retrieve, Nyne funding) run because the employer domain is known"
+        "Person steps (Hunter email-enrichment, Apollo people-enrichment) and the Hunter email-verifier step run",
+        "Company steps (Abstract Company Enrichment lookup, Diffbot KG enhance) run because the employer domain is known"
       ]
     },
     {
       "id": "enrich-by-name-and-company",
       "prompt": "Look up John Doe at Stripe and find his work email and phone.",
-      "expected_output": "Runs the skill with firstName=John, lastName=Doe, company=Stripe; finds and verifies email; returns phone from Sixtyfour find-phone.",
+      "expected_output": "Runs the skill with firstName=John, lastName=Doe, company=Stripe; finds and verifies email; returns phone from Clado contacts when a LinkedIn URL is available.",
       "assertions": [
         "firstName=John, lastName=Doe, company=Stripe params are set",
-        "Hunter email-finder and the email verifier steps run",
-        "Sixtyfour find-phone step runs",
-        "Output labels each email as work or personal with a verification status"
+        "Hunter email-finder and the Hunter email-verifier steps run",
+        "Clado contacts (phone) runs when linkedinUrl is provided, and is noted as requiring a LinkedIn URL otherwise",
+        "Output labels each email with a verification status"
       ]
     },
     {
       "id": "company-only-by-domain",
-      "prompt": "Research stripe.com — overview, leadership, funding, and competitors.",
-      "expected_output": "Runs the company branch with domain=stripe.com: Brand.dev overview, Fiber leadership search, Nyne funding/funders, Exa findSimilar competitors.",
+      "prompt": "Research stripe.com — overview, funding, and competitors.",
+      "expected_output": "Runs the company branch with domain=stripe.com: Abstract Company Enrichment overview, Diffbot KG funding + investors, Exa findSimilar competitors.",
       "assertions": [
         "domain param is set to stripe.com",
-        "Brand.dev retrieve, Fiber natural-language-search/profiles, and Nyne funding steps run",
+        "Abstract Company Enrichment lookup and Diffbot KG enhance (funding + investors) steps run",
         "Exa findSimilar runs for competitors",
         "Person-only steps are skipped or return empty when no person identifier is given"
       ]
@@ -41,25 +41,25 @@
       "assertions": [
         "linkedinUrl param is set to https://linkedin.com/in/johndoe",
         "Every step in the run reports rail=routed",
-        "Fiber LinkedIn profile/single and profile-posts steps run",
+        "Apollo people-enrichment and Clado contacts steps run with the LinkedIn URL",
         "No step uses the direct rail"
       ]
     },
     {
       "id": "cost-cap-respected",
-      "prompt": "Enrich acme.com but keep it cheap — skip the expensive funding lookups.",
-      "expected_output": "Runs company steps for acme.com, and the user can drop the Nyne funding/funders steps; total spend stays under the $3.20 run cap.",
+      "prompt": "Enrich acme.com but keep it cheap — skip the expensive lookups.",
+      "expected_output": "Runs company steps for acme.com, and the user can drop the priciest steps; total spend stays under the $5.00 manifest cap (live-price sum is ~$0.58).",
       "assertions": [
         "domain param is set to acme.com",
-        "The total run respects the manifest maxAmount of 3.20",
+        "The total run respects the manifest maxAmount of 5.00",
         "Each executed step's spend is bounded by its per-step maxAmount",
-        "The two Nyne steps ($0.578 and $1.44) are identified as the most expensive and skippable"
+        "Clado search ($0.31815) and Hunter domain-search ($0.10815) are identified as the most expensive and skippable"
       ]
     },
     {
       "id": "probe-only-validation",
       "prompt": "Before paying, probe the enrichment endpoints for stripe.com to confirm they answer with a 402.",
-      "expected_output": "Uses selat-pay --probe-only against the skill's endpoints (e.g. Brand.dev retrieve, Tomba enrich) to confirm 402 challenges without paying.",
+      "expected_output": "Uses selat-pay --probe-only against the skill's endpoints (e.g. Abstract Company Enrichment lookup, Apollo people-enrichment) to confirm 402 challenges without paying.",
       "assertions": [
         "The validation uses selat-pay with the --probe-only flag",
         "At least one probe targets a host+path from references/endpoints.md",

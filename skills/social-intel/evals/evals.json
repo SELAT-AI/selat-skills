@@ -4,10 +4,10 @@
     {
       "id": "trigger-1",
       "prompt": "What's the social sentiment on agent payments right now — scan Reddit and Twitter and give me a brief with web context?",
-      "expected_output": "Runs social-intel across Exa + Parallel (web) and Scrape Creators Reddit + X steps, then fuses a cross-platform sentiment brief with citations.",
+      "expected_output": "Runs social-intel across Exa + Parallel (web) and StableSocial Reddit + X steps, then fuses a cross-platform sentiment brief with citations.",
       "assertions": [
         "social-intel is selected",
-        "calls both a web-search step (Exa or Parallel) and a Scrape Creators social step",
+        "calls both a web-search step (Exa or Parallel) and a StableSocial Reddit step",
         "output fuses web + Reddit + X signal into a sentiment/themes brief with source URLs"
       ]
     },

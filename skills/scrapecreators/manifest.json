@@ -1,18 +1,18 @@
 {
   "schema": "selat-skill/v1",
   "name": "scrapecreators",
-  "description": "Social media scraping via Scrape Creators (MPP, ROUTED via the SELAT Router): Instagram, TikTok, LinkedIn, and X/Twitter profiles, posts, and content. Each capability is a routed tempo-native MPP payment compiled by the selat CLI.",
+  "description": "Multi-merchant social media scraping across AIsa (X/Twitter — Circle x402 catalog, DIRECT, Circle Gateway-batched), StableSocial (Instagram + TikTok — MPP, ROUTED via the SELAT Router), and Clado (LinkedIn — MPP, ROUTED): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI.",
   "maxAmount": "5.00",
   "params": {
     "handle": {
       "required": false,
       "default": "openai",
-      "description": "Social handle without @ (used by Twitter, Instagram, and TikTok profile lookups)."
+      "description": "Social handle without @ (used by the X/Twitter, Instagram, and TikTok profile/posts lookups)."
     },
-    "tweetUrl": {
+    "tweetId": {
       "required": false,
-      "default": "https://x.com/OpenAI/status/123456",
-      "description": "Tweet URL for the X/Twitter tweet-details lookup."
+      "default": "1234567890123456789",
+      "description": "Numeric tweet ID for the X/Twitter tweet-details lookup (AIsa takes tweet IDs, not tweet URLs)."
     },
     "linkedinUrl": {
       "required": false,
@@ -29,110 +29,127 @@
       "default": "https://linkedin.com/company/anthropic",
       "description": "LinkedIn company page URL."
     },
-    "instagramUserId": {
+    "instagramHandle": {
       "required": false,
-      "default": "12345",
-      "description": "Instagram numeric user ID for the basic-profile lookup."
-    },
-    "instagramPostUrl": {
-      "required": false,
-      "default": "https://instagram.com/p/abc123",
-      "description": "Instagram post or reel URL."
+      "default": "openai",
+      "description": "Instagram handle for the secondary profile lookup (StableSocial resolves profiles by handle; replaces the old numeric userId lookup)."
     },
     "hashtag": {
       "required": false,
       "default": "tech",
       "description": "TikTok hashtag to search for, without #."
-    },
-    "region": {
-      "required": false,
-      "default": "US",
-      "description": "Region code for the TikTok trending feed proxy, e.g. US."
     }
   },
   "steps": [
     {
-      "label": "X/Twitter profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "X/Twitter profile — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/profile?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
       "maxAmount": "5.00"
     },
     {
-      "label": "X/Twitter user tweets — Scrape Creators (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "X/Twitter user tweets — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets?handle=${handle}",
+      "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "5.00"
     },
     {
-      "label": "X/Twitter tweet details — Scrape Creators (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "X/Twitter tweet details — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
+      "rail": "direct",
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/twitter/tweet?url=${tweetUrl}",
+      "url": "https://api.aisa.one/apis/v2/twitter/tweets?tweet_ids=${tweetId}",
       "maxAmount": "5.00"
     },
     {
-      "label": "LinkedIn profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "LinkedIn profile — Clado (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}",
+      "method": "POST",
+      "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
+      "body": {
+        "linkedin_url": "${linkedinUrl}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "LinkedIn post — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "LinkedIn post — Clado scrape (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/post?url=${linkedinPostUrl}",
+      "method": "POST",
+      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
+      "body": {
+        "linkedin_url": "${linkedinPostUrl}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "LinkedIn company page — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "LinkedIn company page — Clado scrape (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/company?url=${linkedinCompanyUrl}",
+      "method": "POST",
+      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
+      "body": {
+        "linkedin_url": "${linkedinCompanyUrl}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "Instagram profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "Instagram profile — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/instagram/profile?handle=${handle}",
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/instagram/profile",
+      "body": {
+        "handle": "${handle}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "Instagram basic profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "Instagram profile by handle — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/instagram/basic-profile?userId=${instagramUserId}",
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/instagram/profile",
+      "body": {
+        "handle": "${instagramHandle}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "Instagram post/reel — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "Instagram recent posts — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/instagram/post?url=${instagramPostUrl}",
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/instagram/posts",
+      "body": {
+        "handle": "${handle}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "TikTok profile — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "TikTok profile — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/profile?handle=${handle}",
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/tiktok/profile",
+      "body": {
+        "handle": "${handle}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "TikTok hashtag search — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "TikTok hashtag search — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/search/hashtag?hashtag=${hashtag}",
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/tiktok/search-hashtag",
+      "body": {
+        "hashtag": "${hashtag}"
+      },
       "maxAmount": "5.00"
     },
     {
-      "label": "TikTok trending feed — Scrape Creators (MPP, ROUTED via SELAT Router)",
+      "label": "TikTok trending via keyword search — StableSocial (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/get-trending-feed?region=${region}",
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/tiktok/search",
+      "body": {
+        "query": "trending"
+      },
       "maxAmount": "5.00"
     }
   ]

@@ -4,53 +4,54 @@
     {
       "id": "trigger-basic-email",
       "prompt": "Enrich this lead for me: jane@acme.com",
-      "expected_output": "The skill activates and runs the routed waterfall starting with Apollo people/match, returning merged person + company JSON.",
+      "expected_output": "The skill activates and runs the waterfall starting with Apollo people-enrichment via Locus, returning merged person + company JSON.",
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
-        "The first executed step is POST https://api.apollo.io/api/v1/people/match",
-        "All executed steps use rail 'routed'",
+        "The first executed step is POST https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
+        "All executed steps use rail 'routed' (the direct AIsa Twitter step only runs when a handle is found)",
         "The email param is set to jane@acme.com"
       ]
     },
     {
       "id": "trigger-who-is",
       "prompt": "Who is the person behind founder@stripe.com and what does their company do?",
-      "expected_output": "Activates the skill, derives domain stripe.com, runs people-match + combined-find + Brand.dev retrieve, returns person and company description.",
+      "expected_output": "Activates the skill, derives domain stripe.com, runs people-enrichment + combined-enrichment + Abstract Company Enrichment lookup, returns person and company description.",
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
         "The domain param resolves to stripe.com",
-        "A Brand.dev retrieve step (https://api.brand.dev/v1/brand/retrieve) is included for the non-free domain",
+        "An Abstract Company Enrichment lookup step (https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup) is included for the non-free domain",
         "Output includes a company description and an is_b2b_saas classification"
       ]
     },
     {
-      "id": "free-email-skips-branddev",
+      "id": "free-email-skips-company-lookup",
       "prompt": "Look up the prospect bob@gmail.com",
-      "expected_output": "Recognizes gmail.com as a free-email provider and skips the Brand.dev retrieve step to save cost.",
+      "expected_output": "Recognizes gmail.com as a free-email provider and skips the Abstract Company Enrichment lookup step to save cost.",
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
-        "The Brand.dev retrieve step is marked skipped (free email provider)",
-        "Apollo people/match and Tomba email-verifier still run"
+        "The Abstract Company Enrichment lookup step is marked skipped (free email provider)",
+        "Apollo people-enrichment and Hunter email-verifier still run"
       ]
     },
     {
       "id": "qualified-lead-buying-signals",
       "prompt": "Enrich and qualify cto@databricks.com — I want buying signals, they're a big funded B2B company.",
-      "expected_output": "Runs the core waterfall then the Phase-4 buying-signal steps (Brand.dev ai/products and Apollo job_postings) because the company is funded, B2B, and large.",
+      "expected_output": "Runs the core waterfall then the hiring-signal call (Apollo job-postings via Locus) because an organizationId was captured from people-enrichment.",
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
-        "The Brand.dev ai/products step (POST https://api.brand.dev/v1/brand/ai/products) runs only when funded + B2B + >50 employees",
-        "The Apollo job_postings step runs only when an organizationId was captured",
-        "The total paid amount stays at or below the 0.35 maxAmount cap"
+        "The Apollo job-postings call (POST https://apollo.mpp.paywithlocus.com/apollo/job-postings) runs only when an organizationId was captured",
+        "No product/pricing buying-signal call is attempted (that capability has no merchant equivalent)",
+        "The total paid amount stays at or below the top-level maxAmount cap"
       ]
     },
     {
-      "id": "obscure-lead-sixtyfour-fallback",
+      "id": "obscure-lead-conditional-fallbacks",
       "prompt": "I can't find anything on this lead: someone@tiny-unknown-startup.io — dig deeper.",
-      "expected_output": "Cheap steps return no person, so the Sixtyfour enrich-lead AI fallback ($0.10) is triggered.",
+      "expected_output": "The primary Apollo people-enrichment step doubles as the person fallback (the old separate AI fallback was merged into it); remaining gaps are filled by the conditional Hunter steps, not a separate expensive fallback.",
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
-        "The Sixtyfour enrich-lead step (POST https://api.sixtyfour.ai/enrich-lead) is invoked only after person data is missing",
+        "No separate person-fallback endpoint is invoked beyond POST https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
+        "The Hunter email-enrichment tie-breaker (POST https://hunter.mpp.paywithlocus.com/hunter/email-enrichment) is invoked only when sources conflict or person data is missing",
         "Each step respects its per-step maxAmount cap"
       ]
     },

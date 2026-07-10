@@ -1,6 +1,6 @@
 ---
 name: social-intel
-description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit signal (Scrape Creators, routed MPP) + X/Twitter signal (AIsa, direct x402, Gateway-batched) with grounded web context (Exa + Parallel). Pays per call via selat-pay (USDC), no API keys.
+description: Use this skill when the user wants a cross-platform read on what people are saying about a topic, brand, product, or account — e.g. "what's the social sentiment on X", "scan Reddit and Twitter for <topic>", "social listening on <brand>", "is <topic> trending", "pull chatter + web context on <handle>", "brand/topic intelligence brief". Fuses Reddit signal (StableSocial, routed MPP) + X/Twitter signal (AIsa, direct x402, Gateway-batched) with grounded web context (Exa + Parallel). Pays per call via selat-pay (USDC), no API keys.
 license: Apache-2.0
 compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet on Base. The routed steps need a reachable SELAT Router (SELAT_ROUTER_URL); `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
@@ -34,7 +34,7 @@ around the paid data.
 This skill spans both x402 protocols and two settlement paths:
 
 - **routed x402**: Exa web search — resolves as `routed-x402`.
-- **routed MPP**: Parallel web search + Scrape Creators (Reddit) — resolve as `routed-mpp`.
+- **routed MPP**: Parallel web search + StableSocial (Reddit) — resolve as `routed-mpp`.
 - **direct x402 (Gateway-batched)**: AIsa (X/Twitter) — called directly, settles `GatewayWalletBatched` (`mode=direct`).
 
 The `selat` CLI auto-detects each step's protocol at call time.
@@ -51,10 +51,10 @@ Recommended agent procedure (cheapest-first; stop early when a side is conclusiv
 1. **Ground the topic on the web** — Exa `POST /search` (routed x402, ~$0.007).
 2. **Corroborate the web read** — Parallel `POST /api/search` (routed MPP, ~$0.011).
    Cross-reference against Exa; flag claims only one source makes.
-3. **Read the Reddit conversation** — Scrape Creators `GET /v1/reddit/search`
-   (routed MPP, ~$0.021); rank hits by engagement.
-4. **Add community context** — Scrape Creators `GET /v1/reddit/subreddit`
-   (routed MPP, ~$0.021) for the named subreddit's current top posts.
+3. **Read the Reddit conversation** — StableSocial `POST /api/reddit/search`
+   (routed MPP, ~$0.063); rank hits by engagement.
+4. **Add community context** — StableSocial `POST /api/reddit/subreddit`
+   (routed MPP, ~$0.063) for the named subreddit's current top posts.
 5. **Profile the account** — AIsa `GET /v2/twitter/user/info?userName=`
    (direct x402, Gateway-batched, ~$0.0004) for follower counts + bio.
 6. **Read its recent posts** — AIsa `GET /v2/twitter/user/last_tweets?userName=`
@@ -83,17 +83,18 @@ intelligence brief.
 
 ## Gotchas
 
-- **Mixed rails.** Exa settles `routed-x402`; Parallel and the Scrape Creators
+- **Mixed rails.** Exa settles `routed-x402`; Parallel and the StableSocial
   (Reddit) steps settle `routed-mpp` through the SELAT Router (so a reachable
   `SELAT_ROUTER_URL` is required for those); the AIsa (X/Twitter) steps are a
   **direct** x402 call settling `GatewayWalletBatched` (`mode=direct`, no router hop).
-- **GET params in the query, POST params in `body`.** Exa/Parallel are POST — their
-  query goes in the body; the Scrape Creators (Reddit) and AIsa (Twitter) steps are
-  GET — `?query=`/`?subreddit=`/`?userName=` in the URL.
-- **`maxAmount` is a guardrail, not the price.** Per-step cap is `$0.05` (live
-  quotes: Exa ~$0.007, Parallel ~$0.011, each Scrape Creators Reddit call ~$0.021,
-  AIsa profile ~$0.0004, AIsa tweets ~$0.004, AIsa topic search ~$0.002); the
-  full-run cap is `$0.50`.
+- **GET params in the query, POST params in `body`.** Exa/Parallel and the
+  StableSocial (Reddit) steps are POST — their query/subreddit goes in the body;
+  the AIsa (Twitter) steps are GET — `?userName=`/`?query=` in the URL.
+- **`maxAmount` is a guardrail, not the price.** Per-step caps are `$0.05`
+  (web + Twitter steps) and `$0.20` (the StableSocial Reddit steps); live quotes
+  (probe-verified 2026-07-10): Exa ~$0.007, Parallel ~$0.011, each StableSocial
+  Reddit call ~$0.063, AIsa profile ~$0.0004, AIsa tweets ~$0.004, AIsa topic
+  search ~$0.002. The full-run cap is `$0.70`.
 - **Handle-scoped vs topic-scoped Twitter.** Steps 5–6 follow `--handle` (one
   account); step 7 (`advanced_search`) follows `--topic` for cross-account chatter.
 - **Pass `--handle` / `--subreddit`** to retarget the account + Reddit-community steps;

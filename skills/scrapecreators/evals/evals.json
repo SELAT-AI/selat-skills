@@ -3,52 +3,52 @@
   "evals": [
     {
       "id": "twitter-profile",
-      "prompt": "Scrape the X/Twitter profile for the handle openai using Scrape Creators.",
-      "expected_output": "The skill runs the routed Scrape Creators twitter/profile step and returns the profile JSON (bio, follower counts).",
+      "prompt": "Scrape the X/Twitter profile for the handle openai.",
+      "expected_output": "The skill runs the direct AIsa twitter user-info step and returns the profile JSON (bio, follower counts).",
       "assertions": [
         "The skill triggers (scrapecreators) for a social profile scrape request",
-        "The twitter/profile step targets https://api.scrapecreators.com/v1/twitter/profile?handle=openai",
-        "The step rail is routed with maxAmount 0.02"
+        "The X/Twitter profile step targets https://api.aisa.one/apis/v2/twitter/user/info?userName=openai",
+        "The step rail is direct (Circle Gateway-batched, no SELAT Router)"
       ]
     },
     {
       "id": "tiktok-trending",
-      "prompt": "Show me TikTok's trending feed for the US region.",
-      "expected_output": "The routed tiktok/get-trending-feed step runs with region=US and returns trending videos.",
+      "prompt": "Show me what's trending on TikTok.",
+      "expected_output": "The routed StableSocial tiktok/search step runs with query=trending (keyword-search proxy; there is no trending-feed endpoint) and returns matching videos.",
       "assertions": [
-        "The skill triggers for a trending-feed request",
-        "The step URL is https://api.scrapecreators.com/v1/tiktok/get-trending-feed?region=US",
-        "The step is rail routed"
+        "The skill triggers for a trending-content request",
+        "The step URL is https://stablesocial.dev/api/tiktok/search with body {\"query\":\"trending\"}",
+        "The step is rail routed (MPP via the SELAT Router)"
       ]
     },
     {
       "id": "linkedin-company",
       "prompt": "Pull the LinkedIn company page data for https://linkedin.com/company/anthropic.",
-      "expected_output": "The routed linkedin/company step runs with the supplied company URL and returns size, industry, locations, specialties.",
+      "expected_output": "The routed Clado scrape step runs with the supplied company URL and returns the company page data.",
       "assertions": [
-        "The linkedinCompanyUrl param is used in the linkedin/company step URL",
-        "The step method is GET and rail routed",
-        "The host is api.scrapecreators.com"
+        "The linkedinCompanyUrl param flows into the Clado scrape step body as linkedin_url",
+        "The step method is POST and rail routed",
+        "The host is clado.mpp.paywithlocus.com"
       ]
     },
     {
-      "id": "instagram-post",
-      "prompt": "Get the data for this Instagram reel: https://instagram.com/p/abc123",
-      "expected_output": "The routed instagram/post step runs with the supplied post URL and returns the post/reel JSON.",
+      "id": "instagram-posts",
+      "prompt": "Get the recent Instagram posts for the handle openai.",
+      "expected_output": "The routed StableSocial instagram/posts step runs with the handle and returns the recent posts JSON (there is no single-post-by-URL endpoint).",
       "assertions": [
-        "The instagramPostUrl param flows into the instagram/post step",
-        "The step targets https://api.scrapecreators.com/v1/instagram/post",
-        "The step rail is routed with maxAmount 0.02"
+        "The handle param flows into the instagram/posts step body",
+        "The step targets https://stablesocial.dev/api/instagram/posts",
+        "The step method is POST and rail routed"
       ]
     },
     {
       "id": "full-run-cap",
       "prompt": "Run the full scrapecreators skill with defaults.",
-      "expected_output": "All 12 routed steps run and the run cost is capped at the manifest maxAmount.",
+      "expected_output": "All 12 steps run — 3 direct AIsa steps plus 9 routed StableSocial/Clado steps — and the run cost is capped at the manifest maxAmount.",
       "assertions": [
         "manifest.json parses as valid JSON",
-        "Top-level maxAmount is 0.24 (sum of 12 steps at 0.02)",
-        "Every step has rail routed and host api.scrapecreators.com"
+        "Top-level maxAmount is 5.00 (loose cap; live total is about 0.45)",
+        "AIsa steps are rail direct on api.aisa.one; StableSocial and Clado steps are rail routed"
       ]
     },
     {
@@ -57,7 +57,7 @@
       "expected_output": "The scrapecreators skill does NOT trigger; this is unrelated to social media scraping.",
       "assertions": [
         "The scrapecreators skill is not selected",
-        "No Scrape Creators endpoint is called"
+        "No AIsa, StableSocial, or Clado social-scraping endpoint is called"
       ]
     }
   ]

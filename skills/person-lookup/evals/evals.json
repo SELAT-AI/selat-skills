@@ -8,7 +8,7 @@
       "assertions": [
         "The skill activates on a 'who is [name]?' question",
         "The query param includes 'Dario Amodei'",
-        "The routed step POSTs to https://api.nyne.ai/person/search",
+        "The routed step POSTs to https://clado.mpp.paywithlocus.com/clado/search",
         "The step rail is 'routed'"
       ]
     },
@@ -29,25 +29,25 @@
       "assertions": [
         "The skill activates on a contact-info / social-profile request about a named person",
         "The query includes disambiguating context (company or title)",
-        "The maxAmount cap is respected (full-run cap $0.40)"
+        "The maxAmount cap is respected (full-run cap $5.00)"
       ]
     },
     {
       "id": "probe-only-no-payment",
       "prompt": "Probe the person-lookup endpoint without paying to confirm it's reachable.",
-      "expected_output": "A free 402 probe is issued against https://api.nyne.ai/person/search using --probe-only; no payment is made.",
+      "expected_output": "A free 402 probe is issued against https://clado.mpp.paywithlocus.com/clado/search using --probe-only; no payment is made.",
       "assertions": [
         "The command uses selat-pay with --probe-only",
-        "The target URL is https://api.nyne.ai/person/search",
+        "The target URL is https://clado.mpp.paywithlocus.com/clado/search",
         "No actual payment / settlement occurs"
       ]
     },
     {
-      "id": "async-poll-awareness",
+      "id": "sync-single-call",
       "prompt": "Research the background of Satya Nadella at Microsoft.",
-      "expected_output": "person-lookup runs; if the POST returns a requestId, the workflow accounts for Nyne's async polling before reporting results.",
+      "expected_output": "person-lookup runs as a single synchronous POST; results are returned directly in the response with no polling or request IDs.",
       "assertions": [
-        "The skill recognizes the search is async and may return a requestId",
+        "The workflow treats the search as synchronous — no polling step is added",
         "The query includes 'Satya Nadella' and 'Microsoft'",
         "The step rail is 'routed' and routed via the SELAT Router"
       ]
@@ -58,7 +58,7 @@
       "expected_output": "person-lookup does NOT trigger; this is a market-price request, not a person lookup.",
       "assertions": [
         "The person-lookup skill does not activate",
-        "No call is made to https://api.nyne.ai/person/search"
+        "No call is made to https://clado.mpp.paywithlocus.com/clado/search"
       ]
     }
   ]

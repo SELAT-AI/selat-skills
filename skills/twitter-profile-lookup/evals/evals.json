@@ -6,10 +6,10 @@
       "prompt": "Who is @openai on Twitter?",
       "expected_output": "Profile summary for the openai handle with bio, follower/following counts, and verified status.",
       "assertions": [
-        "The run calls GET https://api.scrapecreators.com/v1/twitter/profile with handle=openai",
+        "The run calls GET https://api.aisa.one/apis/v2/twitter/user/info with userName=openai",
         "The output reports follower and following counts",
         "The output reports verified status",
-        "Both steps use rail routed via the SELAT Router"
+        "Both steps use rail direct (Circle x402, Gateway-batched)"
       ]
     },
     {
@@ -17,7 +17,7 @@
       "prompt": "Show me Sam Altman's recent tweets on X.",
       "expected_output": "A list of recent tweets for handle sama with engagement metrics.",
       "assertions": [
-        "The run calls GET https://api.scrapecreators.com/v1/twitter/user-tweets with handle=sama",
+        "The run calls GET https://api.aisa.one/apis/v2/twitter/user/last_tweets with userName=sama",
         "The output includes tweet text and like/retweet/reply counts",
         "The handle is passed without a leading @"
       ]
@@ -28,17 +28,17 @@
       "expected_output": "Recent tweets for handle AnthropicAI plus profile context.",
       "assertions": [
         "The run resolves the handle to AnthropicAI",
-        "The user-tweets step is invoked",
-        "Per-step maxAmount is 0.02 and full-run maxAmount is 0.04"
+        "The last_tweets step is invoked",
+        "Per-step and full-run maxAmount are the loose 5.00 cap; live prices are $0.00044 (profile) and $0.0036 (last tweets)"
       ]
     },
     {
-      "id": "trim-flag",
-      "prompt": "Pull a trimmed feed of recent tweets for handle nasa.",
-      "expected_output": "Trimmed tweets response for handle nasa.",
+      "id": "handle-param",
+      "prompt": "Pull recent tweets for handle nasa.",
+      "expected_output": "Recent tweets response for handle nasa.",
       "assertions": [
-        "The user-tweets URL includes trim=true",
-        "The user-tweets URL includes handle=nasa"
+        "The last_tweets URL includes userName=nasa",
+        "No @ appears in the userName query param"
       ]
     },
     {
@@ -53,10 +53,10 @@
     {
       "id": "probe-only-validation",
       "prompt": "Do a free 402 probe of the twitter profile endpoint without paying.",
-      "expected_output": "A selat-pay --probe-only command against the Scrape Creators twitter/profile endpoint that returns 402 details without settling payment.",
+      "expected_output": "A selat-pay --probe-only command against the AIsa twitter user info endpoint that returns 402 details without settling payment.",
       "assertions": [
         "The command uses selat-pay GET with --probe-only",
-        "The probed URL is https://api.scrapecreators.com/v1/twitter/profile",
+        "The probed URL is https://api.aisa.one/apis/v2/twitter/user/info",
         "No payment is settled during the probe"
       ]
     }

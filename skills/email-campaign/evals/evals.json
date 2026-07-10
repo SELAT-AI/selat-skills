@@ -16,11 +16,11 @@
     {
       "id": "verify-only",
       "prompt": "I just want to check whether jane@acme.com is deliverable before I send.",
-      "expected_output": "Verification routed through Hunter email-verifier and/or Fiber validate-email, with the email param set to jane@acme.com.",
+      "expected_output": "Verification routed through the Hunter email-verifier (deliverability pass and bounce-check pass), with the email param set to jane@acme.com.",
       "assertions": [
         "The email param is bound to jane@acme.com",
-        "The Hunter email-verifier step targets hunter.io/hunter/email-verifier with a JSON body containing email",
-        "The Fiber bounce check targets api.fiber.ai/v1/validate-email/single"
+        "The Hunter email-verifier step targets hunter.mpp.paywithlocus.com/hunter/email-verifier with a JSON body containing email",
+        "The bounce check targets hunter.mpp.paywithlocus.com/hunter/email-verifier via POST"
       ]
     },
     {
@@ -36,11 +36,11 @@
     {
       "id": "enrich-for-personalization",
       "prompt": "Enrich a lead named Sam Carter at Figma so I can personalize my outreach.",
-      "expected_output": "Sixtyfour enrich-lead routed step with the lead's name and company, returning enrichment fields.",
+      "expected_output": "Apollo people-enrichment routed step with the lead's name and organization, returning enrichment fields.",
       "assertions": [
-        "The Sixtyfour step targets api.sixtyfour.ai/enrich-lead via POST",
-        "The body includes lead_info with first_name, last_name, and company",
-        "The enrich-lead step cap is 0.1"
+        "The Apollo step targets apollo.mpp.paywithlocus.com/apollo/people-enrichment via POST",
+        "The body includes first_name, last_name, and organization_name",
+        "The people-enrichment step cap is 5.00"
       ]
     },
     {
@@ -56,10 +56,10 @@
     {
       "id": "brand-context",
       "prompt": "Get the brand colors and description for stripe.com for my outreach template.",
-      "expected_output": "Brand.dev brand/retrieve routed GET with domain=stripe.com.",
+      "expected_output": "Abstract Company Enrichment lookup routed POST with domain=stripe.com, returning firmographic context (industry, description, size); note that this merchant does not return brand assets like logos or colors.",
       "assertions": [
-        "The Brand.dev step is GET to api.brand.dev/v1/brand/retrieve",
-        "The domain is passed as a query parameter bound to stripe.com",
+        "The company-context step is POST to abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
+        "The domain is passed in the JSON body bound to stripe.com",
         "The step rail is 'routed'"
       ]
     }

@@ -1,8 +1,8 @@
 # twitter-profile-lookup — endpoints
 
-Every endpoint below is probe-verified live-payable over MPP via the SELAT Router (`selat-pay --probe-only`). Caps are a 5 USDC spending filter, not the live price.
+Every endpoint below is probe-verified live-payable as a direct x402 call (Circle x402 catalog, Circle Gateway-batched; `selat-pay --probe-only`, 2026-07-10). Caps are a 5 USDC spending filter, not the live price.
 
 | Merchant | Endpoint | Live price |
 |---|---|---|
-| scrapecreators | `GET mpp.orthogonal.com/scrapecreators/v1/twitter/profile` | ~ |
-| scrapecreators | `GET mpp.orthogonal.com/scrapecreators/v1/twitter/user-tweets` | ~ |
+| AIsa | `GET api.aisa.one/apis/v2/twitter/user/info?userName=${handle}` | $0.00044 |
+| AIsa | `GET api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}` | $0.0036 |

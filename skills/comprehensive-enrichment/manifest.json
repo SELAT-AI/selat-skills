@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "comprehensive-enrichment",
-  "description": "Comprehensive person + company enrichment across many MPP-routed data providers (Fiber, Nyne, Sixtyfour, Hunter, Tomba, Brand.dev, Linkup, ScrapeGraphAI, Exa). Resolves contact info, verified emails, phone, social profiles, company overview, leadership, funding, products, and competitors. All steps are routed through the SELAT Router (MPP / tempo-native).",
+  "description": "Comprehensive person + company enrichment across many MPP-routed data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Resolves contact info, verified emails, phone, social profiles, company overview, funding, products, and competitors. All steps are routed through the SELAT Router (MPP).",
   "maxAmount": "5.00",
   "params": {
     "email": {
@@ -32,7 +32,7 @@
     "linkedinUrl": {
       "required": false,
       "default": "https://linkedin.com/in/williamhgates",
-      "description": "LinkedIn person profile URL, e.g. https://linkedin.com/in/johndoe."
+      "description": "LinkedIn person profile URL, e.g. https://linkedin.com/in/johndoe. Required for the phone lookup step (Clado contacts)."
     },
     "pricingUrl": {
       "required": false,
@@ -42,42 +42,36 @@
   },
   "steps": [
     {
-      "label": "person deep search — Nyne (work history, education, social)",
+      "label": "person deep search — Clado search (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/nyne/person/search",
+      "url": "https://clado.mpp.paywithlocus.com/clado/search",
       "body": {
         "query": "${firstName} ${lastName} ${company}"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "person AI enrichment — Sixtyfour enrich-lead (emails, title, bio)",
+      "label": "person enrichment — Apollo people-enrichment (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/sixtyfour/enrich-lead",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
-        "lead_info": {
-          "first_name": "${firstName}",
-          "last_name": "${lastName}",
-          "company": "${company}",
-          "linkedin_url": "${linkedinUrl}"
-        },
-        "struct": {
-          "work_email": "Work email",
-          "personal_email": "Personal email (Gmail, etc.)",
-          "phone": "Phone number",
-          "title": "Job title",
-          "bio": "Short bio"
-        }
+        "first_name": "${firstName}",
+        "last_name": "${lastName}",
+        "organization_name": "${company}",
+        "linkedin_url": "${linkedinUrl}"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "email enrich — Tomba enrich (all known emails for the person)",
+      "label": "email enrich — Hunter email-enrichment (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/tomba/v1/enrich?email=${email}",
+      "method": "POST",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
+      "body": {
+        "email": "${email}"
+      },
       "maxAmount": "5.00"
     },
     {
@@ -103,53 +97,33 @@
       "maxAmount": "5.00"
     },
     {
-      "label": "verify email — Tomba email-verifier",
-      "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/tomba/v1/email-verifier?email=${email}",
-      "maxAmount": "5.00"
-    },
-    {
-      "label": "verify email — Fiber validate-email",
+      "label": "phone — Clado contacts (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/fiber/v1/validate-email/single",
+      "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
       "body": {
-        "email": "${email}"
+        "linkedin_url": "${linkedinUrl}"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "phone — Sixtyfour find-phone",
+      "label": "person research — Exa search (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/sixtyfour/find-phone",
+      "url": "https://exa.mpp.tempo.xyz/search",
       "body": {
-        "lead": {
-          "first_name": "${firstName}",
-          "last_name": "${lastName}",
-          "company": "${company}"
-        }
+        "query": "${firstName} ${lastName} ${company} recent news interviews talks"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "person research — Linkup deep search (personalization angles)",
+      "label": "company overview — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/linkup/search",
+      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
       "body": {
-        "q": "${firstName} ${lastName} ${company} recent news interviews talks",
-        "depth": "deep",
-        "outputType": "sourcedAnswer"
+        "domain": "${domain}"
       },
-      "maxAmount": "5.00"
-    },
-    {
-      "label": "company overview — Brand.dev retrieve by domain",
-      "rail": "routed",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/brand-dev/v1/brand/retrieve?domain=${domain}",
       "maxAmount": "5.00"
     },
     {
@@ -163,32 +137,23 @@
       "maxAmount": "5.00"
     },
     {
-      "label": "funding history — Nyne company/funding",
+      "label": "funding + investors — Diffbot KG enhance (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/nyne/company/funding",
+      "url": "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance",
       "body": {
-        "company_name": "${company}"
+        "type": "Organization",
+        "name": "${company}"
       },
       "maxAmount": "5.00"
     },
     {
-      "label": "investors — Nyne company/funders",
+      "label": "pricing/features — Firecrawl extract (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/nyne/company/funders",
+      "url": "https://firecrawl.mpp.tempo.xyz/v1/extract",
       "body": {
-        "company_domain": "${domain}"
-      },
-      "maxAmount": "5.00"
-    },
-    {
-      "label": "pricing/features — ScrapeGraphAI extract",
-      "rail": "routed",
-      "method": "POST",
-      "url": "https://mpp.orthogonal.com/scrapegraphai/api/extract",
-      "body": {
-        "url": "${pricingUrl}",
+        "urls": ["${pricingUrl}"],
         "prompt": "Extract all products, pricing tiers, and features"
       },
       "maxAmount": "5.00"
@@ -208,14 +173,12 @@
       "maxAmount": "5.00"
     },
     {
-      "label": "company research — Linkup deep search (news, partnerships)",
+      "label": "company research — Exa search (MPP, ROUTED via SELAT Router)",
       "rail": "routed",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/linkup/search",
+      "url": "https://exa.mpp.tempo.xyz/search",
       "body": {
-        "q": "${company} recent news funding announcements partnerships press releases",
-        "depth": "deep",
-        "outputType": "sourcedAnswer"
+        "query": "${company} recent news funding announcements partnerships press releases"
       },
       "maxAmount": "5.00"
     }

@@ -4,7 +4,7 @@
     {
       "id": "trigger-1",
       "prompt": "Build me a cross-platform footprint and reputation brief on the @OpenAI account — who are they, how present are they on Twitter, YouTube, and the web, and are they credible?",
-      "expected_output": "Runs account-intel with --handle OpenAI --name OpenAI across the Scrape Creators X + YouTube steps, Brave news, and Exa citations, then fuses a per-platform presence map + credibility read with source URLs.",
+      "expected_output": "Runs account-intel with --handle OpenAI --name OpenAI across the AIsa X + YouTube steps, Brave news, and Exa citations, then fuses a per-platform presence map + credibility read with source URLs.",
       "assertions": [
         "account-intel is selected (not social-intel)",
         "calls the X/Twitter profile + tweets steps and at least one web step (Exa or Brave) and the YouTube step",

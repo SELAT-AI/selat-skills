@@ -4,64 +4,64 @@
     {
       "id": "person-resolve-from-email",
       "prompt": "Enrich this person for me — all I have is their email patrick@stripe.com. Who are they and where do they work?",
-      "expected_output": "Runs the enrich-waterfall skill, starts in the resolve tier (Tomba enrich / Apollo people-match / Ocean.io / Fiber email-to-person by email), anchors the company from the resolved domain, and returns a person + company record without prematurely jumping to dollar-class reveals.",
+      "expected_output": "Runs the enrich-waterfall skill, starts in the resolve tier (Apollo people-enrichment / Hunter email-enrichment / Hunter combined-enrichment by email), anchors the company from the resolved domain, and returns a person + company record without prematurely jumping to premium reveals.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "The first calls are resolve-tier endpoints keyed on email (e.g. api.tomba.io/v1/enrich, api.apollo.io/api/v1/people/match, api.fiber.ai/v1/email-to-person/single)",
-        "The run does NOT call any escalate-tier endpoint (ContactOut people/enrich, PDL identify, Sixtyfour find-phone) when resolve already returns a confident match",
-        "Every step executed is rail=routed"
+        "The first calls are resolve-tier endpoints keyed on email (e.g. apollo.mpp.paywithlocus.com/apollo/people-enrichment, hunter.mpp.paywithlocus.com/hunter/email-enrichment or /hunter/combined-enrichment)",
+        "The run does NOT call any escalate-tier endpoint (Clado contacts, Clado search) when resolve already returns a confident match",
+        "Every step executed is rail=routed (the only direct step is the AIsa X/Twitter social lookup, which a pure resolve request does not need)"
       ]
     },
     {
       "id": "company-enrichment-from-domain",
       "prompt": "Build a company profile for stripe.com — firmographics plus recent funding and hiring signals.",
-      "expected_output": "Runs enrich-waterfall, anchors the company via domain (Apollo/Coresignal/Company Enrich/PredictLeads/Aviato company enrich), then fans out into the signals slices (PredictLeads financing_events / job_openings, Aviato funding-rounds) — staying in the cheap anchor + signals tiers.",
+      "expected_output": "Runs enrich-waterfall, anchors the company via domain (Abstract Company Enrichment lookup / Apollo org-enrichment / Hunter company-enrichment), captures the Apollo organization_id, then fans out into the signals slices (Brave news-search for funding rounds, Apollo job-postings, Diffbot KG enhance) — staying in the cheap anchor + signals tiers.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "An anchor-tier company-enrich endpoint is called with domain=stripe.com",
-        "Signals endpoints for funding and hiring are called (e.g. predictleads.com/v3/companies/stripe.com/financing_events and /job_openings)",
+        "An anchor-tier company endpoint is called with domain=stripe.com (e.g. abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup or apollo.mpp.paywithlocus.com/apollo/org-enrichment)",
+        "Signals endpoints for funding and hiring are called (brave.mpp.paywithlocus.com/brave/news-search with a funding-round query, and apollo.mpp.paywithlocus.com/apollo/job-postings using the organization_id from the anchor step)",
         "No person-contact escalate endpoints are called for a pure company-profile request"
       ]
     },
     {
       "id": "contact-find-and-verify",
       "prompt": "I need the work email for Jane Doe at acme.com, and verify it's deliverable before you give it to me.",
-      "expected_output": "Runs enrich-waterfall: derives the email via the email-finder anchor tier (Tomba/Hunter/Sixtyfour email-finder with domain+firstName+lastName), then runs the verify tier (Hunter email-verifier / Fiber validate-email) LAST on the chosen address before returning it.",
+      "expected_output": "Runs enrich-waterfall: derives the email via the anchor tier (Hunter email-finder with domain+firstName+lastName), then runs the verify tier (Hunter email-verifier) LAST on the chosen address before returning it.",
       "assertions": [
-        "An anchor-tier email-finder endpoint is called with domain=acme.com, first_name=Jane, last_name=Doe",
-        "A verify-tier endpoint (hunter.io/hunter/email-verifier or api.fiber.ai/v1/validate-email/single) is called AFTER the email is found, not before",
+        "The anchor-tier email-finder endpoint (hunter.mpp.paywithlocus.com/hunter/email-finder) is called with domain=acme.com, first_name=Jane, last_name=Doe",
+        "The verify-tier endpoint (hunter.mpp.paywithlocus.com/hunter/email-verifier) is called AFTER the email is found, not before",
         "The returned email is one that passed verification"
       ]
     },
     {
       "id": "escalation-on-gap",
       "prompt": "Find me a direct phone number and personal email for the person at this LinkedIn profile: https://linkedin.com/in/someone — spend what it takes.",
-      "expected_output": "Runs enrich-waterfall, tries cheap resolve/anchor first, and because phone + personal email are requested and not surfaced cheaply, escalates to premium reveals (ContactOut people/enrich or people/linkedin with include_phone, Sixtyfour find-phone).",
+      "expected_output": "Runs enrich-waterfall, tries cheap resolve/anchor first (Clado linkedin-profile, Apollo people-enrichment), and because phone + personal email are requested and not surfaced cheaply, escalates to the premium reveals (Clado contacts by LinkedIn URL, Clado search).",
       "assertions": [
         "Cheaper resolve/anchor tiers are attempted before any escalate-tier call",
-        "At least one escalate-tier endpoint is called (api.contactout.com/v1/people/enrich, /v1/people/linkedin, or api.sixtyfour.ai/find-phone)",
+        "At least one escalate-tier endpoint is called (clado.mpp.paywithlocus.com/clado/contacts or /clado/search)",
         "The escalation is justified by a phone/personal-email gap left by the cheaper tiers",
-        "The per-step maxAmount caps are respected and the run stays under the $6.00 full-run cap"
+        "The per-step maxAmount caps are respected and the run stays under the $5.00 full-run cap"
       ]
     },
     {
       "id": "tech-stack-detection",
       "prompt": "What technologies does acme.com run? Just the tech stack.",
-      "expected_output": "Runs enrich-waterfall and calls only the tech-tier endpoints keyed on domain (Tomba technology, BuiltWith domain/free/relationships, Brand.dev, PredictLeads technology_detections) — no contact or signals fan-out.",
+      "expected_output": "Runs enrich-waterfall and calls only the domain-keyed anchor endpoints that return tech data (Apollo org-enrichment for technology_names, Abstract Company Enrichment lookup for industry/SIC) — no contact or signals fan-out.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "Tech-tier endpoints are called with domain=acme.com (e.g. api.tomba.io/v1/technology, builtwith.com/builtwith/domain, predictleads.com/v3/companies/acme.com/technology_detections)",
+        "Tech-bearing anchor endpoints are called with domain=acme.com (apollo.mpp.paywithlocus.com/apollo/org-enrichment and/or abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup)",
         "No person-resolve or escalate contact endpoints are called for a tech-only request"
       ]
     },
     {
       "id": "social-presence-lookup",
       "prompt": "Find the social profiles — Twitter, Instagram, LinkedIn — for this founder so I can see their recent posts.",
-      "expected_output": "Runs enrich-waterfall and uses the social-tier endpoints (Fiber natural-language-search/profiles, twitter/instagram/tiktok/youtube profile lookups, LinkedIn profile-posts; Aviato person/posts) rather than the contact-reveal escalate tier.",
+      "expected_output": "Runs enrich-waterfall and uses the social-tier endpoints (AIsa X/Twitter user info, StableSocial Instagram/TikTok profiles, Clado scrape for LinkedIn posts) rather than the contact-reveal escalate tier.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "Social-tier endpoints are called (e.g. api.fiber.ai/v1/twitter/profile, /v1/instagram/profile, /v1/linkedin-live-fetch/profile-posts, data.api.aviato.co/social/person/posts)",
-        "The run does not escalate to ContactOut/PDL-identify reveals just to satisfy a social-profile request"
+        "Social-tier endpoints are called (e.g. api.aisa.one/apis/v2/twitter/user/info, stablesocial.dev/api/instagram/profile, clado.mpp.paywithlocus.com/clado/scrape)",
+        "The run does not escalate to Clado contacts/search reveals just to satisfy a social-profile request"
       ]
     }
   ]
