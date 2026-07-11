@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "multi",
       "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins."
+    },
+    {
+      "name": "flight-route-status",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Real-time flight status between two airports (IATA). Multi-source, cheapest-first: FlightAPI track-by-route, AviationStack live flights, GoFlightLabs live flights — all MPP-routed via the SELAT Router."
     }
   ]
 }
