@@ -70,6 +70,19 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
    write access? It prints fork-and-PR commands. A maintainer paid-re-verifies
    before merge.
 
+## Authoring Voice
+
+A skill's reader is the agent; the agent's audience is often a non-technical
+user. Author for that split:
+
+- Command blocks are **instructions for the agent to execute** — never content
+  the user is expected to read.
+- In **Workflow**, add a "tell the user" line wherever the agent should report
+  back — especially before any spend ("this costs about $X — proceed?") and
+  when relaying results in plain language.
+- Keep endpoint URLs, wallet addresses, and raw response JSON out of what the
+  agent is told to relay; plain language plus the dollar price is the default.
+
 ## Available Scripts
 
 - `scripts/new-skill.mjs <name> [--rail …] [--kind …] [--dir skills]` — offline
