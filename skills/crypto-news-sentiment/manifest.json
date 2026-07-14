@@ -1,0 +1,23 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "crypto-news-sentiment",
+  "description": "Fetches recent crypto news headlines and queries KOL/social market sentiment via the Otto AI API.",
+  "maxAmount": "0.05",
+  "params": {},
+  "steps": [
+    {
+      "label": "crypto-news — Otto AI (Circle x402 catalog)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/crypto-news",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "kol-sentiment — Otto AI (Circle x402 catalog)",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/kol-sentiment",
+      "maxAmount": "0.01"
+    }
+  ]
+}

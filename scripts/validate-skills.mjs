@@ -41,7 +41,7 @@ function validateManifest(name, m) {
 // top-level scalar whose value contains ": " (a colon-space, which YAML reads as
 // a nested mapping → "mapping values are not allowed here").
 function lintFrontmatter(name, fm) {
-  const lines = fm.split("\n");
+  const lines = fm.split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (/^\t|^ *\t/.test(line)) { err(name, `SKILL.md frontmatter line ${i + 1}: uses a tab; YAML requires spaces`); continue; }
@@ -72,7 +72,7 @@ function validateSkill(name) {
   if (!existsSync(join(dir, "SKILL.md"))) err(name, "missing SKILL.md");
   else {
     const md = readFileSync(join(dir, "SKILL.md"), "utf8");
-    const fm = md.match(/^---\n([\s\S]*?)\n---/);
+    const fm = md.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     const nm = fm && fm[1].match(/^name:\s*(.+)$/m);
     if (!nm) err(name, "SKILL.md missing YAML frontmatter name");
     else if (nm[1].trim() !== name) err(name, `SKILL.md frontmatter name "${nm[1].trim()}" must equal folder "${name}"`);
@@ -117,7 +117,7 @@ if (existsSync(META_DIR)) {
   for (const d of readdirSync(META_DIR, { withFileTypes: true }).filter((x) => x.isDirectory())) {
     const p = join(META_DIR, d.name, "SKILL.md");
     if (!existsSync(p)) continue;
-    const fm = readFileSync(p, "utf8").match(/^---\n([\s\S]*?)\n---/);
+    const fm = readFileSync(p, "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (!fm) err(`meta/${d.name}`, "SKILL.md missing YAML frontmatter");
     else lintFrontmatter(`meta/${d.name}`, fm[1]);
   }

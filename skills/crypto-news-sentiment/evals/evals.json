@@ -1,0 +1,24 @@
+{
+  "skill_name": "crypto-news-sentiment",
+  "evals": [
+    {
+      "id": "fetch-news-sentiment",
+      "prompt": "Get recent crypto news and kol sentiment.",
+      "expected_output": "Latest crypto news headlines and KOL sentiment statistics.",
+      "assertions": [
+        "The run calls GET https://x402.ottoai.services/crypto-news",
+        "The run calls GET https://x402.ottoai.services/kol-sentiment",
+        "Both steps use rail direct (Circle x402)"
+      ]
+    },
+    {
+      "id": "market-sentiment-check",
+      "prompt": "Is the crypto market bullish or bearish right now according to KOLs?",
+      "expected_output": "Current market sentiment analysis from social KOLs.",
+      "assertions": [
+        "The run calls GET https://x402.ottoai.services/kol-sentiment",
+        "The output includes bullish or bearish metrics"
+      ]
+    }
+  ]
+}
