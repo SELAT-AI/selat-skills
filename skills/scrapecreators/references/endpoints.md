@@ -1,6 +1,6 @@
 # scrapecreators — endpoints
 
-Multi-merchant social scraping across **AIsa** (X/Twitter — Circle x402 catalog, direct, Circle Gateway-batched), **StableSocial** (Instagram + TikTok — MPP, routed via the SELAT Router), and **Clado** (LinkedIn — MPP, routed). Every endpoint below is probe-verified live-payable (`selat-pay --probe-only`, 2026-07-10). Caps are a 5 USDC spending filter, not the live price.
+Multi-merchant social scraping across **AIsa** (X/Twitter — Circle x402 catalog, direct, Circle Gateway-batched), **StableSocial** (Instagram + TikTok — MPP, routed via the SELAT Router), and **Clado** (LinkedIn — MPP, routed). Every endpoint below is probe-verified live-payable (`selat-pay --probe-only`, 2026-07-10). Caps (`maxAmount`) are ~10x each live price, not the live price.
 
 ## Endpoints used
 
@@ -19,7 +19,7 @@ Multi-merchant social scraping across **AIsa** (X/Twitter — Circle x402 catalo
 | 11 | TikTok hashtag search — StableSocial | POST | `https://stablesocial.dev/api/tiktok/search-hashtag` body `{"hashtag":"${hashtag}"}` | routed MPP | $0.063 |
 | 12 | TikTok trending via keyword search — StableSocial | POST | `https://stablesocial.dev/api/tiktok/search` body `{"query":"trending"}` | routed MPP | $0.063 |
 
-Full-run cap (`maxAmount`): **$5.00** (loose spending filter); per-step cap **$5.00**. Live total across all 12 steps ≈ **$0.45**.
+Per-step caps (`maxAmount`): **~10x each live price ($0.10–$0.75)**; full-run fallback cap **$0.75**. Live total across all 12 steps ≈ **$0.45**.
 
 ## Capability notes
 

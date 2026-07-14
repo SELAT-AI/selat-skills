@@ -1,6 +1,6 @@
 # find-twitter-influencers — endpoints
 
-Every endpoint below is probe-verified live-payable (probe-verified 2026-07-10 with `selat-pay --probe-only`). Caps are a 5 USDC spending filter, not the live price. Rails: `routed` = MPP via the SELAT Router (Locus / Tempo gateways); `direct` = Circle x402 catalog (AIsa), paid direct and Circle Gateway-batched.
+Every endpoint below is probe-verified live-payable (probe-verified 2026-07-10 with `selat-pay --probe-only`). Caps (`maxAmount`) are ~10x each live price, not the live price. Rails: `routed` = MPP via the SELAT Router (Locus / Tempo gateways); `direct` = Circle x402 catalog (AIsa), paid direct and Circle Gateway-batched.
 
 | Merchant | Rail | Endpoint | Live price |
 |---|---|---|---|

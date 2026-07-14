@@ -46,7 +46,7 @@ Outputs: Hunter returns email/verification/company JSON; Apollo returns an enric
 ## Gotchas
 
 - **All five steps are routed.** The whole run needs `SELAT_ROUTER_URL` configured and the router reachable — there is no direct fallback.
-- Per-step caps are a loose **$5.00** filter; live prices (probe-verified 2026-07-10) sum to about **$0.089** per run. Clado contacts ($0.04515) dominates the cost.
+- Per-step caps are **~10x each live price ($0.10–$0.50)**; live prices (probe-verified 2026-07-10) sum to about **$0.089** per run. Clado contacts ($0.04515) dominates the cost.
 - Step 2 needs an email. If you do not pass `--email`, feed the address returned by step 1 before running the verifier.
 - Step 4 (Clado contacts) keys entirely off `linkedinUrl` — without a real LinkedIn URL the phone lookup cannot match. Step 3 (Apollo) also matches much better with it.
 - Steps run independently (continue-across-steps): one merchant can succeed while another fails — check the per-step summary.

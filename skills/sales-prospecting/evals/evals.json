@@ -9,7 +9,7 @@
         "All six steps use rail \"routed\"",
         "The Hunter step is a POST to https://hunter.mpp.paywithlocus.com/hunter/domain-search with domain in the body",
         "The email verification step calls https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
-        "The run respects the top-level maxAmount cap of 5.00"
+        "The run respects the top-level maxAmount cap of 1.00"
       ]
     },
     {
@@ -45,10 +45,10 @@
     {
       "id": "routed-rail-and-caps",
       "prompt": "How much could a full sales-prospecting run cost and which payment rail does it use?",
-      "expected_output": "Explains that every step is routed MPP via the SELAT Router, the run is capped at 5.00 USDC (a loose spending filter), and the live prices (probe-verified 2026-07-10) are $0.10815 domain-search, $0.01365 email-finder, $0.0084 email-verifier, and $0.0063 company-enrichment lookup.",
+      "expected_output": "Explains that every step is routed MPP via the SELAT Router, per-step caps are ~10x each live price ($0.10–$1.00), and the live prices (probe-verified 2026-07-10) are $0.10815 domain-search, $0.01365 email-finder, $0.0084 email-verifier, and $0.0063 company-enrichment lookup.",
       "assertions": [
         "The answer states all steps are routed (MPP via SELAT Router)",
-        "The answer cites the 5.00 top-level maxAmount cap as a loose filter, distinct from the live prices",
+        "The answer cites the 1.00 top-level maxAmount fallback cap as a ceiling, distinct from the live prices",
         "No direct-rail step is claimed"
       ]
     },

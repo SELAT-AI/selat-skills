@@ -41,7 +41,7 @@
         "Cheaper resolve/anchor tiers are attempted before any escalate-tier call",
         "At least one escalate-tier endpoint is called (clado.mpp.paywithlocus.com/clado/contacts or /clado/search)",
         "The escalation is justified by a phone/personal-email gap left by the cheaper tiers",
-        "The per-step maxAmount caps are respected and the run stays under the $5.00 full-run cap"
+        "The per-step maxAmount caps ($0.10–$1.00, ~10x each live price) are respected"
       ]
     },
     {

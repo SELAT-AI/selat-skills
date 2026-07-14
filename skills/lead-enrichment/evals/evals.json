@@ -8,7 +8,7 @@
       "assertions": [
         "All five steps use rail \"routed\" via the SELAT Router",
         "Steps target hunter.mpp.paywithlocus.com, apollo.mpp.paywithlocus.com, and clado.mpp.paywithlocus.com hosts",
-        "The run cap does not exceed maxAmount 5.00",
+        "The run cap does not exceed the per-step maxAmounts (0.10–0.50)",
         "The output references both an email-finder and an email-verifier step",
         "No 'orth' or 'orth run' command appears in the workflow"
       ]
@@ -30,7 +30,7 @@
       "assertions": [
         "Find-phone step posts to https://clado.mpp.paywithlocus.com/clado/contacts",
         "The body includes a linkedin_url field set to the lead's LinkedIn URL",
-        "Step maxAmount is 5.00"
+        "Step maxAmount is 0.50"
       ]
     },
     {
@@ -40,7 +40,7 @@
       "assertions": [
         "Company step posts to https://hunter.mpp.paywithlocus.com/hunter/company-enrichment with a domain field",
         "The step is routed MPP",
-        "Step maxAmount is 5.00"
+        "Step maxAmount is 0.15"
       ]
     },
     {
@@ -50,7 +50,7 @@
       "assertions": [
         "Apollo step posts to https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
         "The body uses Apollo-native fields: first_name, last_name, organization_name, linkedin_url",
-        "Step maxAmount is 5.00"
+        "Step maxAmount is 0.10"
       ]
     },
     {

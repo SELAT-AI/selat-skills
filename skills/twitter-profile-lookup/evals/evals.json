@@ -29,7 +29,7 @@
       "assertions": [
         "The run resolves the handle to AnthropicAI",
         "The last_tweets step is invoked",
-        "Per-step and full-run maxAmount are the loose 5.00 cap; live prices are $0.00044 (profile) and $0.0036 (last tweets)"
+        "Per-step and full-run maxAmount are 0.10; live prices are $0.00044 (profile) and $0.0036 (last tweets)"
       ]
     },
     {

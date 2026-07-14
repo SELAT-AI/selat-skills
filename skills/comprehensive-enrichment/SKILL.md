@@ -48,7 +48,7 @@ Outputs: each step returns its provider's JSON (profile objects, email verificat
 ## Gotchas
 
 - **All steps are routed**: every step needs `SELAT_ROUTER_URL` set and the router reachable. There is no direct fallback.
-- **Manifest cap is $5.00**; the sum of live prices (probe-verified 2026-07-10) is ~$0.58 per full run. The priciest steps are Clado search ($0.31815), Hunter domain-search ($0.10815), and Clado contacts ($0.04515); skip Clado search for public megacorps to save cost.
+- **Per-step caps are ~10x each live price (max $1.00; manifest fallback cap $1.00)**; the sum of live prices (probe-verified 2026-07-10) is ~$0.58 per full run. The priciest steps are Clado search ($0.31815), Hunter domain-search ($0.10815), and Clado contacts ($0.04515); skip Clado search for public megacorps to save cost.
 - **Provide matching params**: a verifier step with an empty `email`, or a domain step with an empty `domain`, will return little of value — pass the identifiers you actually have.
 - **Phone needs a LinkedIn URL**: the phone step is Clado contacts, which enriches by `linkedinUrl` — without it, there is no phone lookup.
 - **Funding + investors are one step**: the Diffbot KG enhance Organization record includes both, so don't look for a separate investors step.

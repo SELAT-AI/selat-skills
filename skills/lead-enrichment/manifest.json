@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "lead-enrichment",
   "description": "Multi-source lead enrichment, fully routed through the SELAT Router (MPP). Finds and verifies a work email (Hunter), enriches the lead (Apollo), discovers a phone number and contact details (Clado), and enriches the company (Hunter). One run chains three paid MPP merchants across five steps.",
-  "maxAmount": "5.00",
+  "maxAmount": "0.50",
   "params": {
     "firstName": {
       "required": true,
@@ -46,7 +46,7 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "verify email — Hunter Email Verifier (MPP, ROUTED via SELAT Router)",
@@ -56,7 +56,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "enrich lead — Apollo People Enrichment (MPP, ROUTED via SELAT Router)",
@@ -69,7 +69,7 @@
         "organization_name": "${company}",
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "find phone — Clado Contacts (MPP, ROUTED via SELAT Router)",
@@ -79,7 +79,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.50"
     },
     {
       "label": "enrich company — Hunter Company Enrichment (MPP, ROUTED via SELAT Router)",
@@ -89,7 +89,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     }
   ]
 }

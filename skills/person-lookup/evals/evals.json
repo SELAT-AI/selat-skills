@@ -29,7 +29,7 @@
       "assertions": [
         "The skill activates on a contact-info / social-profile request about a named person",
         "The query includes disambiguating context (company or title)",
-        "The maxAmount cap is respected (full-run cap $5.00)"
+        "The maxAmount cap is respected (full-run cap $1.00)"
       ]
     },
     {

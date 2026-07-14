@@ -51,7 +51,7 @@ Outputs: a merged JSON object with `person` (name, title, linkedin_url, location
 - The old separate expensive AI person-fallback step was **merged into step 1**: its replacement resolved to the same Apollo `people-enrichment` endpoint with the same params, so a separate fallback call would just repeat step 1. If step 1 finds no person, the Hunter steps (2 and 6) are the remaining person sources.
 - The product/pricing buying-signal call (formerly Brand.dev `ai/products`) has **no equivalent** among the replacement merchants and was removed from the workflow — a capability gap, not an oversight.
 - The source skill's free GitHub-stars step is **dropped**: GitHub's public API is not a payable merchant, so it cannot be expressed as an inert payment step.
-- Live prices sum to ≈ $0.083 for all 8 manifest steps (worst case); a typical waterfall (steps 1-4 + the org gap-fill) costs ≈ $0.056. Per-step `maxAmount` values are loose $5.00 spending filters, not price estimates.
+- Live prices sum to ≈ $0.083 for all 8 manifest steps (worst case); a typical waterfall (steps 1-4 + the org gap-fill) costs ≈ $0.056. Per-step `maxAmount` values are ~10x each live price ($0.10–$0.25) — ceilings, not price estimates.
 - Steps run independently: gate the conditional steps (5-8 and job-postings) on prior results so you do not pay for gap-fill or buying-signal calls on unqualified leads.
 - The Abstract Company Enrichment lookup should be skipped for free-email providers (gmail/yahoo/outlook/etc.) to save $0.0063.
 - All calls in this waterfall are synchronous — no async polling.

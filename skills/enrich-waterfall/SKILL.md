@@ -79,8 +79,8 @@ and **stop climbing a branch the moment you have what you need**:
 5. **verify** ($0.0084) — last: Hunter `email-verifier` confirms the chosen email
    is deliverable before shipping it.
 
-Per-step caps come from each step's `maxAmount` (a loose $5.00 filter); the
-full-run cap is `maxAmount` `$5.00` at the manifest top level. Live prices for all
+Per-step caps come from each step's `maxAmount` (~10x each live price,
+$0.10–$1.00); the manifest top-level fallback `maxAmount` is `$1.00`. Live prices for all
 20 steps sum to ≈ $0.74, and running every branch is rarely necessary — a typical
 resolve + anchor + one escalate + verify is well under ten cents.
 
@@ -114,7 +114,7 @@ the canonical result, and ship only an email that passed the verify tier.
   x402 call and settles via Circle Gateway.
 - **Don't run all 20 steps.** The manifest is a menu ordered cheapest-first; the
   agent walks it and stops per the stop/escalation conditions above. Blindly running
-  every branch wastes money (≈ $0.74 for everything) against the $5.00 cap.
+  every branch wastes money (≈ $0.74 for everything) even within the per-step caps.
 - **`organizationId` is a chained input** — Apollo `job-postings` takes an
   organization id, not a domain; pull it from the Apollo org-enrichment/org-search
   response before firing the hiring-signals step.

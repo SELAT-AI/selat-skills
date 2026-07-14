@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-smart",
   "description": "Multi-provider waterfall lead enrichment, routed via the SELAT Router (MPP) with one direct Circle x402 step. Takes an email (+ optional name) and returns person + company data by cross-referencing cheap routed APIs first (Apollo, Hunter, Abstract Company Enrichment via Locus), with buying-signal and AIsa Twitter social-proof gap-fills.",
-  "maxAmount": "5.00",
+  "maxAmount": "0.25",
   "params": {
     "email": {
       "required": true,
@@ -35,7 +35,7 @@
         "email": "${email}",
         "reveal_personal_emails": true
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "person + company combined — Hunter combined-enrichment (MPP, ROUTED via SELAT Router)",
@@ -45,7 +45,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.25"
     },
     {
       "label": "email deliverability — Hunter email-verifier (MPP, ROUTED via SELAT Router)",
@@ -55,7 +55,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "company brand — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router; skip for free email)",
@@ -65,7 +65,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "company gap-fill — Apollo org-enrichment (MPP, ROUTED via SELAT Router; only if funding missing)",
@@ -75,7 +75,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "person tie-breaker — Hunter email-enrichment (MPP, ROUTED via SELAT Router; only if sources conflict)",
@@ -85,7 +85,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "company fallback — Hunter company-enrichment (MPP, ROUTED via SELAT Router; only if major gaps + >500 employees)",
@@ -95,14 +95,14 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "social proof — AIsa Twitter user-info API (Circle x402 catalog; DIRECT, Circle Gateway-batched; only if Twitter handle found)",
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${twitterHandle}",
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     }
   ]
 }

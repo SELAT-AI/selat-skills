@@ -46,7 +46,7 @@ Outputs: a merged JSON object with `person` (full_name, title, linkedin_url, loc
 
 - Every step is **routed**: `SELAT_ROUTER_URL` must be set and the router reachable for both the Apollo and Hunter merchants (via Locus).
 - Step 3 is a **conditional fallback**. Only run Apollo `/apollo/org-enrichment` if Hunter returned no funding data. A full run with the fallback costs ≈ $0.03 (0.0084 + 0.01365 + 0.0084); without it ≈ $0.022.
-- Caps are per step (`maxAmount`, a loose 5 USDC spending filter); they are not pooled.
+- Caps are per step (`maxAmount`, ~10x each live price: $0.10–$0.15); they are not pooled.
 - All three steps are POST with a JSON body — the org-enrichment domain goes in the body, not the query string.
 - No endpoint returns an AI/B2B-SaaS classification; infer it from description/keywords and mark low confidence.
 

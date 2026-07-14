@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "person-lookup",
   "description": "Look up a person — work history, education, social profiles, and contact info — via Clado's natural-language people search, routed through the SELAT Router (MPP via Locus).",
-  "maxAmount": "5.00",
+  "maxAmount": "1.00",
   "params": {
     "query": {
       "required": true,
@@ -19,7 +19,7 @@
       "body": {
         "query": "${query}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "1.00"
     }
   ]
 }

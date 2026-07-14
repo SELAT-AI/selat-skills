@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "scrapecreators",
   "description": "Multi-merchant social media scraping across AIsa (X/Twitter — Circle x402 catalog, DIRECT, Circle Gateway-batched), StableSocial (Instagram + TikTok — MPP, ROUTED via the SELAT Router), and Clado (LinkedIn — MPP, ROUTED): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI.",
-  "maxAmount": "5.00",
+  "maxAmount": "0.75",
   "params": {
     "handle": {
       "required": false,
@@ -46,21 +46,21 @@
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "X/Twitter user tweets — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "X/Twitter tweet details — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/tweets?tweet_ids=${tweetId}",
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "LinkedIn profile — Clado (MPP, ROUTED via SELAT Router)",
@@ -70,7 +70,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "LinkedIn post — Clado scrape (MPP, ROUTED via SELAT Router)",
@@ -80,7 +80,7 @@
       "body": {
         "linkedin_url": "${linkedinPostUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.25"
     },
     {
       "label": "LinkedIn company page — Clado scrape (MPP, ROUTED via SELAT Router)",
@@ -90,7 +90,7 @@
       "body": {
         "linkedin_url": "${linkedinCompanyUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.25"
     },
     {
       "label": "Instagram profile — StableSocial (MPP, ROUTED via SELAT Router)",
@@ -100,7 +100,7 @@
       "body": {
         "handle": "${handle}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.75"
     },
     {
       "label": "Instagram profile by handle — StableSocial (MPP, ROUTED via SELAT Router)",
@@ -110,7 +110,7 @@
       "body": {
         "handle": "${instagramHandle}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.75"
     },
     {
       "label": "Instagram recent posts — StableSocial (MPP, ROUTED via SELAT Router)",
@@ -120,7 +120,7 @@
       "body": {
         "handle": "${handle}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.75"
     },
     {
       "label": "TikTok profile — StableSocial (MPP, ROUTED via SELAT Router)",
@@ -130,7 +130,7 @@
       "body": {
         "handle": "${handle}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.75"
     },
     {
       "label": "TikTok hashtag search — StableSocial (MPP, ROUTED via SELAT Router)",
@@ -140,7 +140,7 @@
       "body": {
         "hashtag": "${hashtag}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.75"
     },
     {
       "label": "TikTok trending via keyword search — StableSocial (MPP, ROUTED via SELAT Router)",
@@ -150,7 +150,7 @@
       "body": {
         "query": "trending"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.75"
     }
   ]
 }

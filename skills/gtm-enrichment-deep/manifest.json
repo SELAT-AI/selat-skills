@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-deep",
   "description": "Deep GTM lead enrichment from an email (+ optional name). Apollo people enrichment is the primary source for person identity + LinkedIn, Hunter for company data, and Apollo organization enrichment is the routed fallback for funding. All steps are routed MPP via the SELAT Router.",
-  "maxAmount": "5.00",
+  "maxAmount": "0.15",
   "params": {
     "email": {
       "required": true,
@@ -44,7 +44,7 @@
         "domain": "${domain}",
         "reveal_personal_emails": true
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "enrich company — Hunter (MPP, ROUTED via SELAT Router)",
@@ -54,7 +54,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "fallback org enrich — Apollo (MPP, ROUTED via SELAT Router) — run only if Hunter returned no funding data",
@@ -64,7 +64,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     }
   ]
 }

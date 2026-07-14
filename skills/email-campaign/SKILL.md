@@ -49,7 +49,7 @@ Outputs: Hunter returns email lists / verification verdicts (deliverability + bo
 
 - All seven steps are **routed** MPP payments — the run needs `SELAT_ROUTER_URL` configured and the router reachable; there is no direct rail in this skill.
 - The MPP-routed Hunter endpoints are **POST** with a JSON body (`{domain}`, `{email}`, `{domain,first_name,last_name}`) — not the GET/query form from the upstream Hunter docs.
-- Per-step live prices (probe-verified 2026-07-10): $0.10815 + $0.01365 + $0.0084 + $0.0084 + $0.0084 + $0.0063 ≈ **$0.1533** for a full manifest run; the per-step and top-level `maxAmount` of 5.00 USDC is a loose spending filter, not the price.
+- Per-step live prices (probe-verified 2026-07-10): $0.10815 + $0.01365 + $0.0084 + $0.0084 + $0.0084 + $0.0063 ≈ **$0.1533** for a full manifest run; per-step `maxAmount` caps are ~10x each live price ($0.10–$1.00; top-level fallback $1.00) — a ceiling, not the price.
 - Hunter `domain-search` is the most expensive step ($0.10815) — drop it if you already know your target person and only need find + verify + enrich.
 - The bounce check (step 5) is a second pass through the same Hunter `email-verifier` endpoint as step 4 — Hunter's verdict already covers bounce risk and catch-all domains, so drop one of the two if a single verification is enough.
 - Steps run independently: a later step can succeed even if an earlier one fails; always read the per-step summary.

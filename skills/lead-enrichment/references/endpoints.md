@@ -1,6 +1,6 @@
 # lead-enrichment — endpoints
 
-Every endpoint below is probe-verified live-payable over MPP via the SELAT Router (`selat-pay --probe-only`, verified 2026-07-10). Caps are a 5 USDC spending filter, not the live price.
+Every endpoint below is probe-verified live-payable over MPP via the SELAT Router (`selat-pay --probe-only`, verified 2026-07-10). Caps (`maxAmount`) are ~10x each live price, not the live price.
 
 | Merchant | Endpoint | Live price |
 |---|---|---|

@@ -41,7 +41,7 @@ Outputs: news-search results — a list of articles, each with title, descriptio
 ## Gotchas
 
 - The routed step needs `SELAT_ROUTER_URL` configured and the router reachable — there is no direct rail in this skill.
-- Live price is $0.03675 per call (probe-verified 2026-07-10); the manifest's $5.00 caps are a loose spending filter, not the price.
+- Live price is $0.03675 per call (probe-verified 2026-07-10); the manifest's $0.40 caps (~10x live) are a ceiling, not the price.
 - This is a news search, not a funding database: no `date_start`/`date_end`, `financing_types`, or `size_min` filters exist. Encode round type or size hints in the query wording and filter results client-side.
 - Coverage skews toward rounds that got press; small or unannounced raises may not appear at all.
 

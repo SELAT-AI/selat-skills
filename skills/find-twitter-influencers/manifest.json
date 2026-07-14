@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "find-twitter-influencers",
   "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the company (Apollo org search, Abstract Company Enrichment), discovers curated listicles (Exa), pulls Twitter profiles and engagement (AIsa, Circle x402 catalog), and enriches contacts (Hunter, Clado). Mixed rail: most steps are MPP-routed via the SELAT Router; the AIsa Twitter steps are direct Circle x402 calls.",
-  "maxAmount": "5.00",
+  "maxAmount": "0.50",
   "params": {
     "company": {
       "required": true,
@@ -59,7 +59,7 @@
       "body": {
         "q_organization_name": "${company}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "resolve company by domain — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
@@ -69,7 +69,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "discover curated influencer listicles — Exa search (MPP, ROUTED via SELAT Router)",
@@ -85,7 +85,7 @@
           }
         }
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "expand from a strong listicle — Exa findSimilar (MPP, ROUTED via SELAT Router)",
@@ -101,21 +101,21 @@
           }
         }
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "fetch Twitter profile + counts — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "fetch top tweets + engagement — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "find email by name + domain — Hunter email-finder (MPP, ROUTED via SELAT Router)",
@@ -127,7 +127,7 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "LinkedIn-to-contact (email + phone) — Clado contacts (MPP, ROUTED via SELAT Router)",
@@ -137,7 +137,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.50"
     }
   ]
 }

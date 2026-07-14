@@ -48,10 +48,10 @@
     {
       "id": "cost-cap-respected",
       "prompt": "Enrich acme.com but keep it cheap — skip the expensive lookups.",
-      "expected_output": "Runs company steps for acme.com, and the user can drop the priciest steps; total spend stays under the $5.00 manifest cap (live-price sum is ~$0.58).",
+      "expected_output": "Runs company steps for acme.com, and the user can drop the priciest steps; total spend stays within the per-step caps (live-price sum is ~$0.58; manifest fallback cap $1.00).",
       "assertions": [
         "domain param is set to acme.com",
-        "The total run respects the manifest maxAmount of 5.00",
+        "The total run respects the manifest maxAmount of 1.00",
         "Each executed step's spend is bounded by its per-step maxAmount",
         "Clado search ($0.31815) and Hunter domain-search ($0.10815) are identified as the most expensive and skippable"
       ]
