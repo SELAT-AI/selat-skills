@@ -1,6 +1,6 @@
 {
   "schema": "selat-reliability/v1",
-  "generatedAt": "2026-07-15T02:25:17.612Z",
+  "generatedAt": "2026-07-15T04:26:56.485Z",
   "method": "selat-pay --probe-only (free live-402 quote; no paid call)",
   "router": "https://router.selat.ai",
   "summary": {
@@ -14,7 +14,7 @@
       "name": "account-intel",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "X/Twitter profile — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
@@ -26,7 +26,7 @@
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1396,
+          "latencyMs": 1211,
           "error": null
         },
         {
@@ -39,7 +39,7 @@
           "reachable": true,
           "livePriceUsd": 0.0036,
           "withinCap": true,
-          "latencyMs": 1251,
+          "latencyMs": 1140,
           "error": null
         },
         {
@@ -52,7 +52,7 @@
           "reachable": true,
           "livePriceUsd": 0.0024,
           "withinCap": true,
-          "latencyMs": 1313,
+          "latencyMs": 1277,
           "error": null
         },
         {
@@ -65,7 +65,7 @@
           "reachable": true,
           "livePriceUsd": 0.03675,
           "withinCap": true,
-          "latencyMs": 1147,
+          "latencyMs": 1049,
           "error": null
         },
         {
@@ -78,7 +78,7 @@
           "reachable": true,
           "livePriceUsd": 0.00735,
           "withinCap": true,
-          "latencyMs": 863,
+          "latencyMs": 734,
           "error": null
         },
         {
@@ -91,7 +91,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 617,
+          "latencyMs": 525,
           "error": null
         }
       ]
@@ -100,175 +100,175 @@
       "name": "comprehensive-enrichment",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "person deep search — Clado search (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 1,
           "url": "https://clado.mpp.paywithlocus.com/clado/search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.31815,
           "withinCap": true,
-          "latencyMs": 874,
+          "latencyMs": 881,
           "error": null
         },
         {
           "label": "person enrichment — Apollo people-enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 887,
+          "latencyMs": 802,
           "error": null
         },
         {
           "label": "email enrich — Hunter email-enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 854,
+          "latencyMs": 868,
           "error": null
         },
         {
           "label": "find work email — Hunter email-finder",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 648,
+          "latencyMs": 613,
           "error": null
         },
         {
           "label": "verify email — Hunter email-verifier",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 675,
+          "latencyMs": 659,
           "error": null
         },
         {
           "label": "phone — Clado contacts (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.5,
           "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.04515,
           "withinCap": true,
-          "latencyMs": 639,
+          "latencyMs": 605,
           "error": null
         },
         {
           "label": "person research — Exa search (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://exa.mpp.tempo.xyz/search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 1727,
+          "latencyMs": 2811,
           "error": null
         },
         {
           "label": "company overview — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0063,
           "withinCap": true,
-          "latencyMs": 845,
+          "latencyMs": 838,
           "error": null
         },
         {
           "label": "company emails — Hunter domain-search",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.10815,
           "withinCap": true,
-          "latencyMs": 649,
+          "latencyMs": 741,
           "error": null
         },
         {
           "label": "funding + investors — Diffbot KG enhance (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.4,
           "url": "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.03675,
           "withinCap": true,
-          "latencyMs": 822,
+          "latencyMs": 781,
           "error": null
         },
         {
           "label": "pricing/features — Firecrawl extract (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://firecrawl.mpp.tempo.xyz/v1/extract",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 772,
+          "latencyMs": 2421,
           "error": null
         },
         {
           "label": "competitors — Exa findSimilar",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://exa.mpp.tempo.xyz/findSimilar",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 774,
+          "latencyMs": 653,
           "error": null
         },
         {
           "label": "company research — Exa search (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://exa.mpp.tempo.xyz/search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 722,
+          "latencyMs": 646,
           "error": null
         }
       ]
@@ -277,84 +277,84 @@
       "name": "email-campaign",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "emails by domain — Hunter (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.10815,
           "withinCap": true,
-          "latencyMs": 648,
+          "latencyMs": 753,
           "error": null
         },
         {
           "label": "find person email — Hunter (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 633,
+          "latencyMs": 582,
           "error": null
         },
         {
           "label": "verify deliverability — Hunter (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 640,
+          "latencyMs": 621,
           "error": null
         },
         {
           "label": "bounce check — Hunter (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 649,
+          "latencyMs": 590,
           "error": null
         },
         {
           "label": "enrich lead — Apollo (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 828,
+          "latencyMs": 748,
           "error": null
         },
         {
           "label": "company context — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0063,
           "withinCap": true,
-          "latencyMs": 797,
+          "latencyMs": 765,
           "error": null
         }
       ]
@@ -363,266 +363,266 @@
       "name": "enrich-waterfall",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "person resolve — Apollo people enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 643,
+          "latencyMs": 582,
           "error": null
         },
         {
           "label": "person resolve by email — Hunter email enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 643,
+          "latencyMs": 583,
           "error": null
         },
         {
           "label": "person resolve by LinkedIn URL — Clado LinkedIn profile (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 794,
+          "latencyMs": 751,
           "error": null
         },
         {
           "label": "person+company resolve by email — Hunter combined enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.25,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.02415,
           "withinCap": true,
-          "latencyMs": 638,
+          "latencyMs": 599,
           "error": null
         },
         {
           "label": "company anchor (no domain) — Apollo org search by name (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 631,
+          "latencyMs": 586,
           "error": null
         },
         {
           "label": "company anchor — Abstract Company Enrichment lookup by domain (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0063,
           "withinCap": true,
-          "latencyMs": 642,
+          "latencyMs": 584,
           "error": null
         },
         {
           "label": "company anchor + tech + headcount — Apollo org enrichment by domain (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 639,
+          "latencyMs": 603,
           "error": null
         },
         {
           "label": "company anchor — Hunter company enrichment by domain (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 635,
+          "latencyMs": 585,
           "error": null
         },
         {
           "label": "email find by name — Hunter email-finder (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 664,
+          "latencyMs": 589,
           "error": null
         },
         {
           "label": "X/Twitter profile — AIsa user info (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=John%20Doe",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1311,
+          "latencyMs": 1276,
           "error": null
         },
         {
           "label": "LinkedIn person/company posts — Clado scrape (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.25,
           "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.02415,
           "withinCap": true,
-          "latencyMs": 797,
+          "latencyMs": 746,
           "error": null
         },
         {
           "label": "Instagram profile — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/instagram/profile",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 1015,
+          "latencyMs": 929,
           "error": null
         },
         {
           "label": "TikTok profile — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/tiktok/profile",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 862,
+          "latencyMs": 801,
           "error": null
         },
         {
           "label": "job openings / hiring signals — Apollo job postings by org id (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/job-postings",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 808,
+          "latencyMs": 786,
           "error": null
         },
         {
           "label": "news events — Brave news search for company (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.4,
           "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.03675,
           "withinCap": true,
-          "latencyMs": 785,
+          "latencyMs": 764,
           "error": null
         },
         {
           "label": "financing events — Brave news search for funding rounds (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.4,
           "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.03675,
           "withinCap": true,
-          "latencyMs": 634,
+          "latencyMs": 593,
           "error": null
         },
         {
           "label": "business connections / KG record — Diffbot Knowledge Graph enhance (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.4,
           "url": "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.03675,
           "withinCap": true,
-          "latencyMs": 776,
+          "latencyMs": 755,
           "error": null
         },
         {
           "label": "contact reveal (email + phone) from LinkedIn — Clado contacts (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.5,
           "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.04515,
           "withinCap": true,
-          "latencyMs": 801,
+          "latencyMs": 761,
           "error": null
         },
         {
           "label": "person search by handle / natural language — Clado search (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 1,
           "url": "https://clado.mpp.paywithlocus.com/clado/search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.31815,
           "withinCap": true,
-          "latencyMs": 634,
+          "latencyMs": 595,
           "error": null
         },
         {
           "label": "email verify — Hunter email-verifier (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 793,
+          "latencyMs": 765,
           "error": null
         }
       ]
@@ -631,7 +631,7 @@
       "name": "fifa-stadium-hotel-planner",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "FIFA match and trip bundle - Fanfare (routed x402)",
@@ -643,7 +643,7 @@
           "reachable": true,
           "livePriceUsd": 0.2625,
           "withinCap": true,
-          "latencyMs": 1315,
+          "latencyMs": 924,
           "error": null
         },
         {
@@ -656,7 +656,7 @@
           "reachable": true,
           "livePriceUsd": 0.0336,
           "withinCap": true,
-          "latencyMs": 783,
+          "latencyMs": 2671,
           "error": null
         },
         {
@@ -669,7 +669,7 @@
           "reachable": true,
           "livePriceUsd": 0.01785,
           "withinCap": true,
-          "latencyMs": 708,
+          "latencyMs": 624,
           "error": null
         },
         {
@@ -682,7 +682,7 @@
           "reachable": true,
           "livePriceUsd": 0.01785,
           "withinCap": true,
-          "latencyMs": 725,
+          "latencyMs": 632,
           "error": null
         },
         {
@@ -695,7 +695,7 @@
           "reachable": true,
           "livePriceUsd": 0.0336,
           "withinCap": true,
-          "latencyMs": 721,
+          "latencyMs": 630,
           "error": null
         },
         {
@@ -708,7 +708,7 @@
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 718,
+          "latencyMs": 637,
           "error": null
         },
         {
@@ -721,7 +721,7 @@
           "reachable": true,
           "livePriceUsd": 0.0021,
           "withinCap": true,
-          "latencyMs": 843,
+          "latencyMs": 624,
           "error": null
         }
       ]
@@ -730,7 +730,7 @@
       "name": "financial-intel",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "spot price — Alchemy (direct nanopayment, Circle Gateway-batched)",
@@ -742,7 +742,7 @@
           "reachable": true,
           "livePriceUsd": 0.001,
           "withinCap": true,
-          "latencyMs": 611,
+          "latencyMs": 522,
           "error": null
         },
         {
@@ -755,7 +755,7 @@
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 881,
+          "latencyMs": 778,
           "error": null
         },
         {
@@ -768,7 +768,7 @@
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 939,
+          "latencyMs": 792,
           "error": null
         },
         {
@@ -781,7 +781,7 @@
           "reachable": true,
           "livePriceUsd": 0.0525,
           "withinCap": true,
-          "latencyMs": 938,
+          "latencyMs": 964,
           "error": null
         },
         {
@@ -794,7 +794,7 @@
           "reachable": true,
           "livePriceUsd": 0.1575,
           "withinCap": true,
-          "latencyMs": 797,
+          "latencyMs": 843,
           "error": null
         },
         {
@@ -807,7 +807,7 @@
           "reachable": true,
           "livePriceUsd": 0.00735,
           "withinCap": true,
-          "latencyMs": 744,
+          "latencyMs": 655,
           "error": null
         }
       ]
@@ -816,40 +816,14 @@
       "name": "find-twitter-influencers",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "resolve company by name — Apollo org search (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
-          "mode": "routed-mpp",
-          "reachable": true,
-          "livePriceUsd": 0.00525,
-          "withinCap": true,
-          "latencyMs": 803,
-          "error": null
-        },
-        {
-          "label": "resolve company by domain — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
-          "rail": "routed",
-          "method": "POST",
-          "maxAmount": 5,
-          "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-          "mode": "routed-mpp",
-          "reachable": true,
-          "livePriceUsd": 0.0063,
-          "withinCap": true,
-          "latencyMs": 807,
-          "error": null
-        },
-        {
-          "label": "discover curated influencer listicles — Exa search (MPP, ROUTED via SELAT Router)",
-          "rail": "routed",
-          "method": "POST",
-          "maxAmount": 5,
-          "url": "https://exa.mpp.tempo.xyz/search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
@@ -858,68 +832,94 @@
           "error": null
         },
         {
+          "label": "resolve company by domain — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
+          "rail": "routed",
+          "method": "POST",
+          "maxAmount": 0.1,
+          "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
+          "mode": "routed-mpp",
+          "reachable": true,
+          "livePriceUsd": 0.0063,
+          "withinCap": true,
+          "latencyMs": 740,
+          "error": null
+        },
+        {
+          "label": "discover curated influencer listicles — Exa search (MPP, ROUTED via SELAT Router)",
+          "rail": "routed",
+          "method": "POST",
+          "maxAmount": 0.1,
+          "url": "https://exa.mpp.tempo.xyz/search",
+          "mode": "routed-mpp",
+          "reachable": true,
+          "livePriceUsd": 0.00525,
+          "withinCap": true,
+          "latencyMs": 656,
+          "error": null
+        },
+        {
           "label": "expand from a strong listicle — Exa findSimilar (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://exa.mpp.tempo.xyz/findSimilar",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 715,
+          "latencyMs": 646,
           "error": null
         },
         {
           "label": "fetch Twitter profile + counts — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=examplehandle",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1319,
+          "latencyMs": 1141,
           "error": null
         },
         {
           "label": "fetch top tweets + engagement — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=examplehandle",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.0036,
           "withinCap": true,
-          "latencyMs": 1215,
+          "latencyMs": 1107,
           "error": null
         },
         {
           "label": "find email by name + domain — Hunter email-finder (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 795,
+          "latencyMs": 731,
           "error": null
         },
         {
           "label": "LinkedIn-to-contact (email + phone) — Clado contacts (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.5,
           "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.04515,
           "withinCap": true,
-          "latencyMs": 794,
+          "latencyMs": 754,
           "error": null
         }
       ]
@@ -928,45 +928,45 @@
       "name": "gtm-enrichment-deep",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "enrich person — Apollo (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 799,
+          "latencyMs": 741,
           "error": null
         },
         {
           "label": "enrich company — Hunter (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 643,
+          "latencyMs": 589,
           "error": null
         },
         {
           "label": "fallback org enrich — Apollo (MPP, ROUTED via SELAT Router) — run only if Hunter returned no funding data",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 638,
+          "latencyMs": 595,
           "error": null
         }
       ]
@@ -975,110 +975,110 @@
       "name": "gtm-enrichment-smart",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "person enrich — Apollo people-enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 655,
+          "latencyMs": 591,
           "error": null
         },
         {
           "label": "person + company combined — Hunter combined-enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.25,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.02415,
           "withinCap": true,
-          "latencyMs": 635,
+          "latencyMs": 579,
           "error": null
         },
         {
           "label": "email deliverability — Hunter email-verifier (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 647,
+          "latencyMs": 580,
           "error": null
         },
         {
           "label": "company brand — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router; skip for free email)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0063,
           "withinCap": true,
-          "latencyMs": 803,
+          "latencyMs": 741,
           "error": null
         },
         {
           "label": "company gap-fill — Apollo org-enrichment (MPP, ROUTED via SELAT Router; only if funding missing)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 675,
+          "latencyMs": 583,
           "error": null
         },
         {
           "label": "person tie-breaker — Hunter email-enrichment (MPP, ROUTED via SELAT Router; only if sources conflict)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 661,
+          "latencyMs": 572,
           "error": null
         },
         {
           "label": "company fallback — Hunter company-enrichment (MPP, ROUTED via SELAT Router; only if major gaps + >500 employees)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 645,
+          "latencyMs": 581,
           "error": null
         },
         {
           "label": "social proof — AIsa Twitter user-info API (Circle x402 catalog; DIRECT, Circle Gateway-batched; only if Twitter handle found)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=elonmusk",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1330,
+          "latencyMs": 1239,
           "error": null
         }
       ]
@@ -1087,71 +1087,71 @@
       "name": "lead-enrichment",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "find email — Hunter Email Finder (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 638,
+          "latencyMs": 590,
           "error": null
         },
         {
           "label": "verify email — Hunter Email Verifier (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 654,
+          "latencyMs": 582,
           "error": null
         },
         {
           "label": "enrich lead — Apollo People Enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 810,
+          "latencyMs": 1034,
           "error": null
         },
         {
           "label": "find phone — Clado Contacts (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.5,
           "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.04515,
           "withinCap": true,
-          "latencyMs": 1057,
+          "latencyMs": 842,
           "error": null
         },
         {
           "label": "enrich company — Hunter Company Enrichment (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 657,
+          "latencyMs": 613,
           "error": null
         }
       ]
@@ -1160,19 +1160,19 @@
       "name": "person-lookup",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "person search — Clado (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 1,
           "url": "https://clado.mpp.paywithlocus.com/clado/search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.31815,
           "withinCap": true,
-          "latencyMs": 710,
+          "latencyMs": 657,
           "error": null
         }
       ]
@@ -1181,19 +1181,19 @@
       "name": "recent-funding-rounds",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "recent funding-round news — Brave Search (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.4,
           "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.03675,
           "withinCap": true,
-          "latencyMs": 857,
+          "latencyMs": 817,
           "error": null
         }
       ]
@@ -1202,58 +1202,58 @@
       "name": "sales-prospecting",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "all emails for domain — Hunter domain search (ROUTED MPP via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.10815,
           "withinCap": true,
-          "latencyMs": 665,
+          "latencyMs": 651,
           "error": null
         },
         {
           "label": "find specific contact email — Hunter email finder (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 641,
+          "latencyMs": 590,
           "error": null
         },
         {
           "label": "verify email deliverability — Hunter email verifier (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 641,
+          "latencyMs": 613,
           "error": null
         },
         {
           "label": "enrich with company data — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.0063,
           "withinCap": true,
-          "latencyMs": 792,
+          "latencyMs": 814,
           "error": null
         }
       ]
@@ -1262,162 +1262,162 @@
       "name": "scrapecreators",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "X/Twitter profile — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=openai",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1227,
+          "latencyMs": 1252,
           "error": null
         },
         {
           "label": "X/Twitter user tweets — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=openai",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.0036,
           "withinCap": true,
-          "latencyMs": 1305,
+          "latencyMs": 1116,
           "error": null
         },
         {
           "label": "X/Twitter tweet details — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/tweets?tweet_ids=1234567890123456789",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.0022,
           "withinCap": true,
-          "latencyMs": 1220,
+          "latencyMs": 1150,
           "error": null
         },
         {
           "label": "LinkedIn profile — Clado (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.15,
           "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.01365,
           "withinCap": true,
-          "latencyMs": 839,
+          "latencyMs": 802,
           "error": null
         },
         {
           "label": "LinkedIn post — Clado scrape (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.25,
           "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.02415,
           "withinCap": true,
-          "latencyMs": 634,
+          "latencyMs": 594,
           "error": null
         },
         {
           "label": "LinkedIn company page — Clado scrape (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.25,
           "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.02415,
           "withinCap": true,
-          "latencyMs": 630,
+          "latencyMs": 636,
           "error": null
         },
         {
           "label": "Instagram profile — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/instagram/profile",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 832,
+          "latencyMs": 955,
           "error": null
         },
         {
           "label": "Instagram profile by handle — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/instagram/profile",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 801,
+          "latencyMs": 742,
           "error": null
         },
         {
           "label": "Instagram recent posts — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/instagram/posts",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 854,
+          "latencyMs": 741,
           "error": null
         },
         {
           "label": "TikTok profile — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/tiktok/profile",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 889,
+          "latencyMs": 715,
           "error": null
         },
         {
           "label": "TikTok hashtag search — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/tiktok/search-hashtag",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 881,
+          "latencyMs": 712,
           "error": null
         },
         {
           "label": "TikTok trending via keyword search — StableSocial (MPP, ROUTED via SELAT Router)",
           "rail": "routed",
           "method": "POST",
-          "maxAmount": 5,
+          "maxAmount": 0.75,
           "url": "https://stablesocial.dev/api/tiktok/search",
           "mode": "routed-mpp",
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 832,
+          "latencyMs": 711,
           "error": null
         }
       ]
@@ -1426,7 +1426,7 @@
       "name": "self-evolving-agent",
       "rail": "routed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "Social alpha - Otto KOL sentiment",
@@ -1438,7 +1438,7 @@
           "reachable": true,
           "livePriceUsd": 0.00105,
           "withinCap": true,
-          "latencyMs": 1443,
+          "latencyMs": 1719,
           "error": null
         },
         {
@@ -1451,7 +1451,7 @@
           "reachable": true,
           "livePriceUsd": 0.00105,
           "withinCap": true,
-          "latencyMs": 1129,
+          "latencyMs": 1021,
           "error": null
         },
         {
@@ -1464,7 +1464,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 1329,
+          "latencyMs": 1127,
           "error": null
         }
       ]
@@ -1473,7 +1473,7 @@
       "name": "social-intel",
       "rail": "mixed",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "web context — Exa search (routed x402 via SELAT Router)",
@@ -1485,7 +1485,7 @@
           "reachable": true,
           "livePriceUsd": 0.00735,
           "withinCap": true,
-          "latencyMs": 713,
+          "latencyMs": 628,
           "error": null
         },
         {
@@ -1498,7 +1498,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 7191,
+          "latencyMs": 6294,
           "error": null
         },
         {
@@ -1511,7 +1511,7 @@
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 896,
+          "latencyMs": 768,
           "error": null
         },
         {
@@ -1524,7 +1524,7 @@
           "reachable": true,
           "livePriceUsd": 0.063,
           "withinCap": true,
-          "latencyMs": 868,
+          "latencyMs": 806,
           "error": null
         },
         {
@@ -1537,7 +1537,7 @@
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1213,
+          "latencyMs": 1141,
           "error": null
         },
         {
@@ -1550,7 +1550,7 @@
           "reachable": true,
           "livePriceUsd": 0.0036,
           "withinCap": true,
-          "latencyMs": 1340,
+          "latencyMs": 1125,
           "error": null
         },
         {
@@ -1563,7 +1563,7 @@
           "reachable": true,
           "livePriceUsd": 0.0022,
           "withinCap": true,
-          "latencyMs": 1334,
+          "latencyMs": 1140,
           "error": null
         }
       ]
@@ -1572,32 +1572,32 @@
       "name": "twitter-profile-lookup",
       "rail": "direct",
       "status": "ok",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "profile — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=openai",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.00044,
           "withinCap": true,
-          "latencyMs": 1235,
+          "latencyMs": 1147,
           "error": null
         },
         {
           "label": "recent tweets — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
           "rail": "direct",
           "method": "GET",
-          "maxAmount": 5,
+          "maxAmount": 0.1,
           "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=openai",
           "mode": "direct",
           "reachable": true,
           "livePriceUsd": 0.0036,
           "withinCap": true,
-          "latencyMs": 1227,
+          "latencyMs": 1126,
           "error": null
         }
       ]
@@ -1606,7 +1606,7 @@
       "name": "vc-ai-infra-scout",
       "rail": "mixed",
       "status": "degraded",
-      "checkedAt": "2026-07-15T02:25:17.612Z",
+      "checkedAt": "2026-07-15T04:26:56.485Z",
       "steps": [
         {
           "label": "Hacker News discovery — Tavily advanced search scoped to HN (direct x402, Circle registry)",
@@ -1618,7 +1618,7 @@
           "reachable": false,
           "livePriceUsd": null,
           "withinCap": false,
-          "latencyMs": 3088,
+          "latencyMs": 2755,
           "error": "Cannot convert 0.016 to a BigInt"
         },
         {
@@ -1631,7 +1631,7 @@
           "reachable": true,
           "livePriceUsd": 0.0105,
           "withinCap": true,
-          "latencyMs": 7226,
+          "latencyMs": 7004,
           "error": null
         },
         {
@@ -1644,7 +1644,7 @@
           "reachable": true,
           "livePriceUsd": 0.00735,
           "withinCap": true,
-          "latencyMs": 705,
+          "latencyMs": 782,
           "error": null
         },
         {
@@ -1657,7 +1657,7 @@
           "reachable": true,
           "livePriceUsd": 0.0022,
           "withinCap": true,
-          "latencyMs": 1216,
+          "latencyMs": 1122,
           "error": null
         },
         {
@@ -1670,7 +1670,7 @@
           "reachable": true,
           "livePriceUsd": 0.0022,
           "withinCap": true,
-          "latencyMs": 1218,
+          "latencyMs": 1131,
           "error": null
         },
         {
@@ -1683,7 +1683,7 @@
           "reachable": false,
           "livePriceUsd": null,
           "withinCap": false,
-          "latencyMs": 3344,
+          "latencyMs": 2736,
           "error": "Cannot convert 0.016 to a BigInt"
         },
         {
@@ -1696,7 +1696,7 @@
           "reachable": true,
           "livePriceUsd": 0.0022,
           "withinCap": true,
-          "latencyMs": 1233,
+          "latencyMs": 1139,
           "error": null
         },
         {
@@ -1709,7 +1709,7 @@
           "reachable": true,
           "livePriceUsd": 0.00525,
           "withinCap": true,
-          "latencyMs": 1106,
+          "latencyMs": 833,
           "error": null
         },
         {
@@ -1722,7 +1722,7 @@
           "reachable": true,
           "livePriceUsd": 0.0084,
           "withinCap": true,
-          "latencyMs": 659,
+          "latencyMs": 568,
           "error": null
         }
       ]
