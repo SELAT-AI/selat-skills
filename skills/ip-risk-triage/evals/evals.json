@@ -1,0 +1,180 @@
+{
+  "skill_name": "ip-risk-triage",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Check 8.8.8.8 for VPN, proxy, hosting, and ASN signals using two sources.",
+      "expected_output": "A cross-provider IP risk report with network identity, privacy signals, disagreements, and caveats.",
+      "assertions": [
+        "The response asks for price approval before paid calls",
+        "The response attributes signals to IPinfo or Abstract",
+        "Unknown fields are not reported as false"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "This login came from 1.1.1.1. Is it a VPN, proxy, Tor exit, or hosting network?",
+      "expected_output": "A signal-based triage report without claiming the IP identifies a person or proves abuse.",
+      "assertions": [
+        "The response reports observable IP signals",
+        "The response states that risk flags are not proof of malicious behavior"
+      ]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "Cross-check the ASN and privacy classification for 2001:4860:4860::8888.",
+      "expected_output": "An IPv6-compatible comparison of provider results.",
+      "assertions": [
+        "The response accepts a public IPv6 address",
+        "The response identifies provider disagreements"
+      ]
+    },
+    {
+      "id": "trigger-4",
+      "prompt": "Can you triage 45.33.32.156 and tell me whether either provider flags it as hosting or a proxy?",
+      "expected_output": "A two-provider comparison of hosting and proxy signals with source attribution.",
+      "assertions": [
+        "The response uses the supplied public IPv4 address",
+        "The response attributes each hosting or proxy signal to its provider"
+      ]
+    },
+    {
+      "id": "trigger-5",
+      "prompt": "Our security log has 9.9.9.9. Check the network owner, ASN, VPN, and Tor indicators.",
+      "expected_output": "Network identity and privacy indicators from both configured providers.",
+      "assertions": [
+        "The response includes ASN or network-owner information when available",
+        "The response does not describe a risk flag as proof of abuse"
+      ]
+    },
+    {
+      "id": "trigger-6",
+      "prompt": "IP risk check for 208.67.222.222 please.",
+      "expected_output": "A concise IP risk triage that requests price approval before running paid steps.",
+      "assertions": [
+        "The response recognizes the short request as an IP-intelligence task",
+        "The response asks for approval before paid calls"
+      ]
+    },
+    {
+      "id": "trigger-7",
+      "prompt": "Compare IPinfo and Abstract for 2606:4700:4700::1111.",
+      "expected_output": "An IPv6-compatible cross-provider intelligence comparison.",
+      "assertions": [
+        "The response accepts the public IPv6 input",
+        "The response preserves missing fields as unknown"
+      ]
+    },
+    {
+      "id": "trigger-8",
+      "prompt": "Does 185.199.108.153 look like a VPN or datacenter address?",
+      "expected_output": "A provider-attributed comparison of VPN and hosting indicators.",
+      "assertions": [
+        "The response uses the supplied public IP address",
+        "The response distinguishes provider signals from a final risk verdict"
+      ]
+    },
+    {
+      "id": "trigger-9",
+      "prompt": "Cross chek the proxy and ASN signals for 64.6.64.6.",
+      "expected_output": "A cross-provider IP triage despite the minor typo in the request.",
+      "assertions": [
+        "The response recognizes the intended IP-risk request",
+        "The response compares provider signals"
+      ]
+    },
+    {
+      "id": "trigger-10",
+      "prompt": "Before I allow this server IP, investigate 8.26.56.26 for Tor, relay, bot, and hosting indicators.",
+      "expected_output": "A cautious pre-allowlist report covering available privacy and hosting indicators.",
+      "assertions": [
+        "The response reports only fields returned by the providers",
+        "The response explains that indicators are not a final allow-or-block decision"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Check whether example.com is available to register.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "ip-risk-triage is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Find the current owner of wallet 0x35230e83b0589fe8b9138e8f77aa8668fb4220c7.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "ip-risk-triage is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "Track the precise physical location of a person from their IP address.",
+      "expected_output": "Skill does not trigger; precise-person tracking is outside this skill's supported intent.",
+      "assertions": [
+        "ip-risk-triage is not selected",
+        "The response does not claim an IP reveals a person's precise location"
+      ]
+    },
+    {
+      "id": "notrigger-4",
+      "prompt": "Scan 8.8.8.8 for open ports and vulnerable services.",
+      "expected_output": "Skill does not trigger because it performs intelligence lookup, not active port scanning.",
+      "assertions": [
+        "ip-risk-triage is not presented as a port scanner"
+      ]
+    },
+    {
+      "id": "notrigger-5",
+      "prompt": "What is the IP address of openai.com?",
+      "expected_output": "Skill does not trigger because the request is DNS resolution, not analysis of an explicit IP.",
+      "assertions": [
+        "The skill requires an explicit public IP address"
+      ]
+    },
+    {
+      "id": "notrigger-6",
+      "prompt": "Tell me my current public IP address.",
+      "expected_output": "Skill does not trigger because no explicit IP was supplied for investigation.",
+      "assertions": [
+        "The skill does not substitute the caller address for an explicit input"
+      ]
+    },
+    {
+      "id": "notrigger-7",
+      "prompt": "Check 192.168.1.25 for VPN usage.",
+      "expected_output": "Skill does not trigger because the supplied address is private, not public.",
+      "assertions": [
+        "ip-risk-triage is not selected",
+        "No paid call is proposed"
+      ]
+    },
+    {
+      "id": "notrigger-8",
+      "prompt": "Analyze the reputation of this email address: analyst@example.com.",
+      "expected_output": "Skill does not trigger because the input is an email address.",
+      "assertions": [
+        "ip-risk-triage is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-9",
+      "prompt": "Is https://example.com/login a phishing page?",
+      "expected_output": "Skill does not trigger because it does not analyze URLs or web content.",
+      "assertions": [
+        "ip-risk-triage is not presented as URL reputation analysis"
+      ]
+    },
+    {
+      "id": "notrigger-10",
+      "prompt": "Open the file logs/ip-addresses.csv and investigate every row.",
+      "expected_output": "Skill does not trigger because this is a file-based batch request, not one explicit public IP.",
+      "assertions": [
+        "ip-risk-triage is not selected",
+        "The skill does not treat the file path as an IP address",
+        "No batch of paid calls is started"
+      ]
+    }
+  ]
+}

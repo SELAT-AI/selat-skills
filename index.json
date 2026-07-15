@@ -110,10 +110,10 @@
       "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins."
     },
     {
-      "name": "real-time-flight-data",
+      "name": "ip-risk-triage",
       "rail": "routed",
       "kind": "multi",
-      "description": "Live flight-status and route lookup using three routed MPP flight-data services."
+      "description": "Cross-provider IP risk triage for privacy, hosting, geolocation, and network-owner signals."
     }
   ]
 }
