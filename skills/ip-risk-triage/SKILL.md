@@ -49,7 +49,7 @@ estimates; the live quote is authoritative.
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `ip` | no | `8.8.8.8` | Public IPv4 or IPv6 address to investigate |
+| `ip` | yes | `8.8.8.8` | Public IPv4 or IPv6 address to investigate |
 
 Output: a concise report containing the target IP, ASN/network owner, coarse
 country or region when available, privacy and hosting signals by provider,
