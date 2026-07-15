@@ -41,7 +41,7 @@ Outputs: each step returns the merchant's JSON payload for that endpoint (profil
 ## Gotchas
 
 - **Mixed rails**: the StableSocial and Clado steps are routed and need `SELAT_ROUTER_URL` configured with the SELAT Router reachable; the AIsa X/Twitter steps are direct and bypass the router.
-- Per-step and full-run caps (`maxAmount`) are a loose $5.00 spending filter; live prices total ≈ $0.45 across all 12 steps (see `references/endpoints.md`).
+- Per-step caps (`maxAmount`) are ~10x each live price ($0.10–$0.75; full-run fallback $0.75); live prices total ≈ $0.45 across all 12 steps (see `references/endpoints.md`).
 - Handles must be passed **without** the leading `@`; hashtags **without** the leading `#`.
 - Tweet details take a **numeric tweet ID** (`tweetId`), not a tweet URL.
 - The LinkedIn steps expect a full URL and POST it as `linkedin_url` in the body via Clado.

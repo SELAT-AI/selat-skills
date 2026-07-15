@@ -1,6 +1,6 @@
 # gtm-enrichment-deep — endpoints
 
-Every endpoint below is probe-verified live-payable over MPP via the SELAT Router (`selat-pay --probe-only`, 2026-07-10). Caps are a 5 USDC spending filter, not the live price.
+Every endpoint below is probe-verified live-payable over MPP via the SELAT Router (`selat-pay --probe-only`, 2026-07-10). Caps are ~10x each live price ($0.10–$0.15 per step), not the live price.
 
 | Merchant | Endpoint | Live price |
 |---|---|---|

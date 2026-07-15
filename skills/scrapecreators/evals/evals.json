@@ -47,7 +47,7 @@
       "expected_output": "All 12 steps run — 3 direct AIsa steps plus 9 routed StableSocial/Clado steps — and the run cost is capped at the manifest maxAmount.",
       "assertions": [
         "manifest.json parses as valid JSON",
-        "Top-level maxAmount is 5.00 (loose cap; live total is about 0.45)",
+        "Top-level maxAmount is 0.75 (fallback cap; live total is about 0.45)",
         "AIsa steps are rail direct on api.aisa.one; StableSocial and Clado steps are rail routed"
       ]
     },

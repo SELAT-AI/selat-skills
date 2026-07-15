@@ -54,7 +54,7 @@ Outputs (per step): Apollo org-search returns organization records (name, domain
 ## Gotchas
 
 - **Mixed rail.** Steps 1–4 and 7–8 are routed MPP and need `SELAT_ROUTER_URL` configured and the router reachable; steps 5–6 (AIsa) are direct Circle x402 calls (Circle Gateway-batched) and bypass the router.
-- **Caps are loose.** Every step carries a `maxAmount` of $5.00 as a spending filter; live prices (probe-verified 2026-07-10) sum to about $0.085 per full run: Apollo $0.00525, Abstract $0.0063, Exa $0.00525 ×2, AIsa $0.00044 + $0.0036, Hunter $0.01365, Clado $0.04515 — see `references/endpoints.md`.
+- **Caps are ceilings, not prices.** Every step carries a `maxAmount` of ~10x its live price ($0.10–$0.50); live prices (probe-verified 2026-07-10) sum to about $0.085 per full run: Apollo $0.00525, Abstract $0.0063, Exa $0.00525 ×2, AIsa $0.00044 + $0.0036, Hunter $0.01365, Clado $0.04515 — see `references/endpoints.md`.
 - **Hunter is POST in MPP.** The MPP route is `POST hunter.mpp.paywithlocus.com/hunter/email-finder` with a JSON body (`domain`, `first_name`, `last_name`) — not the upstream `GET /v2/email-finder`. The manifest grounds to the MPP host/path/method.
 - **Exa cannot search Twitter.** x.com / twitter.com profiles are not in Exa's index; always search for listicle pages and parse handles from `contents.text`.
 - **AIsa keys on `userName`.** Both Twitter endpoints take the bare handle (no @) as the `userName` query param.

@@ -3,7 +3,7 @@
 Every endpoint below is probe-verified live-payable (2026-07-10) with
 `selat-pay --probe-only`. All steps are routed over MPP via the SELAT Router
 except the AIsa step, which is a direct Circle x402 call (Circle Gateway-batched).
-Caps are a 5 USDC spending filter, not the live price. Live prices are the
+Caps (`maxAmount`) are ~10x each live price, not the live price. Live prices are the
 router quote on the probe date.
 
 | Tier | Merchant | Endpoint | Live price |
@@ -29,7 +29,7 @@ router quote on the probe date.
 | escalate | clado (Locus) | `POST clado.mpp.paywithlocus.com/clado/search` | $0.31815 |
 | verify | hunter (Locus) | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | $0.0084 |
 
-Sum of live prices if every step fires: ≈ $0.74. Manifest top-level cap: $5.00.
+Sum of live prices if every step fires: ≈ $0.74. Per-step caps: ~10x live price ($0.10–$1.00); manifest top-level fallback cap: $1.00.
 
 ## Coverage notes
 

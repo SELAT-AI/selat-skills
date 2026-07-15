@@ -49,7 +49,7 @@ Outputs: Fiber returns matching companies / people lists; Hunter returns the ema
 ## Gotchas
 
 - **All steps are routed MPP.** The whole run needs `SELAT_ROUTER_URL` configured and the router reachable — there is no direct fallback.
-- **Per-step caps are a loose $5.00 spending filter, not the live price.** Live prices (probe-verified 2026-07-10): Hunter domain search $0.10815, Hunter email finder $0.01365, Hunter email verifier $0.0084, Abstract Company Enrichment lookup $0.0063 — a full run of the manifest steps costs ≈ $0.1365 at today's router quotes.
+- **Per-step caps are ~10x each live price ($0.10–$1.00) — ceilings, not the live price.** Live prices (probe-verified 2026-07-10): Hunter domain search $0.10815, Hunter email finder $0.01365, Hunter email verifier $0.0084, Abstract Company Enrichment lookup $0.0063 — a full run of the manifest steps costs ≈ $0.1365 at today's router quotes.
 - **Hunter is POST, not GET.** The grounded MPP endpoint is `POST hunter.mpp.paywithlocus.com/hunter/domain-search` with the domain in the JSON body — not a `?domain=` query. The same applies to the email-finder, email-verifier, and Abstract Company Enrichment steps: params go in the JSON body.
 - **`${jobTitles}`, `${companyNames}`, `${locations}` are comma-joined strings** substituted into single-element arrays; pass one value each for the cleanest results, or adjust the manifest if you need multi-value arrays.
 - **Steps run independently** (continue-across-steps): the people search can succeed while the email finder fails for a missing person — check the per-step summary.

@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "recent-funding-rounds",
   "description": "Find recent funding rounds via Brave Search news-search (MPP, ROUTED via SELAT Router). Searches recent news articles announcing startup funding rounds in a sector — returns news coverage of raises, not a structured funding database — all through the SELAT routed payment rail.",
-  "maxAmount": "5.00",
+  "maxAmount": "0.40",
   "params": {
     "sector": {
       "required": true,
@@ -19,7 +19,7 @@
       "body": {
         "q": "${sector} startup funding round announced"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.40"
     }
   ]
 }

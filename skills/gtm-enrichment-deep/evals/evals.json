@@ -46,10 +46,10 @@
     {
       "id": "cost-cap-faithful",
       "prompt": "What does a full gtm-enrichment-deep run cost and what is the cap?",
-      "expected_output": "Live prices are $0.0084 (Apollo people-enrichment) + $0.01365 (Hunter company-enrichment) + $0.0084 (Apollo org-enrichment fallback); a full run is about $0.03 and each step carries a loose 5.00 USDC maxAmount spending filter.",
+      "expected_output": "Live prices are $0.0084 (Apollo people-enrichment) + $0.01365 (Hunter company-enrichment) + $0.0084 (Apollo org-enrichment fallback); a full run is about $0.03 and each step carries a ~10x-live-price maxAmount cap ($0.10–$0.15).",
       "assertions": [
-        "The manifest maxAmount is 5.00",
-        "Each of the three steps has maxAmount 5.00",
+        "The manifest maxAmount is 0.15",
+        "The three steps carry maxAmount 0.10, 0.15, and 0.10 (~10x live)",
         "A full run with the fallback costs about $0.03 at live prices"
       ]
     },

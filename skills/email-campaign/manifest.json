@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "email-campaign",
   "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company firmographic context — all via MPP merchants (Hunter, Apollo, Abstract Company Enrichment via Locus) routed through the SELAT Router.",
-  "maxAmount": "5.00",
+  "maxAmount": "1.00",
   "params": {
     "industry": {
       "required": false,
@@ -44,7 +44,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "1.00"
     },
     {
       "label": "find person email — Hunter (MPP, ROUTED via SELAT Router)",
@@ -56,7 +56,7 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "verify deliverability — Hunter (MPP, ROUTED via SELAT Router)",
@@ -66,7 +66,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "bounce check — Hunter (MPP, ROUTED via SELAT Router)",
@@ -76,7 +76,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "enrich lead — Apollo (MPP, ROUTED via SELAT Router)",
@@ -88,7 +88,7 @@
         "last_name": "${lastName}",
         "organization_name": "${company}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "company context — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
@@ -98,7 +98,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     }
   ]
 }

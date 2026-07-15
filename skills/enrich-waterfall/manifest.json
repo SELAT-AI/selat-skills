@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "enrich-waterfall",
   "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one direct Circle x402 call. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts, Clado natural-language people search) only on gaps, and verifies the email last. 20 deduplicated steps across Apollo, Hunter, Clado, Brave Search, Diffbot KG and Abstract Company Enrichment (via Locus), StableSocial (MPP direct merchant), and AIsa (Circle x402 catalog).",
-  "maxAmount": "5.00",
+  "maxAmount": "1.00",
   "params": {
     "email": {
       "required": false,
@@ -59,7 +59,7 @@
         "domain": "${domain}",
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.10",
       "tier": "resolve"
     },
     {
@@ -70,7 +70,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.15",
       "tier": "resolve"
     },
     {
@@ -81,7 +81,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.15",
       "tier": "resolve"
     },
     {
@@ -92,7 +92,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.25",
       "tier": "resolve"
     },
     {
@@ -103,7 +103,7 @@
       "body": {
         "q_organization_name": "${company}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.10",
       "tier": "anchor"
     },
     {
@@ -114,7 +114,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.10",
       "tier": "anchor"
     },
     {
@@ -125,7 +125,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.10",
       "tier": "anchor"
     },
     {
@@ -136,7 +136,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.15",
       "tier": "anchor"
     },
     {
@@ -149,7 +149,7 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.15",
       "tier": "anchor"
     },
     {
@@ -157,7 +157,7 @@
       "rail": "direct",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${name}",
-      "maxAmount": "5.00",
+      "maxAmount": "0.10",
       "tier": "social"
     },
     {
@@ -168,7 +168,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.25",
       "tier": "social"
     },
     {
@@ -179,7 +179,7 @@
       "body": {
         "handle": "${name}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.75",
       "tier": "social"
     },
     {
@@ -190,7 +190,7 @@
       "body": {
         "handle": "${name}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.75",
       "tier": "social"
     },
     {
@@ -201,7 +201,7 @@
       "body": {
         "organization_id": "${organizationId}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.10",
       "tier": "signals"
     },
     {
@@ -212,7 +212,7 @@
       "body": {
         "q": "${company} news"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.40",
       "tier": "signals"
     },
     {
@@ -223,7 +223,7 @@
       "body": {
         "q": "${company} funding round"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.40",
       "tier": "signals"
     },
     {
@@ -235,7 +235,7 @@
         "type": "Organization",
         "name": "${company}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.40",
       "tier": "signals"
     },
     {
@@ -246,7 +246,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.50",
       "tier": "escalate"
     },
     {
@@ -257,7 +257,7 @@
       "body": {
         "query": "person with X/Twitter handle @${name}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "1.00",
       "tier": "escalate"
     },
     {
@@ -268,7 +268,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00",
+      "maxAmount": "0.10",
       "tier": "verify"
     }
   ]

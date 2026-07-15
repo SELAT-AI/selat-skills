@@ -1,6 +1,6 @@
 # twitter-profile-lookup — endpoints
 
-Every endpoint below is probe-verified live-payable as a direct x402 call (Circle x402 catalog, Circle Gateway-batched; `selat-pay --probe-only`, 2026-07-10). Caps are a 5 USDC spending filter, not the live price.
+Every endpoint below is probe-verified live-payable as a direct x402 call (Circle x402 catalog, Circle Gateway-batched; `selat-pay --probe-only`, 2026-07-10). Caps (`maxAmount`) are ~10x each live price, not the live price.
 
 | Merchant | Endpoint | Live price |
 |---|---|---|

@@ -37,7 +37,7 @@
       "expected_output": "A routed Brave news-search; deal-size filtering happens client-side by reading the articles, since news-search has no size_min filter.",
       "assertions": [
         "No size_min field is sent; size filtering is done from article text",
-        "The per-step maxAmount of 5.00 comfortably covers the $0.03675 live price and is not exceeded",
+        "The per-step maxAmount of 0.40 comfortably covers the $0.03675 live price and is not exceeded",
         "The skill uses only the routed rail with no direct or x402 step"
       ]
     },

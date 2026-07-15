@@ -39,7 +39,7 @@ Outputs: comprehensive person data — full name and current title, current empl
 ## Gotchas
 
 - This is a **routed** step: `SELAT_ROUTER_URL` must be set and the router reachable. There is no direct rail in this skill.
-- Per-step cap is $5.00 (full-run cap $5.00) — a loose spending filter, not the price. Clado's `/clado/search` live price is $0.31815 (probe-verified 2026-07-10).
+- Per-step cap is $1.00 (full-run cap $1.00) — a ceiling ~3x the live price, not the charge. Clado's `/clado/search` live price is $0.31815 (probe-verified 2026-07-10).
 - Common names return multiple matches — add a company or title to the `query` to narrow down. A 404 means not found; try alternate spellings or more context.
 
 ## Validation

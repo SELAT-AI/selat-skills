@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "comprehensive-enrichment",
   "description": "Comprehensive person + company enrichment across many MPP-routed data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Resolves contact info, verified emails, phone, social profiles, company overview, funding, products, and competitors. All steps are routed through the SELAT Router (MPP).",
-  "maxAmount": "5.00",
+  "maxAmount": "1.00",
   "params": {
     "email": {
       "required": false,
@@ -49,7 +49,7 @@
       "body": {
         "query": "${firstName} ${lastName} ${company}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "1.00"
     },
     {
       "label": "person enrichment — Apollo people-enrichment (MPP, ROUTED via SELAT Router)",
@@ -62,7 +62,7 @@
         "organization_name": "${company}",
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "email enrich — Hunter email-enrichment (MPP, ROUTED via SELAT Router)",
@@ -72,7 +72,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "find work email — Hunter email-finder",
@@ -84,7 +84,7 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "verify email — Hunter email-verifier",
@@ -94,7 +94,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "phone — Clado contacts (MPP, ROUTED via SELAT Router)",
@@ -104,7 +104,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.50"
     },
     {
       "label": "person research — Exa search (MPP, ROUTED via SELAT Router)",
@@ -114,7 +114,7 @@
       "body": {
         "query": "${firstName} ${lastName} ${company} recent news interviews talks"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "company overview — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router)",
@@ -124,7 +124,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "company emails — Hunter domain-search",
@@ -134,7 +134,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "1.00"
     },
     {
       "label": "funding + investors — Diffbot KG enhance (MPP, ROUTED via SELAT Router)",
@@ -145,7 +145,7 @@
         "type": "Organization",
         "name": "${company}"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.40"
     },
     {
       "label": "pricing/features — Firecrawl extract (MPP, ROUTED via SELAT Router)",
@@ -153,10 +153,12 @@
       "method": "POST",
       "url": "https://firecrawl.mpp.tempo.xyz/v1/extract",
       "body": {
-        "urls": ["${pricingUrl}"],
+        "urls": [
+          "${pricingUrl}"
+        ],
         "prompt": "Extract all products, pricing tiers, and features"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "competitors — Exa findSimilar",
@@ -170,7 +172,7 @@
           "text": true
         }
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     },
     {
       "label": "company research — Exa search (MPP, ROUTED via SELAT Router)",
@@ -180,7 +182,7 @@
       "body": {
         "query": "${company} recent news funding announcements partnerships press releases"
       },
-      "maxAmount": "5.00"
+      "maxAmount": "0.10"
     }
   ]
 }

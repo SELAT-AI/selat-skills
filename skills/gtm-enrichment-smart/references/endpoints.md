@@ -1,6 +1,6 @@
 # gtm-enrichment-smart — endpoints
 
-Every endpoint below is probe-verified live-payable (`selat-pay --probe-only`, 2026-07-10). Routed rows go over MPP via the SELAT Router; the AIsa row is a direct Circle x402 call (Gateway-batched). Caps are a 5 USDC spending filter, not the live price.
+Every endpoint below is probe-verified live-payable (`selat-pay --probe-only`, 2026-07-10). Routed rows go over MPP via the SELAT Router; the AIsa row is a direct Circle x402 call (Gateway-batched). Caps (`maxAmount`) are ~10x each live price, not the live price.
 
 | Merchant | Rail | Endpoint | Live price |
 |---|---|---|---|

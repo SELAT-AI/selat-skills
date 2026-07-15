@@ -44,7 +44,7 @@ Outputs:
 ## Gotchas
 
 - Both steps are **direct**: they pay AIsa over x402 (Circle Gateway-batched) — no SELAT Router needed.
-- Caps are a loose $5.00 spending filter per step and per run; live prices are $0.00044 (profile) + $0.0036 (last tweets) ≈ $0.004 per full run.
+- Caps are $0.10 per step and per run (the recap floor; still ~25x the live prices); live prices are $0.00044 (profile) + $0.0036 (last tweets) ≈ $0.004 per full run.
 - Remove `@` from handles; protected/private accounts return errors with no workaround.
 - Rate limiting can cause failures on rapid sequential calls — add short delays.
 - Steps run independently: profile can succeed while tweets fails (or vice versa); check the per-step summary.

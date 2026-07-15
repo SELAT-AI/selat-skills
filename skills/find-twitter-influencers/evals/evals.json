@@ -36,9 +36,9 @@
     {
       "id": "cost-cap",
       "prompt": "What does a single full run of this skill cost at most?",
-      "expected_output": "Every step is capped at $5.00 (a loose spending filter); the live probe-verified prices sum to about $0.085 per full run.",
+      "expected_output": "Every step is capped at ~10x its live price ($0.10–$0.50); the live probe-verified prices sum to about $0.085 per full run.",
       "assertions": [
-        "Top-level maxAmount in manifest.json equals \"5.00\"",
+        "Top-level maxAmount in manifest.json equals \"0.50\"",
         "Each step declares its own maxAmount cap",
         "The documented live prices (Apollo $0.00525, Abstract $0.0063, Exa $0.00525 x2, AIsa $0.00044 + $0.0036, Hunter $0.01365, Clado $0.04515) sum to about $0.085"
       ]
