@@ -1,0 +1,56 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "real-time-flight-data",
+  "description": "Live flight-status and route lookup using three routed MPP flight-data services.",
+  "maxAmount": "0.04",
+  "params": {
+    "flight_iata": {
+      "required": false,
+      "default": "GA102",
+      "description": "Airline and flight number in IATA format, for example GA102"
+    },
+    "flight_date": {
+      "required": false,
+      "default": "2026-07-15",
+      "description": "Flight date in YYYY-MM-DD format"
+    },
+    "departure_id": {
+      "required": false,
+      "default": "CGK",
+      "description": "Departure airport IATA code for route searches"
+    },
+    "arrival_id": {
+      "required": false,
+      "default": "SIN",
+      "description": "Arrival airport IATA code for route searches"
+    },
+    "outbound_date": {
+      "required": false,
+      "default": "2026-07-20",
+      "description": "Outbound travel date in YYYY-MM-DD format"
+    }
+  },
+  "steps": [
+    {
+      "label": "real-time flight status — AviationStack",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://aviationstack.mpp.tempo.xyz/v1/flights?flight_iata=${flight_iata}&flight_date=${flight_date}",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "real-time flight status — GoFlightLabs",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://goflightlabs.mpp.tempo.xyz/flights?flight_iata=${flight_iata}&flight_date=${flight_date}",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "flight route search — SerpApi Google Flights",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://serpapi.mpp.tempo.xyz/search?engine=google_flights&departure_id=${departure_id}&arrival_id=${arrival_id}&outbound_date=${outbound_date}&currency=USD",
+      "maxAmount": "0.025"
+    }
+  ]
+}

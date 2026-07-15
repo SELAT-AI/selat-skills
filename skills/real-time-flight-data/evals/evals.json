@@ -1,0 +1,41 @@
+{
+  "skill_name": "real-time-flight-data",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "What is the current status of GA102 today?",
+      "expected_output": "A concise current flight-status result with provider attribution and timing details.",
+      "assertions": [
+        "The response reports status or clearly says that no live status was returned",
+        "The response includes timing or route information when available",
+        "The response states the paid price before making the calls"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Find live flight options from Jakarta CGK to Singapore SIN for 2026-07-20.",
+      "expected_output": "A route-search summary with available flight options and prices if returned.",
+      "assertions": [
+        "The response identifies the requested airports and date",
+        "The response distinguishes unavailable data from available options"
+      ]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "Check whether my flight is delayed and compare the latest data from multiple sources.",
+      "expected_output": "A cross-checked flight-status summary that identifies provider disagreements.",
+      "assertions": [
+        "The response compares provider results",
+        "The response does not silently hide conflicting statuses"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Find a hotel near Changi Airport for tomorrow night.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "real-time-flight-data is not selected"
+      ]
+    }
+  ]
+}
