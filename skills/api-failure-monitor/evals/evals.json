@@ -1,0 +1,24 @@
+{
+  "skill_name": "api-failure-monitor",
+  "evals": [
+    {
+      "id": "preflight-check-healthy",
+      "prompt": "Check if the target enrichment API endpoint is healthy before running the lead enrichment pipeline.",
+      "expected_output": "Outputs telemetry result with circuit_breaker CLOSED and action PROCEED.",
+      "assertions": [
+        "The output contains circuit_breaker",
+        "The response includes latency_ms",
+        "The action is PROCEED when HTTP status is 200 or 402"
+      ]
+    },
+    {
+      "id": "circuit-breaker-tripped-502",
+      "prompt": "The upstream provider returned 502 Bad Gateway. Run telemetry probe and protect treasury wallet funds.",
+      "expected_output": "Trips the circuit breaker and instructs the runtime to halt or reroute.",
+      "assertions": [
+        "The circuit_breaker field is TRIPPED",
+        "The action is HALT_AND_REROUTE"
+      ]
+    }
+  ]
+}
