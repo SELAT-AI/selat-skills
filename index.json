@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "multi",
       "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins."
+    },
+    {
+      "name": "crypto-news-sentiment",
+      "rail": "direct",
+      "kind": "multi",
+      "description": "Fetches recent crypto news headlines and queries KOL/social market sentiment via the Otto AI API."
     }
   ]
 }
