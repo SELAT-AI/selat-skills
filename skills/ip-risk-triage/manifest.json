@@ -1,0 +1,35 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "ip-risk-triage",
+  "description": "Cross-provider IP risk triage for privacy, hosting, geolocation, and network-owner signals.",
+  "maxAmount": "0.02",
+  "params": {
+    "ip": {
+      "required": true,
+      "default": "8.8.8.8",
+      "description": "A public IPv4 or IPv6 address to investigate"
+    }
+  },
+  "steps": [
+    {
+      "label": "network identity and privacy signals — IPinfo",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://ipinfo.mpp.paywithlocus.com/ipinfo/ip-lookup",
+      "body": {
+        "ip": "${ip}"
+      },
+      "maxAmount": "0.005"
+    },
+    {
+      "label": "VPN proxy bot and Tor signals — Abstract IP Intelligence",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://abstract-ip-intelligence.mpp.paywithlocus.com/abstract-ip-intelligence/lookup",
+      "body": {
+        "ip_address": "${ip}"
+      },
+      "maxAmount": "0.01"
+    }
+  ]
+}
