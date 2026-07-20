@@ -108,6 +108,13 @@
       "rail": "routed",
       "kind": "multi",
       "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins."
+    },
+    {
+      "name": "api-failure-monitor",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Zero-cost pre-flight telemetry probe and circuit-breaker verification for SELAT API endpoints and paid agent pipelines."
     }
   ]
 }
+
