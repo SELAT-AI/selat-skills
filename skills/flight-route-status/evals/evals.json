@@ -1,0 +1,65 @@
+{
+  "skill_name": "flight-route-status",
+  "evals": [
+    {
+      "id": "jakarta-beijing-live",
+      "prompt": "What flights are live right now from Jakarta to Beijing?",
+      "expected_output": "A multi-source routed flight-route-status run with depIata=CGK and arrIata=PEK, returning live flight rows from FlightAPI, AviationStack, and/or GoFlightLabs.",
+      "assertions": [
+        "The skill uses depIata CGK and arrIata PEK (or equivalent IATA mapping)",
+        "At least the FlightAPI trackbyroute step is issued as a routed GET to flightapi.mpp.tempo.xyz",
+        "No booking or payment-for-ticket step is invoked"
+      ]
+    },
+    {
+      "id": "jfk-lhr-status",
+      "prompt": "Show live flight status JFK to LHR.",
+      "expected_output": "Routed multi-step status with depIata=JFK and arrIata=LHR.",
+      "assertions": [
+        "Parameters map to depIata=JFK and arrIata=LHR",
+        "Steps target *.mpp.tempo.xyz serviceUrls, not api.aviationstack.com",
+        "Rail for each step is routed"
+      ]
+    },
+    {
+      "id": "cheapest-first-order",
+      "prompt": "How does this skill order its data sources?",
+      "expected_output": "FlightAPI track-by-route first (cheapest), then AviationStack, then GoFlightLabs.",
+      "assertions": [
+        "manifest.json steps[0] is FlightAPI trackbyroute",
+        "manifest.json steps[1] is AviationStack /v1/flights",
+        "manifest.json steps[2] is GoFlightLabs /flights"
+      ]
+    },
+    {
+      "id": "probe-only-no-charge",
+      "prompt": "Validate the flight endpoints without paying.",
+      "expected_output": "Free 402 probes via selat-pay --probe-only against the three serviceUrls.",
+      "assertions": [
+        "Validation uses selat-pay with --probe-only",
+        "No payment is broadcast during the probe",
+        "Probe reports mpp=yes / mode=routed-mpp for each step"
+      ]
+    },
+    {
+      "id": "spending-cap-headroom",
+      "prompt": "Is the skill maxAmount the price?",
+      "expected_output": "No — maxAmount is a spending filter with headroom over ~$0.013 full-run probe total.",
+      "assertions": [
+        "Top-level maxAmount is 1.00",
+        "Per-step maxAmount is 0.10, above the ~$0.00525 live quotes",
+        "SKILL.md documents probe prices distinctly from caps"
+      ]
+    },
+    {
+      "id": "no-orth-cli",
+      "prompt": "How does this skill call the flight APIs under the hood?",
+      "expected_output": "Declarative manifest compiled by the selat CLI into selat-pay calls; no orth or subprocess.",
+      "assertions": [
+        "The manifest contains no orth, orth run, or api.orth.sh references",
+        "Execution is via selat skill run / selat-pay over the SELAT Router",
+        "Each step is a plain method+url JSON object"
+      ]
+    }
+  ]
+}

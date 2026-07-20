@@ -1,0 +1,46 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "flight-route-status",
+  "description": "Real-time flight status between two airports (IATA). Multi-source, cheapest-first: FlightAPI track-by-route, AviationStack live flights, GoFlightLabs live flights — all MPP-routed via the SELAT Router.",
+  "maxAmount": "1.00",
+  "params": {
+    "depIata": {
+      "required": true,
+      "default": "CGK",
+      "description": "Departure airport IATA code, e.g. CGK (Jakarta), JFK, LHR."
+    },
+    "arrIata": {
+      "required": true,
+      "default": "PEK",
+      "description": "Arrival airport IATA code, e.g. PEK (Beijing), NRT, SIN."
+    },
+    "limit": {
+      "required": false,
+      "default": "5",
+      "description": "Max rows to return from AviationStack / GoFlightLabs list endpoints (string integer, e.g. 5)."
+    }
+  },
+  "steps": [
+    {
+      "label": "track-by-route — FlightAPI (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://flightapi.mpp.tempo.xyz/trackbyroute/${depIata}/${arrIata}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "live flights — AviationStack (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://aviationstack.mpp.tempo.xyz/v1/flights?dep_iata=${depIata}&arr_iata=${arrIata}&limit=${limit}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "live flights — GoFlightLabs (MPP, ROUTED via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://goflightlabs.mpp.tempo.xyz/flights?departure=${depIata}&arrival=${arrIata}&limit=${limit}",
+      "maxAmount": "0.10"
+    }
+  ]
+}
