@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "multi",
       "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins."
+    },
+    {
+      "name": "manhwa-chapter-check",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Check if new English chapters of ANY manhwa series have been released recently. Give it any series name and it searches the web for latest chapter numbers — Extra's Academy Survival Guide, Tower of God, Solo Leveling, or whatever you're reading. Uses Exa web search + Parallel search + Reddit, routed MPP via the SELAT Router."
     }
   ]
 }

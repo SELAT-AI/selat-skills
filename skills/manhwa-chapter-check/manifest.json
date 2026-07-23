@@ -1,0 +1,52 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "manhwa-chapter-check",
+  "description": "Check if new English chapters of ANY manhwa series have been released recently. Give it any series name and it searches the web for latest chapter numbers — Extra's Academy Survival Guide, Tower of God, Solo Leveling, or whatever you're reading. Uses Exa web search + Parallel search + Reddit, routed MPP via the SELAT Router.",
+  "maxAmount": "0.50",
+  "params": {
+    "series": {
+      "required": true,
+      "description": "Name of the manhwa series to check for new chapters (e.g. 'Tower of God', 'Solo Leveling', 'Extra's Academy Survival Guide')"
+    }
+  },
+  "steps": [
+    {
+      "label": "Exa web search for series chapter info (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.exa.ai/search",
+      "body": {
+        "query": "newest ${series} latest English chapter release 2026",
+        "numResults": 5,
+        "contents": {
+          "text": {
+            "maxCharacters": 3000
+          }
+        }
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "Parallel search corroboration — additional sources (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://parallelmpp.dev/api/search",
+      "body": {
+        "objective": "Find the latest English chapter number for ${series} manhwa",
+        "search_queries": ["${series} latest chapter English"],
+        "max_results": 5
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "Reddit discussion — StableSocial subreddit search (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://stablesocial.dev/api/reddit/subreddit",
+      "body": {
+        "subreddit": "manhwa"
+      },
+      "maxAmount": "0.25"
+    }
+  ]
+}

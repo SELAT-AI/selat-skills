@@ -1,0 +1,55 @@
+{
+  "skill_name": "manhwa-chapter-check",
+  "evals": [
+    {
+      "id": "check-any-series",
+      "prompt": "Check if there's a new chapter of Tower of God.",
+      "expected_output": "Latest chapter number and release date for Tower of God.",
+      "assertions": [
+        "The run calls POST https://api.exa.ai/search with query containing 'Tower of God'",
+        "The output reports a chapter number and release date or status",
+        "The series param is passed correctly as 'Tower of God'"
+      ]
+    },
+    {
+      "id": "check-popular-series",
+      "prompt": "What chapter is Solo Leveling on right now?",
+      "expected_output": "The latest chapter number for Solo Leveling.",
+      "assertions": [
+        "The series param is 'Solo Leveling'",
+        "The Exa step searches for Solo Leveling chapter info",
+        "The output includes a chapter number"
+      ]
+    },
+    {
+      "id": "reddit-discussion",
+      "prompt": "What are people on Reddit saying about the latest manhwa releases?",
+      "expected_output": "Top posts from r/manhwa community.",
+      "assertions": [
+        "The StableSocial Reddit subreddit step is invoked",
+        "The subreddit param is 'manhwa'",
+        "The output includes Reddit posts or discussion topics"
+      ]
+    },
+    {
+      "id": "nintendo-switch-2-hype",
+      "prompt": "Check for new chapters of One Piece.",
+      "expected_output": "Latest chapter info for One Piece.",
+      "assertions": [
+        "The series param is 'One Piece'",
+        "The Exa step searches for One Piece chapter info",
+        "The output reports whether a new chapter exists or the latest known chapter number"
+      ]
+    },
+    {
+      "id": "unique-manhwa",
+      "prompt": "Any new chapter of The Beginning After The End?",
+      "expected_output": "Latest chapter info for The Beginning After The End.",
+      "assertions": [
+        "The series param is 'The Beginning After The End'",
+        "Search steps reference the series name",
+        "The output reports chapter info even for non-Korean works"
+      ]
+    }
+  ]
+}
