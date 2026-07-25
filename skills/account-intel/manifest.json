@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "account-intel",
-  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans three rails (Circle Gateway nanopayment + MPP + x402 on Base), paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
+  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans two rails (Circle Gateway + MPP on Tempo), paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
   "maxAmount": "0.50",
   "params": {
     "handle": {
@@ -41,10 +41,10 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "YouTube presence — AIsa YouTube API (x402 via Circle Gateway)",
-      "rail": "x402 via Circle Gateway",
+      "label": "YouTube presence — Scrape Creators (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/youtube/search?query=${name}",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=${name}",
       "maxAmount": "0.05"
     },
     {
