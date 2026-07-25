@@ -1,6 +1,6 @@
 {
   "schema": "selat-skill/v1",
-  "name": "twitter-research",
+  "name": "x-ray",
   "description": "Read-only Twitter/X research toolkit: a curated menu of 9 SELAT-native (catalog.selat.ai) GET endpoints covering account reads (profile, recent tweets, mentions, followers), tweet reads (details, replies, retweeters), topic search, and trends. The agent selects only the endpoints a request needs; each call is ~$0.001, x402 via Circle Gateway. No API keys.",
   "maxAmount": "0.10",
   "params": {

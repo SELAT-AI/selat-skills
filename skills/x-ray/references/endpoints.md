@@ -1,4 +1,4 @@
-# twitter-research — endpoints
+# x-ray — endpoints
 
 A curated menu of **9 SELAT-native Twitter GET reads** (`catalog.selat.ai`),
 each probe-verified live-payable as an **x402 via Circle Gateway** call

@@ -98,7 +98,7 @@
       "description": "Deal-sourcing scout for a VC running an AI-infrastructure thesis spanning crypto-AI / decentralized-AI, robotics / embodied-AI, and agentic payments (inference/serving, GPU & compute, training stacks, vector/data infra, agent infra, eval/observability, model-ops; decentralized compute/GPU, on-chain AI agents, DePIN-for-AI; robotics foundation models, humanoid/embodied-AI, sim-to-real, actuation/sensor stacks; agentic-payment rails, agent commerce, x402/stablecoin agent settlement). Discovers emerging companies and founders from Hacker News, Product Hunt, the web, and Twitter/X; searches recent pre-seed/seed fundraising news on Twitter/X and LinkedIn and summarizes the tweets of the investors at the funds leading those rounds to distill the live thesis; then dedupes, ranks, flags who has NOT raised yet, and enriches the top lead. Paid per call across two rails (MPP on Tempo + x402 on Base) via selat-pay (USDC via Circle Gateway), no API keys."
     },
     {
-      "name": "twitter-research",
+      "name": "x-ray",
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
       "description": "Read-only Twitter/X research toolkit: a curated menu of 9 SELAT-native (catalog.selat.ai) GET endpoints covering account reads (profile, recent tweets, mentions, followers), tweet reads (details, replies, retweeters), topic search, and trends. The agent selects only the endpoints a request needs; each call is ~$0.001, x402 via Circle Gateway. No API keys."

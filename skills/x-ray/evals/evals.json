@@ -1,5 +1,5 @@
 {
-  "skill_name": "twitter-research",
+  "skill_name": "x-ray",
   "evals": [
     {
       "id": "profile-only-single-endpoint",
@@ -33,7 +33,7 @@
     },
     {
       "id": "menu-not-pipeline",
-      "prompt": "Run every twitter-research endpoint for openai.",
+      "prompt": "Run every x-ray endpoint for openai.",
       "expected_output": "The agent explains this is a menu of 9 independent reads costing ~$0.009 to run all, confirms the cost before spending, and only proceeds if the user confirms.",
       "assertions": [
         "The agent surfaces that running all 9 costs about $0.009 and is usually unnecessary",

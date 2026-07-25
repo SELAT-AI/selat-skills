@@ -1,5 +1,5 @@
 ---
-name: twitter-research
+name: x-ray
 description: Use this skill for read-only Twitter/X research on the SELAT-native Twitter API (catalog.selat.ai) — profiles, recent tweets, mentions, followers, tweet details/replies/retweeters, topic search, and trends. Triggers on "who is @X on Twitter", "recent tweets from X", "who's mentioning X", "how did this tweet do / who replied / who retweeted", "search X for <topic>", "is <topic> trending". It is a curated 9-endpoint MENU — pick only the endpoints a request needs, do not run all of them. For topic monitoring alone this skill's search+trends steps cover it; for cross-platform entity footprints use `account-intel`; for topic sentiment fused with Reddit + web use `social-intel`.
 license: Apache-2.0
 compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step settles x402 via Circle Gateway through the SELAT Router, so a reachable SELAT Router (SELAT_ROUTER_URL) is required. `selat skill verify` (no --pay) is free and needs no funded wallet.
@@ -10,7 +10,7 @@ metadata:
   kind: multi
 ---
 
-# twitter-research
+# x-ray
 
 A read-only research toolkit for Twitter/X, backed by SELAT's own first-party
 Twitter API (`catalog.selat.ai`). The manifest lists **9 curated GET endpoints
@@ -88,8 +88,8 @@ tweet-reception breakdown, topic chatter, or trend list — whichever was asked)
 
 ## Validation
 
-- `selat skill validate ./skills/twitter-research` → passes.
-- `selat skill verify ./skills/twitter-research` → all 9 steps reachable and
+- `selat skill validate ./skills/x-ray` → passes.
+- `selat skill verify ./skills/x-ray` → all 9 steps reachable and
   ≤ `maxAmount` (writes the verify receipt). `--pay` runs all 9 as a settled
   smoke test (~$0.009); in normal use you'd pay only the selected subset.
 - `npm run validate` → 0 errors (whole-repo + `index.json` consistency).
