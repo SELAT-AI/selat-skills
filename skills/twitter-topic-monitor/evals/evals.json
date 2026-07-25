@@ -1,0 +1,63 @@
+{
+  "skill_name": "twitter-topic-monitor",
+  "evals": [
+    {
+      "id": "topic-chatter",
+      "prompt": "What are people saying about AI agents on X right now?",
+      "expected_output": "A short topic-monitor brief for 'AI agents': volume/tone of recent chatter, 2-3 highest-engagement tweets paraphrased with rough numbers, notable accounts, and whether the topic is trending.",
+      "assertions": [
+        "The run calls GET https://catalog.selat.ai/twitter/tweet/advanced_search with query=AI agents",
+        "The run calls GET https://catalog.selat.ai/twitter/trends with woeid=1",
+        "The output summarizes recent tweets with engagement (likes/retweets)",
+        "Both steps use rail x402 via Circle Gateway"
+      ]
+    },
+    {
+      "id": "cashtag-operator",
+      "prompt": "Monitor $SOL chatter on Twitter with at least 100 likes.",
+      "expected_output": "Recent high-engagement tweets mentioning $SOL, distilled into a chatter summary.",
+      "assertions": [
+        "The advanced_search query includes the cashtag $SOL and a min_faves operator",
+        "The whole search string is passed as the single query param"
+      ]
+    },
+    {
+      "id": "regional-trends",
+      "prompt": "Is #ethdenver trending in the United States, and what are people posting?",
+      "expected_output": "A trends read for the US region plus recent tweets on the hashtag, with a trending-or-not verdict.",
+      "assertions": [
+        "The trends step passes woeid=23424977 (United States)",
+        "The advanced_search query includes #ethdenver",
+        "The output states whether the term is trending in the region"
+      ]
+    },
+    {
+      "id": "cost-before-spend",
+      "prompt": "Track mentions of our product launch on X.",
+      "expected_output": "The agent states the run costs about $0.002 and asks to proceed before spending, then runs the two steps.",
+      "assertions": [
+        "The agent surfaces the approximate dollar cost before paying",
+        "Per-step and full-run maxAmount are 0.10; live prices are $0.001 (advanced_search) and $0.001 (trends)"
+      ]
+    },
+    {
+      "id": "read-only-gotcha",
+      "prompt": "Use twitter-topic-monitor to post a tweet about the trend it finds.",
+      "expected_output": "An explanation that this skill is read-only (search + trends) and does not post, like, or follow.",
+      "assertions": [
+        "The output states the skill cannot post or engage",
+        "No claim of a successful post is made"
+      ]
+    },
+    {
+      "id": "probe-only-validation",
+      "prompt": "Do a free 402 probe of the twitter advanced_search endpoint without paying.",
+      "expected_output": "A selat-pay --probe-only command against the SELAT-native advanced_search endpoint that returns 402 details without settling payment.",
+      "assertions": [
+        "The command uses selat-pay GET with --probe-only",
+        "The probed URL is https://catalog.selat.ai/twitter/tweet/advanced_search",
+        "No payment is settled during the probe"
+      ]
+    }
+  ]
+}

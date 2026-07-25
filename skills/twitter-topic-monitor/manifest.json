@@ -1,0 +1,34 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "twitter-topic-monitor",
+  "description": "Monitor Twitter/X for a topic: search recent tweets matching a query (with engagement) and pull regional trending topics for context, via the SELAT-native Twitter API (catalog.selat.ai), paid per call as x402 via Circle Gateway. No API keys.",
+  "maxAmount": "0.10",
+  "params": {
+    "query": {
+      "required": true,
+      "default": "AI agents",
+      "description": "Search query / topic to monitor. Supports X search operators, e.g. \"AI agents\", \"$SOL\", \"from:openai\", \"#ethdenver\", \"agentic payments min_faves:100\"."
+    },
+    "woeid": {
+      "required": false,
+      "default": "1",
+      "description": "Yahoo WOEID for the trending-context step (1 = worldwide, 23424977 = United States, 2459115 = New York City)."
+    }
+  },
+  "steps": [
+    {
+      "label": "recent tweets on the topic — SELAT Twitter advanced_search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${query}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "trending context — SELAT Twitter trends by WOEID (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/trends?woeid=${woeid}",
+      "maxAmount": "0.10"
+    }
+  ]
+}
