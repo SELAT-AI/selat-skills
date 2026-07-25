@@ -28,21 +28,21 @@
   "steps": [
     {
       "label": "Social alpha - Otto KOL sentiment",
-      "rail": "routed",
+      "rail": "x402 on Base",
       "method": "GET",
       "url": "https://x402.ottoai.services/kol-sentiment",
       "maxAmount": "0.010"
     },
     {
       "label": "Financial context - Otto Hyperliquid market",
-      "rail": "routed",
+      "rail": "x402 on Base",
       "method": "GET",
       "url": "https://x402.ottoai.services/hyperliquid-market",
       "maxAmount": "0.010"
     },
     {
       "label": "Infrastructure quote - StableDomains availability",
-      "rail": "routed",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stabledomains.dev/api/check",
       "body": {

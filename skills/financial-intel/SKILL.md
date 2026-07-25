@@ -2,7 +2,7 @@
 name: financial-intel
 description: Use this skill when the user wants a multi-signal financial intelligence brief on a crypto asset, token, or equity ticker — e.g. "give me a full read on ETH", "what's the market intel on <token>", "fuse price + on-chain + news on <asset>", "smart-money + fundamentals brief for <coin>", "macro + equities + crypto snapshot on <ticker>", "is <asset> a buy right now". Fuses spot price (Alchemy), token market data (CoinGecko), macro/equities (Alpha Vantage), on-chain smart-money (Nansen), fundamentals/funding (Messari), and market news (Exa) across three payment rails. Pays per call via selat-pay (USDC via Circle Gateway), no API keys.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet. The routed steps (CoinGecko, Alpha Vantage, Nansen, Messari, Exa) need a reachable SELAT Router (SELAT_ROUTER_URL); the direct Alchemy step does not. `selat skill verify` (no --pay) is free and needs no funded wallet.
+compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet. The SELAT Router steps (CoinGecko, Alpha Vantage, Nansen, Messari, Exa) need a reachable SELAT Router (SELAT_ROUTER_URL); the Circle-Gateway Alchemy step does not. `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.0"
@@ -13,9 +13,9 @@ metadata:
 # financial-intel
 
 Multi-signal financial intelligence on a crypto asset, token, or equity ticker.
-The skill gathers paid signal across **three settlement modes** — a **direct**
-Circle Gateway-batched nanopayment (Alchemy), **routed MPP** (CoinGecko, Alpha
-Vantage, Nansen), and **routed x402 on Base** (Messari, Exa) — and the agent
+The skill gathers paid signal across **three settlement modes** — a **x402 via Circle Gateway**
+Circle Gateway-batched nanopayment (Alchemy), **MPP on Tempo** (CoinGecko, Alpha
+Vantage, Nansen), and **x402 on Base** (Messari, Exa) — and the agent
 fuses it into one brief: what the asset costs, how its market is behaving, what
 macro/equities are doing, where smart money sits on-chain, the fundamentals and
 funding picture, and the latest market news — with citations.
@@ -34,17 +34,17 @@ the paid data.
 
 This skill spans **three settlement modes** across two x402 protocols:
 
-- **direct nanopayment** — Alchemy spot price (`x402.alchemy.com`) settles
-  `mode=direct`: a Circle Gateway-batched nanopayment paid straight to the
+- **Circle Gateway nanopayment** — Alchemy spot price (`x402.alchemy.com`) settles
+  `x402 via Circle Gateway`: a Circle Gateway-batched nanopayment paid straight to the
   upstream, **no router hop**. This step does **not** require `SELAT_ROUTER_URL`.
-- **routed MPP** — CoinGecko, Alpha Vantage, and Nansen settle `mode=routed-mpp`
+- **MPP on Tempo** — CoinGecko, Alpha Vantage, and Nansen settle `MPP on Tempo`
   through the SELAT Router.
-- **routed x402 on Base** — Messari and Exa serve native x402 challenges; the
-  router settles them on Base (`mode=routed-x402`).
+- **x402 on Base** — Messari and Exa serve native x402 challenges; the
+  router settles them on Base (`x402 on Base`).
 
-The routed steps require a reachable `SELAT_ROUTER_URL`. The `selat` CLI
+The SELAT Router steps require a reachable `SELAT_ROUTER_URL`. The `selat` CLI
 auto-detects each step's protocol and settlement mode at call time. Because the
-skill mixes direct and routed steps, its `rail` is `mixed`.
+skill mixes Circle-Gateway and SELAT Router steps, its `rail` is `mixed`.
 
 ## Workflow
 
@@ -56,17 +56,17 @@ skill mixes direct and routed steps, its `rail` is `mixed`.
 Recommended agent procedure (cheapest-first; stop early when the picture is clear):
 
 1. **Get the spot price** — Alchemy `GET /prices/v1/tokens/by-symbol`
-   (direct nanopayment, ~$0.001). Anchor every other signal to live price.
+   (Circle Gateway nanopayment, ~$0.001). Anchor every other signal to live price.
 2. **Add token market data** — CoinGecko `POST /coingecko/coins-markets`
-   (routed MPP, ~$0.063): market cap, volume, supply, 24h/7d moves.
+   (MPP on Tempo, ~$0.063): market cap, volume, supply, 24h/7d moves.
 3. **Add macro/equities context** — Alpha Vantage `POST /alphavantage/global-quote`
-   (routed MPP, ~$0.0084) for the named equity ticker; use as a risk-on/risk-off read.
+   (MPP on Tempo, ~$0.0084) for the named equity ticker; use as a risk-on/risk-off read.
 4. **Read on-chain smart money** — Nansen `POST /api/v1/smart-money/holdings`
-   (routed MPP, ~$0.0525) for the named chain; surface where labeled smart wallets sit.
+   (MPP on Tempo, ~$0.0525) for the named chain; surface where labeled smart wallets sit.
 5. **Pull fundamentals/funding** — Messari `GET /funding/v1/rounds`
-   (routed x402 on Base, ~$0.1575): recent rounds, investors, valuations.
+   (x402 on Base, ~$0.1575): recent rounds, investors, valuations.
 6. **Add market news/context** — Exa `POST /search`
-   (routed x402 on Base, ~$0.007); surface the headlines that move the read.
+   (x402 on Base, ~$0.007); surface the headlines that move the read.
 
 Then synthesize: a price-and-market snapshot, the macro backdrop, the on-chain
 smart-money posture, the fundamentals/funding picture, and the news that confirms
@@ -88,10 +88,10 @@ that the agent fuses into a single multi-signal financial intelligence brief.
 
 ## Gotchas
 
-- **Three rails, mixed settlement.** Alchemy settles `mode=direct` (no router);
-  CoinGecko/Alpha Vantage/Nansen settle `routed-mpp`; Messari/Exa settle
-  `routed-x402` on Base. A reachable `SELAT_ROUTER_URL` is required for every step
-  **except** the direct Alchemy step.
+- **Three rails, mixed settlement.** Alchemy settles `x402 via Circle Gateway` (no router);
+  CoinGecko/Alpha Vantage/Nansen settle `MPP on Tempo`; Messari/Exa settle
+  `x402 on Base` on Base. A reachable `SELAT_ROUTER_URL` is required for every step
+  **except** the Circle-Gateway Alchemy step.
 - **GET params in the query, POST params in `body`.** Alchemy and Messari are GET;
   CoinGecko, Alpha Vantage, Nansen, and Exa are POST — their params go in the body.
 - **`maxAmount` is a guardrail, not the price.** Per-step caps run from `$0.01`

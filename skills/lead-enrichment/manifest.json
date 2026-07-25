@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "lead-enrichment",
-  "description": "Multi-source lead enrichment, fully routed through the SELAT Router (MPP). Finds and verifies a work email (Hunter), enriches the lead (Apollo), discovers a phone number and contact details (Clado), and enriches the company (Hunter). One run chains three paid MPP merchants across five steps.",
+  "description": "Multi-source lead enrichment, fully through the SELAT Router (MPP). Finds and verifies a work email (Hunter), enriches the lead (Apollo), discovers a phone number and contact details (Clado), and enriches the company (Hunter). One run chains three paid MPP merchants across five steps.",
   "maxAmount": "0.50",
   "params": {
     "firstName": {
@@ -37,8 +37,8 @@
   },
   "steps": [
     {
-      "label": "find email — Hunter Email Finder (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "find email — Hunter Email Finder (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
       "body": {
@@ -49,8 +49,8 @@
       "maxAmount": "0.15"
     },
     {
-      "label": "verify email — Hunter Email Verifier (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "verify email — Hunter Email Verifier (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
@@ -59,8 +59,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "enrich lead — Apollo People Enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "enrich lead — Apollo People Enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
@@ -72,8 +72,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "find phone — Clado Contacts (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "find phone — Clado Contacts (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
       "body": {
@@ -82,8 +82,8 @@
       "maxAmount": "0.50"
     },
     {
-      "label": "enrich company — Hunter Company Enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "enrich company — Hunter Company Enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
       "body": {

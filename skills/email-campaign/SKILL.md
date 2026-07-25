@@ -1,12 +1,12 @@
 ---
 name: email-campaign
-description: Use this skill when the user wants to build a verified cold-email or outreach list — e.g. "build an email campaign", "find and verify emails for a domain", "find someone's work email", "verify these emails before I send", "enrich a lead for personalized outreach", "get company brand context for outreach". Runs a 7-step pipeline across MPP merchants (Fiber company search, Hunter domain/email lookup + verification + bounce check, Apollo lead enrichment, Abstract Company Enrichment company context), all routed through the SELAT Router.
+description: Use this skill when the user wants to build a verified cold-email or outreach list — e.g. "build an email campaign", "find and verify emails for a domain", "find someone's work email", "verify these emails before I send", "enrich a lead for personalized outreach", "get company brand context for outreach". Runs a 7-step pipeline across MPP merchants (Fiber company search, Hunter domain/email lookup + verification + bounce check, Apollo lead enrichment, Abstract Company Enrichment company context), all through the SELAT Router.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a routed MPP payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the run.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a MPP on Tempo payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the run.
 metadata:
   author: SELAT-AI
   version: "1.0"
-  rail: routed
+  rail: MPP on Tempo
   kind: multi
 ---
 
@@ -14,13 +14,13 @@ metadata:
 
 ## When To Use
 
-Use when the user wants to assemble a targeted, verified outreach list end-to-end: discover target companies, pull emails for a domain, find a specific person's email, verify deliverability, enrich the lead for personalization, and pull company brand context. Every step is paid per-call through MPP merchants and routed via the SELAT Router — no API keys to manage.
+Use when the user wants to assemble a targeted, verified outreach list end-to-end: discover target companies, pull emails for a domain, find a specific person's email, verify deliverability, enrich the lead for personalization, and pull company brand context. Every step is paid per-call through MPP merchants and via the SELAT Router — no API keys to manage.
 
 ## Workflow
 
 1. Install: `selat skill install email-campaign`
 2. Run: `selat skill run email-campaign --domain stripe.com --email john@stripe.com [--industry SaaS] [--firstName John] [--lastName Doe] [--company Stripe]`
-3. The CLI compiles each step into a `selat-pay` call (one routed MPP payment per step), runs them in order, and prints a per-step status + summary.
+3. The CLI compiles each step into a `selat-pay` call (one MPP on Tempo payment per step), runs them in order, and prints a per-step status + summary.
 
 Steps (in order):
 
@@ -47,8 +47,8 @@ Outputs: Hunter returns email lists / verification verdicts (deliverability + bo
 
 ## Gotchas
 
-- All seven steps are **routed** MPP payments — the run needs `SELAT_ROUTER_URL` configured and the router reachable; there is no direct rail in this skill.
-- The MPP-routed Hunter endpoints are **POST** with a JSON body (`{domain}`, `{email}`, `{domain,first_name,last_name}`) — not the GET/query form from the upstream Hunter docs.
+- All seven steps are **via the SELAT Router** MPP payments — the run needs `SELAT_ROUTER_URL` configured and the router reachable; every step settles through the SELAT Router.
+- The MPP on Tempo Hunter endpoints are **POST** with a JSON body (`{domain}`, `{email}`, `{domain,first_name,last_name}`) — not the GET/query form from the upstream Hunter docs.
 - Per-step live prices (probe-verified 2026-07-10): $0.10815 + $0.01365 + $0.0084 + $0.0084 + $0.0084 + $0.0063 ≈ **$0.1533** for a full manifest run; per-step `maxAmount` caps are ~10x each live price ($0.10–$1.00; top-level fallback $1.00) — a ceiling, not the price.
 - Hunter `domain-search` is the most expensive step ($0.10815) — drop it if you already know your target person and only need find + verify + enrich.
 - The bounce check (step 5) is a second pass through the same Hunter `email-verifier` endpoint as step 4 — Hunter's verdict already covers bounce risk and catch-all domains, so drop one of the two if a single verification is enough.

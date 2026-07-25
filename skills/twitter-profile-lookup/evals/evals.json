@@ -9,7 +9,7 @@
         "The run calls GET https://catalog.selat.ai/twitter/user/info with userName=openai",
         "The output reports follower and following counts",
         "The output reports verified status",
-        "Both steps use rail direct (Circle x402, Gateway-batched)"
+        "Both steps use rail x402 via Circle Gateway (Circle x402, Gateway-batched)"
       ]
     },
     {

@@ -7,8 +7,8 @@
       "expected_output": "A merged enrichment JSON with person (full_name, title, linkedin_url) from Apollo and company (name, domain, funding) from Hunter, derived domain acme.com.",
       "assertions": [
         "The skill derives domain acme.com from the email",
-        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a routed POST",
-        "Step 2 calls https://hunter.mpp.paywithlocus.com/hunter/company-enrichment as a routed POST",
+        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a POST",
+        "Step 2 calls https://hunter.mpp.paywithlocus.com/hunter/company-enrichment as a POST",
         "The output includes person.linkedin_url and company.funding fields",
         "meta.total_cost reflects the executed steps"
       ]
@@ -20,7 +20,7 @@
       "assertions": [
         "The people-enrichment body includes first_name Jane, last_name Doe, and organization_name Acme",
         "The people-enrichment body includes email jane@acme.com and domain acme.com",
-        "All steps use rail routed"
+        "All steps use rail via the SELAT Router"
       ]
     },
     {
@@ -29,7 +29,7 @@
       "expected_output": "No. Person identity and LinkedIn match are one Apollo people-enrichment call; the former separate fallback hit the same endpoint with the same match params and was merged into Step 1.",
       "assertions": [
         "There is exactly one person-enrichment step in the manifest",
-        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a routed POST with email and reveal_personal_emails true",
+        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a POST with email and reveal_personal_emails true",
         "person.source is marked apollo"
       ]
     },
@@ -54,13 +54,13 @@
       ]
     },
     {
-      "id": "all-routed-rail",
+      "id": "all-mpp-rail",
       "prompt": "Which payment rail does gtm-enrichment-deep use?",
-      "expected_output": "Every step is routed MPP via the SELAT Router; there is no direct rail in this skill.",
+      "expected_output": "Every step is MPP on Tempo; every step settles through the SELAT Router.",
       "assertions": [
-        "All three steps have rail routed",
+        "All three steps have rail via the SELAT Router",
         "The skill notes SELAT_ROUTER_URL must be set",
-        "No step uses the direct rail"
+        "No step is paid via Circle Gateway"
       ]
     }
   ]

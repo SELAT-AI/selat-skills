@@ -1,8 +1,8 @@
 ---
 name: account-intel
-description: Use this skill when the user wants an entity-centric footprint or reputation read on one specific person, brand, company, or handle — e.g. "profile @OpenAI across platforms", "what's the cross-platform footprint of <brand>", "is <person> credible / how present are they online", "build me a reputation brief on <handle>", "who is this account and where do they show up", "footprint of <entity> on Twitter + YouTube + the web". Profiles ONE entity across X/Twitter (SELAT-native catalog.selat.ai), YouTube (AIsa), web news + reputation (Brave), web citations (Exa), and any associated on-chain token (Alchemy). Spans three rails — direct Circle nanopayment + MPP + x402 on Base — all paid per call via selat-pay (USDC via Circle Gateway), no API keys. For TOPIC/keyword listening (sentiment on a subject, "what are people saying about <topic>") use `social-intel` instead.
+description: Use this skill when the user wants an entity-centric footprint or reputation read on one specific person, brand, company, or handle — e.g. "profile @OpenAI across platforms", "what's the cross-platform footprint of <brand>", "is <person> credible / how present are they online", "build me a reputation brief on <handle>", "who is this account and where do they show up", "footprint of <entity> on Twitter + YouTube + the web". Profiles ONE entity across X/Twitter (SELAT-native catalog.selat.ai), YouTube (AIsa), web news + reputation (Brave), web citations (Exa), and any associated on-chain token (Alchemy). Spans three rails — Circle Gateway nanopayment + MPP + x402 on Base — all paid per call via selat-pay (USDC via Circle Gateway), no API keys. For TOPIC/keyword listening (sentiment on a subject, "what are people saying about <topic>") use `social-intel` instead.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet. The routed steps (SELAT-native X/Twitter, Brave, Exa) need a reachable SELAT Router (SELAT_ROUTER_URL); the direct steps (AIsa YouTube, Alchemy) settle upstream Gateway-batched on Base and bypass the router. `selat skill verify` (no --pay) is free and needs no funded wallet.
+compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet. The SELAT Router steps (SELAT-native X/Twitter, Brave, Exa) need a reachable SELAT Router (SELAT_ROUTER_URL); the Circle Gateway steps (AIsa YouTube, Alchemy) settle via Circle Gateway on Base and bypass the router. `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.0"
@@ -15,7 +15,7 @@ metadata:
 Entity-centric footprint & reputation intelligence. Point the skill at **one
 specific person, brand, company, or handle** and it gathers paid signal across
 X/Twitter, YouTube, web news/reputation, web citations, and any associated
-on-chain token — over **three rails (direct + MPP + x402 on Base)** — which the
+on-chain token — over **three rails (x402 via Circle Gateway + MPP on Tempo + x402 on Base)** — which the
 agent fuses into a single cross-platform footprint brief: who this account is,
 how present they are per platform, and how credible the web makes them look.
 
@@ -36,14 +36,14 @@ entity's* footprint, use **account-intel**.
 
 This skill spans **three rails**:
 
-- **direct** (`rail: direct`): AIsa (YouTube search; Circle x402 catalog) and
+- **x402 via Circle Gateway** (`rail: x402 via Circle Gateway`): AIsa (YouTube search; Circle x402 catalog) and
   Alchemy token-by-address serve native x402 challenges that resolve as
-  `mode=direct` — Circle Gateway-batched nanopayments paid straight to the
+  `x402 via Circle Gateway` — Circle Gateway-batched nanopayments paid straight to the
   upstream on Base, **bypassing the router**.
-- **MPP** (`rail: routed`): Brave news-search (via Locus) resolves as
-  `routed-mpp` through the SELAT Router.
-- **x402** (`rail: routed`): SELAT-native X/Twitter (catalog.selat.ai) and Exa
-  web search resolve as `routed-x402` on Base through the SELAT Router.
+- **MPP** (`rail: via the SELAT Router`): Brave news-search (via Locus) resolves as
+  `MPP on Tempo` through the SELAT Router.
+- **x402** (`rail: via the SELAT Router`): SELAT-native X/Twitter (catalog.selat.ai) and Exa
+  web search resolve as `x402 on Base` on Base through the SELAT Router.
 
 The manifest's top-level `rail` is `mixed`. The `selat` CLI auto-detects each
 step's protocol at call time.
@@ -59,18 +59,18 @@ Recommended agent procedure (cheapest-first; stop early when the footprint is
 already conclusive):
 
 1. **X/Twitter profile** — SELAT-native `GET /twitter/user/info`
-   (routed x402, ~$0.001) for follower counts, bio, verification.
+   (x402 on Base, ~$0.001) for follower counts, bio, verification.
 2. **On-chain token footprint** — Alchemy `GET /data/v1/assets/tokens/by-address`
-   (direct, ~$0.001). Only meaningful if the entity has an associated token;
+   (x402 via Circle Gateway, ~$0.001). Only meaningful if the entity has an associated token;
    pass `--address`. Skip/ignore if the entity is purely off-chain.
 3. **YouTube presence** — AIsa `GET /apis/v2/youtube/search`
-   (direct, ~$0.0024) for whether/where the entity shows up on YouTube.
+   (x402 via Circle Gateway, ~$0.0024) for whether/where the entity shows up on YouTube.
 4. **X/Twitter recent tweets** — SELAT-native `GET /twitter/user/last_tweets`
-   (routed x402, ~$0.001); read cadence + engagement, surface the breakout post.
-5. **Web citations** — Exa `POST /search` (routed x402, ~$0.007). Grounds the
+   (x402 on Base, ~$0.001); read cadence + engagement, surface the breakout post.
+5. **Web citations** — Exa `POST /search` (x402 on Base, ~$0.007). Grounds the
    entity in indexed web sources for corroboration.
 6. **Web reputation / news** — Brave `POST /brave/news-search`
-   (routed MPP, ~$0.0368); recent press, controversy, sentiment signal.
+   (MPP on Tempo, ~$0.0368); recent press, controversy, sentiment signal.
 
 Then synthesize: a per-platform presence map (X, YouTube, web, on-chain), a
 credibility/reputation read, the entity's strongest channel, and where the web
@@ -94,13 +94,13 @@ reputation brief.
 
 - **Entity-centric, not topic-centric.** This skill profiles *one account/brand*.
   For topic/keyword sentiment listening across a crowd, use `social-intel`.
-- **Three rails.** AIsa (YouTube) and Alchemy settle `mode=direct` (Gateway-batched,
-  paid upstream, router bypassed); SELAT-native (X/Twitter profile + tweets) and Exa
-  settle `routed-x402`; Brave settles `routed-mpp` — so a reachable `SELAT_ROUTER_URL`
-  is required for the four routed steps, but not for the two direct steps.
+- **Three rails.** AIsa (YouTube) and Alchemy settle `x402 via Circle Gateway` (Gateway-batched,
+  paid upstream, router bypassed); SELAT-native (X/Twitter profile + tweets) settles via Circle Gateway; Exa
+  settles `x402 on Base`; Brave settles `MPP on Tempo` — so a reachable `SELAT_ROUTER_URL`
+  is required for the four SELAT Router steps, but not for the two Circle Gateway steps.
 - **The social rails are split.** The YouTube step pays AIsa (`api.aisa.one`)
   directly via Circle Gateway-batched nanopayments — no router involved; the
-  X/Twitter steps pay SELAT-native (`catalog.selat.ai`) routed via the SELAT Router.
+  X/Twitter steps pay SELAT-native (`catalog.selat.ai`) via the SELAT Router.
 - **The on-chain step is optional context.** It's only useful when the entity has
   an associated token; pass a real `--address`. The zero-address default just lets
   `verify` exercise the step.

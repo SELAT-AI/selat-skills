@@ -2,9 +2,9 @@
 
 | Step | Method | URL | Rail | Catalogue price | Cap |
 |---|---|---|---|---|---|
-| KOL sentiment | GET | `https://x402.ottoai.services/kol-sentiment` | routed x402 | about $0.001 | $0.010 |
-| Hyperliquid market context | GET | `https://x402.ottoai.services/hyperliquid-market` | routed x402 | about $0.001 | $0.010 |
-| Domain availability | POST | `https://stabledomains.dev/api/check` | routed x402 | about $0.010 | $0.015 |
+| KOL sentiment | GET | `https://x402.ottoai.services/kol-sentiment` | x402 on Base | about $0.001 | $0.010 |
+| Hyperliquid market context | GET | `https://x402.ottoai.services/hyperliquid-market` | x402 on Base | about $0.001 | $0.010 |
+| Domain availability | POST | `https://stabledomains.dev/api/check` | MPP on Tempo | about $0.010 | $0.015 |
 
 ## Provenance
 

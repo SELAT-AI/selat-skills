@@ -1,12 +1,12 @@
 ---
 name: person-lookup
-description: Use this skill when the user wants to look up a specific person — e.g. "who is [name]?", "look up [name]", "find info about [name]", "what's [name]'s background?", "find [name]'s work history / social profiles / contact info". Runs a synchronous natural-language people search via Clado (work history, education, social profiles, location, contact info), routed through the SELAT Router as an MPP payment via Locus.
+description: Use this skill when the user wants to look up a specific person — e.g. "who is [name]?", "look up [name]", "find info about [name]", "what's [name]'s background?", "find [name]'s work history / social profiles / contact info". Runs a synchronous natural-language people search via Clado (work history, education, social profiles, location, contact info), through the SELAT Router as an MPP payment via Locus.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). This is a routed MPP skill — it also requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound Gateway-batched payment into an outbound MPP payment to Clado via Locus.
+compatibility: Requires the selat CLI, selat-pay, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). This is a MPP on Tempo skill — it also requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound Gateway-batched payment into an outbound MPP payment to Clado via Locus.
 metadata:
   author: SELAT-AI
   version: "1.0"
-  rail: routed
+  rail: MPP on Tempo
   kind: single
 ---
 
@@ -20,11 +20,11 @@ Use when the user wants background on a specific person: who they are, their cur
 
 1. Install: `selat skill install person-lookup`
 2. Run: `selat skill run person-lookup --query "Dario Amodei Anthropic CEO"`
-3. The CLI compiles the step into a `selat-pay` call. Each step in the manifest becomes one capped payment — here a single routed POST to Clado via the SELAT Router — and prints a ✓/✗ summary with the response status.
+3. The CLI compiles the step into a `selat-pay` call. Each step in the manifest becomes one capped payment — here a single POST to Clado via the SELAT Router — and prints a ✓/✗ summary with the response status.
 
 Step:
 
-- **person search — Clado** `POST /clado/search` — **ROUTED MPP** via the SELAT Router.
+- **person search — Clado** `POST /clado/search` — **MPP on Tempo** via the SELAT Router.
 
 Clado search is **synchronous**: one POST with a natural-language query returns matching people directly in the response — no request IDs, no polling.
 
@@ -38,7 +38,7 @@ Outputs: comprehensive person data — full name and current title, current empl
 
 ## Gotchas
 
-- This is a **routed** step: `SELAT_ROUTER_URL` must be set and the router reachable. There is no direct rail in this skill.
+- This is a **via the SELAT Router** step: `SELAT_ROUTER_URL` must be set and the router reachable. Every step settles through the SELAT Router.
 - Per-step cap is $1.00 (full-run cap $1.00) — a ceiling ~3x the live price, not the charge. Clado's `/clado/search` live price is $0.31815 (probe-verified 2026-07-10).
 - Common names return multiple matches — add a company or title to the `query` to narrow down. A 404 means not found; try alternate spellings or more context.
 
@@ -48,7 +48,7 @@ Outputs: comprehensive person data — full name and current title, current empl
 
 - Probe without paying (free 402 probe):
   - `selat-pay POST "https://clado.mpp.paywithlocus.com/clado/search" --body '{"query":"Dario Amodei Anthropic CEO"}' --chain base --probe-only`
-- A successful run prints `status=200` and a ✓ summary for the routed step.
+- A successful run prints `status=200` and a ✓ summary for the MPP-on-Tempo step.
 
 ## References
 

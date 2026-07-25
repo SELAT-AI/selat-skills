@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "social-intel",
-  "description": "Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches (Exa neural + Tavily advanced) for corroborated results with citations, paid per call over x402, routed via the SELAT Router (selat-pay, USDC via Circle Gateway).",
+  "description": "Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches (Exa neural + Tavily advanced) for corroborated results with citations, paid per call over x402, via the SELAT Router (selat-pay, USDC via Circle Gateway).",
   "maxAmount": "0.10",
   "params": {
     "topic": {
@@ -12,20 +12,24 @@
   },
   "steps": [
     {
-      "label": "web context — Exa search (routed x402 via SELAT Router)",
-      "rail": "routed",
+      "label": "web context — Exa search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.exa.ai/search",
       "body": {
         "query": "${topic}",
         "numResults": 10,
-        "contents": { "text": { "maxCharacters": 4000 } }
+        "contents": {
+          "text": {
+            "maxCharacters": 4000
+          }
+        }
       },
       "maxAmount": "0.05"
     },
     {
-      "label": "web corroboration — Tavily search (routed x402 via SELAT Router)",
-      "rail": "routed",
+      "label": "web corroboration — Tavily search (x402 on Base)",
+      "rail": "x402 on Base",
       "method": "POST",
       "url": "https://x402.tavily.com/search",
       "body": {

@@ -1,8 +1,8 @@
 ---
 name: find-twitter-influencers
-description: Use this skill when the user wants to find Twitter/X influencers to promote a product or brand — e.g. "find influencers for Acme", "discover Twitter accounts for partnerships", "build an influencer outreach list", "who are the top fintech creators on X", "identify creators in our niche". Resolves the company, discovers curated listicles, pulls Twitter profiles and engagement, scores candidates, and enriches contacts (email + LinkedIn). Mixed rail — most steps are MPP-routed through the SELAT Router; the Twitter data steps are routed x402 calls via the SELAT Router to SELAT-native.
+description: Use this skill when the user wants to find Twitter/X influencers to promote a product or brand — e.g. "find influencers for Acme", "discover Twitter accounts for partnerships", "build an influencer outreach list", "who are the top fintech creators on X", "identify creators in our niche". Resolves the company, discovers curated listicles, pulls Twitter profiles and engagement, scores candidates, and enriches contacts (email + LinkedIn). Mixed rail — most steps are MPP-through the SELAT Router; the Twitter data steps are x402 via Circle Gateway calls via the SELAT Router to SELAT-native.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Routed MPP steps need a reachable SELAT Router (SELAT_ROUTER_URL); the SELAT-native steps pay routed via the SELAT Router (Circle x402, Gateway-batched).
+compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). MPP on Tempo steps need a reachable SELAT Router (SELAT_ROUTER_URL); the SELAT-native steps pay via the SELAT Router (Circle x402, Gateway-batched).
 metadata:
   author: SELAT-AI
   version: "1.0"
@@ -14,7 +14,7 @@ metadata:
 
 ## When To Use
 
-Use when the user wants a ranked, enriched list of Twitter/X influencers for a company, product, or niche — for partnerships, sponsorships, or outreach. The skill spans the full pipeline: company resolution, candidate discovery, Twitter profile + engagement pull, and contact enrichment. Every API call is a paid service — most routed MPP through the SELAT Router, plus two routed x402 calls via the SELAT Router to SELAT-native for Twitter data; the agent does the parsing, scoring, and ranking around the paid data.
+Use when the user wants a ranked, enriched list of Twitter/X influencers for a company, product, or niche — for partnerships, sponsorships, or outreach. The skill spans the full pipeline: company resolution, candidate discovery, Twitter profile + engagement pull, and contact enrichment. Every API call is a paid service — most MPP on Tempo through the SELAT Router, plus two x402 via Circle Gateway calls via the SELAT Router to SELAT-native for Twitter data; the agent does the parsing, scoring, and ranking around the paid data.
 
 ## Workflow
 
@@ -22,14 +22,14 @@ Use when the user wants a ranked, enriched list of Twitter/X influencers for a c
 2. Run: `selat skill run find-twitter-influencers --company "Acme Corp" [--domain acme.com] [--query "best fintech Twitter accounts to follow"] [--handle somehandle] [--linkedinUrl https://linkedin.com/in/...] [--firstName Jane --lastName Smith --contactDomain janesmithcreative.com]`
 3. The CLI compiles each step into a `selat-pay` call, pays the per-step price (capped per step), runs the steps in order, and prints a per-step status summary.
 
-Steps (**ROUTED MPP** via the SELAT Router unless marked DIRECT):
+Steps (**MPP on Tempo** via the SELAT Router unless marked x402 via Circle Gateway):
 
 - **Step 1 — Apollo** `POST /apollo/org-search` — resolve the company by name (`q_organization_name`) to get its Apollo org record, domain, and industry.
 - **Step 2 — Abstract Company Enrichment** `POST /abstract-company-enrichment/lookup` — resolve by domain when one is supplied (richer firmographic context, industry/SIC fields).
 - **Step 3 — Exa** `POST /search` — discover curated influencer listicles (request `contents.text` to parse handles from page text; x.com is NOT in Exa's index).
 - **Step 4 — Exa** `POST /findSimilar` — expand from a strong listicle URL to find more lists.
-- **Step 5 — SELAT-native (ROUTED via SELAT Router, x402)** `GET /twitter/user/info?userName=` — fetch a candidate's Twitter profile and follower counts.
-- **Step 6 — SELAT-native (ROUTED via SELAT Router, x402)** `GET /twitter/user/last_tweets?userName=` — fetch recent tweets with engagement metrics.
+- **Step 5 — SELAT-native (x402 via Circle Gateway)** `GET /twitter/user/info?userName=` — fetch a candidate's Twitter profile and follower counts.
+- **Step 6 — SELAT-native (x402 via Circle Gateway)** `GET /twitter/user/last_tweets?userName=` — fetch recent tweets with engagement metrics.
 - **Step 7 — Hunter** `POST /hunter/email-finder` — find an email by name + domain.
 - **Step 8 — Clado** `POST /clado/contacts` — LinkedIn-URL-to-contact enrichment (email + phone); synchronous, no polling.
 
@@ -53,7 +53,7 @@ Outputs (per step): Apollo org-search returns organization records (name, domain
 
 ## Gotchas
 
-- **Mixed rail.** Steps 1–4 and 7–8 are routed MPP and need `SELAT_ROUTER_URL` configured and the router reachable; steps 5–6 (SELAT-native) are routed x402 calls via the SELAT Router (Circle Gateway-batched).
+- **Mixed rail.** Steps 1–4 and 7–8 are MPP on Tempo and need `SELAT_ROUTER_URL` configured and the router reachable; steps 5–6 (SELAT-native) are x402 via Circle Gateway calls via the SELAT Router (Circle Gateway-batched).
 - **Caps are ceilings, not prices.** Every step carries a `maxAmount` of ~10x its live price ($0.10–$0.50); live prices (probe-verified 2026-07-10) sum to about $0.085 per full run: Apollo $0.00525, Abstract $0.0063, Exa $0.00525 ×2, SELAT-native $0.001 + $0.001, Hunter $0.01365, Clado $0.04515 — see `references/endpoints.md`.
 - **Hunter is POST in MPP.** The MPP route is `POST hunter.mpp.paywithlocus.com/hunter/email-finder` with a JSON body (`domain`, `first_name`, `last_name`) — not the upstream `GET /v2/email-finder`. The manifest grounds to the MPP host/path/method.
 - **Exa cannot search Twitter.** x.com / twitter.com profiles are not in Exa's index; always search for listicle pages and parse handles from `contents.text`.
