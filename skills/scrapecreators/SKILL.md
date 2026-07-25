@@ -1,8 +1,8 @@
 ---
 name: scrapecreators
-description: Use this skill when the user wants to scrape or pull social media data — Instagram, TikTok, LinkedIn, or X/Twitter profiles, posts, tweets, company pages, hashtags, or trending content. Triggers on "social scraper", "get this TikTok profile", "pull a LinkedIn profile", "fetch tweets for", "Instagram profile data", "trending TikToks", "influencer research", "social listening", "competitor social analysis". Multi-merchant — X/Twitter via SELAT-native (catalog.selat.ai; routed via the SELAT Router, Circle Gateway-batched), Instagram + TikTok via StableSocial (MPP, routed via the SELAT Router), LinkedIn via Clado (MPP, routed) — each capability compiled into a selat-pay call by the selat CLI.
+description: Use this skill when the user wants to scrape or pull social media data — Instagram, TikTok, LinkedIn, or X/Twitter profiles, posts, tweets, company pages, hashtags, or trending content. Triggers on "social scraper", "get this TikTok profile", "pull a LinkedIn profile", "fetch tweets for", "Instagram profile data", "trending TikToks", "influencer research", "social listening", "competitor social analysis". Multi-merchant — X/Twitter via SELAT-native (catalog.selat.ai; via the SELAT Router, Circle Gateway-batched), Instagram + TikTok via StableSocial (MPP, via the SELAT Router), LinkedIn via Clado (MPP on Tempo) — each capability compiled into a selat-pay call by the selat CLI.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). The routed steps (StableSocial, Clado) need a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound Gateway-batched payment into an outbound MPP payment; the SELAT-native steps also route through the SELAT Router (Circle Gateway-batched).
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). The SELAT Router steps (StableSocial, Clado) need a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound Gateway-batched payment into an outbound MPP payment; the SELAT-native steps also settle through the SELAT Router (Circle Gateway-batched).
 metadata:
   author: SELAT-AI
   version: "1.0"
@@ -14,13 +14,13 @@ metadata:
 
 ## When To Use
 
-Use when the user wants social media data scraped from Instagram, TikTok, LinkedIn, or X/Twitter — profiles, recent posts, tweets, company pages, hashtag searches, or trending content. Common contexts: influencer research, social listening, competitive analysis, content research, and lead generation. This is a **multi-merchant** skill: X/Twitter capabilities are **routed** SELAT-native calls (catalog.selat.ai, Circle Gateway-batched via the SELAT Router), while Instagram/TikTok (StableSocial) and LinkedIn (Clado) capabilities run as **routed** MPP payments through the SELAT Router. (The skill name is historical — it was originally backed by a single "Scrape Creators" merchant.)
+Use when the user wants social media data scraped from Instagram, TikTok, LinkedIn, or X/Twitter — profiles, recent posts, tweets, company pages, hashtag searches, or trending content. Common contexts: influencer research, social listening, competitive analysis, content research, and lead generation. This is a **multi-merchant** skill: X/Twitter capabilities are **via the SELAT Router** SELAT-native calls (catalog.selat.ai, Circle Gateway-batched via the SELAT Router), while Instagram/TikTok (StableSocial) and LinkedIn (Clado) capabilities run as **via the SELAT Router** MPP payments through the SELAT Router. (The skill name is historical — it was originally backed by a single "Scrape Creators" merchant.)
 
 ## Workflow
 
 1. Install: `selat skill install scrapecreators`
 2. Run: `selat skill run scrapecreators [--handle openai] [--hashtag tech] [--tweetId ...] [--linkedinUrl ...] [--instagramHandle ...]`
-3. The CLI compiles each step in `manifest.json` into a `selat-pay` call — routed SELAT-native steps pay upstream Gateway-batched; StableSocial and Clado steps route through the SELAT Router (MPP) — runs the steps in order, and prints a per-step ✓/✗ summary.
+3. The CLI compiles each step in `manifest.json` into a `selat-pay` call — SELAT-native steps pay upstream Gateway-batched; StableSocial and Clado steps settle through the SELAT Router (MPP) — runs the steps in order, and prints a per-step ✓/✗ summary.
 
 Only pass the params for the capabilities you actually need; unused steps still run against their defaults unless you scope the run.
 
@@ -40,7 +40,7 @@ Outputs: each step returns the merchant's JSON payload for that endpoint (profil
 
 ## Gotchas
 
-- **Mixed rails**: the StableSocial and Clado steps are routed and need `SELAT_ROUTER_URL` configured with the SELAT Router reachable; the SELAT-native X/Twitter steps are routed through the SELAT Router.
+- **Mixed rails**: the StableSocial and Clado steps settle via MPP on Tempo and need `SELAT_ROUTER_URL` configured with the SELAT Router reachable; the SELAT-native X/Twitter steps are through the SELAT Router.
 - Per-step caps (`maxAmount`) are ~10x each live price ($0.10–$0.75; full-run fallback $0.75); live prices total ≈ $0.45 across all 12 steps (see `references/endpoints.md`).
 - Handles must be passed **without** the leading `@`; hashtags **without** the leading `#`.
 - Tweet details take a **numeric tweet ID** (`tweetId`), not a tweet URL.

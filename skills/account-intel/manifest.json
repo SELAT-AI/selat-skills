@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "account-intel",
-  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans three rails (direct Circle nanopayment + MPP + x402 on Base), paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
+  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans three rails (Circle Gateway nanopayment + MPP + x402 on Base), paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
   "maxAmount": "0.50",
   "params": {
     "handle": {
@@ -27,29 +27,29 @@
   },
   "steps": [
     {
-      "label": "X/Twitter profile — SELAT Twitter API (catalog.selat.ai; ROUTED via SELAT Router, Circle Gateway-batched)",
-      "rail": "routed",
+      "label": "X/Twitter profile — SELAT Twitter API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/info?userName=${handle}",
       "maxAmount": "0.05"
     },
     {
-      "label": "X/Twitter recent tweets — SELAT Twitter API (catalog.selat.ai; ROUTED via SELAT Router, Circle Gateway-batched)",
-      "rail": "routed",
+      "label": "X/Twitter recent tweets — SELAT Twitter API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "0.05"
     },
     {
-      "label": "YouTube presence — AIsa YouTube API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
-      "rail": "direct",
+      "label": "YouTube presence — AIsa YouTube API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://api.aisa.one/apis/v2/youtube/search?query=${name}",
       "maxAmount": "0.05"
     },
     {
-      "label": "Web reputation / news — Brave news-search (ROUTED MPP via Locus, SELAT Router)",
-      "rail": "routed",
+      "label": "Web reputation / news — Brave news-search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
       "body": {
@@ -58,8 +58,8 @@
       "maxAmount": "0.06"
     },
     {
-      "label": "Web context / citations — Exa search (routed x402 on Base via SELAT Router)",
-      "rail": "routed",
+      "label": "Web context / citations — Exa search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.exa.ai/search",
       "body": {
@@ -74,8 +74,8 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "On-chain token footprint — Alchemy token-by-address (DIRECT x402, Circle Gateway-batched on Base)",
-      "rail": "direct",
+      "label": "On-chain token footprint — Alchemy token-by-address (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
       "maxAmount": "0.02"

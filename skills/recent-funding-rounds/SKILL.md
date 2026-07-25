@@ -1,12 +1,12 @@
 ---
 name: recent-funding-rounds
-description: Use this skill when the user asks about companies that raised funding recently — "what companies raised funding this week?", "recent seed rounds", "latest Series A deals", "what fintech companies recently raised", "this month's funding rounds", or weekly/monthly deal flow. Searches recent news coverage of funding rounds via Brave Search news-search, routed through the SELAT Router over the MPP rail. Returns news articles announcing raises, not a structured funding database.
+description: Use this skill when the user asks about companies that raised funding recently — "what companies raised funding this week?", "recent seed rounds", "latest Series A deals", "what fintech companies recently raised", "this month's funding rounds", or weekly/monthly deal flow. Searches recent news coverage of funding rounds via Brave Search news-search, through the SELAT Router over the MPP rail. Returns news articles announcing raises, not a structured funding database.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). The single routed step requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound payment into an outbound MPP payment to Brave Search (via Locus).
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). The single MPP-on-Tempo step requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound payment into an outbound MPP payment to Brave Search (via Locus).
 metadata:
   author: SELAT-AI
   version: "1.0"
-  rail: routed
+  rail: MPP on Tempo
   kind: single
 ---
 
@@ -14,7 +14,7 @@ metadata:
 
 ## When To Use
 
-Use when the user wants to discover companies that have **raised funding recently** in a given sector. Typical triggers: "what companies raised funding this week?", "show me recent seed rounds", "latest Series A deals in fintech". The skill issues a single routed MPP call to Brave Search's `/brave/news-search` and returns recent news articles announcing funding rounds.
+Use when the user wants to discover companies that have **raised funding recently** in a given sector. Typical triggers: "what companies raised funding this week?", "show me recent seed rounds", "latest Series A deals in fintech". The skill issues a single MPP on Tempo call to Brave Search's `/brave/news-search` and returns recent news articles announcing funding rounds.
 
 **Be honest about what comes back:** Brave news-search returns news articles about funding rounds (headline, snippet, source, publish date, URL) — it is **not** a structured funding database. There is no server-side filtering by exact date range, round type, or deal size; those signals live in the article text. Fold them into the query wording (e.g. a "seed" or "Series A" mention in `sector`) and extract deal details from the returned articles.
 
@@ -26,7 +26,7 @@ Use when the user wants to discover companies that have **raised funding recentl
 
 Step:
 
-- **Step 1 — Brave Search** `POST /brave/news-search` — **ROUTED MPP** via the SELAT Router. Queries `"${sector} startup funding round announced"` against Brave's news index; returns recent news articles covering funding announcements in that sector.
+- **Step 1 — Brave Search** `POST /brave/news-search` — **MPP on Tempo** via the SELAT Router. Queries `"${sector} startup funding round announced"` against Brave's news index; returns recent news articles covering funding announcements in that sector.
 
 To bias toward a round type, include it in `sector` (e.g. `--sector "fintech seed"`); news search naturally surfaces recent coverage, so "this week / this month" style asks are served by the recency of the news index rather than an explicit date filter.
 
@@ -40,7 +40,7 @@ Outputs: news-search results — a list of articles, each with title, descriptio
 
 ## Gotchas
 
-- The routed step needs `SELAT_ROUTER_URL` configured and the router reachable — there is no direct rail in this skill.
+- The MPP-on-Tempo step needs `SELAT_ROUTER_URL` configured and the router reachable — every step settles through the SELAT Router.
 - Live price is $0.03675 per call (probe-verified 2026-07-10); the manifest's $0.40 caps (~10x live) are a ceiling, not the price.
 - This is a news search, not a funding database: no `date_start`/`date_end`, `financing_types`, or `size_min` filters exist. Encode round type or size hints in the query wording and filter results client-side.
 - Coverage skews toward rounds that got press; small or unannounced raises may not appear at all.
@@ -51,7 +51,7 @@ Outputs: news-search results — a list of articles, each with title, descriptio
 
 - Probe without paying (free 402 probe):
   - `selat-pay POST "https://brave.mpp.paywithlocus.com/brave/news-search" --body '{"q":"artificial intelligence startup funding round announced"}' --chain base --probe-only`
-- A successful run prints `status=200` and a ✓ summary for the routed rail.
+- A successful run prints `status=200` and a ✓ summary for the MPP-on-Tempo rail.
 
 ## References
 

@@ -1,8 +1,8 @@
 ---
 name: enrich-waterfall
-description: Use this skill when the user wants to enrich a person or company from a partial identifier — e.g. "enrich this email", "find the work email and phone for X at Y", "who is this person", "build a lead profile for stripe.com", "company enrichment for this domain", "find their LinkedIn / Twitter", "get me funding and hiring signals", "waterfall enrichment", "verify this email". Runs a cheapest-first B2B enrichment waterfall — resolve the person sub-cent, anchor the company, fan out to signals / social, escalate to premium contact reveals (Clado contacts, Clado people search) only on gaps, then verify the email. Nearly every step is paid routed (MPP) through the SELAT Router; the SELAT-native X/Twitter step is a routed x402 call via the SELAT Router. The selat CLI compiles each manifest step into a payment.
+description: Use this skill when the user wants to enrich a person or company from a partial identifier — e.g. "enrich this email", "find the work email and phone for X at Y", "who is this person", "build a lead profile for stripe.com", "company enrichment for this domain", "find their LinkedIn / Twitter", "get me funding and hiring signals", "waterfall enrichment", "verify this email". Runs a cheapest-first B2B enrichment waterfall — resolve the person sub-cent, anchor the company, fan out to signals / social, escalate to premium contact reveals (Clado contacts, Clado people search) only on gaps, then verify the email. Nearly every step is paid MPP on Tempo through the SELAT Router; the SELAT-native X/Twitter step is a x402 via Circle Gateway call via the SELAT Router. The selat CLI compiles each manifest step into a payment.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps, including the SELAT-native X/Twitter call, are routed, so a reachable SELAT Router (SELAT_ROUTER_URL) is required.
+compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps, including the SELAT-native X/Twitter call, settle via the SELAT Router, so a reachable one (SELAT_ROUTER_URL) is required.
 metadata:
   author: SELAT-AI
   version: "1.0"
@@ -32,9 +32,9 @@ Do **not** use this for crypto/market price lookups (see `market-snapshot`,
 1. Install: `selat skill install enrich-waterfall`
 2. Run: `selat skill run enrich-waterfall [--email ...] [--name ...] [--firstName ...] [--lastName ...] [--domain ...] [--company ...] [--linkedinUrl ...] [--organizationId ...]`
 3. The CLI compiles each manifest step into a `selat-pay` call, runs the steps in
-   order, and prints a per-step `status` + cost summary. Every step is **routed**
+   order, and prints a per-step `status` + cost summary. Every step is **via the SELAT Router**
    through the SELAT Router (MPP) except the SELAT-native X/Twitter profile step, which is
-   a **direct** Circle x402 call (Circle Gateway-batched).
+   a **x402 via Circle Gateway** Circle x402 call (Circle Gateway-batched).
 
 ### The waterfall (cheapest-first, with stop/escalation conditions)
 
@@ -61,7 +61,7 @@ and **stop climbing a branch the moment you have what you need**:
 
 3. **social / signals** ($0.0004–$0.063) — enrichment fan-out, run **only the
    slices the caller asked for**:
-   - *social* — SELAT-native X/Twitter profile (routed x402, $0.001), Clado `scrape` for
+   - *social* — SELAT-native X/Twitter profile (x402 via Circle Gateway, $0.001), Clado `scrape` for
      LinkedIn person/company posts, StableSocial Instagram/TikTok profiles by handle.
    - *signals* — Apollo `job-postings` (needs `organizationId` from the anchor
      tier), Brave news search for company news and funding rounds, Diffbot KG
@@ -109,8 +109,8 @@ the canonical result, and ship only an email that passed the verify tier.
 
 ## Gotchas
 
-- **All routed except one** — `SELAT_ROUTER_URL` must be set and the router
-  reachable for the 19 routed steps; the SELAT-native X/Twitter step also routes through the SELAT Router, like the other
+- **All via the SELAT Router** — `SELAT_ROUTER_URL` must be set and the router
+  reachable for the 19 SELAT Router steps; the SELAT-native X/Twitter step also settles through the SELAT Router, like the other
   x402 call and settles via Circle Gateway.
 - **Don't run all 20 steps.** The manifest is a menu ordered cheapest-first; the
   agent walks it and stops per the stop/escalation conditions above. Blindly running
@@ -139,7 +139,7 @@ the canonical result, and ship only an email that passed the verify tier.
   - `selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=patrickc" --chain base --probe-only`
 - Validate the recipe locally: `python3 -c "import json; json.load(open('manifest.json'))"`.
 - A clean run prints `status=200` for the steps that fired and a per-step cost
-  summary; the routed steps each show a SELAT Router hop.
+  summary; the SELAT Router steps each show a SELAT Router hop.
 
 ## References
 

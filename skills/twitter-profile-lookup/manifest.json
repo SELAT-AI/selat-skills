@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "twitter-profile-lookup",
-  "description": "Look up a Twitter/X profile and recent tweets via the SELAT-native Twitter API (catalog.selat.ai), paid routed via the SELAT Router (Circle Gateway-batched x402). Returns bio, follower/following counts, verified status, and recent tweet engagement for a public handle.",
+  "description": "Look up a Twitter/X profile and recent tweets via the SELAT-native Twitter API (catalog.selat.ai), paid via the SELAT Router (Circle Gateway-batched x402). Returns bio, follower/following counts, verified status, and recent tweet engagement for a public handle.",
   "maxAmount": "0.10",
   "params": {
     "handle": {
@@ -12,15 +12,15 @@
   },
   "steps": [
     {
-      "label": "profile — SELAT Twitter API (catalog.selat.ai; ROUTED via SELAT Router, Circle Gateway-batched)",
-      "rail": "routed",
+      "label": "profile — SELAT Twitter API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/info?userName=${handle}",
       "maxAmount": "0.10"
     },
     {
-      "label": "recent tweets — SELAT Twitter API (catalog.selat.ai; ROUTED via SELAT Router, Circle Gateway-batched)",
-      "rail": "routed",
+      "label": "recent tweets — SELAT Twitter API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "0.10"
