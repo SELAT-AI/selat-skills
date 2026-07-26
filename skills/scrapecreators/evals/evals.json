@@ -4,51 +4,51 @@
     {
       "id": "twitter-profile",
       "prompt": "Scrape the X/Twitter profile for the handle openai.",
-      "expected_output": "The skill runs the direct AIsa twitter user-info step and returns the profile JSON (bio, follower counts).",
+      "expected_output": "The skill runs the SELAT-native twitter user-info step and returns the profile JSON (bio, follower counts).",
       "assertions": [
         "The skill triggers (scrapecreators) for a social profile scrape request",
-        "The X/Twitter profile step targets https://api.aisa.one/apis/v2/twitter/user/info?userName=openai",
-        "The step rail is direct (Circle Gateway-batched, no SELAT Router)"
+        "The X/Twitter profile step targets https://catalog.selat.ai/twitter/user/info?userName=openai",
+        "The step rail is x402 via Circle Gateway (no SELAT Router)"
       ]
     },
     {
       "id": "tiktok-trending",
       "prompt": "Show me what's trending on TikTok.",
-      "expected_output": "The routed StableSocial tiktok/search step runs with query=trending (keyword-search proxy; there is no trending-feed endpoint) and returns matching videos.",
+      "expected_output": "The MPP-on-Tempo StableSocial tiktok/search step runs with query=trending (keyword-search proxy; there is no trending-feed endpoint) and returns matching videos.",
       "assertions": [
         "The skill triggers for a trending-content request",
         "The step URL is https://stablesocial.dev/api/tiktok/search with body {\"query\":\"trending\"}",
-        "The step is rail routed (MPP via the SELAT Router)"
+        "The step is rail via the SELAT Router (MPP via the SELAT Router)"
       ]
     },
     {
       "id": "linkedin-company",
       "prompt": "Pull the LinkedIn company page data for https://linkedin.com/company/anthropic.",
-      "expected_output": "The routed Clado scrape step runs with the supplied company URL and returns the company page data.",
+      "expected_output": "The MPP-on-Tempo Clado scrape step runs with the supplied company URL and returns the company page data.",
       "assertions": [
         "The linkedinCompanyUrl param flows into the Clado scrape step body as linkedin_url",
-        "The step method is POST and rail routed",
+        "The step method is POST and rail via the SELAT Router",
         "The host is clado.mpp.paywithlocus.com"
       ]
     },
     {
       "id": "instagram-posts",
       "prompt": "Get the recent Instagram posts for the handle openai.",
-      "expected_output": "The routed StableSocial instagram/posts step runs with the handle and returns the recent posts JSON (there is no single-post-by-URL endpoint).",
+      "expected_output": "The MPP-on-Tempo StableSocial instagram/posts step runs with the handle and returns the recent posts JSON (there is no single-post-by-URL endpoint).",
       "assertions": [
         "The handle param flows into the instagram/posts step body",
         "The step targets https://stablesocial.dev/api/instagram/posts",
-        "The step method is POST and rail routed"
+        "The step method is POST and rail via the SELAT Router"
       ]
     },
     {
       "id": "full-run-cap",
       "prompt": "Run the full scrapecreators skill with defaults.",
-      "expected_output": "All 12 steps run — 3 direct AIsa steps plus 9 routed StableSocial/Clado steps — and the run cost is capped at the manifest maxAmount.",
+      "expected_output": "All 12 steps run — 3 x402-via-Circle-Gateway SELAT-native steps plus 9 MPP-on-Tempo StableSocial/Clado steps — and the run cost is capped at the manifest maxAmount.",
       "assertions": [
         "manifest.json parses as valid JSON",
         "Top-level maxAmount is 0.75 (fallback cap; live total is about 0.45)",
-        "AIsa steps are rail direct on api.aisa.one; StableSocial and Clado steps are rail routed"
+        "SELAT-native Twitter steps are rail via the SELAT Router via catalog.selat.ai; StableSocial and Clado steps are rail via the SELAT Router"
       ]
     },
     {
@@ -57,7 +57,7 @@
       "expected_output": "The scrapecreators skill does NOT trigger; this is unrelated to social media scraping.",
       "assertions": [
         "The scrapecreators skill is not selected",
-        "No AIsa, StableSocial, or Clado social-scraping endpoint is called"
+        "No SELAT-native, StableSocial, or Clado social-scraping endpoint is called"
       ]
     }
   ]

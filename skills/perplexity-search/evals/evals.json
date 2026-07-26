@@ -1,0 +1,33 @@
+{
+  "skill_name": "perplexity-search",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Search the web and tell me the latest on x402 adoption, with sources.",
+      "expected_output": "Runs the perplexity-search step (POST /search) and returns a short cited brief synthesized from the web results.",
+      "assertions": [
+        "perplexity-search is selected",
+        "the agent tells the user the ~$0.01 cost before spending",
+        "the final answer cites source URLs from the search results"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Do a grounded web read on how agentic payment rails are being adopted this month.",
+      "expected_output": "Runs perplexity-search with recency=month and synthesizes a cited answer.",
+      "assertions": [
+        "perplexity-search is selected",
+        "recency is set to a valid enum value (hour|day|week|month|year)"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "What is 17 times 23?",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "perplexity-search is not selected",
+        "no paid call is made for a question answerable without live web data"
+      ]
+    }
+  ]
+}

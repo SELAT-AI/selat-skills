@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "email-campaign",
-  "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company firmographic context — all via MPP merchants (Hunter, Apollo, Abstract Company Enrichment via Locus) routed through the SELAT Router.",
+  "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company firmographic context — all via MPP merchants (Hunter, Apollo, Abstract Company Enrichment via Locus) through the SELAT Router.",
   "maxAmount": "1.00",
   "params": {
     "industry": {
@@ -37,8 +37,8 @@
   },
   "steps": [
     {
-      "label": "emails by domain — Hunter (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "emails by domain — Hunter (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
       "body": {
@@ -47,8 +47,8 @@
       "maxAmount": "1.00"
     },
     {
-      "label": "find person email — Hunter (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "find person email — Hunter (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
       "body": {
@@ -59,8 +59,8 @@
       "maxAmount": "0.15"
     },
     {
-      "label": "verify deliverability — Hunter (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "verify deliverability — Hunter (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
@@ -69,8 +69,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "bounce check — Hunter (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "bounce check — Hunter (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
@@ -79,8 +79,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "enrich lead — Apollo (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "enrich lead — Apollo (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
@@ -91,8 +91,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "company context — Abstract Company Enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "company context — Abstract Company Enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
       "body": {

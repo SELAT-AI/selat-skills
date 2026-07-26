@@ -2,7 +2,7 @@
 name: vc-ai-infra-scout
 description: "Use this skill when a VC wants to source emerging AI-infrastructure, crypto-AI, robotics, or agentic-payments deals before the round — e.g. \"scout new AI inference infra startups\", \"who's building agent infra / GPU compute / eval-observability that hasn't raised yet\", \"find founders shipping vector/data infra on HN and Product Hunt\", \"give me a deal shortlist for my AI-infra thesis\", \"what pre-seed/seed rounds are people announcing on Twitter and LinkedIn and what's the thesis behind them\", crypto-AI: \"scout decentralized-AI / DePIN-for-AI deals\", \"find on-chain AI agent projects to back\", robotics: \"scout robotics foundation-model / humanoid / embodied-AI / sim-to-real startups\", or agentic payments: \"find agent-payment-rail / agent-commerce / x402 / stablecoin-settlement startups\". Discovers companies + founders from Hacker News, Product Hunt, the web (Exa), and Twitter/X; searches recent pre-seed/seed fundraising news on Twitter/X and LinkedIn and summarizes the tweets of investors at the funds leading those rounds to distill the live thesis; then enriches the top lead (Apollo). Dedupes across sources, ranks by signal, flags who has NOT raised yet, and outputs a shortlist with links + a suggested-outreach note. Paid per call across mixed rails via selat-pay (USDC via Circle Gateway), no API keys."
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet. Routed steps require a reachable SELAT_ROUTER_URL; direct Circle x402 steps use Gateway-batched payments. `selat skill verify` (no --pay) is free and needs no funded wallet.
+compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet. SELAT Router steps require a reachable SELAT_ROUTER_URL; x402 via Circle Gateway steps use Gateway-batched payments. `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.3"
@@ -16,12 +16,12 @@ A deal-sourcing scout for a VC running an **AI-infrastructure thesis** that span
 **crypto-AI / decentralized-AI**, **robotics / embodied-AI**, and **agentic
 payments**. It surfaces emerging companies and
 founders from **Hacker News** (Tavily), **Product Hunt** (Parallel), the **web**
-(Exa), and **Twitter/X** (AIsa advanced search); **searches recent pre-seed/seed fundraising news on
+(Exa), and **Twitter/X** (SELAT-native advanced_search); **searches recent pre-seed/seed fundraising news on
 Twitter/X and LinkedIn** and **summarizes the tweets of the investors at the funds
 leading those rounds** to distill the live thesis; then **enriches** the single
 most promising lead (Apollo). The skill pays for the data across **mixed rails**:
-**direct Circle x402** (Tavily + AIsa), **routed MPP** (Parallel + Apollo), and
-**routed x402 on Base** (Exa). The agent does the work *around* the paid data: dedupe across sources, rank
+**x402 via Circle Gateway** (Tavily), **via the SELAT Router** (SELAT-native Twitter, Parallel + Apollo MPP), and
+**x402 on Base** (Exa). The agent does the work *around* the paid data: dedupe across sources, rank
 by signal (traction, recency, founder pedigree), distill the investor thesis from
 lead-fund tweets, flag who has **not** raised yet to pre-empt the round, and output
 a shortlist with links + a suggested-outreach note.
@@ -47,15 +47,15 @@ not-yet-raised flagging, and synthesis around the paid data.
 
 This skill spans **mixed rails**, so its `rail` is `mixed`:
 
-- **direct Circle x402** — Tavily advanced search covers HN and LinkedIn public
-  posts, while AIsa advanced_search covers Twitter/X founder buzz, fundraising
+- **x402 on Base** — Tavily advanced search covers HN and LinkedIn public
+  posts, while SELAT-native advanced_search covers Twitter/X founder buzz, fundraising
   announcements, and investor/fund thesis tweets.
-- **routed MPP** — Parallel covers Product Hunt discovery, and Apollo covers
+- **MPP on Tempo** — Parallel covers Product Hunt discovery, and Apollo covers
   people-search + org-enrichment through the SELAT Router.
-- **routed x402 on Base** — Exa (`api.exa.ai`) serves a native x402 challenge; the
-  router settles it on Base (`mode=routed-x402`).
+- **x402 on Base** — Exa (`api.exa.ai`) serves a native x402 challenge; the
+  router settles it on Base (`x402 on Base`).
 
-So: **5 direct Circle x402** steps, **3 routed MPP** steps, and **1 routed x402 on
+So: **5 x402 via Circle Gateway** steps, **3 MPP on Tempo** steps, and **1 x402 on Base on
 Base** step. The `selat` CLI auto-detects each step's protocol at call time.
 Full-run `maxAmount` is `$0.40`.
 
@@ -69,33 +69,33 @@ Full-run `maxAmount` is `$0.40`.
 Recommended agent procedure (cheapest-first; stop early when the picture is clear):
 
 1. **Discover on Hacker News** — Tavily `POST /search` with
-   `${thesis} site:news.ycombinator.com` (direct Circle x402). Pull Show HN /
+   `${thesis} site:news.ycombinator.com` (x402 via Circle Gateway). Pull Show HN /
    launch threads naming new infra projects.
 2. **Discover on Product Hunt** — Parallel `POST /api/search` with
-   `${thesis} site:producthunt.com` (routed MPP).
+   `${thesis} site:producthunt.com` (MPP on Tempo).
 3. **Add launch + web context** — Exa `POST /search` for
-   `${thesis} startup launch funding` (routed x402 on Base, ~$0.0073): recency and
+   `${thesis} startup launch funding` (x402 on Base, ~$0.0073): recency and
    early chatter with text snippets + URLs.
-4. **Scan Twitter/X for founders & buzz** — AIsa `GET /apis/v2/twitter/tweet/advanced_search` with
-   `${twitterQuery}` (direct Circle x402). Returns recent tweets matching a **keyword**,
+4. **Scan Twitter/X for founders & buzz** — SELAT-native `GET /twitter/tweet/advanced_search` with
+   `${twitterQuery}` (x402 via Circle Gateway). Returns recent tweets matching a **keyword**,
    so use it to *discover* founders shipping in public.
-5. **Fundraising news on Twitter/X** — AIsa advanced_search with
-   `${fundraisingQuery}` (direct Circle x402): recent pre-seed/seed raise
+5. **Fundraising news on Twitter/X** — SELAT-native advanced_search with
+   `${fundraisingQuery}` (x402 via Circle Gateway): recent pre-seed/seed raise
    announcements and the "we're thrilled to announce" threads. Extract the company,
    round, amount, and the **lead investors** named.
 6. **Fundraising news on LinkedIn** — Tavily `POST /search` with
-   `${fundraisingQuery} site:linkedin.com/posts` (direct Circle x402): LinkedIn
+   `${fundraisingQuery} site:linkedin.com/posts` (x402 via Circle Gateway): LinkedIn
    funding-announcement posts indexed by Google. Cross-reference against the Twitter
    raises; LinkedIn often names the partner who led.
 7. **Distill the investor thesis** — take the funds leading those rounds (from steps
-   5–6) and run AIsa advanced_search with `${investorQuery}` set to their
-   handle/name (direct Circle x402). Summarize those tweets into the *live thesis*
+   5–6) and run SELAT-native advanced_search with `${investorQuery}` set to their
+   handle/name (x402 via Circle Gateway). Summarize those tweets into the *live thesis*
    the lead funds are signalling — what they say they're backing and why.
 8. **Enrich + shortlist.** For the most promising company/founder:
    - Founder shortlist — Apollo `POST /apollo/people-search` keyed on
-     `${thesis} founder` (routed MPP).
+     `${thesis} founder` (MPP on Tempo).
    - Company enrichment — Apollo `POST /apollo/org-enrichment` on `${domain}`
-     (routed MPP): headcount, location, links.
+     (MPP on Tempo): headcount, location, links.
 9. **Flag who has NOT raised yet.** Cross the fundraising chatter + enrichment
    against the discovery set and explicitly call out promising teams with **no
    announced round** — the pre-empt-the-round targets.
@@ -123,18 +123,18 @@ note for the top pick.
 
 ## Gotchas
 
-- **Mixed rails.** Tavily and AIsa are direct Circle x402; Parallel and Apollo are
-  routed MPP; Exa is routed x402 on Base.
-- **GET vs POST.** Tavily, Parallel, Exa, and Apollo are **POST**. AIsa advanced
+- **Mixed rails.** Tavily is x402 via Circle Gateway; SELAT-native Twitter, Parallel and Apollo are
+  MPP on Tempo; Exa is x402 on Base.
+- **GET vs POST.** Tavily, Parallel, Exa, and Apollo are **POST**. SELAT-native advanced
   Twitter/X search is **GET** with `query` and `queryType=Latest`.
 - **Site-scoped search reaches HN, Product Hunt, and LinkedIn.** There is no
   dedicated HN/PH/LinkedIn merchant here; use `site:` scoped searches with Tavily
   for HN/LinkedIn and Parallel for Product Hunt. LinkedIn coverage is public indexed
   posts, so corroborate against the Twitter fundraising step rather than treating
   either as complete.
-- **Three AIsa advanced_search calls, different intent.** Step 4 (`${twitterQuery}`)
+- **Three SELAT-native advanced_search calls, different intent.** Step 4 (`${twitterQuery}`)
   finds **founders**; step 5 (`${fundraisingQuery}`) finds **raise announcements**;
-  step 7 (`${investorQuery}`) finds **investors/funds**. AIsa returns tweets
+  step 7 (`${investorQuery}`) finds **investors/funds**. SELAT-native returns tweets
   matching a **keyword**, not a known handle — discover handles from the results,
   then refine `investorQuery` to the lead funds named in the fundraising steps.
 - **Recency lives in the query, not a date filter.** These are keyword searches, not
@@ -146,7 +146,7 @@ note for the top pick.
 - **The live 402 is the source of truth.** If a step stops serving a challenge,
   `selat skill verify` flags the drift — omit it and re-add when the gateway
   serves it again.
-- **No third-party Twitter-scraper merchants.** Twitter/X comes from AIsa
+- **No third-party Twitter-scraper merchants.** Twitter/X comes from SELAT-native
   advanced_search; site-scoped search comes from Tavily and Parallel.
 
 ## Validation
@@ -157,7 +157,7 @@ note for the top pick.
 - Live gate (free): `selat skill verify ./skills/vc-ai-infra-scout --thesis "AI inference infrastructure" --twitterQuery "AI inference infra founder" --fundraisingQuery "AI infrastructure startup raised seed pre-seed funding round" --investorQuery "AI infra seed fund partner" --domain modal.com`
 - Paid confirm (settles real 200s): add `--pay` to the verify command.
 - Single-step probes (no pay):
-  - `selat-pay GET "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=AI%20infrastructure%20startup%20raised%20seed%20pre-seed%20round&queryType=Latest" --chain base --probe-only`
+  - `selat-pay GET "https://catalog.selat.ai/twitter/tweet/advanced_search?query=AI%20infrastructure%20startup%20raised%20seed%20pre-seed%20round&queryType=Latest" --chain base --probe-only`
   - `selat-pay POST "https://x402.tavily.com/search" --body '{"query":"AI infrastructure startup raised seed funding site:linkedin.com/posts","search_depth":"advanced","max_results":10,"topic":"general"}' --chain base --probe-only`
 
 ## References

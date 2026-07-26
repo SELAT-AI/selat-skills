@@ -23,9 +23,9 @@ Current manifest endpoints:
 Latest receipt:
 
 - verified at: `2026-06-30T08:19:01.583Z`
-- step 1: Otto KOL sentiment, routed x402, live price `$0.00105`, cap `$0.010`
-- step 2: Otto Hyperliquid market, routed x402, live price `$0.00105`, cap `$0.010`
-- step 3: StableDomains availability, routed MPP, live price `$0.0105`, cap `$0.015`
+- step 1: Otto KOL sentiment, x402 on Base, live price `$0.00105`, cap `$0.010`
+- step 2: Otto Hyperliquid market, x402 on Base, live price `$0.00105`, cap `$0.010`
+- step 3: StableDomains availability, MPP on Tempo, live price `$0.0105`, cap `$0.015`
 - receipt file: `skills/self-evolving-agent/.selat/verify-receipt.json`
 
 Run `selat skill verify skills/self-evolving-agent` again after manifest edits.

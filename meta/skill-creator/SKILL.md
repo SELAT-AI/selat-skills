@@ -47,24 +47,36 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
 2. **Discover endpoints** in the federated catalogue and record each merchant's
    **`serviceUrl`** (NOT the descriptive provider `url`), method, path, price.
    See `references/endpoint-discovery.md` — this is where most skills break.
-3. **Author** — replace every `TODO`:
+3. **Enrich each endpoint's schema** — pin the real request shape *before* writing
+   any `body`/`${param}`, from a **free** source, because a wrong param name or shape
+   still costs money: the SELAT Router settles the payment **before** the upstream
+   validates the body, and a `verify` probe checks *payability, not param
+   correctness*. Pull the gateway's OpenAPI (`<serviceUrl-host>/openapi.json`), decode
+   the self-describing `bazaar` schema in the 402 `payment-required` header, or read
+   the upstream's public API docs — then **corroborate against the live API**, which
+   is the real source of truth (specs drift: observed `tweet_id` vs live `tweetId`,
+   and "only field X required" when the live API rejects a body without more). Record
+   every param (name, required, type, enum, format) in `references/endpoints.md` and
+   map each manifest `${param}` to the real API param name.
+   See `references/schema-enrichment.md`.
+4. **Author** — replace every `TODO`:
    - `manifest.json` — `name` (== folder), `maxAmount` (cap *with
      headroom*, a filter not a price), `params` (real defaults), `steps[]` with
      `url` = `serviceUrl` + path, `${param}` substitution, `body` for POST.
    - `SKILL.md` — frontmatter + sections (When To Use, Workflow, Inputs And
      Outputs, Gotchas, Validation, References). No `TODO` may remain.
    - `references/endpoints.md` and `evals/evals.json` (`skill_name` == folder).
-4. **Validate (static):** `selat skill validate ./skills/<name>`.
-5. **Verify (the gate):** `selat skill verify ./skills/<name>` probes each step's
+5. **Validate (static):** `selat skill validate ./skills/<name>`.
+6. **Verify (the gate):** `selat skill verify ./skills/<name>` probes each step's
    real 402 price/rail (free) and checks it ≤ `maxAmount`; `--pay` makes a capped
    real call to confirm it settles 200. Pass required params as flags. This writes
    `skills/<name>/.selat/verify-receipt.json` — the provenance `submit` attaches to
    the PR and that **gates merge**. Fix any step that's unreachable or over cap;
    prefer **first-party** providers over proxies.
-6. **Register:** `selat skill register ./skills/<name>` auto-adds/updates the
+7. **Register:** `selat skill register ./skills/<name>` auto-adds/updates the
    `index.json` entry from the manifest.
-7. **Whole-repo check:** `npm run validate` (exactly what CI runs).
-8. **Submit:** `selat skill submit ./skills/<name>` (use `--dry-run` first). It
+8. **Whole-repo check:** `npm run validate` (exactly what CI runs).
+9. **Submit:** `selat skill submit ./skills/<name>` (use `--dry-run` first). It
    requires a passing verify receipt, then branches, commits `skills/<name>` + the
    `index.json` entry, pushes, and opens a PR with the receipt as provenance. No
    write access? It prints fork-and-PR commands. A maintainer paid-re-verifies
@@ -115,6 +127,16 @@ ready for `submit`.
 - **`verify` is the gate, and the live 402 is the source of truth.** The catalogue
   lists endpoints the gateway may no longer serve. Never submit a step that doesn't
   verify; omit it and re-add when it's served.
+- **Enrich the schema from a free source before the first paid call — a wrong param
+  still charges.** The Router settles payment *before* the upstream validates the
+  body, and a probe checks payability, not param correctness. Pin the shape from the
+  gateway OpenAPI (`<host>/openapi.json`), the 402 `bazaar` extension, or upstream
+  docs, then confirm with `verify --pay`. **Specs drift from the live API; the live
+  API wins** (seen: OpenAPI `tweet_id` vs live `tweetId`; "only `input` required" when
+  the live endpoint also demands `model`/`models`/`preset`).
+- **`${param}` substitutes as a string — no type coercion.** A numeric or array field
+  wired as `"${n}"` sends `"8"` and 4xx's. Keep string-typed fields in the manifest
+  `body`; document integer/array fields for a hand-built `selat-pay` call instead.
 - **Prefer first-party providers over proxies** when equivalent — cheaper/equal,
   with real identity and recourse.
 - **The authoring SOP lives only at the repo root** `references/agent-skill-authoring-sop.md`;
@@ -150,5 +172,6 @@ does not declare one.
 - [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — repo-level quick reference that points back to this skill.
 - `references/manifest-reference.md` — `selat-skill/v1` manifest schema, params, rails, examples.
 - `references/endpoint-discovery.md` — finding endpoints in the catalogue and the `serviceUrl` rule.
+- `references/schema-enrichment.md` — pinning each endpoint's request schema from OpenAPI / the 402 `bazaar` extension / upstream docs, and verifying it against the live API.
 - `references/submission-checklist.md` — the `selat skill` command sequence + pre-PR checklist.
 - [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — the authoring standard.

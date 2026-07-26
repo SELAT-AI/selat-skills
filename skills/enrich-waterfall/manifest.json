@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "enrich-waterfall",
-  "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one direct Circle x402 call. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts, Clado natural-language people search) only on gaps, and verifies the email last. 20 deduplicated steps across Apollo, Hunter, Clado, Brave Search, Diffbot KG and Abstract Company Enrichment (via Locus), StableSocial (MPP direct merchant), and AIsa (Circle x402 catalog).",
+  "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the SELAT Router. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts, Clado natural-language people search) only on gaps, and verifies the email last. 20 deduplicated steps across Apollo, Hunter, Clado, Brave Search, Diffbot KG and Abstract Company Enrichment (via Locus), StableSocial (MPP merchant), and SELAT-native (catalog.selat.ai).",
   "maxAmount": "1.00",
   "params": {
     "email": {
@@ -12,7 +12,7 @@
     "name": {
       "required": false,
       "default": "John Doe",
-      "description": "Full name; also used as the social handle for the AIsa X/Twitter profile, StableSocial Instagram/TikTok profile, and Clado handle-to-person search steps."
+      "description": "Full name; also used as the social handle for the SELAT-native X/Twitter profile, StableSocial Instagram/TikTok profile, and Clado handle-to-person search steps."
     },
     "firstName": {
       "required": false,
@@ -47,8 +47,8 @@
   },
   "steps": [
     {
-      "label": "person resolve — Apollo people enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person resolve — Apollo people enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
@@ -63,8 +63,8 @@
       "tier": "resolve"
     },
     {
-      "label": "person resolve by email — Hunter email enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person resolve by email — Hunter email enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
       "body": {
@@ -74,8 +74,8 @@
       "tier": "resolve"
     },
     {
-      "label": "person resolve by LinkedIn URL — Clado LinkedIn profile (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person resolve by LinkedIn URL — Clado LinkedIn profile (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
       "body": {
@@ -85,8 +85,8 @@
       "tier": "resolve"
     },
     {
-      "label": "person+company resolve by email — Hunter combined enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person+company resolve by email — Hunter combined enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment",
       "body": {
@@ -96,8 +96,8 @@
       "tier": "resolve"
     },
     {
-      "label": "company anchor (no domain) — Apollo org search by name (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "company anchor (no domain) — Apollo org search by name (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
       "body": {
@@ -107,8 +107,8 @@
       "tier": "anchor"
     },
     {
-      "label": "company anchor — Abstract Company Enrichment lookup by domain (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "company anchor — Abstract Company Enrichment lookup by domain (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
       "body": {
@@ -118,8 +118,8 @@
       "tier": "anchor"
     },
     {
-      "label": "company anchor + tech + headcount — Apollo org enrichment by domain (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "company anchor + tech + headcount — Apollo org enrichment by domain (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
       "body": {
@@ -129,8 +129,8 @@
       "tier": "anchor"
     },
     {
-      "label": "company anchor — Hunter company enrichment by domain (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "company anchor — Hunter company enrichment by domain (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
       "body": {
@@ -140,8 +140,8 @@
       "tier": "anchor"
     },
     {
-      "label": "email find by name — Hunter email-finder (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "email find by name — Hunter email-finder (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
       "body": {
@@ -153,16 +153,16 @@
       "tier": "anchor"
     },
     {
-      "label": "X/Twitter profile — AIsa user info (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
-      "rail": "direct",
+      "label": "X/Twitter profile — SELAT user info (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${name}",
+      "url": "https://catalog.selat.ai/twitter/user/info?userName=${name}",
       "maxAmount": "0.10",
       "tier": "social"
     },
     {
-      "label": "LinkedIn person/company posts — Clado scrape (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "LinkedIn person/company posts — Clado scrape (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
       "body": {
@@ -172,8 +172,8 @@
       "tier": "social"
     },
     {
-      "label": "Instagram profile — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "Instagram profile — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/instagram/profile",
       "body": {
@@ -183,8 +183,8 @@
       "tier": "social"
     },
     {
-      "label": "TikTok profile — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "TikTok profile — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/tiktok/profile",
       "body": {
@@ -194,8 +194,8 @@
       "tier": "social"
     },
     {
-      "label": "job openings / hiring signals — Apollo job postings by org id (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "job openings / hiring signals — Apollo job postings by org id (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/job-postings",
       "body": {
@@ -205,8 +205,8 @@
       "tier": "signals"
     },
     {
-      "label": "news events — Brave news search for company (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "news events — Brave news search for company (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
       "body": {
@@ -216,8 +216,8 @@
       "tier": "signals"
     },
     {
-      "label": "financing events — Brave news search for funding rounds (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "financing events — Brave news search for funding rounds (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
       "body": {
@@ -227,8 +227,8 @@
       "tier": "signals"
     },
     {
-      "label": "business connections / KG record — Diffbot Knowledge Graph enhance (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "business connections / KG record — Diffbot Knowledge Graph enhance (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance",
       "body": {
@@ -239,8 +239,8 @@
       "tier": "signals"
     },
     {
-      "label": "contact reveal (email + phone) from LinkedIn — Clado contacts (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "contact reveal (email + phone) from LinkedIn — Clado contacts (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
       "body": {
@@ -250,8 +250,8 @@
       "tier": "escalate"
     },
     {
-      "label": "person search by handle / natural language — Clado search (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person search by handle / natural language — Clado search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/search",
       "body": {
@@ -261,8 +261,8 @@
       "tier": "escalate"
     },
     {
-      "label": "email verify — Hunter email-verifier (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "email verify — Hunter email-verifier (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {

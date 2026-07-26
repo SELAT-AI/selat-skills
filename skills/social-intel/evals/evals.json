@@ -3,22 +3,22 @@
   "evals": [
     {
       "id": "trigger-1",
-      "prompt": "What's the social sentiment on agent payments right now — scan Reddit and Twitter and give me a brief with web context?",
-      "expected_output": "Runs social-intel across Exa + Parallel (web) and StableSocial Reddit + X steps, then fuses a cross-platform sentiment brief with citations.",
+      "prompt": "What's being said about agent payments right now — give me a grounded web brief with citations?",
+      "expected_output": "Runs social-intel across Exa + Tavily (two web searches), then fuses a corroborated web brief with source URLs.",
       "assertions": [
         "social-intel is selected",
-        "calls both a web-search step (Exa or Parallel) and a StableSocial Reddit step",
-        "output fuses web + Reddit + X signal into a sentiment/themes brief with source URLs"
+        "calls both web-search steps (Exa and Tavily)",
+        "output cross-checks the two engines and fuses a themes/sentiment brief with source URLs"
       ]
     },
     {
       "id": "trigger-2",
-      "prompt": "Do social listening on the @OpenAI account and the r/ethereum community around 'restaking'.",
-      "expected_output": "Runs social-intel with --topic restaking --handle OpenAI --subreddit ethereum, pulling the X profile + tweets and the subreddit top posts plus topic search.",
+      "prompt": "Pull grounded web context on 'restaking' and flag anything only one source claims.",
+      "expected_output": "Runs social-intel with --topic restaking, cross-referencing Exa and Tavily results and flagging single-source claims.",
       "assertions": [
         "social-intel is selected",
-        "handle, subreddit, and topic params are passed through",
-        "X/Twitter profile + tweets and subreddit posts are retrieved and summarized"
+        "topic param is passed through to both engines",
+        "output distinguishes corroborated claims from single-source ones with citations"
       ]
     },
     {

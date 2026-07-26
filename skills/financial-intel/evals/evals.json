@@ -7,7 +7,7 @@
       "expected_output": "Runs financial-intel across Alchemy (price), CoinGecko (market data), Nansen (smart money), Messari (funding), and Exa (news), then fuses a multi-signal brief with citations.",
       "assertions": [
         "financial-intel is selected",
-        "calls the Alchemy spot-price step plus at least one routed signal (CoinGecko, Nansen, Messari, or Exa)",
+        "calls the Alchemy spot-price step plus at least one signal (CoinGecko, Nansen, Messari, or Exa)",
         "output fuses price + market + on-chain + news signal into a single intelligence brief with source URLs"
       ]
     },

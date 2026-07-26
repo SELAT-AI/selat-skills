@@ -1,85 +1,42 @@
 {
   "schema": "selat-skill/v1",
   "name": "social-intel",
-  "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, routed via the SELAT Router (selat-pay, USDC via Circle Gateway).",
-  "maxAmount": "0.70",
+  "description": "Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches (Exa neural + Tavily advanced) for corroborated results with citations, paid per call over x402, via the SELAT Router (selat-pay, USDC via Circle Gateway).",
+  "maxAmount": "0.10",
   "params": {
     "topic": {
       "required": true,
       "default": "agent payments",
-      "description": "Keyword/topic to listen for across the web and Reddit (used as ${topic} in search bodies/queries)."
-    },
-    "handle": {
-      "required": false,
-      "default": "OpenAI",
-      "description": "X/Twitter handle (no @) to pull a profile and recent tweets for."
-    },
-    "subreddit": {
-      "required": false,
-      "default": "ethereum",
-      "description": "Subreddit (no r/) to scan the top posts of for community signal."
+      "description": "Keyword/topic to search the web for (used as ${topic} in both search queries)."
     }
   },
   "steps": [
     {
-      "label": "web context — Exa search (routed x402 via SELAT Router)",
-      "rail": "routed",
+      "label": "web context — Exa search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.exa.ai/search",
       "body": {
         "query": "${topic}",
         "numResults": 10,
-        "contents": { "text": { "maxCharacters": 4000 } }
+        "contents": {
+          "text": {
+            "maxCharacters": 4000
+          }
+        }
       },
       "maxAmount": "0.05"
     },
     {
-      "label": "web corroboration — Parallel search (routed MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "web corroboration — Tavily search (x402 on Base)",
+      "rail": "x402 on Base",
       "method": "POST",
-      "url": "https://parallelmpp.dev/api/search",
+      "url": "https://x402.tavily.com/search",
       "body": {
-        "objective": "${topic}",
-        "search_queries": [ "${topic}" ],
+        "query": "${topic}",
+        "search_depth": "advanced",
         "max_results": 10
       },
-      "maxAmount": "0.05"
-    },
-    {
-      "label": "Reddit keyword search — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/reddit/search",
-      "body": { "query": "${topic}" },
-      "maxAmount": "0.20"
-    },
-    {
-      "label": "Reddit subreddit top posts — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/reddit/subreddit",
-      "body": { "subreddit": "${subreddit}" },
-      "maxAmount": "0.20"
-    },
-    {
-      "label": "X/Twitter profile + counts — AIsa (direct x402, Circle Gateway-batched)",
-      "rail": "direct",
-      "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
-      "maxAmount": "0.05"
-    },
-    {
-      "label": "X/Twitter recent tweets + engagement — AIsa (direct x402, Circle Gateway-batched)",
-      "rail": "direct",
-      "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
-      "maxAmount": "0.05"
-    },
-    {
-      "label": "X/Twitter topic search — AIsa advanced_search (direct x402, Circle Gateway-batched)",
-      "rail": "direct",
-      "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=${topic}&queryType=Latest",
       "maxAmount": "0.05"
     }
   ]

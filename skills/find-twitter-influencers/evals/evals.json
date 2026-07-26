@@ -7,10 +7,10 @@
       "expected_output": "A ranked markdown table of Twitter/X influencers with name, handle URL, followers, engagement rate, fit reason, top tweet, and contact info, produced by running the mixed-rail paid pipeline.",
       "assertions": [
         "Apollo org-search (or Abstract Company Enrichment when a domain is supplied) is used to resolve the company before discovery",
-        "Exa search/findSimilar are used to discover curated listicles (not direct x.com search)",
-        "AIsa Twitter user/info and user/last_tweets endpoints are used for profile and engagement metrics",
+        "Exa search/findSimilar are used to discover curated listicles (not x.com search)",
+        "SELAT-native Twitter user/info and user/last_tweets endpoints are used for profile and engagement metrics",
         "The final output is a ranked table with at least one contact-enrichment column (email or LinkedIn)",
-        "Routed steps go through the SELAT Router; the AIsa steps pay direct via Circle x402"
+        "SELAT Router steps and the SELAT-native Twitter steps all go through the SELAT Router (x402/MPP)"
       ]
     },
     {
@@ -40,18 +40,18 @@
       "assertions": [
         "Top-level maxAmount in manifest.json equals \"0.50\"",
         "Each step declares its own maxAmount cap",
-        "The documented live prices (Apollo $0.00525, Abstract $0.0063, Exa $0.00525 x2, AIsa $0.00044 + $0.0036, Hunter $0.01365, Clado $0.04515) sum to about $0.085"
+        "The documented live prices (Apollo $0.00525, Abstract $0.0063, Exa $0.00525 x2, SELAT-native $0.001 + $0.001, Hunter $0.01365, Clado $0.04515) sum to about $0.085"
       ]
     },
     {
       "id": "mixed-rail",
       "prompt": "Which payment rails does the influencer-finder skill use?",
-      "expected_output": "Mixed rail: the Apollo, Abstract, Exa, Hunter, and Clado steps are routed MPP through the SELAT Router; the two AIsa Twitter steps are direct Circle x402 calls (Circle Gateway-batched).",
+      "expected_output": "Mixed rail: the Apollo, Abstract, Exa, Hunter, and Clado steps are MPP on Tempo through the SELAT Router; the two SELAT-native Twitter steps are x402 on Base calls via the SELAT Router (Circle Gateway-batched).",
       "assertions": [
-        "Steps 1-4 and 7-8 in manifest.json have rail \"routed\"",
-        "The two AIsa Twitter steps in manifest.json have rail \"direct\"",
+        "Steps 1-4 and 7-8 in manifest.json have rail \"MPP on Tempo\"",
+        "The two SELAT-native Twitter steps in manifest.json have rail \"MPP on Tempo\"",
         "metadata.rail in SKILL.md is \"mixed\"",
-        "The skill notes routed steps require a reachable SELAT Router (SELAT_ROUTER_URL) while AIsa steps bypass it"
+        "The skill notes SELAT Router steps require a reachable SELAT Router (SELAT_ROUTER_URL) while the SELAT-native steps also use it"
       ]
     },
     {
@@ -60,7 +60,7 @@
       "expected_output": "Use selat-pay --probe-only to send free 402 probes against each endpoint.",
       "assertions": [
         "The validation guidance uses selat-pay with the --probe-only flag",
-        "Probe commands cover Apollo, Abstract Company Enrichment, Exa, AIsa, Hunter, and Clado",
+        "Probe commands cover Apollo, Abstract Company Enrichment, Exa, SELAT-native, Hunter, and Clado",
         "No probe command performs an actual payment"
       ]
     }
