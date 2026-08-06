@@ -1,0 +1,22 @@
+{
+  "skill_name": "web-intelligence",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Find recent news and crypto prices for AI agents",
+      "expected_output": "Runs the web-intelligence steps and returns broad web search results and crypto prices.",
+      "assertions": [
+        "web-intelligence is selected",
+        "the agent informs the user of cost before spending"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "What is 2 + 2?",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "web-intelligence is not selected"
+      ]
+    }
+  ]
+}

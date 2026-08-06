@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "single",
       "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key."
+    },
+    {
+      "name": "web-intelligence",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Multi-source web search & real-time crypto price intelligence across federated x402 endpoints."
     }
   ]
 }
