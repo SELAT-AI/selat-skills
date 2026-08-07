@@ -1,0 +1,57 @@
+{
+  "skill_name": "destination-brief",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "I'm going to Lisbon next month. Brief me on what's worth seeing and where to stay.",
+      "expected_output": "A synthesised destination brief naming specific Tripadvisor points of interest with ratings, plus practical guidance on timing, transport and neighbourhoods with source URLs.",
+      "assertions": [
+        "destination-brief is selected",
+        "destination param is set to Lisbon (optionally qualified with Portugal)",
+        "all three steps are attempted",
+        "output names specific points of interest rather than generic advice",
+        "output cites source URLs from the web-context step"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Research Kyoto for a trip — best time to go and how to get around.",
+      "expected_output": "A brief for Kyoto whose web-context step is narrowed to timing and local transport.",
+      "assertions": [
+        "destination-brief is selected",
+        "destination param is set to Kyoto",
+        "research_query reflects timing and transport rather than the default",
+        "output distinguishes seasonal timing advice from transport advice"
+      ]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "What should I know before visiting Banff National Park?",
+      "expected_output": "A brief for Banff National Park, treating a park rather than a city as the destination.",
+      "assertions": [
+        "destination-brief is selected",
+        "destination param is set to Banff National Park",
+        "output does not assume an urban destination"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Find me the cheapest flight from London to Lisbon on the 14th.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "destination-brief is not selected",
+        "none of the three steps are paid for",
+        "the response explains that this skill does not price or book travel and suggests discovering a flight-price endpoint instead"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Enrich this lead: jane@acme.com at Acme Corp.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "destination-brief is not selected",
+        "a person or company enrichment skill is preferred"
+      ]
+    }
+  ]
+}
