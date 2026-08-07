@@ -1,0 +1,45 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "destination-brief",
+  "description": "Trip-planning brief for any destination — fuses Tripadvisor's location index (POIs, ratings, addresses), a live web-context search, and a Google SERP into one grounded pre-travel brief. Three routed calls, ~$0.04 total, no API keys.",
+  "maxAmount": "0.09",
+  "params": {
+    "destination": {
+      "required": true,
+      "default": "Lisbon, Portugal",
+      "description": "City, region, or landmark to brief on. Free text, e.g. \"Lisbon, Portugal\", \"Kyoto\", \"Banff National Park\". Used as Tripadvisor `searchQuery` and as the SerpApi `q` term."
+    },
+    "research_query": {
+      "required": false,
+      "default": "best time to visit, getting around, and neighbourhoods to stay in",
+      "description": "What the web-context step should investigate about the destination (maps to Tavily `query`, appended after the destination name)."
+    }
+  },
+  "steps": [
+    {
+      "label": "points of interest — Tripadvisor location search (routed x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://tripadvisor.x402.paysponge.com/api/v1/location/search?searchQuery=${destination}",
+      "maxAmount": "0.03"
+    },
+    {
+      "label": "web context — Tavily search (routed x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://x402.tavily.com/search",
+      "body": {
+        "query": "${destination} ${research_query}",
+        "max_results": 5
+      },
+      "maxAmount": "0.03"
+    },
+    {
+      "label": "SERP — SerpApi Google results (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://serpapi.mpp.tempo.xyz/search?q=${destination}&engine=google",
+      "maxAmount": "0.03"
+    }
+  ]
+}

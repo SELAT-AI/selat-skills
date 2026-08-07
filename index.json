@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "single",
       "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key."
+    },
+    {
+      "name": "destination-brief",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Trip-planning brief for any destination — fuses Tripadvisor's location index (POIs, ratings, addresses), a live web-context search, and a Google SERP into one grounded pre-travel brief. Three routed calls, ~$0.04 total, no API keys."
     }
   ]
 }
