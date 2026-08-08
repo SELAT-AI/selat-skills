@@ -46,6 +46,7 @@ skills/<name>/
 | [web-search](skills/web-search/SKILL.md) | routed | single | Web search via Exa/BlockRun |
 | [allium-price](skills/allium-price/SKILL.md) | routed | single | Latest token price via Allium (MPP) |
 | [market-snapshot](skills/market-snapshot/SKILL.md) | mixed | multi | Spot price (direct) + token price (routed MPP) |
+| [api-failure-monitor](skills/api-failure-monitor/SKILL.md) | routed | single | Pre-flight telemetry probe & circuit-breaker verification |
 
 The `index.json` catalog at the repo root backs `selat skill list --available`.
 

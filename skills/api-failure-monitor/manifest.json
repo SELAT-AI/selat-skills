@@ -1,0 +1,27 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "api-failure-monitor",
+  "description": "Zero-cost pre-flight telemetry probe and circuit-breaker verification for SELAT API endpoints and paid agent pipelines.",
+  "maxAmount": "0.00",
+  "params": {
+    "target_url": {
+      "required": true,
+      "default": "https://router.selat.ai/v1/probe",
+      "description": "Target endpoint URL or SELAT Router path to evaluate."
+    },
+    "max_latency_ms": {
+      "required": false,
+      "default": "1500",
+      "description": "Maximum acceptable round-trip latency in milliseconds."
+    }
+  },
+  "steps": [
+    {
+      "label": "Execute zero-cost pre-flight telemetry probe",
+      "rail": "routed",
+      "method": "GET",
+      "url": "${target_url}",
+      "maxAmount": "0.00"
+    }
+  ]
+}
