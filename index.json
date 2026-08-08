@@ -98,6 +98,12 @@
       "description": "Deal-sourcing scout for a VC running a multi-track thesis: AI infrastructure (inference/serving, GPU & compute, training stacks, vector/data infra, agent infra, model-ops), crypto-AI / decentralized-AI / DePIN-for-AI, robotics / embodied-AI (foundation models, humanoid, sim-to-real, actuation/sensor stacks), and agentic payments (x402/stablecoin agent settlement, agent commerce).\n\nHOW IT WORKS: Runs a 9-step discovery pipeline across Tavily (broad web), Parallel (Product Hunt), Exa (funding context), Twitter/X (founder buzz, fundraising news, investor thesis), LinkedIn (funding posts), and Apollo (people + org enrichment).\n\nIMPORTANT — ROBOTICS / MODEL-LAYER QUERIES: Earlier versions hardcoded step 1 to Hacker News only, which misses robotics foundation-model startups (they surface more on TechCrunch, The Information, arXiv, and Twitter). v1.1 broadens step 1 to a general web search scoped to startup + funding signals. For robotics, still supplement with direct SELAT Twitter/X advanced_search and Tavily keyword queries because the robotics FM layer is earlier and more stealth than infra.\n\nSYNTHESIS EXPECTATION: The agent must synthesize all 9 steps into a tiered intelligence memo — not a bare bullet list. Group findings by funding-tier (mega-round, well-funded early, stealth/seed), identify the live investor thesis from Twitter/X investor chatter, flag geographic and pipeline blindspots, and connect cross-source corroboration. The output should read like a VC associate memo.\n\nPaid per call across mixed rails (x402 via Circle Gateway + MPP on Tempo + x402 on Base) via selat-pay (USDC via Circle Gateway), no API keys."
     },
     {
+      "name": "ai-research-scout",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Due-diligence scout for AI, robotics, semiconductor, and deep-tech entities. Uses a pinned paid menu: Serper Scrape as primary recent-activity scraper, StableEnrich Firecrawl as fallback, and AIsa stock snapshots for public tickers; enrichment endpoints with observed charge-on-failure behavior are documented but excluded."
+    },
+    {
       "name": "twitter-research",
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
