@@ -1,0 +1,45 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "lagos-startup-pulse",
+  "description": "Nigeria/Lagos startup pulse: Twitter/X buzz, web funding news, and enrichment for one company, in one call.",
+  "maxAmount": "0.03",
+  "params": {
+    "topic": {
+      "required": true,
+      "description": "Search topic for Twitter/X and web search, e.g. 'Lagos fintech funding' or 'Nigeria startup seed round'. Reference as ${topic}."
+    },
+    "company_domain": {
+      "required": true,
+      "description": "Domain of one company to enrich, e.g. 'moniepoint.com'. Reference as ${company_domain}."
+    }
+  },
+  "steps": [
+    {
+      "label": "Twitter/X buzz search — SELAT native (x402 via Circle Gateway)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${topic}&queryType=Latest"
+    },
+    {
+      "label": "Web funding news — Tavily advanced search (x402 on Base)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://x402.tavily.com/search",
+      "body": {
+        "query": "${topic}",
+        "search_depth": "advanced",
+        "max_results": 10,
+        "topic": "general"
+      }
+    },
+    {
+      "label": "Company enrichment — Apollo org-enrichment (MPP on Tempo)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
+      "body": {
+        "domain": "${company_domain}"
+      }
+    }
+  ]
+}

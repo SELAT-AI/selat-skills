@@ -1,0 +1,23 @@
+{
+  "skill_name": "lagos-startup-pulse",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "What's the buzz on Lagos fintech funding right now? Also pull up info on Moniepoint.",
+      "expected_output": "Twitter/X search results, web search results, and an Apollo org-enrichment record for moniepoint.com",
+      "assertions": ["lagos-startup-pulse is selected", "topic is populated from the funding/buzz phrase", "company_domain resolves to moniepoint.com"]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Check recent Nigeria startup seed rounds and enrich paystack.com",
+      "expected_output": "Twitter/X search results, web search results, and an Apollo org-enrichment record for paystack.com",
+      "assertions": ["lagos-startup-pulse is selected", "company_domain resolves to paystack.com"]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "What's the weather like in Lagos today?",
+      "expected_output": "Skill does not trigger.",
+      "assertions": ["lagos-startup-pulse is not selected"]
+    }
+  ]
+}
