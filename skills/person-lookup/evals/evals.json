@@ -8,8 +8,8 @@
       "assertions": [
         "The skill activates on a 'who is [name]?' question",
         "The query param includes 'Dario Amodei'",
-        "The routed step POSTs to https://clado.mpp.paywithlocus.com/clado/search",
-        "The step rail is 'routed'"
+        "The MPP-on-Tempo step POSTs to https://clado.mpp.paywithlocus.com/clado/search",
+        "The step rail is 'MPP on Tempo'"
       ]
     },
     {
@@ -49,7 +49,7 @@
       "assertions": [
         "The workflow treats the search as synchronous — no polling step is added",
         "The query includes 'Satya Nadella' and 'Microsoft'",
-        "The step rail is 'routed' and routed via the SELAT Router"
+        "The step rail is 'MPP on Tempo' and via the SELAT Router"
       ]
     },
     {

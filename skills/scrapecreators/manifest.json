@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "scrapecreators",
-  "description": "Multi-merchant social media scraping across AIsa (X/Twitter — Circle x402 catalog, DIRECT, Circle Gateway-batched), StableSocial (Instagram + TikTok — MPP, ROUTED via the SELAT Router), and Clado (LinkedIn — MPP, ROUTED): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI.",
+  "description": "Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle Gateway), StableSocial (Instagram + TikTok — MPP, via the SELAT Router), and Clado (LinkedIn — MPP on Tempo): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI.",
   "maxAmount": "0.75",
   "params": {
     "handle": {
@@ -12,7 +12,7 @@
     "tweetId": {
       "required": false,
       "default": "1234567890123456789",
-      "description": "Numeric tweet ID for the X/Twitter tweet-details lookup (AIsa takes tweet IDs, not tweet URLs)."
+      "description": "Numeric tweet ID for the X/Twitter tweet-details lookup (catalog.selat.ai takes tweet IDs, not tweet URLs)."
     },
     "linkedinUrl": {
       "required": false,
@@ -42,29 +42,29 @@
   },
   "steps": [
     {
-      "label": "X/Twitter profile — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
-      "rail": "direct",
+      "label": "X/Twitter profile — SELAT Twitter API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}",
+      "url": "https://catalog.selat.ai/twitter/user/info?userName=${handle}",
       "maxAmount": "0.10"
     },
     {
-      "label": "X/Twitter user tweets — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
-      "rail": "direct",
+      "label": "X/Twitter user tweets — SELAT Twitter API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}",
+      "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "0.10"
     },
     {
-      "label": "X/Twitter tweet details — AIsa Twitter API (Circle x402 catalog; DIRECT, Circle Gateway-batched)",
-      "rail": "direct",
+      "label": "X/Twitter tweet details — SELAT Twitter API (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://api.aisa.one/apis/v2/twitter/tweets?tweet_ids=${tweetId}",
+      "url": "https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}",
       "maxAmount": "0.10"
     },
     {
-      "label": "LinkedIn profile — Clado (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "LinkedIn profile — Clado (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
       "body": {
@@ -73,8 +73,8 @@
       "maxAmount": "0.15"
     },
     {
-      "label": "LinkedIn post — Clado scrape (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "LinkedIn post — Clado scrape (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
       "body": {
@@ -83,8 +83,8 @@
       "maxAmount": "0.25"
     },
     {
-      "label": "LinkedIn company page — Clado scrape (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "LinkedIn company page — Clado scrape (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
       "body": {
@@ -93,8 +93,8 @@
       "maxAmount": "0.25"
     },
     {
-      "label": "Instagram profile — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "Instagram profile — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/instagram/profile",
       "body": {
@@ -103,8 +103,8 @@
       "maxAmount": "0.75"
     },
     {
-      "label": "Instagram profile by handle — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "Instagram profile by handle — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/instagram/profile",
       "body": {
@@ -113,8 +113,8 @@
       "maxAmount": "0.75"
     },
     {
-      "label": "Instagram recent posts — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "Instagram recent posts — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/instagram/posts",
       "body": {
@@ -123,8 +123,8 @@
       "maxAmount": "0.75"
     },
     {
-      "label": "TikTok profile — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "TikTok profile — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/tiktok/profile",
       "body": {
@@ -133,8 +133,8 @@
       "maxAmount": "0.75"
     },
     {
-      "label": "TikTok hashtag search — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "TikTok hashtag search — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/tiktok/search-hashtag",
       "body": {
@@ -143,8 +143,8 @@
       "maxAmount": "0.75"
     },
     {
-      "label": "TikTok trending via keyword search — StableSocial (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "TikTok trending via keyword search — StableSocial (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stablesocial.dev/api/tiktok/search",
       "body": {

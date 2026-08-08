@@ -1,7 +1,8 @@
 # Finding payable endpoints in the federated catalogue
 
-The federated catalogue merges three sources — **Circle**, **Agentic Market**,
-and **MPP** (which includes the Orthogonal- and Locus-routed merchants). Discover
+The federated catalogue merges five sources — **Circle**, **x402 Bazaar**,
+**MPP** (which includes the Orthogonal- and Locus-routed merchants), **Apify**,
+and **SELAT's first-party catalog**. Discover
 with the runtime-integration scripts:
 
 ```bash

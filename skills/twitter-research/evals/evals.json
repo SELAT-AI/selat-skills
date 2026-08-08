@@ -1,0 +1,64 @@
+{
+  "skill_name": "twitter-research",
+  "evals": [
+    {
+      "id": "profile-only-single-endpoint",
+      "prompt": "Who is @openai on Twitter?",
+      "expected_output": "A profile summary for openai (bio, follower/following, verified) from a single read.",
+      "assertions": [
+        "Only the user/info endpoint is called with userName=openai",
+        "The other 8 endpoints are NOT called",
+        "The agent selects a subset rather than running all steps"
+      ]
+    },
+    {
+      "id": "tweet-reception-subset",
+      "prompt": "How did tweet 1234567890123456789 do — who replied and who retweeted it?",
+      "expected_output": "The tweet's counts plus a reply-sentiment and retweeter/amplification read.",
+      "assertions": [
+        "Calls tweets (tweet_ids=), tweet/replies (tweet_id=), and tweet/retweeters (tweet_id=) for the given id",
+        "Does not call the account or trends endpoints",
+        "tweets uses tweet_ids while replies/retweeters use tweet_id"
+      ]
+    },
+    {
+      "id": "topic-monitor-subset",
+      "prompt": "What are people saying about agentic payments on X, and is it trending in the US?",
+      "expected_output": "Recent chatter on the topic with engagement plus a US trending verdict.",
+      "assertions": [
+        "Calls tweet/advanced_search with query=agentic payments and trends with woeid=23424977",
+        "Does not call the account-read or tweet-id endpoints",
+        "The output states whether the topic is trending in the region"
+      ]
+    },
+    {
+      "id": "menu-not-pipeline",
+      "prompt": "Run every twitter-research endpoint for openai.",
+      "expected_output": "The agent explains this is a menu of 9 independent reads costing ~$0.009 to run all, confirms the cost before spending, and only proceeds if the user confirms.",
+      "assertions": [
+        "The agent surfaces that running all 9 costs about $0.009 and is usually unnecessary",
+        "The agent asks to confirm before paying for all steps"
+      ]
+    },
+    {
+      "id": "cost-before-spend",
+      "prompt": "Pull OpenAI's recent tweets and who's mentioning them.",
+      "expected_output": "The agent states the run is two SELAT-native reads (~$0.002) and asks to proceed, then calls last_tweets and mentions.",
+      "assertions": [
+        "The agent surfaces the approximate dollar cost before paying",
+        "Calls user/last_tweets and user/mentions with userName=openai",
+        "Per-step and full-run maxAmount are 0.10; each live price is $0.001"
+      ]
+    },
+    {
+      "id": "probe-only-validation",
+      "prompt": "Do a free 402 probe of the twitter user info endpoint without paying.",
+      "expected_output": "A selat-pay --probe-only command against the SELAT-native user/info endpoint that returns 402 details without settling payment.",
+      "assertions": [
+        "The command uses selat-pay GET with --probe-only",
+        "The probed URL is https://catalog.selat.ai/twitter/user/info",
+        "No payment is settled during the probe"
+      ]
+    }
+  ]
+}

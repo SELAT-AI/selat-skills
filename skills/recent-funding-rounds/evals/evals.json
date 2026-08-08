@@ -4,9 +4,9 @@
     {
       "id": "recent-raises-this-week",
       "prompt": "What companies raised funding this week?",
-      "expected_output": "A routed Brave Search news-search for recent funding-round announcements, returning news articles about recently funded companies.",
+      "expected_output": "An MPP-on-Tempo Brave Search news-search for recent funding-round announcements, returning news articles about recently funded companies.",
       "assertions": [
-        "The skill issues a single routed (MPP) step to https://brave.mpp.paywithlocus.com/brave/news-search",
+        "The skill issues a single MPP on Tempo step to https://brave.mpp.paywithlocus.com/brave/news-search",
         "The request body sets q to a query like '<sector> startup funding round announced'",
         "The output lists recent news articles announcing funding rounds (title, source, date, URL), not structured deal records"
       ]
@@ -14,17 +14,17 @@
     {
       "id": "seed-rounds-this-month",
       "prompt": "Show me seed rounds from the last month.",
-      "expected_output": "A routed Brave news-search whose query wording biases toward seed rounds, since news-search has no structured round-type filter.",
+      "expected_output": "An MPP-on-Tempo Brave news-search whose query wording biases toward seed rounds, since news-search has no structured round-type filter.",
       "assertions": [
         "The body's q includes a seed-round phrasing (e.g. 'seed' in the sector wording)",
         "No date_start/date_end or financing_types fields are sent — recency comes from the news index",
-        "The step rail is routed and method is POST"
+        "The step rail is 'MPP on Tempo' and method is POST"
       ]
     },
     {
       "id": "series-a-fintech",
       "prompt": "What fintech companies recently raised a Series A?",
-      "expected_output": "A routed Brave news-search with a query combining fintech and Series A wording.",
+      "expected_output": "An MPP-on-Tempo Brave news-search with a query combining fintech and Series A wording.",
       "assertions": [
         "The body's q mentions fintech and Series A",
         "The call targets https://brave.mpp.paywithlocus.com/brave/news-search",
@@ -34,11 +34,11 @@
     {
       "id": "large-raises-cap",
       "prompt": "List the biggest funding rounds over $10M from the past week.",
-      "expected_output": "A routed Brave news-search; deal-size filtering happens client-side by reading the articles, since news-search has no size_min filter.",
+      "expected_output": "An MPP-on-Tempo Brave news-search; deal-size filtering happens client-side by reading the articles, since news-search has no size_min filter.",
       "assertions": [
         "No size_min field is sent; size filtering is done from article text",
         "The per-step maxAmount of 0.40 comfortably covers the $0.03675 live price and is not exceeded",
-        "The skill uses only the routed rail with no direct or x402 step"
+        "The skill uses only MPP on Tempo with no Circle-Gateway step"
       ]
     },
     {

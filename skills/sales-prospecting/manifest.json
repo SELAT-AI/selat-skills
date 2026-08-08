@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "sales-prospecting",
-  "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-routed via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Hunter email finder), verifies deliverability (Hunter email verifier), and enriches with company data (Abstract Company Enrichment).",
+  "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Hunter email finder), verifies deliverability (Hunter email verifier), and enriches with company data (Abstract Company Enrichment).",
   "maxAmount": "1.00",
   "params": {
     "companyQuery": {
@@ -47,8 +47,8 @@
   },
   "steps": [
     {
-      "label": "all emails for domain — Hunter domain search (ROUTED MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "all emails for domain — Hunter domain search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
       "body": {
@@ -57,8 +57,8 @@
       "maxAmount": "1.00"
     },
     {
-      "label": "find specific contact email — Hunter email finder (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "find specific contact email — Hunter email finder (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
       "body": {
@@ -69,8 +69,8 @@
       "maxAmount": "0.15"
     },
     {
-      "label": "verify email deliverability — Hunter email verifier (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "verify email deliverability — Hunter email verifier (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
@@ -79,8 +79,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "enrich with company data — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "enrich with company data — Abstract Company Enrichment lookup (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
       "body": {

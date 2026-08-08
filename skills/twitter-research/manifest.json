@@ -1,0 +1,93 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "twitter-research",
+  "description": "Read-only Twitter/X research toolkit: a curated menu of 9 SELAT-native (catalog.selat.ai) GET endpoints covering account reads (profile, recent tweets, mentions, followers), tweet reads (details, replies, retweeters), topic search, and trends. The agent selects only the endpoints a request needs; each call is ~$0.001, x402 via Circle Gateway. No API keys.",
+  "maxAmount": "0.10",
+  "params": {
+    "handle": {
+      "required": false,
+      "default": "openai",
+      "description": "Twitter/X handle without the @ (e.g. openai, sama, AnthropicAI) — for the account-read endpoints."
+    },
+    "query": {
+      "required": false,
+      "default": "AI agents",
+      "description": "Search query for the topic-search endpoint. Supports X operators (from:, $TICKER, #tag, min_faves:, since:, lang:)."
+    },
+    "tweetId": {
+      "required": false,
+      "default": "20",
+      "description": "Numeric tweet ID for the tweet-read endpoints (details, replies, retweeters). Default 20 is the first tweet ever."
+    },
+    "woeid": {
+      "required": false,
+      "default": "1",
+      "description": "Yahoo WOEID for trends (1 = worldwide, 23424977 = United States, 2459115 = New York City)."
+    }
+  },
+  "steps": [
+    {
+      "label": "account profile — SELAT Twitter user/info (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/user/info?userName=${handle}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "recent tweets — SELAT Twitter user/last_tweets (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "mentions — SELAT Twitter user/mentions (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/user/mentions?userName=${handle}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "followers — SELAT Twitter user/followers (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/user/followers?userName=${handle}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "topic search — SELAT Twitter advanced_search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${query}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "trends — SELAT Twitter trends by WOEID (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/trends?woeid=${woeid}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "tweet details — SELAT Twitter tweets by id (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "tweet replies — SELAT Twitter tweet/replies (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/replies?tweetId=${tweetId}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "tweet retweeters — SELAT Twitter tweet/retweeters (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/retweeters?tweetId=${tweetId}",
+      "maxAmount": "0.10"
+    }
+  ]
+}

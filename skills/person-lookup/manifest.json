@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "person-lookup",
-  "description": "Look up a person — work history, education, social profiles, and contact info — via Clado's natural-language people search, routed through the SELAT Router (MPP via Locus).",
+  "description": "Look up a person — work history, education, social profiles, and contact info — via Clado's natural-language people search, through the SELAT Router (MPP via Locus).",
   "maxAmount": "1.00",
   "params": {
     "query": {
@@ -12,8 +12,8 @@
   },
   "steps": [
     {
-      "label": "person search — Clado (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person search — Clado (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/search",
       "body": {

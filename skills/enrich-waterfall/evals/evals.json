@@ -9,7 +9,7 @@
         "The skill enrich-waterfall is selected",
         "The first calls are resolve-tier endpoints keyed on email (e.g. apollo.mpp.paywithlocus.com/apollo/people-enrichment, hunter.mpp.paywithlocus.com/hunter/email-enrichment or /hunter/combined-enrichment)",
         "The run does NOT call any escalate-tier endpoint (Clado contacts, Clado search) when resolve already returns a confident match",
-        "Every step executed is rail=routed (the only direct step is the AIsa X/Twitter social lookup, which a pure resolve request does not need)"
+        "Every step executed is rail=via the SELAT Router (the SELAT-native X/Twitter social lookup step is conditional and a pure resolve request does not run it)"
       ]
     },
     {
@@ -35,7 +35,7 @@
     },
     {
       "id": "escalation-on-gap",
-      "prompt": "Find me a direct phone number and personal email for the person at this LinkedIn profile: https://linkedin.com/in/someone — spend what it takes.",
+      "prompt": "Find me a phone number and personal email for the person at this LinkedIn profile: https://linkedin.com/in/someone — spend what it takes.",
       "expected_output": "Runs enrich-waterfall, tries cheap resolve/anchor first (Clado linkedin-profile, Apollo people-enrichment), and because phone + personal email are requested and not surfaced cheaply, escalates to the premium reveals (Clado contacts by LinkedIn URL, Clado search).",
       "assertions": [
         "Cheaper resolve/anchor tiers are attempted before any escalate-tier call",
@@ -57,10 +57,10 @@
     {
       "id": "social-presence-lookup",
       "prompt": "Find the social profiles — Twitter, Instagram, LinkedIn — for this founder so I can see their recent posts.",
-      "expected_output": "Runs enrich-waterfall and uses the social-tier endpoints (AIsa X/Twitter user info, StableSocial Instagram/TikTok profiles, Clado scrape for LinkedIn posts) rather than the contact-reveal escalate tier.",
+      "expected_output": "Runs enrich-waterfall and uses the social-tier endpoints (SELAT-native X/Twitter user info, StableSocial Instagram/TikTok profiles, Clado scrape for LinkedIn posts) rather than the contact-reveal escalate tier.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "Social-tier endpoints are called (e.g. api.aisa.one/apis/v2/twitter/user/info, stablesocial.dev/api/instagram/profile, clado.mpp.paywithlocus.com/clado/scrape)",
+        "Social-tier endpoints are called (e.g. catalog.selat.ai/twitter/user/info, stablesocial.dev/api/instagram/profile, clado.mpp.paywithlocus.com/clado/scrape)",
         "The run does not escalate to Clado contacts/search reveals just to satisfy a social-profile request"
       ]
     }

@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "financial-intel",
-  "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + fundamentals/funding + market news into one brief, paid per call across three rails (direct nanopayment + MPP + x402 on Base) via selat-pay (USDC via Circle Gateway).",
+  "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + fundamentals/funding + market news into one brief, paid per call across three rails (Circle Gateway nanopayment + MPP + x402 on Base) via selat-pay (USDC via Circle Gateway).",
   "maxAmount": "1.00",
   "params": {
     "symbol": {
@@ -32,15 +32,15 @@
   },
   "steps": [
     {
-      "label": "spot price — Alchemy (direct nanopayment, Circle Gateway-batched)",
-      "rail": "direct",
+      "label": "spot price — Alchemy (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://x402.alchemy.com/prices/v1/tokens/by-symbol?symbols=${symbol}",
       "maxAmount": "0.01"
     },
     {
-      "label": "token market data — CoinGecko coins-markets (routed MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "token market data — CoinGecko coins-markets (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://coingecko.mpp.paywithlocus.com/coingecko/coins-markets",
       "body": {
@@ -50,8 +50,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "equities / macro quote — Alpha Vantage global-quote (routed MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "equities / macro quote — Alpha Vantage global-quote (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote",
       "body": {
@@ -60,8 +60,8 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "on-chain smart-money holdings — Nansen (routed MPP via SELAT Router)",
-      "rail": "routed",
+      "label": "on-chain smart-money holdings — Nansen (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.nansen.ai/api/v1/smart-money/holdings",
       "body": {
@@ -70,21 +70,25 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "fundamentals / funding rounds — Messari (routed x402 on Base via SELAT Router)",
-      "rail": "routed",
+      "label": "fundamentals / funding rounds — Messari (x402 on Base)",
+      "rail": "x402 on Base",
       "method": "GET",
       "url": "https://api.messari.io/funding/v1/rounds",
       "maxAmount": "0.25"
     },
     {
-      "label": "market news / context — Exa search (routed x402 on Base via SELAT Router)",
-      "rail": "routed",
+      "label": "market news / context — Exa search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.exa.ai/search",
       "body": {
         "query": "${query}",
         "numResults": 8,
-        "contents": { "text": { "maxCharacters": 3000 } }
+        "contents": {
+          "text": {
+            "maxCharacters": 3000
+          }
+        }
       },
       "maxAmount": "0.05"
     }

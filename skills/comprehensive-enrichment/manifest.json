@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "comprehensive-enrichment",
-  "description": "Comprehensive person + company enrichment across many MPP-routed data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Resolves contact info, verified emails, phone, social profiles, company overview, funding, products, and competitors. All steps are routed through the SELAT Router (MPP).",
+  "description": "Comprehensive person + company enrichment across many MPP on Tempo data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Resolves contact info, verified emails, phone, social profiles, company overview, funding, products, and competitors. All steps are through the SELAT Router (MPP).",
   "maxAmount": "1.00",
   "params": {
     "email": {
@@ -42,8 +42,8 @@
   },
   "steps": [
     {
-      "label": "person deep search — Clado search (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person deep search — Clado search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/search",
       "body": {
@@ -52,8 +52,8 @@
       "maxAmount": "1.00"
     },
     {
-      "label": "person enrichment — Apollo people-enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person enrichment — Apollo people-enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
@@ -65,8 +65,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "email enrich — Hunter email-enrichment (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "email enrich — Hunter email-enrichment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
       "body": {
@@ -76,7 +76,7 @@
     },
     {
       "label": "find work email — Hunter email-finder",
-      "rail": "routed",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
       "body": {
@@ -88,7 +88,7 @@
     },
     {
       "label": "verify email — Hunter email-verifier",
-      "rail": "routed",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
@@ -97,8 +97,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "phone — Clado contacts (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "phone — Clado contacts (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
       "body": {
@@ -107,8 +107,8 @@
       "maxAmount": "0.50"
     },
     {
-      "label": "person research — Exa search (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "person research — Exa search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://exa.mpp.tempo.xyz/search",
       "body": {
@@ -117,8 +117,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "company overview — Abstract Company Enrichment lookup (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "company overview — Abstract Company Enrichment lookup (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
       "body": {
@@ -128,7 +128,7 @@
     },
     {
       "label": "company emails — Hunter domain-search",
-      "rail": "routed",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
       "body": {
@@ -137,8 +137,8 @@
       "maxAmount": "1.00"
     },
     {
-      "label": "funding + investors — Diffbot KG enhance (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "funding + investors — Diffbot KG enhance (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance",
       "body": {
@@ -148,8 +148,8 @@
       "maxAmount": "0.40"
     },
     {
-      "label": "pricing/features — Firecrawl extract (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "pricing/features — Firecrawl extract (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://firecrawl.mpp.tempo.xyz/v1/extract",
       "body": {
@@ -162,7 +162,7 @@
     },
     {
       "label": "competitors — Exa findSimilar",
-      "rail": "routed",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://exa.mpp.tempo.xyz/findSimilar",
       "body": {
@@ -175,8 +175,8 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "company research — Exa search (MPP, ROUTED via SELAT Router)",
-      "rail": "routed",
+      "label": "company research — Exa search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://exa.mpp.tempo.xyz/search",
       "body": {

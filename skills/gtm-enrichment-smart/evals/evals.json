@@ -8,7 +8,7 @@
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
         "The first executed step is POST https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
-        "All executed steps use rail 'routed' (the direct AIsa Twitter step only runs when a handle is found)",
+        "All executed steps use rail 'MPP on Tempo' (the SELAT-native Twitter step only runs when a handle is found)",
         "The email param is set to jane@acme.com"
       ]
     },

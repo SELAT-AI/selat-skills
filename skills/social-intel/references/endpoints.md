@@ -1,45 +1,28 @@
 # Endpoints — social-intel
 
-Cross-platform social intelligence over the SELAT federated catalogues. Web search
-and Reddit are **routed** through the SELAT Router (x402 + MPP); X/Twitter is a
-**direct** x402 call to AIsa (Circle x402 catalog) that settles **Circle
-Gateway-batched**. Paid per call via selat-pay (USDC), no API keys.
+Grounded web-context intelligence over two independent web-search engines, both
+**via the SELAT Router** through the SELAT Router (native x402). Paid per call via selat-pay
+(USDC), no API keys.
 
 ## Endpoints used
 
 | # | Step | Method | URL | Rail | ~Price |
 |---|---|---|---|---|---|
-| 1 | Web context — Exa | POST | `https://api.exa.ai/search` | routed x402 | $0.007 |
-| 2 | Web corroboration — Parallel | POST | `https://parallelmpp.dev/api/search` | routed MPP | $0.011 |
-| 3 | Reddit keyword search — StableSocial | POST | `https://stablesocial.dev/api/reddit/search` (body `{"query":"${topic}"}`) | routed MPP | $0.063 |
-| 4 | Reddit subreddit top posts — StableSocial | POST | `https://stablesocial.dev/api/reddit/subreddit` (body `{"subreddit":"${subreddit}"}`) | routed MPP | $0.063 |
-| 5 | X/Twitter profile — AIsa | GET | `https://api.aisa.one/apis/v2/twitter/user/info?userName=${handle}` | direct x402 (Gateway-batched) | $0.0004 |
-| 6 | X/Twitter recent tweets — AIsa | GET | `https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=${handle}` | direct x402 (Gateway-batched) | $0.004 |
-| 7 | X/Twitter topic search — AIsa advanced_search | GET | `https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=${topic}&queryType=Latest` | direct x402 (Gateway-batched) | $0.002 |
+| 1 | Web context — Exa | POST | `https://api.exa.ai/search` (body `{"query":"${topic}",...}`) | MPP on Tempo | $0.00735 |
+| 2 | Web corroboration — Tavily | POST | `https://x402.tavily.com/search` (body `{"query":"${topic}","search_depth":"advanced"}`) | x402 on Base | $0.0105 |
 
-Full-run cap (`maxAmount`): **$0.70**; per-step caps **$0.05** (web + Twitter) and
-**$0.20** (StableSocial Reddit steps). Live total ≈ $0.15 (prices probe-verified
-2026-07-10).
-
-Steps 5–6 are **handle-scoped** (`${handle}` → a single account's profile + recent
-timeline); step 7 is **topic-scoped** — AIsa `advanced_search` runs `${topic}` as a
-Twitter archive query (`queryType=Latest`), surfacing cross-account chatter the
-bounded `user/last_tweets` timeline misses. Twitter advanced-search operators work
-in `${topic}` (e.g. `from:cuysheffield x402`).
+Full-run cap (`maxAmount`): **$0.10**; per-step cap **$0.05**. Live total ≈ $0.018
+(prices probe-verified 2026-07-24).
 
 ## Rails & providers
 
-- **routed x402** — Exa (`api.exa.ai`) serves a native x402 challenge; the router
-  settles it (`mode=routed-x402`). Sourced from the Agentic Market / MPP catalogs.
-- **routed MPP** — Parallel (`parallelmpp.dev`) and StableSocial (Reddit,
-  a direct MPP merchant at `stablesocial.dev/api/reddit/...`) settle MPP through
-  the SELAT Router (`mode=routed-mpp`). Sourced from the MPP catalog.
-- **direct x402, Gateway-batched** — AIsa (`api.aisa.one`) is called **directly**
-  (no MPP router hop); selat-pay detects the native x402 challenge and settles it
-  **Circle Gateway-batched** (`GatewayWalletBatched` scheme, `mode=direct`) against
-  the unified cross-chain Gateway balance. Sourced from the Circle x402 catalog.
-  `${handle}` maps to AIsa's `userName` query param (steps 5–6); `${topic}` maps to
-  the `advanced_search` `query` param (step 7).
+- **x402 on Base — Exa** (`api.exa.ai`) serves a native x402 challenge; the router
+  settles it (`x402 on Base`). Neural/semantic search, returns page text.
+- **x402 on Base — Tavily** (`x402.tavily.com`) serves a native x402 challenge; the
+  router settles it (`x402 on Base`, `GatewayWalletBatched`). Aggregation search
+  with `search_depth: advanced`. Note: this is Tavily's own host — **not** the AIsa
+  (`api.aisa.one/.../tavily/search`) or Locus
+  (`tavily.mpp.paywithlocus.com`) re-hosts in the catalogue.
 
 ## Live probes (free; no wallet)
 
@@ -47,24 +30,9 @@ in `${topic}` (e.g. `from:cuysheffield x402`).
 # web search (POST body)
 selat-pay POST "https://api.exa.ai/search" \
   --body '{"query":"agent payments","numResults":5}' --chain base --probe-only
-selat-pay POST "https://parallelmpp.dev/api/search" \
-  --body '{"objective":"agent payments","search_queries":["agent payments"]}' --chain base --probe-only
-
-# Reddit — StableSocial, routed MPP (POST body)
-selat-pay POST "https://stablesocial.dev/api/reddit/search" \
-  --body '{"query":"usdc"}' --chain base --probe-only
-selat-pay POST "https://stablesocial.dev/api/reddit/subreddit" \
-  --body '{"subreddit":"ethereum"}' --chain base --probe-only
-
-# X/Twitter — direct x402, Gateway-batched (GET query)
-selat-pay GET "https://api.aisa.one/apis/v2/twitter/user/info?userName=OpenAI" \
-  --chain base --probe-only
-selat-pay GET "https://api.aisa.one/apis/v2/twitter/user/last_tweets?userName=OpenAI" \
-  --chain base --probe-only
-selat-pay GET "https://api.aisa.one/apis/v2/twitter/tweet/advanced_search?query=x402&queryType=Latest" \
-  --chain base --probe-only
+selat-pay POST "https://x402.tavily.com/search" \
+  --body '{"query":"agent payments","search_depth":"advanced","max_results":5}' --chain base --probe-only
 ```
 
-A served endpoint prints `detected ... price=$X on eip155:8453`. The Exa step shows
-`mode=routed-x402`; Parallel and the StableSocial (Reddit) steps show
-`mode=routed-mpp`; the AIsa (X/Twitter) steps show `mode=direct`.
+A served endpoint prints `detected ... price=$X on eip155:8453`. Both the Exa and
+Tavily steps show `x402 on Base`.

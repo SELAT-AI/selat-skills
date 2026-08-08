@@ -1,12 +1,12 @@
 ---
 name: lead-enrichment
-description: Use this skill when the user wants to enrich a sales lead or contact across multiple data sources — e.g. "enrich this lead", "find and verify their work email", "get a phone number for this prospect", "enrich the company", "complete contact data for John Doe at Stripe". Chains three routed MPP merchants across five steps (Hunter for email find/verify and company enrichment, Apollo for lead enrichment, Clado for phone/contact discovery) in a single run, all paid through the SELAT Router (routed MPP rail).
+description: Use this skill when the user wants to enrich a sales lead or contact across multiple data sources — e.g. "enrich this lead", "find and verify their work email", "get a phone number for this prospect", "enrich the company", "complete contact data for John Doe at Stripe". Chains three MPP on Tempo merchants across five steps (Hunter for email find/verify and company enrichment, Apollo for lead enrichment, Clado for phone/contact discovery) in a single run, all paid through the SELAT Router (MPP on Tempo rail).
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a routed MPP payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the whole run.
+compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a MPP on Tempo payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the whole run.
 metadata:
   author: SELAT-AI
   version: "1.0"
-  rail: routed
+  rail: MPP on Tempo
   kind: multi
 ---
 
@@ -14,13 +14,13 @@ metadata:
 
 ## When To Use
 
-Use when the user has a partial lead (name + company + domain, optionally a LinkedIn URL or known email) and wants complete contact data: a found-and-verified work email, lead-level enrichment, a phone number and contact details, and company details. Every step is a **routed MPP** payment translated by the SELAT Router into an outbound payment on the merchant's rail — there is no direct rail in this skill.
+Use when the user has a partial lead (name + company + domain, optionally a LinkedIn URL or known email) and wants complete contact data: a found-and-verified work email, lead-level enrichment, a phone number and contact details, and company details. Every step is a **MPP on Tempo** payment translated by the SELAT Router into an outbound payment on the merchant's rail — every step settles through the SELAT Router.
 
 ## Workflow
 
 1. Install: `selat skill install lead-enrichment`
 2. Run: `selat skill run lead-enrichment --firstName John --lastName Doe --company Stripe --domain stripe.com [--email john@stripe.com] [--linkedinUrl https://linkedin.com/in/johndoe]`
-3. The CLI compiles each step into a `selat-pay` call (each a routed MPP payment via the SELAT Router), runs them in order, and prints a per-step status (status=200 / ✓ or ✗) summary.
+3. The CLI compiles each step into a `selat-pay` call (each a MPP on Tempo payment via the SELAT Router), runs them in order, and prints a per-step status (status=200 / ✓ or ✗) summary.
 
 Steps, in order:
 
@@ -45,7 +45,7 @@ Outputs: Hunter returns email/verification/company JSON; Apollo returns an enric
 
 ## Gotchas
 
-- **All five steps are routed.** The whole run needs `SELAT_ROUTER_URL` configured and the router reachable — there is no direct fallback.
+- **All five steps settle via MPP on Tempo.** The whole run needs `SELAT_ROUTER_URL` configured and the router reachable — there is no Circle-Gateway fallback.
 - Per-step caps are **~10x each live price ($0.10–$0.50)**; live prices (probe-verified 2026-07-10) sum to about **$0.089** per run. Clado contacts ($0.04515) dominates the cost.
 - Step 2 needs an email. If you do not pass `--email`, feed the address returned by step 1 before running the verifier.
 - Step 4 (Clado contacts) keys entirely off `linkedinUrl` — without a real LinkedIn URL the phone lookup cannot match. Step 3 (Apollo) also matches much better with it.

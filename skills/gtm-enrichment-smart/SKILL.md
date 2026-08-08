@@ -1,8 +1,8 @@
 ---
 name: gtm-enrichment-smart
-description: Use this skill when the user wants to enrich a sales lead or GTM prospect from an email address — e.g. "enrich this lead", "who is jane@acme.com", "look up this prospect", "GTM enrichment", "find the person and company behind this email", "qualify this lead with buying signals". Runs a cost-efficient multi-provider waterfall (Apollo, Hunter, and Abstract Company Enrichment via Locus, plus AIsa Twitter) mostly routed via the SELAT Router (MPP), with one direct Circle x402 step, to return person + company data, funding, AI/B2B classification, and buying signals with confidence scoring.
+description: Use this skill when the user wants to enrich a sales lead or GTM prospect from an email address — e.g. "enrich this lead", "who is jane@acme.com", "look up this prospect", "GTM enrichment", "find the person and company behind this email", "qualify this lead with buying signals". Runs a cost-efficient multi-provider waterfall (Apollo, Hunter, and Abstract Company Enrichment via Locus, plus SELAT-native Twitter) mostly via the SELAT Router (MPP), including a SELAT-native Twitter x402 step, to return person + company data, funding, AI/B2B classification, and buying signals with confidence scoring.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Steps 1-7 are routed MPP, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for them; the AIsa Twitter step is direct (Circle x402, Gateway-batched) and does not need the router.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Steps 1-7 are MPP on Tempo, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for them; the SELAT-native Twitter step is x402 via Circle Gateway.
 metadata:
   author: SELAT-AI
   version: "1.0"
@@ -14,7 +14,7 @@ metadata:
 
 ## When To Use
 
-Use when the user hands you a lead's email (optionally a name/domain) and wants enriched person + company intelligence: title, LinkedIn, location, email deliverability, company description, funding, AI/B2B classification, and buying signals. The skill spends proportionally to lead quality — cheap primary calls first, conditional gap-fills only when earlier results leave gaps. Steps 1-7 are **routed MPP** payments through the SELAT Router; the final Twitter social-proof step is a **direct** Circle x402 call to AIsa (Circle Gateway-batched).
+Use when the user hands you a lead's email (optionally a name/domain) and wants enriched person + company intelligence: title, LinkedIn, location, email deliverability, company description, funding, AI/B2B classification, and buying signals. The skill spends proportionally to lead quality — cheap primary calls first, conditional gap-fills only when earlier results leave gaps. Steps 1-7 are **MPP on Tempo** payments through the SELAT Router; the final Twitter social-proof step is a **via the SELAT Router** x402 call to SELAT-native via the SELAT Router (Circle Gateway-batched).
 
 ## Workflow
 
@@ -31,7 +31,7 @@ Waterfall order (the manifest runs them sequentially; later steps are conditiona
 - **Step 5 — Apollo (via Locus)** `POST /apollo/org-enrichment` ($0.0084) — funding/headcount gap-fill, only if step 1 returned no funding.
 - **Step 6 — Hunter (via Locus)** `POST /hunter/email-enrichment` ($0.01365) — person tie-breaker, only if Apollo and Hunter disagree on name/title.
 - **Step 7 — Hunter (via Locus)** `POST /hunter/company-enrichment` ($0.01365) — company fallback, only if major gaps remain and the company has >500 employees.
-- **Step 8 — AIsa (direct)** `GET /apis/v2/twitter/user/info?userName=…` ($0.00044) — follower social proof, only if a Twitter handle was found. Direct Circle x402 rail; no router needed.
+- **Step 8 — SELAT-native (x402 via Circle Gateway)** `GET /twitter/user/info?userName=…` ($0.001) — follower social proof, only if a Twitter handle was found. x402 via Circle Gateway.
 - **Optional caller-invoked signal (not a manifest step) — Apollo (via Locus)** `POST /apollo/job-postings` body `{"organization_id":"${organizationId}"}` ($0.00525) — hiring signals. The `organization_id` comes from the step-1 people-enrichment (or an org-search) result; only invoke it once an org id was captured.
 
 ## Inputs And Outputs
@@ -41,13 +41,13 @@ Waterfall order (the manifest runs them sequentially; later steps are conditiona
 | `email` | yes | — | Lead email; drives people-enrichment, combined-enrichment, email-verifier, email-enrichment |
 | `domain` | no | — | Company domain from the email; drives Abstract lookup, Apollo org-enrichment, Hunter company-enrichment |
 | `organizationId` | no | — | Apollo org id from step 1; required for the job-postings step |
-| `twitterHandle` | no | — | Twitter/X handle from enrichment data; required for the AIsa Twitter step (sent as `userName`) |
+| `twitterHandle` | no | — | Twitter/X handle from enrichment data; required for the SELAT-native Twitter step (sent as `userName`) |
 
 Outputs: a merged JSON object with `person` (name, title, linkedin_url, location, email_verified, confidence, source), `company` (name, domain, description, funding, classification.is_ai / is_b2b_saas, buying_signals), and `meta` (per-call status, cost, phases run). Cross-reference Apollo + Hunter + Abstract for confidence (high = 2+ sources agree).
 
 ## Gotchas
 
-- **Mixed rail**: steps 1-7 are routed MPP and need `SELAT_ROUTER_URL` set and the router reachable; the AIsa Twitter step (step 8) is direct Circle x402 (Gateway-batched) and works without the router.
+- **Mixed rail**: steps 1-7 are MPP on Tempo and need `SELAT_ROUTER_URL` set and the router reachable; the SELAT-native Twitter step (step 8) is x402 via Circle Gateway (Gateway-batched).
 - The old separate expensive AI person-fallback step was **merged into step 1**: its replacement resolved to the same Apollo `people-enrichment` endpoint with the same params, so a separate fallback call would just repeat step 1. If step 1 finds no person, the Hunter steps (2 and 6) are the remaining person sources.
 - The product/pricing buying-signal call (formerly Brand.dev `ai/products`) has **no equivalent** among the replacement merchants and was removed from the workflow — a capability gap, not an oversight.
 - The source skill's free GitHub-stars step is **dropped**: GitHub's public API is not a payable merchant, so it cannot be expressed as an inert payment step.
@@ -67,7 +67,7 @@ Probe each endpoint for free (402 challenge, no payment) before a paid run:
 - `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment" --body '{"email":"jane@acme.com"}' --chain base --probe-only`
 - `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"jane@acme.com"}' --chain base --probe-only`
 - `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"acme.com"}' --chain base --probe-only`
-- `selat-pay GET "https://api.aisa.one/apis/v2/twitter/user/info?userName=elonmusk" --chain base --probe-only`
+- `selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=elonmusk" --chain base --probe-only`
 
 A successful run prints `status=200` for each executed step and a ✓ summary; gated/skipped steps appear as skipped in the run summary.
 

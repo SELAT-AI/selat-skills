@@ -35,14 +35,14 @@
       ]
     },
     {
-      "id": "all-routed-rail",
+      "id": "all-mpp-rail",
       "prompt": "Enrich the lead at https://linkedin.com/in/johndoe.",
-      "expected_output": "Runs with linkedinUrl set; every executed step is rail=routed (MPP via SELAT Router); no direct-rail or non-MPP calls.",
+      "expected_output": "Runs with linkedinUrl set; every executed step is rail=via the SELAT Router (MPP via SELAT Router); no Circle-Gateway or non-MPP calls.",
       "assertions": [
         "linkedinUrl param is set to https://linkedin.com/in/johndoe",
-        "Every step in the run reports rail=routed",
+        "Every step in the run reports rail=via the SELAT Router",
         "Apollo people-enrichment and Clado contacts steps run with the LinkedIn URL",
-        "No step uses the direct rail"
+        "No step is paid via Circle Gateway"
       ]
     },
     {
