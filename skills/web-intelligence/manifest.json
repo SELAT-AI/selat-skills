@@ -1,0 +1,33 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "web-intelligence",
+  "description": "Multi-source web search & real-time crypto price intelligence across federated x402 endpoints.",
+  "maxAmount": "0.025",
+  "params": {
+    "query": {
+      "required": true,
+      "default": "AI agents",
+      "description": "The search topic or entity query"
+    }
+  },
+  "steps": [
+    {
+      "label": "Web Search (AgentTools)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://api.agentstools.dev/search?q=${query}"
+    },
+    {
+      "label": "Web Search (ReverseSandbox)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://search.reversesandbox.com/web/search?q=${query}"
+    },
+    {
+      "label": "Crypto Price Snapshot",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://store.agentexchange.work/crypto/prices"
+    }
+  ]
+}
