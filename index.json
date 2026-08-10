@@ -101,13 +101,14 @@
       "name": "twitter-research",
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
-      "description": "Read-only Twitter/X research toolkit: a curated menu of 9 SELAT-native (catalog.selat.ai) GET endpoints covering account reads (profile, recent tweets, mentions, followers), tweet reads (details, replies, retweeters), topic search, and trends. The agent selects only the endpoints a request needs; each call is ~$0.001, x402 via Circle Gateway. No API keys."
+      "description": "FIFA World Cup 26 U.S. stadium hotel planner: routed x402 Fanfare trip context plus routed MPP hotel discovery, reviews, distance scoring, and Google Map pins."
     },
     {
-      "name": "perplexity-search",
+      "name": "api-failure-monitor",
       "rail": "routed",
       "kind": "single",
-      "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key."
+      "description": "Zero-cost pre-flight telemetry probe and circuit-breaker verification for SELAT API endpoints and paid agent pipelines."
     }
   ]
 }
+
