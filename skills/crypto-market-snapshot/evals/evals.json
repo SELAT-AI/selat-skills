@@ -1,0 +1,32 @@
+{
+  "skill_name": "crypto-market-snapshot",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "What's the current price of bitcoin and ethereum?",
+      "expected_output": "USD spot price for bitcoin and ethereum with confidence",
+      "assertions": [
+        "crypto-market-snapshot is selected",
+        "price for bitcoin returned",
+        "price for ethereum returned"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Check solana price real quick",
+      "expected_output": "USD spot price for solana",
+      "assertions": [
+        "crypto-market-snapshot is selected",
+        "price for solana returned"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Give me a 30-day historical chart of bitcoin",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "crypto-market-snapshot is not selected"
+      ]
+    }
+  ]
+}

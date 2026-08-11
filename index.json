@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "single",
       "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key."
+    },
+    {
+      "name": "crypto-market-snapshot",
+      "rail": "routed",
+      "kind": "single",
+      "description": "Current USD price snapshot for one or more crypto tokens by CoinGecko id (bitcoin, ethereum, solana, usd-coin, ...) in a single paid call. Returns live spot price, symbol, and confidence per token — sourced from DefiLlama via the agentexchange store. Use for portfolio checks, agent pricing decisions, or any quick token valuation."
     }
   ]
 }
