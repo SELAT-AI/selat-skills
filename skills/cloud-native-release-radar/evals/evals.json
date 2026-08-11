@@ -1,0 +1,65 @@
+{
+  "skill_name": "cloud-native-release-radar",
+  "evals": [
+    {
+      "id": "kubernetes-upgrade-brief",
+      "prompt": "Give me a current Kubernetes release brief before we plan our next cluster upgrade. Include breaking changes and security advisories.",
+      "expected_output": "An operator-focused signal brief comparing the Kubernetes official account with broader community posts and clearly separating announcements from unverified reports.",
+      "assertions": [
+        "The skill runs both the official-account and advanced-search steps",
+        "The output identifies release or upgrade signals and includes post links",
+        "The output distinguishes official-account posts from community reports",
+        "The output flags conflicts, stale results, or unverified claims"
+      ]
+    },
+    {
+      "id": "terraform-breaking-changes",
+      "prompt": "What changed in the newest Terraform release, and is there anything that could break our CI pipelines?",
+      "expected_output": "A Terraform-focused release and migration brief with corroborated breaking-change evidence.",
+      "assertions": [
+        "The handle targets the official Terraform or HashiCorp account",
+        "The community query includes Terraform release and breaking-change language",
+        "The synthesis highlights concrete operator actions rather than only listing links"
+      ]
+    },
+    {
+      "id": "cilium-security-radar",
+      "prompt": "Check current Cilium releases and CVEs before I approve an upgrade.",
+      "expected_output": "A Cilium release and security brief with affected versions, mitigations when sourced, and explicit uncertainty.",
+      "assertions": [
+        "The handle targets the official Cilium project account and the query names Cilium",
+        "The response does not claim that no CVE exists merely because search found none",
+        "Project-owned advisories and release pages are preferred"
+      ]
+    },
+    {
+      "id": "charged-failure-reporting",
+      "prompt": "Run the release radar for Argo CD, but tell me if either paid provider fails.",
+      "expected_output": "A two-step run that reports the actual charge and preserves any timeout or non-200 failure without an automatic paid retry.",
+      "assertions": [
+        "The agent asks for approval before spending",
+        "The agent does not retry a charged failure automatically",
+        "The final output reports per-step success or failure and actual spend"
+      ]
+    },
+    {
+      "id": "probe-without-payment",
+      "prompt": "Verify the cloud-native release radar endpoints without spending anything.",
+      "expected_output": "Free SELAT Twitter/X endpoint probes using selat-pay --probe-only.",
+      "assertions": [
+        "Both probes include --probe-only",
+        "No payment is signed or broadcast",
+        "Each live quote is checked against its per-step cap"
+      ]
+    },
+    {
+      "id": "near-miss-static-docs",
+      "prompt": "Explain what a Kubernetes Deployment is using only the documentation I pasted.",
+      "expected_output": "The skill should not trigger because the request is static documentation explanation, not current release or advisory research.",
+      "assertions": [
+        "No paid endpoint is called",
+        "The response uses only the supplied documentation"
+      ]
+    }
+  ]
+}

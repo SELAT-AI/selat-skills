@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "single",
       "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key."
+    },
+    {
+      "name": "cloud-native-release-radar",
+      "rail": "direct",
+      "kind": "multi",
+      "description": "Monitor official and community Twitter/X signals for releases, upgrade issues, and security advisories around a cloud-native project."
     }
   ]
 }

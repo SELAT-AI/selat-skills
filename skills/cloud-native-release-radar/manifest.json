@@ -1,0 +1,34 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "cloud-native-release-radar",
+  "description": "Monitor official and community Twitter/X signals for releases, upgrade issues, and security advisories around a cloud-native project.",
+  "maxAmount": "0.01",
+  "params": {
+    "handle": {
+      "required": true,
+      "default": "kubernetesio",
+      "description": "Official project Twitter/X handle without @, for example kubernetesio, HashiCorp, argoproj, or ciliumproject."
+    },
+    "query": {
+      "required": true,
+      "default": "Kubernetes release security advisory CVE upgrade",
+      "description": "Community search query. Include the project name plus release, upgrade, CVE, or advisory terms."
+    }
+  },
+  "steps": [
+    {
+      "label": "official project release signals — recent account posts",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
+      "maxAmount": "0.005"
+    },
+    {
+      "label": "community release and incident signals — advanced search",
+      "rail": "direct",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${query}&queryType=Latest",
+      "maxAmount": "0.005"
+    }
+  ]
+}
