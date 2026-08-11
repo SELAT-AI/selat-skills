@@ -1,0 +1,22 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "crypto-market-snapshot",
+  "description": "Current USD price snapshot for one or more crypto tokens by CoinGecko id (bitcoin, ethereum, solana, usd-coin, ...) in a single paid call. Returns live spot price, symbol, and confidence per token — sourced from DefiLlama via the agentexchange store. Use for portfolio checks, agent pricing decisions, or any quick token valuation.",
+  "maxAmount": "0.02",
+  "params": {
+    "ids": {
+      "required": true,
+      "default": "bitcoin,ethereum,solana",
+      "description": "Comma-separated CoinGecko token ids to price, e.g. bitcoin,ethereum,solana,usd-coin"
+    }
+  },
+  "steps": [
+    {
+      "label": "token prices — agentexchange crypto/prices (routed x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://store.agentexchange.work/crypto/prices?ids=${ids}",
+      "maxAmount": "0.02"
+    }
+  ]
+}
