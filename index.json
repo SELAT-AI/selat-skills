@@ -108,6 +108,12 @@
       "rail": "routed",
       "kind": "single",
       "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key."
+    },
+    {
+      "name": "nansen-smart-money",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Fuses three Nansen smart-money signals (DEX trades, portfolio holdings, and capital netflows) for a target blockchain network into a single profile."
     }
   ]
 }
