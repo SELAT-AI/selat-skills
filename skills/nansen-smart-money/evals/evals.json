@@ -1,0 +1,31 @@
+{
+  "skill_name": "nansen-smart-money",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Show me what tokens smart money wallet addresses are swapping right now on Ethereum",
+      "expected_output": "Queries Nansen smart-money DEX trades for ethereum.",
+      "assertions": [
+        "nansen-smart-money is selected",
+        "chain is ethereum"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Check the net capital flows of smart money on Solana",
+      "expected_output": "Queries Nansen smart-money netflow for solana.",
+      "assertions": [
+        "nansen-smart-money is selected",
+        "chain is solana"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "search the web for the latest tech news",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "nansen-smart-money is not selected"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "nansen-smart-money",
+  "description": "Fuses three Nansen smart-money signals (DEX trades, portfolio holdings, and capital netflows) for a target blockchain network into a single profile.",
+  "maxAmount": "0.25",
+  "params": {
+    "chain": {
+      "required": false,
+      "default": "ethereum",
+      "description": "The blockchain network to analyze (e.g., ethereum, solana, arbitrum, optimism, base)."
+    }
+  },
+  "steps": [
+    {
+      "label": "Smart Money DEX Trades (MPP on Tempo)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.nansen.ai/api/v1/smart-money/dex-trades",
+      "body": {
+        "chains": [
+          "${chain}"
+        ]
+      },
+      "maxAmount": "0.07"
+    },
+    {
+      "label": "Smart Money Holdings (MPP on Tempo)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.nansen.ai/api/v1/smart-money/holdings",
+      "body": {
+        "chains": [
+          "${chain}"
+        ]
+      },
+      "maxAmount": "0.07"
+    },
+    {
+      "label": "Smart Money Capital Netflows (MPP on Tempo)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.nansen.ai/api/v1/smart-money/netflow",
+      "body": {
+        "chains": [
+          "${chain}"
+        ]
+      },
+      "maxAmount": "0.07"
+    }
+  ]
+}
