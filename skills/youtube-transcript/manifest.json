@@ -1,0 +1,22 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "youtube-transcript",
+  "description": "Fetch a YouTube video transcript via Scrape Creators (MPP on Tempo through the SELAT Router). Pass a watch URL; returns the spoken transcript text for the agent to summarize — no YouTube API key.",
+  "maxAmount": "0.10",
+  "params": {
+    "videoUrl": {
+      "required": true,
+      "default": "https://www.youtube.com/watch?v=YxXrU0I6vT0",
+      "description": "Full YouTube watch URL (https://www.youtube.com/watch?v=… or youtu.be/…). Mapped to the Scrape Creators GET query param `url`."
+    }
+  },
+  "steps": [
+    {
+      "label": "YouTube video transcript — Scrape Creators (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/youtube/video/transcript?url=${videoUrl}",
+      "maxAmount": "0.10"
+    }
+  ]
+}
