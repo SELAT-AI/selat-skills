@@ -1,0 +1,67 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "site-presence-brief",
+  "description": "One-shot site presence brief: scrape a public URL, pull recent web context on a topic, and mint a simple Open Graph card. Mixed rails via the SELAT Router (Firecrawl scrape MPP + Perplexity search x402 + OG image x402). Paid per call, no API keys.",
+  "maxAmount": "0.10",
+  "params": {
+    "url": {
+      "required": true,
+      "default": "https://www.selat.ai",
+      "description": "Public https URL to scrape (homepage or product page)."
+    },
+    "topic": {
+      "required": true,
+      "default": "SELAT agent payments",
+      "description": "What to search the web for — usually the brand, product, or claim on that page."
+    },
+    "title": {
+      "required": false,
+      "default": "SELAT",
+      "description": "Short title for the Open Graph card (keep it under ~60 chars)."
+    },
+    "subtitle": {
+      "required": false,
+      "default": "Agent commerce brief",
+      "description": "Optional second line on the OG card."
+    },
+    "recency": {
+      "required": false,
+      "default": "month",
+      "description": "Web search recency filter: hour | day | week | month | year."
+    }
+  },
+  "steps": [
+    {
+      "label": "page scrape — StableEnrich Firecrawl (routed MPP)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://stableenrich.dev/api/firecrawl/scrape",
+      "body": {
+        "url": "${url}"
+      },
+      "maxAmount": "0.04"
+    },
+    {
+      "label": "web context — Perplexity /search (routed x402)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://pplx.x402.paysponge.com/search",
+      "body": {
+        "query": "${topic}",
+        "search_recency_filter": "${recency}"
+      },
+      "maxAmount": "0.03"
+    },
+    {
+      "label": "OG card — bip-rep generate (routed x402)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://og.bip-rep.com/generate",
+      "body": {
+        "title": "${title}",
+        "subtitle": "${subtitle}"
+      },
+      "maxAmount": "0.03"
+    }
+  ]
+}

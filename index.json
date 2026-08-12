@@ -114,6 +114,12 @@
       "rail": "mixed",
       "kind": "multi",
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+    },
+    {
+      "name": "site-presence-brief",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "One-shot site presence brief: scrape a public URL, pull recent web context on a topic, and mint a simple Open Graph card. Mixed rails via the SELAT Router (Firecrawl scrape MPP + Perplexity search x402 + OG image x402). Paid per call, no API keys."
     }
   ]
 }

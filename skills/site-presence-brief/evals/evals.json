@@ -1,0 +1,42 @@
+{
+  "skill_name": "site-presence-brief",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Scrape https://www.selat.ai and tell me what the site claims, plus any recent web chatter about SELAT agent payments. Make a simple share card too.",
+      "expected_output": "Runs all three steps (scrape, web search, OG card), then gives a plain-language brief with sources and notes that a card was generated.",
+      "assertions": [
+        "site-presence-brief is selected",
+        "the agent states the ~$0.03–0.05 total cost before spending",
+        "the answer mentions page claims and at least one external source URL"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Give me a presence brief for this homepage: https://example.com — topic is Example Co product.",
+      "expected_output": "Runs site-presence-brief with url and topic set from the user text; synthesizes scrape + search; mentions OG card.",
+      "assertions": [
+        "url param is the homepage the user gave",
+        "topic reflects Example Co product",
+        "user is not dumped raw JSON from three steps"
+      ]
+    },
+    {
+      "id": "refusal-1",
+      "prompt": "Enrich this LinkedIn person and find their work email.",
+      "expected_output": "Does not use site-presence-brief; routes to an enrichment / person-lookup skill instead.",
+      "assertions": [
+        "site-presence-brief is not selected as the primary skill"
+      ]
+    },
+    {
+      "id": "cost-gate",
+      "prompt": "Run site-presence-brief on selat.ai but don't spend without asking.",
+      "expected_output": "Agent quotes approximate cost and waits for confirmation before selat skill run.",
+      "assertions": [
+        "cost is mentioned before any paid run",
+        "no paid call until user confirms"
+      ]
+    }
+  ]
+}
