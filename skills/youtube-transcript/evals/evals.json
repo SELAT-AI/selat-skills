@@ -1,0 +1,63 @@
+{
+  "skill_name": "youtube-transcript",
+  "evals": [
+    {
+      "id": "transcript-from-watch-url",
+      "prompt": "Get the transcript for https://www.youtube.com/watch?v=YxXrU0I6vT0",
+      "expected_output": "An MPP-on-Tempo GET to Scrape Creators YouTube transcript with the watch URL in the url query param, returning spoken transcript text.",
+      "assertions": [
+        "The skill issues a single GET to https://mpp.orthogonal.com/scrapecreators/v1/youtube/video/transcript",
+        "The request includes query param url set to the YouTube watch URL",
+        "The output is transcript content for the agent to summarize, not a general web search"
+      ]
+    },
+    {
+      "id": "summarize-talk",
+      "prompt": "What does this YouTube talk say? https://youtu.be/YxXrU0I6vT0",
+      "expected_output": "Same transcript fetch; agent summarizes spoken content in plain language after the paid call.",
+      "assertions": [
+        "videoUrl accepts youtu.be short links as well as youtube.com/watch URLs",
+        "Cost is surfaced to the user before pay (~$0.02)",
+        "The step rail is MPP on Tempo"
+      ]
+    },
+    {
+      "id": "notrigger-twitter",
+      "prompt": "Get the transcript of this tweet thread about AI agents",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "youtube-transcript is not selected",
+        "Prefer twitter-research or scrapecreators for X/Twitter"
+      ]
+    },
+    {
+      "id": "notrigger-web-search",
+      "prompt": "Search the web for recent Circle Agent Wallet news",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "youtube-transcript is not selected",
+        "Prefer perplexity-search or a web-search endpoint skill"
+      ]
+    },
+    {
+      "id": "probe-only-no-charge",
+      "prompt": "Validate the YouTube transcript endpoint without paying.",
+      "expected_output": "A free 402 probe against the Scrape Creators transcript endpoint via selat-pay --probe-only.",
+      "assertions": [
+        "The validation command uses selat-pay GET …/youtube/video/transcript with --probe-only",
+        "No payment is broadcast during the probe",
+        "The output reflects the 402 payment requirements rather than a settled 200 data response"
+      ]
+    },
+    {
+      "id": "serviceurl-not-provider",
+      "prompt": "How does this skill call Scrape Creators under the hood?",
+      "expected_output": "Declarative manifest step on mpp.orthogonal.com serviceUrl; no direct provider host; no orth CLI.",
+      "assertions": [
+        "The manifest URL uses https://mpp.orthogonal.com/scrapecreators/…",
+        "No orth, orth run, or api.orth.sh references",
+        "Execution is via selat skill run / selat-pay over the SELAT Router"
+      ]
+    }
+  ]
+}
