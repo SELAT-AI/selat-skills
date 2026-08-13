@@ -114,6 +114,12 @@
       "rail": "mixed",
       "kind": "multi",
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+    },
+    {
+      "name": "company-hiring-radar",
+      "rail": "MPP on Tempo",
+      "kind": "multi",
+      "description": "Company hiring radar - recent openings and hiring-change signals for any company from ATS career pages (Fantastic Jobs), LinkedIn/Wellfound/YC boards, and a 24h job-change feed. Paid per call via MPP on Tempo through the SELAT Router."
     }
   ]
 }

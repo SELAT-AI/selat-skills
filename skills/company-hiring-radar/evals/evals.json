@@ -1,0 +1,83 @@
+{
+  "skill_name": "company-hiring-radar",
+  "evals": [
+    {
+      "id": "trigger-what-is-openai-hiring",
+      "prompt": "What is OpenAI hiring for right now?",
+      "expected_output": "Runs the three-step Fantastic Jobs radar (active-ats, active-jb, modified-ats) with company=OpenAI and time_frame=7d, then synthesizes a hiring-signals brief: role mix, locations, remote split, and change-feed signals.",
+      "assertions": [
+        "The first step is a GET to https://mpp.orthogonal.com/fantastic-jobs/v1/active-ats with time_frame, limit, and organization in the query string",
+        "The second step is a GET to https://mpp.orthogonal.com/fantastic-jobs/v1/active-jb",
+        "The third step is a GET to https://mpp.orthogonal.com/fantastic-jobs/v1/modified-ats",
+        "No step uses the provider host data.fantastic.jobs"
+      ]
+    },
+    {
+      "id": "trigger-recent-stripe-roles",
+      "prompt": "Show me the job postings Stripe has published in the last week.",
+      "expected_output": "Runs company-hiring-radar with company=Stripe and time_frame=7d; returns recent ATS and board postings for Stripe.",
+      "assertions": [
+        "company is set to Stripe",
+        "time_frame is set to 7d",
+        "The active-ats step filters by organization=Stripe"
+      ]
+    },
+    {
+      "id": "trigger-new-roles-this-week",
+      "prompt": "Has Figma posted any new roles this week?",
+      "expected_output": "Runs the radar with company=Figma and time_frame=7d and reports which roles are new versus reposted, using the modified-ats feed for change signals.",
+      "assertions": [
+        "company is set to Figma",
+        "The modified-ats step is included for change signals",
+        "The summary distinguishes new postings from modified ones"
+      ]
+    },
+    {
+      "id": "trigger-anthropic-remote",
+      "prompt": "What is Anthropic hiring for remotely?",
+      "expected_output": "Runs the radar with company=Anthropic; the agent filters the returned postings by remote work arrangement and reports the remote split.",
+      "assertions": [
+        "company is set to Anthropic",
+        "The run stays within the 2.00 top-level maxAmount",
+        "The summary reports the remote split of Anthropic's openings"
+      ]
+    },
+    {
+      "id": "notrigger-email-lookup",
+      "prompt": "Find the CTO of OpenAI's email and verify it.",
+      "expected_output": "Skill does not trigger - this is person/lead enrichment, not a hiring scan.",
+      "assertions": [
+        "company-hiring-radar is not selected",
+        "The request routes to an enrichment skill instead"
+      ]
+    },
+    {
+      "id": "notrigger-generic-news",
+      "prompt": "Summarize the latest news about AI funding rounds.",
+      "expected_output": "Skill does not trigger - no specific company hiring scan is requested.",
+      "assertions": [
+        "company-hiring-radar is not selected"
+      ]
+    },
+    {
+      "id": "cost-and-rail",
+      "prompt": "How much does a company-hiring-radar run cost and which rail does it use?",
+      "expected_output": "Explains all steps are MPP on Tempo via the SELAT Router; each step is $0.42 (probe-verified 2026-08-13); per-step caps are $0.50 ceilings; a full three-step run costs ~$1.26, under the $2.00 top-level cap.",
+      "assertions": [
+        "The answer states all steps settle via MPP on Tempo",
+        "The answer cites the $0.42 live price per step and the $2.00 top-level cap",
+        "No Circle-Gateway direct step is claimed"
+      ]
+    },
+    {
+      "id": "probe-only-validation",
+      "prompt": "Check the hiring endpoints are payable before I spend anything.",
+      "expected_output": "Recommends running selat-pay --probe-only against the three mpp.orthogonal.com/fantastic-jobs endpoints with time_frame and limit to read the 402 quote without paying.",
+      "assertions": [
+        "The guidance uses selat-pay with --probe-only",
+        "Probe commands target mpp.orthogonal.com/fantastic-jobs hosts",
+        "No real payment is made during probing"
+      ]
+    }
+  ]
+}

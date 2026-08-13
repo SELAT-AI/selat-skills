@@ -1,0 +1,41 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "company-hiring-radar",
+  "description": "Company hiring radar - recent openings and hiring-change signals for any company from ATS career pages (Fantastic Jobs), LinkedIn/Wellfound/YC boards, and a 24h job-change feed. Paid per call via MPP on Tempo through the SELAT Router.",
+  "maxAmount": "2.00",
+  "params": {
+    "company": {
+      "required": true,
+      "default": "OpenAI",
+      "description": "Exact organization name(s), comma-separated, to scope the hiring scan (ATS career-page postings, LinkedIn/Wellfound/YC board postings, and the 24h change feed)."
+    },
+    "time_frame": {
+      "required": false,
+      "default": "7d",
+      "description": "Time window for new postings: 1h, 24h, 7d, or 6m."
+    }
+  },
+  "steps": [
+    {
+      "label": "recent ATS career-page openings - Fantastic Jobs active-ats (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/fantastic-jobs/v1/active-ats?time_frame=${time_frame}&limit=25&organization=${company}&include_basic_organization_details=true",
+      "maxAmount": "0.50"
+    },
+    {
+      "label": "recent board postings - Fantastic Jobs active-jb (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/fantastic-jobs/v1/active-jb?time_frame=${time_frame}&limit=25&organization=${company}",
+      "maxAmount": "0.50"
+    },
+    {
+      "label": "24h job-change feed - Fantastic Jobs modified-ats (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/fantastic-jobs/v1/modified-ats?limit=25&organization=${company}",
+      "maxAmount": "0.50"
+    }
+  ]
+}
