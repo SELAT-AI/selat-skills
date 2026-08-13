@@ -114,6 +114,12 @@
       "rail": "mixed",
       "kind": "multi",
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+    },
+    {
+      "name": "read-pdf-documents",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Cheapest-first PDF reading over routed x402: extract page-delimited Markdown and metadata from a public PDF URL, then use OCR only for scanned or image-only documents."
     }
   ]
 }
