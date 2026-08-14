@@ -1,0 +1,29 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "translate-text",
+  "description": "Translate text (agent messages, support replies, documents) into another language without breaking Markdown, code blocks, URLs, or proper nouns. Single routed x402 call to AgentUtility.ai (USDC via Circle Gateway), auto-detects the source language; optional source_language and formality (casual/formal/neutral).",
+  "maxAmount": "0.01",
+  "params": {
+    "text": {
+      "required": true,
+      "description": "The text to translate. Max 12k chars. Used as ${text}."
+    },
+    "target_language": {
+      "required": true,
+      "description": "Target language as an ISO code or name, e.g. 'es' or 'Spanish'. Used as ${target_language}."
+    }
+  },
+  "steps": [
+    {
+      "label": "translate — AgentUtility.ai translate-text (x402 via Circle Gateway)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://x402.agentutility.ai/translate-text",
+      "body": {
+        "text": "${text}",
+        "target_language": "${target_language}"
+      },
+      "maxAmount": "0.01"
+    }
+  ]
+}

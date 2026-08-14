@@ -1,0 +1,40 @@
+{
+  "skill_name": "translate-text",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Can you translate this message into Spanish? \"The deployment finished successfully.\"",
+      "expected_output": "Translate the text via the translate-text skill (target_language es/Spanish)",
+      "assertions": [
+        "translate-text is selected",
+        "target_language is Spanish or es",
+        "a paid call is offered with the ~$0.002 price surfaced first"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Translation please: send the support reply in Japanese",
+      "expected_output": "Translate the text via the translate-text skill (target_language ja/Japanese)",
+      "assertions": [
+        "translate-text is selected",
+        "target_language is Japanese or ja"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Summarize this paragraph in a more formal tone.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "translate-text is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "What's the weather in Berlin today?",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "translate-text is not selected"
+      ]
+    }
+  ]
+}
