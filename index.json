@@ -114,6 +114,12 @@
       "rail": "mixed",
       "kind": "multi",
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+    },
+    {
+      "name": "crypto-market-pulse",
+      "rail": "x402 on Base",
+      "kind": "multi",
+      "description": "One-command market pulse for any listed crypto token — Otto AI token-details (price/mcap/volume), token-alpha (derivatives OI, funding, order flow, positioning, technicals), crypto-news (sentiment-ranked headlines), and news-recaps (hourly market recap) — fused into a compact non-advisory directional brief. Paid per call via selat-pay (x402 on Base/Polygon) through the SELAT Router."
     }
   ]
 }
