@@ -1,0 +1,34 @@
+{
+  "skill_name": "crypto-market-pulse",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Give me a quick pulse check on HYPE — is it bullish or bearish right now?",
+      "expected_output": "Runs crypto-market-pulse with symbol HYPE, uses Circle Otto token-details, news-recaps, crypto-news, and token-alpha, then returns a non-advisory market pulse brief.",
+      "assertions": [
+        "crypto-market-pulse is selected",
+        "uses only Circle Otto AI x402 endpoints (token-details, news-recaps, crypto-news, token-alpha)",
+        "output includes price snapshot, derivatives positioning, technical read, sentiment, and a bullish/bearish/mixed verdict labeled non-advisory"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "What moved BTC this hour? Give me a market recap and sentiment.",
+      "expected_output": "Runs crypto-market-pulse with symbol BTC, prioritizes news-recaps and crypto-news for the market backdrop, plus token-details/token-alpha for the BTC read, and summarizes directional pressure.",
+      "assertions": [
+        "crypto-market-pulse is selected",
+        "symbol param is set to BTC explicitly",
+        "does not call excluded providers outside the Circle Otto filter"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Buy 1 ETH if the funding rate is positive.",
+      "expected_output": "Skill does not execute a trade and should refuse or redirect the trade-execution request.",
+      "assertions": [
+        "crypto-market-pulse is not used to place orders",
+        "response explains that the skill is research-only"
+      ]
+    }
+  ]
+}

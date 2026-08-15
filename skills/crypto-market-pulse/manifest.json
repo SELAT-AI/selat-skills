@@ -1,0 +1,43 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "crypto-market-pulse",
+  "description": "One-command market pulse for any listed crypto token \u2014 Otto AI token-details (price/mcap/volume), token-alpha (derivatives OI, funding, order flow, positioning, technicals), crypto-news (sentiment-ranked headlines), and news-recaps (hourly market recap) \u2014 fused into a compact non-advisory directional brief. Paid per call via selat-pay (x402 on Base/Polygon) through the SELAT Router.",
+  "maxAmount": "0.05",
+  "params": {
+    "symbol": {
+      "required": true,
+      "default": "BTC",
+      "description": "Token symbol (e.g. BTC, ETH, SOL, HYPE). Used as ${symbol} in each step URL. Always pass the user's symbol explicitly; never let the default silently research another token."
+    }
+  },
+  "steps": [
+    {
+      "label": "token details \u2014 Otto token-details (x402 on Base)",
+      "rail": "x402 on Base",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/token-details?symbol=${symbol}",
+      "maxAmount": "0.005"
+    },
+    {
+      "label": "market recap \u2014 Otto news-recaps (x402 on Base)",
+      "rail": "x402 on Base",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/news-recaps",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "news sentiment \u2014 Otto crypto-news (x402 on Base)",
+      "rail": "x402 on Base",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/crypto-news",
+      "maxAmount": "0.005"
+    },
+    {
+      "label": "alpha intelligence \u2014 Otto token-alpha (x402 on Base)",
+      "rail": "x402 on Base",
+      "method": "GET",
+      "url": "https://x402.ottoai.services/token-alpha?symbol=${symbol}",
+      "maxAmount": "0.02"
+    }
+  ]
+}
