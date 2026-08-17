@@ -1,0 +1,107 @@
+{
+  "skill_name": "current-weather",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "what's the weather in London?",
+      "expected_output": "current-weather is selected; runs with --location London",
+      "assertions": ["current-weather is selected", "location param is London"]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "weather in Tokyo",
+      "expected_output": "current-weather is selected; runs with --location Tokyo",
+      "assertions": ["current-weather is selected"]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "how hot is it in New York right now",
+      "expected_output": "current-weather is selected; runs with --location \"New York\"",
+      "assertions": ["current-weather is selected", "reports temperature in Celsius and Fahrenheit"]
+    },
+    {
+      "id": "trigger-4",
+      "prompt": "is it raining in Seattle?",
+      "expected_output": "current-weather is selected; answers from precipitation/conditions fields",
+      "assertions": ["current-weather is selected", "answer references precipitation or weather_description"]
+    },
+    {
+      "id": "trigger-5",
+      "prompt": "how windy is it in Berlin",
+      "expected_output": "current-weather is selected; reports wind_speed_kmh",
+      "assertions": ["current-weather is selected", "answer includes wind speed"]
+    },
+    {
+      "id": "trigger-6",
+      "prompt": "temperature at 51.5,-0.12",
+      "expected_output": "current-weather is selected; runs with --location \"51.5,-0.12\"",
+      "assertions": ["current-weather is selected", "location param accepts lat/lon"]
+    },
+    {
+      "id": "trigger-7",
+      "prompt": "current conditions in Bali",
+      "expected_output": "current-weather is selected; runs with --location Bali",
+      "assertions": ["current-weather is selected"]
+    },
+    {
+      "id": "trigger-8",
+      "prompt": "nyc weather",
+      "expected_output": "current-weather is selected; runs with --location nyc",
+      "assertions": ["current-weather is selected"]
+    },
+    {
+      "id": "trigger-9",
+      "prompt": "does it feel like 30 degrees in Dubai today",
+      "expected_output": "current-weather is selected; runs with --location Dubai",
+      "assertions": ["current-weather is selected"]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "what's the 5-day forecast for London?",
+      "expected_output": "Skill does not trigger (forecast, not current).",
+      "assertions": ["current-weather is not selected"]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "summarize the news about AI",
+      "expected_output": "Skill does not trigger.",
+      "assertions": ["current-weather is not selected"]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "how is the market weather looking for BTC?",
+      "expected_output": "Skill does not trigger (financial sentiment, not weather).",
+      "assertions": ["current-weather is not selected"]
+    },
+    {
+      "id": "notrigger-4",
+      "prompt": "what's the climate like in the Sahara?",
+      "expected_output": "Skill does not trigger (climate, not current weather).",
+      "assertions": ["current-weather is not selected"]
+    },
+    {
+      "id": "notrigger-5",
+      "prompt": "translate this paragraph to French",
+      "expected_output": "Skill does not trigger.",
+      "assertions": ["current-weather is not selected"]
+    },
+    {
+      "id": "notrigger-6",
+      "prompt": "find me flight prices to Tokyo",
+      "expected_output": "Skill does not trigger.",
+      "assertions": ["current-weather is not selected"]
+    },
+    {
+      "id": "notrigger-7",
+      "prompt": "what was the weather in London last week?",
+      "expected_output": "Skill does not trigger (historical, not current).",
+      "assertions": ["current-weather is not selected"]
+    },
+    {
+      "id": "notrigger-8",
+      "prompt": "tell me about aurora borealis viewing spots",
+      "expected_output": "Skill does not trigger.",
+      "assertions": ["current-weather is not selected"]
+    }
+  ]
+}
