@@ -1,0 +1,24 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "current-weather",
+  "description": "Current weather for any global location — temperature, feels-like, humidity, precipitation, wind, and a human-readable condition string, keyless via Open-Meteo, paid per call (~$0.001) over x402 via the SELAT Router.",
+  "maxAmount": "0.01",
+  "params": {
+    "location": {
+      "required": true,
+      "description": "City or location (e.g. London, New York, Tokyo) or lat/lon coordinates — used as ${location} in the request body. See references/endpoints.md for the accepted forms."
+    }
+  },
+  "steps": [
+    {
+      "label": "current weather — weather.payapi.market (x402 via Circle Gateway)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://weather.payapi.market/current",
+      "body": {
+        "location": "${location}"
+      },
+      "maxAmount": "0.01"
+    }
+  ]
+}
