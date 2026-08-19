@@ -1,0 +1,93 @@
+{
+  "skill_name": "domain-trust-check",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "A supplier I've never dealt with wants a wire transfer and their site is acme-procurement-portal.com. Is this domain legit before I pay them?",
+      "expected_output": "Runs domain-trust-check with --domain acme-procurement-portal.com --site https://acme-procurement-portal.com, then reports registration age, email authentication, TLS state and a pay / don't-pay recommendation in plain language.",
+      "assertions": [
+        "domain-trust-check is selected",
+        "both domain and site params are passed and point at the same host",
+        "the user is told the ~$0.044 price before the run",
+        "output leads with domain age and a clear recommendation, not raw JSON"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Got an email from billing@paypa1-secure.com asking me to update card details. Is that domain real?",
+      "expected_output": "Runs domain-trust-check on paypa1-secure.com and highlights recent registration and/or missing SPF/DMARC as spoofing risk.",
+      "assertions": [
+        "domain-trust-check is selected",
+        "the reply addresses whether email from the domain can be trusted (SPF/DMARC)",
+        "registration age is reported"
+      ]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "How old is the domain stripe.com, and does its SSL certificate expire soon?",
+      "expected_output": "Runs domain-trust-check --domain stripe.com --site https://stripe.com and reports the RDAP registration date plus TLS validity window.",
+      "assertions": [
+        "domain-trust-check is selected",
+        "both registration age and TLS expiry are reported"
+      ]
+    },
+    {
+      "id": "trigger-4",
+      "prompt": "Audit our own domain — do we have DMARC set up, and are we missing any security headers?",
+      "expected_output": "Runs domain-trust-check against the user's domain and reports SPF/DKIM/DMARC posture plus HSTS/CSP/X-Frame-Options findings.",
+      "assertions": [
+        "domain-trust-check is selected",
+        "email authentication posture and HTTP security headers are both reported"
+      ]
+    },
+    {
+      "id": "trigger-5",
+      "prompt": "This inbound lead's website looks brand new to me. Can you check whether it has any real history before I book a call?",
+      "expected_output": "Runs domain-trust-check and compares the RDAP registration date against the Wayback first capture to judge whether the site has genuine history.",
+      "assertions": [
+        "domain-trust-check is selected",
+        "the archive/Wayback age cross-check is used alongside registration data"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Is the wallet address 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 on any sanctions list?",
+      "expected_output": "domain-trust-check does not trigger — this is a crypto address compliance lookup, not a domain check.",
+      "assertions": [
+        "domain-trust-check is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Find me the email addresses and job titles of the marketing team at stripe.com.",
+      "expected_output": "domain-trust-check does not trigger — this is contact enrichment (lead-enrichment / gtm-enrichment), not domain trust.",
+      "assertions": [
+        "domain-trust-check is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "Search the web and summarize what people are saying about Stripe's new pricing.",
+      "expected_output": "domain-trust-check does not trigger — this is web search / sentiment, not domain vetting.",
+      "assertions": [
+        "domain-trust-check is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-4",
+      "prompt": "Scrape all the product pages from example.com and put them in a table.",
+      "expected_output": "domain-trust-check does not trigger — this is content scraping, not a trust or safety assessment.",
+      "assertions": [
+        "domain-trust-check is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-5",
+      "prompt": "Does this site contain malware or a virus?",
+      "expected_output": "domain-trust-check may be offered only with an explicit caveat that it reports posture and age, not malware scanning or blocklist status.",
+      "assertions": [
+        "if the skill is offered, the reply states it does not scan content or check malware blocklists"
+      ]
+    }
+  ]
+}

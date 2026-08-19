@@ -114,6 +114,12 @@
       "rail": "mixed",
       "kind": "multi",
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+    },
+    {
+      "name": "domain-trust-check",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Decide whether a domain is safe to trust or transact with — fuses RDAP registration age, DNS, SPF/DKIM/DMARC and TLS posture with live reachability, HTTP security headers, and an independent Wayback first-capture age cross-check. Paid per call via x402 through the SELAT Router (USDC via Circle Gateway)."
     }
   ]
 }

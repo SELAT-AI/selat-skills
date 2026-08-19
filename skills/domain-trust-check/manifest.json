@@ -1,0 +1,48 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "domain-trust-check",
+  "description": "Decide whether a domain is safe to trust or transact with — fuses RDAP registration age, DNS, SPF/DKIM/DMARC and TLS posture with live reachability, HTTP security headers, and an independent Wayback first-capture age cross-check. Paid per call via x402 through the SELAT Router (USDC via Circle Gateway).",
+  "maxAmount": "0.12",
+  "params": {
+    "domain": {
+      "required": true,
+      "default": "example.com",
+      "description": "Bare domain to vet, no scheme and no path (used as ${domain}). Example: stripe.com"
+    },
+    "site": {
+      "required": false,
+      "default": "https://example.com",
+      "description": "Full https:// URL of the same site, used for the reachability, security-header and archive steps (used as ${site}). Should point at the same host as ${domain}."
+    }
+  },
+  "steps": [
+    {
+      "label": "registration age, DNS, email auth and TLS — x402node domain/check (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://api.x402node.dev/domain/check?domain=${domain}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "live reachability and redirect chain — x402node url/check-status (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://api.x402node.dev/url/check-status?url=${site}",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "HTTP security headers (HSTS/CSP/X-Frame-Options) — x402node web/headers (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://api.x402node.dev/web/headers?url=${site}",
+      "maxAmount": "0.02"
+    },
+    {
+      "label": "independent age cross-check via Wayback first capture — x402node web/archive (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://api.x402node.dev/web/archive?url=${site}",
+      "maxAmount": "0.02"
+    }
+  ]
+}
