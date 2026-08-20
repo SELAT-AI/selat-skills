@@ -1,0 +1,36 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "city-weather",
+  "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC on Base), no API key.",
+  "maxAmount": "0.01",
+  "params": {
+    "location": {
+      "required": true,
+      "default": "Jakarta",
+      "description": "City or place name to fetch weather for (e.g. 'London', 'New York', 'Jakarta')."
+    }
+  },
+  "steps": [
+    {
+      "label": "current conditions — weather.payapi.market /current (routed x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://weather.payapi.market/current",
+      "body": {
+        "location": "${location}"
+      },
+      "maxAmount": "0.005"
+    },
+    {
+      "label": "3-day forecast — weather.payapi.market /forecast (routed x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://weather.payapi.market/forecast",
+      "body": {
+        "location": "${location}",
+        "days": 3
+      },
+      "maxAmount": "0.005"
+    }
+  ]
+}
