@@ -1,0 +1,47 @@
+{
+  "skill_name": "cheapest-viable-call",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "What's the cheapest way to get real-time crypto funding rates before I pay for one?",
+      "expected_output": "Runs cheapest-viable-call.mjs, reports the top payable candidate's live price and schema confidence, does not call or pay for anything itself.",
+      "assertions": ["The skill was selected", "No selat run or selat-pay call was made by this skill", "The response includes a live price, not just a catalogue price"]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Find a payable endpoint for weather data — I don't want to pay to discover it's broken.",
+      "expected_output": "Runs the shortlist script and reports payable vs. discarded candidates with failure signatures for the discarded ones.",
+      "assertions": ["The skill was selected", "discarded[] failure signatures are surfaced, not summarized away"]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "My last call to that endpoint failed with a 400 on a missing parameter — what else can I try before paying again?",
+      "expected_output": "Runs the shortlist script for the same capability and surfaces alternatives, flagging schema-unknown candidates.",
+      "assertions": ["The skill was selected", "The response warns about schema-unknown candidates before suggesting a retry"]
+    },
+    {
+      "id": "trigger-4",
+      "prompt": "Which of these five funding-rate endpoints actually work right now, and which is genuinely cheapest?",
+      "expected_output": "Runs the shortlist script, ranks survivors by live price, flags any catalogue-vs-live price divergence.",
+      "assertions": ["The skill was selected", "Ranking uses livePriceUsd, not catalogueUsd"]
+    },
+    {
+      "id": "no-trigger-1",
+      "prompt": "Enrich this person by name and company: Jane Doe at Stripe.",
+      "expected_output": "Uses an enrichment skill (e.g. lead-enrichment or comprehensive-enrichment), not this one.",
+      "assertions": ["cheapest-viable-call was not selected"]
+    },
+    {
+      "id": "no-trigger-2",
+      "prompt": "Just run selat run \"get the current BTC price\" and tell me what it costs.",
+      "expected_output": "Calls selat run directly for a single already-decided intent; no pre-purchase shortlisting requested.",
+      "assertions": ["cheapest-viable-call was not selected", "No shortlist/comparison step was inserted before the direct paid call"]
+    },
+    {
+      "id": "no-trigger-3",
+      "prompt": "Is api-failure-monitor down right now for my enrich-waterfall pipeline?",
+      "expected_output": "This is a runtime circuit-breaker question about an already-installed multi-step pipeline, not a pre-purchase capability search — routes to api-failure-monitor's own logic, not this skill.",
+      "assertions": ["cheapest-viable-call was not selected"]
+    }
+  ]
+}

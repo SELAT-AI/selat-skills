@@ -1,0 +1,18 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "cheapest-viable-call",
+  "description": "Free pre-purchase shortlist: for a capability request, ranks only endpoints that actually pass a live 402 probe, by true router-quoted price, with schema confidence — spends nothing.",
+  "params": {
+    "intent": { "required": true, "default": "", "description": "The capability to search for, e.g. \"real-time crypto funding rates\"" },
+    "limit": { "required": false, "default": "8", "description": "Max candidates to probe from the search results" }
+  },
+  "steps": [
+    {
+      "label": "federated catalog read (free, no payment, no 402 challenge) — the data source selat search queries",
+      "rail": "none",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/api/v1/federated",
+      "maxAmount": "0.01"
+    }
+  ]
+}
