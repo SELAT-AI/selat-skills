@@ -114,6 +114,12 @@
       "rail": "mixed",
       "kind": "multi",
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+    },
+    {
+      "name": "city-weather",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC on Base), no API key."
     }
   ]
 }
