@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "stock-direction-signals",
-  "description": "Provider-filtered stock direction research \u2014 Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro \u2014 fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router.",
+  "description": "Provider-filtered stock direction research \u2014 Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro \u2014 fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (x402 via Circle Gateway + x402 on Base + MPP on Tempo) via the SELAT Router.",
   "maxAmount": "0.25",
   "params": {
     "ticker": {

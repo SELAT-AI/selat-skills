@@ -18,7 +18,7 @@ is authoritative — `selat skill verify` probes it free.
 | 9 — Reddit | POST | `https://stableenrich.dev/api/reddit/search` | MPP on Tempo | $0.021 |
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
-- **x402 on Base / Polygon:** Settles via Circle Gateway batched nanopayments. Buyer is the funded Gateway chain; 9/9 rehearsal was Polygon. This is not a pay-chain claim.
+- **x402 on Base / Polygon:** Settles via Circle Gateway batched nanopayments. Buyer is the funded Gateway chain. This is not a pay-chain claim.
 - **MPP on Tempo:** Alpha Vantage via Locus (`alphavantage.mpp.paywithlocus.com`). Circle StableEnrich (`stableenrich.dev`) is MPP on Tempo but not Locus.
 
 ## Alpha Vantage MPP — `MPP on Tempo`
