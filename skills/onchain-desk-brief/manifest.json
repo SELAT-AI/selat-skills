@@ -1,8 +1,8 @@
 {
   "schema": "selat-skill/v1",
   "name": "onchain-desk-brief",
-  "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway; verify prints routed-x402), Dune SQL execute (MPP on Tempo), SELAT-native Twitter chatter (x402 via Circle Gateway; verify prints routed-x402). Paid per call via selat-pay (USDC via Circle Gateway).",
-  "maxAmount": "1.00",
+  "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway; verify prints routed-x402), SELAT-native Twitter chatter (x402 via Circle Gateway; verify prints routed-x402). MPP (Allium prices) is parked: router.selat.ai 502s. Paid per call via selat-pay (USDC via Circle Gateway).",
+  "maxAmount": "0.50",
   "params": {
     "address": {
       "required": true,
@@ -12,12 +12,7 @@
     "protocol": {
       "required": false,
       "default": "uniswap",
-      "description": "Protocol or token name used to retarget twitter_query and sql. Not interpolated into a URL by itself."
-    },
-    "sql": {
-      "required": false,
-      "default": "SELECT 1",
-      "description": "Dune SQL for POST /api/v1/sql/execute (used as ${sql}). Verify uses SELECT 1 so the live 402 is exercisable. Rewrite to the named wallet or protocol before a paid run."
+      "description": "Protocol or token name used to retarget twitter_query. Not interpolated into a URL by itself."
     },
     "twitter_query": {
       "required": false,
@@ -39,16 +34,6 @@
       "method": "GET",
       "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
       "maxAmount": "0.01"
-    },
-    {
-      "label": "on-chain SQL — Dune sql/execute (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://api.dune.com/api/v1/sql/execute",
-      "body": {
-        "sql": "${sql}"
-      },
-      "maxAmount": "1.00"
     }
   ]
 }

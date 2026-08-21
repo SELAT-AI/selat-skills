@@ -117,9 +117,9 @@
     },
     {
       "name": "onchain-desk-brief",
-      "rail": "mixed",
+      "rail": "x402 via Circle Gateway",
       "kind": "multi",
-      "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway; verify prints routed-x402), Dune SQL execute (MPP on Tempo), SELAT-native Twitter chatter (x402 via Circle Gateway; verify prints routed-x402). Paid per call via selat-pay (USDC via Circle Gateway)."
+      "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway; verify prints routed-x402), SELAT-native Twitter chatter (x402 via Circle Gateway; verify prints routed-x402). MPP (Allium prices) parked: router.selat.ai 502s. Paid per call via selat-pay (USDC via Circle Gateway)."
     }
   ]
 }
