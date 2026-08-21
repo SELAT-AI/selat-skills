@@ -1,0 +1,69 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "onchain-desk-brief",
+  "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway), Allium token search + latest price (MPP on Tempo), SELAT-native Twitter chatter (x402 via Circle Gateway). Paid per call via selat-pay (USDC via Circle Gateway).",
+  "maxAmount": "0.50",
+  "params": {
+    "address": {
+      "required": true,
+      "default": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "description": "EVM wallet or protocol-token/contract address for the Alchemy token-by-address step (used as ${address}). Always pass the user's 0x address explicitly when they gave a wallet."
+    },
+    "protocol": {
+      "required": false,
+      "default": "uniswap",
+      "description": "Protocol or token name for Allium token search (used as ${protocol}). Retarget alongside address and twitter_query."
+    },
+    "tokenChain": {
+      "required": false,
+      "default": "ethereum",
+      "description": "Lowercase Allium chain name for token search and latest price (used as ${tokenChain}). EVM only — do not pass solana."
+    },
+    "tokenAddress": {
+      "required": false,
+      "default": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "description": "Token contract address for the Allium latest-price step (used as ${tokenAddress}). Native ETH is the zero address."
+    },
+    "twitter_query": {
+      "required": false,
+      "default": "uniswap OR UNI",
+      "description": "SELAT-native Twitter advanced-search query (used as ${twitter_query}). Widen with protocol, token ticker, or a known wallet label — not a raw 0x dump."
+    }
+  },
+  "steps": [
+    {
+      "label": "twitter chatter — SELAT-native advanced search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "on-chain token footprint — Alchemy token-by-address (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "token identity — Allium tokens search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "GET",
+      "url": "https://agents.allium.so/api/v1/developer/tokens/search?q=${protocol}&chain=${tokenChain}",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "latest token price — Allium prices (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://agents.allium.so/api/v1/developer/prices",
+      "body": [
+        {
+          "chain": "${tokenChain}",
+          "token_address": "${tokenAddress}"
+        }
+      ],
+      "maxAmount": "0.10"
+    }
+  ]
+}

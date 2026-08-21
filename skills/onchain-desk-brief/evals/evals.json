@@ -1,0 +1,60 @@
+{
+  "skill_name": "onchain-desk-brief",
+  "evals": [
+    {
+      "id": "trigger-wallet",
+      "prompt": "Give me a cited on-chain desk brief for wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 — holdings, token identity, and what Twitter is saying.",
+      "expected_output": "Runs onchain-desk-brief with the wallet as --address, retargets twitter_query away from the Uniswap defaults, calls Alchemy token-by-address plus Allium and SELAT Twitter, then fuses a cited non-advisory desk brief.",
+      "assertions": [
+        "onchain-desk-brief is selected",
+        "financial-intel is not selected",
+        "address is passed through to Alchemy GET /data/v1/assets/tokens/by-address",
+        "uses only Alchemy, Allium, and catalog.selat.ai Twitter endpoints",
+        "output is a cited desk brief with source notes, not a buy/hold/avoid asset call"
+      ]
+    },
+    {
+      "id": "trigger-protocol",
+      "prompt": "Protocol desk brief on Uniswap — on-chain footprint, Allium token read, and latest X chatter. Cited.",
+      "expected_output": "Runs onchain-desk-brief with --protocol uniswap and UNI-flavored address/tokenAddress/twitter_query, pulling Alchemy, Allium search + prices, and SELAT Twitter, then returns a cited protocol brief.",
+      "assertions": [
+        "onchain-desk-brief is selected",
+        "protocol, tokenAddress, and twitter_query are retargeted to Uniswap/UNI",
+        "Allium tokens/search and Allium prices both run",
+        "does not call Exa, Dune, QuickNode, Nansen, or CoinGecko"
+      ]
+    },
+    {
+      "id": "notrigger-asset-brief",
+      "prompt": "Give me a full financial intelligence brief on ETH right now — price, market data, on-chain smart money, and the latest news. Is it a buy?",
+      "expected_output": "Skill does not trigger; this is a financial-intel asset brief, not a wallet-or-protocol desk brief.",
+      "assertions": [
+        "onchain-desk-brief is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-hiring",
+      "prompt": "Scout hiring signals at Circle this week and tell me who is posting jobs.",
+      "expected_output": "Skill does not trigger; hiring-signal work is out of scope.",
+      "assertions": [
+        "onchain-desk-brief is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-stock",
+      "prompt": "Is NVDA bullish or bearish right now using chart, news, and Twitter?",
+      "expected_output": "Skill does not trigger; this is stock-direction-signals.",
+      "assertions": [
+        "onchain-desk-brief is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-code",
+      "prompt": "Write me a Python function that reverses a linked list.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "onchain-desk-brief is not selected"
+      ]
+    }
+  ]
+}
