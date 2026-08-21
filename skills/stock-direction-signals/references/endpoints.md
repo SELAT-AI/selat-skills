@@ -1,9 +1,25 @@
-# Provider-filtered endpoint catalogue
+# Endpoints — stock-direction-signals
 
 Use only these endpoint families for `stock-direction-signals`. Hosts below are
 the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
 is authoritative — `selat skill verify` probes it free.
+
+| Step | Method | URL | Rail | ~Price |
+|---|---|---|---|---|
+| 1 — Twitter chatter | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
+| 2 — Macro regime | GET | `https://x402.ottoai.services/tradfi-data?symbol=${ticker}` | x402 on Base | $0.00315 |
+| 3 — Quote | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote` | MPP on Tempo | $0.0084 |
+| 4 — Daily chart | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/time-series-daily` | MPP on Tempo | $0.0084 |
+| 5 — RSI | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/rsi` | MPP on Tempo | $0.0084 |
+| 6 — MACD | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/macd` | MPP on Tempo | $0.0084 |
+| 7 — News | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/news-sentiment` | MPP on Tempo | $0.0084 |
+| 8 — Earnings | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/earnings` | MPP on Tempo | $0.0084 |
+| 9 — Reddit | POST | `https://stableenrich.dev/api/reddit/search` | MPP on Tempo | $0.021 |
+
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **x402 on Base / Polygon:** Settles via Circle Gateway batched nanopayments. Buyer is the funded Gateway chain; 9/9 rehearsal was Polygon. This is not a pay-chain claim.
+- **MPP on Tempo:** Alpha Vantage via Locus (`alphavantage.mpp.paywithlocus.com`). Circle StableEnrich (`stableenrich.dev`) is MPP on Tempo but not Locus.
 
 ## Alpha Vantage MPP — `MPP on Tempo`
 
@@ -46,7 +62,7 @@ Indicator body pattern:
 { "symbol": "NVDA", "interval": "daily", "time_period": 14, "series_type": "close" }
 ```
 
-## SELAT-native Twitter — `x402 on Base`
+## SELAT-native Twitter — `x402 via Circle Gateway`
 
 serviceUrl: `https://catalog.selat.ai`
 
@@ -88,7 +104,7 @@ serviceUrl: `https://x402.ottoai.services`
 
 Live-probed price: `$0.00315` for `tradfi-data` (`routed-x402`); other
 endpoints `$0.001`–`$0.005`, `mega-report` ≈ `$0.05`. All endpoints are **GET
-with query-string params**; the router settles on Base.
+with query-string params**.
 
 | Capability | Endpoint | Query params |
 | --- | --- | --- |

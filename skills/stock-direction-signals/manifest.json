@@ -22,22 +22,22 @@
   },
   "steps": [
     {
-      "label": "twitter chatter \u2014 SELAT-native advanced search (x402)",
-      "rail": "x402",
+      "label": "twitter chatter \u2014 SELAT-native advanced search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest",
       "maxAmount": "0.01"
     },
     {
-      "label": "macro regime \u2014 Circle Otto tradfi-data (x402)",
-      "rail": "x402",
+      "label": "macro regime \u2014 Circle Otto tradfi-data (x402 on Base)",
+      "rail": "x402 on Base",
       "method": "GET",
       "url": "https://x402.ottoai.services/tradfi-data?symbol=${ticker}",
       "maxAmount": "0.02"
     },
     {
-      "label": "quote \u2014 Alpha Vantage global-quote (MPP)",
-      "rail": "MPP",
+      "label": "quote \u2014 Alpha Vantage global-quote (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote",
       "body": {
@@ -46,8 +46,8 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "daily chart \u2014 Alpha Vantage time-series-daily (MPP)",
-      "rail": "MPP",
+      "label": "daily chart \u2014 Alpha Vantage time-series-daily (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/time-series-daily",
       "body": {
@@ -56,8 +56,8 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "momentum \u2014 Alpha Vantage RSI (MPP)",
-      "rail": "MPP",
+      "label": "momentum \u2014 Alpha Vantage RSI (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/rsi",
       "body": {
@@ -69,8 +69,8 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "trend \u2014 Alpha Vantage MACD (MPP)",
-      "rail": "MPP",
+      "label": "trend \u2014 Alpha Vantage MACD (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/macd",
       "body": {
@@ -81,8 +81,8 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "catalysts \u2014 Alpha Vantage news-sentiment (MPP)",
-      "rail": "MPP",
+      "label": "catalysts \u2014 Alpha Vantage news-sentiment (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/news-sentiment",
       "body": {
@@ -92,8 +92,8 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "earnings \u2014 Alpha Vantage earnings (MPP)",
-      "rail": "MPP",
+      "label": "earnings \u2014 Alpha Vantage earnings (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/earnings",
       "body": {
@@ -102,8 +102,8 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "reddit chatter \u2014 Circle StableEnrich reddit search (MPP)",
-      "rail": "MPP",
+      "label": "reddit chatter \u2014 Circle StableEnrich reddit search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stableenrich.dev/api/reddit/search",
       "body": {
