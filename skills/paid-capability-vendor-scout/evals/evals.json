@@ -1,0 +1,34 @@
+{
+  "skill_name": "paid-capability-vendor-scout",
+  "evals": [
+    {
+      "id": "trigger-agent-payments-vendor",
+      "prompt": "Research SELAT as an agent-payment vendor, map its competitors, and separate its website claims from external evidence.",
+      "expected_output": "The skill is selected, requests spend approval for a run capped at $0.35, executes the three evidence steps, and synthesizes a vendor brief without inventing asynchronous market-map results.",
+      "assertions": [
+        "paid-capability-vendor-scout is selected",
+        "The user is told the maximum spend before paid execution",
+        "Website claims are distinguished from third-party evidence",
+        "A returned mapID is reported as asynchronous rather than a completed competitor map"
+      ]
+    },
+    {
+      "id": "trigger-custom-vendor",
+      "prompt": "Build a quick competitive landscape for this x402 API marketplace using its public website and a focused web query.",
+      "expected_output": "The agent asks for or derives company, website, and research_query values, then uses the skill for paid-capability vendor research.",
+      "assertions": [
+        "The three manifest parameters are populated",
+        "The run cap and paid nature are disclosed",
+        "The final response includes positioning, competitors, evidence gaps, and follow-up questions"
+      ]
+    },
+    {
+      "id": "notrigger-consumer-shopping",
+      "prompt": "Find the cheapest running shoes under $100 and compare shipping times.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "paid-capability-vendor-scout is not selected"
+      ]
+    }
+  ]
+}
