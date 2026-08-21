@@ -1,0 +1,42 @@
+{
+  "skill_name": "travel-brief",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "I'm flying to Tokyo next week - give me a quick travel brief with the forecast and a QR code for the hotel map link.",
+      "expected_output": "Agent runs selat skill run travel-brief --location \"Tokyo\" --data \"<hotel maps URL>\" and relays a plain-language 7-day forecast summary, notes the QR image is generated, and mentions total cost was under 0.01 USDC.",
+      "assertions": [
+        "travel-brief is selected",
+        "location param is set to the destination city",
+        "agent tells the user the expected cost before paying",
+        "forecast days are summarized in plain language, not raw JSON"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Check what the weather looks like in Mount Bromo this week and where the IP 1.1.1.1 is located.",
+      "expected_output": "Agent runs selat skill run travel-brief --location \"Mount Bromo\" --ip 1.1.1.1 and reports the forecast plus the IP's city/country/ISP.",
+      "assertions": [
+        "travel-brief is selected",
+        "both location and ip params are passed",
+        "ip geolocation result includes country and city"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Summarize this article about renewable energy for me.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "travel-brief is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Generate a QR code for my Wi-Fi password.",
+      "expected_output": "Skill does not trigger on its own (single-purpose QR request; agent should prefer a dedicated QR capability or use only the qr step contextually).",
+      "assertions": [
+        "travel-brief is not selected as a whole-skill match for an isolated QR task"
+      ]
+    }
+  ]
+}

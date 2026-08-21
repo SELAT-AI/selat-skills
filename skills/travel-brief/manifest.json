@@ -1,0 +1,54 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "travel-brief",
+  "description": "One-shot pre-travel brief for any city: 7-day weather forecast, geolocation context for a reference IP, and a scannable QR code linking to the destination - paid per call in USDC, no API keys.",
+  "maxAmount": "0.02",
+  "params": {
+    "location": {
+      "required": true,
+      "description": "City or place name for the weather forecast (e.g. \"Jakarta\", \"London\", \"Mount Bromo\") - used as ${location} in the weather step body."
+    },
+    "ip": {
+      "required": false,
+      "default": "8.8.8.8",
+      "description": "Reference IPv4 address for the geolocation step (e.g. a server or exit-node IP to sanity-check) - used as ${ip} in the ip-geo step body."
+    },
+    "data": {
+      "required": false,
+      "default": "https://selat.ai",
+      "description": "Text or URL to encode into the QR code (e.g. a maps link for the destination) - used as ${data} in the qr step body."
+    }
+  },
+  "steps": [
+    {
+      "label": "7-day weather forecast - payapi.market (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://weather.payapi.market/forecast",
+      "body": {
+        "location": "${location}"
+      },
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "IP geolocation context - ip-geo-api (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://ip-geo-api-production.up.railway.app/lookup/ip",
+      "body": {
+        "ip": "${ip}"
+      },
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "Destination QR code - klymax402 (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://qr-code.api.klymax402.com/api/qr",
+      "body": {
+        "data": "${data}"
+      },
+      "maxAmount": "0.01"
+    }
+  ]
+}
