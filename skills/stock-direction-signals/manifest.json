@@ -107,7 +107,10 @@
       "method": "POST",
       "url": "https://stableenrich.dev/api/reddit/search",
       "body": {
-        "query": "${reddit_query}"
+        "query": "${reddit_query}",
+        "sort": "relevance",
+        "timeframe": "week",
+        "maxResults": 10
       },
       "maxAmount": "0.04"
     }
