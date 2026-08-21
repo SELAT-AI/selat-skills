@@ -1,0 +1,39 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "onchain-desk-brief",
+  "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway; verify prints routed-x402), SELAT-native Twitter chatter (x402 via Circle Gateway; verify prints routed-x402). MPP (Allium prices) is parked: router.selat.ai 502s. Paid per call via selat-pay (USDC via Circle Gateway).",
+  "maxAmount": "0.50",
+  "params": {
+    "address": {
+      "required": true,
+      "default": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "description": "EVM wallet or protocol-token/contract address for the Alchemy token-by-address step (used as ${address}). Always pass the user's 0x address explicitly when they gave a wallet."
+    },
+    "protocol": {
+      "required": false,
+      "default": "uniswap",
+      "description": "Protocol or token name used to retarget twitter_query. Not interpolated into a URL by itself."
+    },
+    "twitter_query": {
+      "required": false,
+      "default": "uniswap OR UNI",
+      "description": "SELAT-native Twitter advanced-search query (used as ${twitter_query}). Widen with protocol, token ticker, or a known wallet label — not a raw 0x dump."
+    }
+  },
+  "steps": [
+    {
+      "label": "twitter chatter — SELAT-native advanced search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "on-chain token footprint — Alchemy token-by-address (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
+      "maxAmount": "0.01"
+    }
+  ]
+}

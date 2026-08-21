@@ -114,6 +114,12 @@
       "rail": "mixed",
       "kind": "multi",
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+    },
+    {
+      "name": "onchain-desk-brief",
+      "rail": "x402 via Circle Gateway",
+      "kind": "multi",
+      "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway; verify prints routed-x402), SELAT-native Twitter chatter (x402 via Circle Gateway; verify prints routed-x402). MPP (Allium prices) parked: router.selat.ai 502s. Paid per call via selat-pay (USDC via Circle Gateway)."
     }
   ]
 }
