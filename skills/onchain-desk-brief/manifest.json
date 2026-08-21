@@ -1,8 +1,8 @@
 {
   "schema": "selat-skill/v1",
   "name": "onchain-desk-brief",
-  "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway), Allium token search + latest price (MPP on Tempo), SELAT-native Twitter chatter (x402 via Circle Gateway). Paid per call via selat-pay (USDC via Circle Gateway).",
-  "maxAmount": "0.50",
+  "description": "Cited on-chain desk brief for one EVM wallet or one protocol — Alchemy token-by-address (x402 via Circle Gateway; verify prints routed-x402), Dune SQL execute (MPP on Tempo), SELAT-native Twitter chatter (x402 via Circle Gateway; verify prints routed-x402). Paid per call via selat-pay (USDC via Circle Gateway).",
+  "maxAmount": "1.00",
   "params": {
     "address": {
       "required": true,
@@ -12,17 +12,12 @@
     "protocol": {
       "required": false,
       "default": "uniswap",
-      "description": "Protocol or token name for Allium token search (used as ${protocol}). Retarget alongside address and twitter_query."
+      "description": "Protocol or token name used to retarget twitter_query and sql. Not interpolated into a URL by itself."
     },
-    "tokenChain": {
+    "sql": {
       "required": false,
-      "default": "ethereum",
-      "description": "Lowercase Allium chain name for token search and latest price (used as ${tokenChain}). EVM only — do not pass solana."
-    },
-    "tokenAddress": {
-      "required": false,
-      "default": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
-      "description": "Token contract address for the Allium latest-price step (used as ${tokenAddress}). Native ETH is the zero address."
+      "default": "SELECT 1",
+      "description": "Dune SQL for POST /api/v1/sql/execute (used as ${sql}). Verify uses SELECT 1 so the live 402 is exercisable. Rewrite to the named wallet or protocol before a paid run."
     },
     "twitter_query": {
       "required": false,
@@ -46,24 +41,14 @@
       "maxAmount": "0.01"
     },
     {
-      "label": "token identity — Allium tokens search (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "GET",
-      "url": "https://agents.allium.so/api/v1/developer/tokens/search?q=${protocol}&chain=${tokenChain}",
-      "maxAmount": "0.10"
-    },
-    {
-      "label": "latest token price — Allium prices (MPP on Tempo)",
+      "label": "on-chain SQL — Dune sql/execute (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://agents.allium.so/api/v1/developer/prices",
-      "body": [
-        {
-          "chain": "${tokenChain}",
-          "token_address": "${tokenAddress}"
-        }
-      ],
-      "maxAmount": "0.10"
+      "url": "https://api.dune.com/api/v1/sql/execute",
+      "body": {
+        "sql": "${sql}"
+      },
+      "maxAmount": "1.00"
     }
   ]
 }

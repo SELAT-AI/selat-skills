@@ -1,56 +1,69 @@
 # Endpoints — onchain-desk-brief
 
 Cited desk brief across **two settlement modes** from hosts already used in
-this repo / live-probed 2026-08-21: Circle Gateway-batched nanopayment
-(`x402 via Circle Gateway`, Alchemy + SELAT Twitter) and **MPP on Tempo**
-(Allium). Paid per call via selat-pay (USDC via Circle Gateway), no API keys.
+this repo / live-probed 2026-08-21: `x402 via Circle Gateway` (Alchemy +
+SELAT Twitter; verify prints `routed-x402`) and **MPP on Tempo** (Dune SQL
+execute; verify prints `routed-mpp`). Paid per call via selat-pay (USDC via
+Circle Gateway), no API keys.
 
 Pinned hosts (no in-skill discover):
 
 - **Alchemy** — same `x402.alchemy.com` token-by-address GET as
-  `account-intel` (Gateway-batched `x402 via Circle Gateway`).
-- **Allium** — same `agents.allium.so` prices POST as the retired
-  `allium-price` skill, plus the live-probed tokens/search GET.
+  `account-intel`. Manifest rail `x402 via Circle Gateway`. Verify prints
+  **`routed-x402`** — the call hops the SELAT Router. Not a no-router-hop claim.
+- **Dune** — `POST https://api.dune.com/api/v1/sql/execute` (docs MPP path
+  under `/api/v1/…`). Manifest rail `MPP on Tempo`. Verify prints
+  **`routed-mpp`** (Tempo `intent=session`). Live router quote **$4.20**.
 - **SELAT Twitter** — same `catalog.selat.ai` advanced_search GET as
-  `stock-direction-signals` / `find-twitter-influencers`.
+  `stock-direction-signals` / `find-twitter-influencers`. Verify prints
+  **`routed-x402`**.
 
 Not pinned (investigated, left out):
 
+- **Allium** `https://agents.allium.so` — bare probe 402s (Tempo `charge` +
+  x402; search $0.03 / prices $0.02). Default selat-pay / `selat skill verify`
+  prefers MPP, then `router.selat.ai` returns
+  `502 expected upstream 402 challenge, got 500` on every developer and
+  explorer path tried (search, prices, tokens list, chain-address, prices
+  history, wallet balances, explorer run-async). `--prefer-x402` quotes
+  through the router ($0.0315 / $0.021) but the manifest cannot pass that
+  flag. Nansen MPP on the same router still quotes ($0.0525) — Allium-specific,
+  not a total MPP outage. No Locus Allium host 402s. Not pinned: a broken
+  Allium step must not be the only MPP pin.
 - **QuickNode** `https://x402.quicknode.com` — live 402, but JSON-RPC rather
   than a desk-brief REST. Alchemy already covers the x402 family.
-- **Dune** `https://api.dune.com/api/v1/sql/execute` — live 402 with Tempo
-  `intent=session`, not the `charge` MPP other selat-skills pin. Allium already
-  covers the MPP family.
+- **Dune** `POST https://api.dune.com/v1/sql/execute` (no `/api/`) — no
+  challenge. `GET /api/v1/execution/:id/results` MPP-detected at $1024; router
+  503 (`upstream price exceeds MAX_UPSTREAM_PRICE_USD ($5)`). Sim
+  (`api.sim.dune.com`) is not MPP.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Twitter chatter | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
-| 2 — On-chain footprint | GET | `https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}` | x402 via Circle Gateway | $0.001 |
-| 3 — Token identity | GET | `https://agents.allium.so/api/v1/developer/tokens/search?q=${protocol}&chain=${tokenChain}` | MPP on Tempo | $0.03 (bare) / $0.0315 (`--prefer-x402` via router) |
-| 4 — Latest price | POST | `https://agents.allium.so/api/v1/developer/prices` | MPP on Tempo | $0.02 (bare) / $0.021 (`--prefer-x402` via router) |
+| Step | Method | URL | Rail (manifest) | Verify prints | ~Price |
+|---|---|---|---|---|---|
+| 1 — Twitter chatter | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest` | x402 via Circle Gateway | routed-x402 | $0.001 |
+| 2 — On-chain footprint | GET | `https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}` | x402 via Circle Gateway | routed-x402 | $0.001 |
+| 3 — On-chain SQL | POST | `https://api.dune.com/api/v1/sql/execute` | MPP on Tempo | routed-mpp | $4.20 |
 
-Full-run cap (`maxAmount`): **$0.50**; per-step caps **$0.01** (Twitter, Alchemy)
-and **$0.10** (Allium). Live total ≈ $0.052 bare / ≈ $0.055 with Allium x402
-fallback (probe-verified 2026-08-21).
+Full-run cap (`maxAmount`): **$1.00** (selat CLI hard ceiling). Per-step caps
+**$0.01** (Twitter, Alchemy) and **$1.00** (Dune). Dune's live $4.20 quote
+exceeds that ceiling — verify will 402 and flag `withinCap`. Do not invent a
+cheaper quote.
 
-**Router note (2026-08-21):** Allium's default selat-pay route is `routed-mpp`
-(Tempo `charge` is present on probe 1). `https://router.selat.ai` currently
-returns `502 expected upstream 402 challenge, got 500` for that MPP
-translation — so `selat skill verify` / `selat skill run` fail on steps 3–4.
-The same URLs quote successfully with `selat-pay --prefer-x402` (routed-x402).
-Nansen MPP on the same router still quotes ($0.0525), so this is Allium-specific,
-not a total MPP outage. Keep the rail pin `MPP on Tempo`; do not invent a
-Locus Allium host (none listed).
+- **SELAT Router:** every step, including Alchemy, routes via
+  `https://router.selat.ai`. `SELAT_ROUTER_URL` is required.
+- **x402 via Circle Gateway:** Alchemy and SELAT Twitter. Verify prints
+  `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain
+  claim and not a no-router-hop claim.
+- **MPP on Tempo:** Dune SQL execute serves Tempo `intent=session`. Verify
+  prints `routed-mpp`. Buyer is the funded Gateway chain.
 
-- **SELAT Router:** Allium and SELAT Twitter route via `https://router.selat.ai` with protocol detection (MPP ↔ x402). Alchemy does not need the router.
-- **x402 via Circle Gateway:** Alchemy (`x402.alchemy.com`) and SELAT Twitter (`catalog.selat.ai`) serve `GatewayWalletBatched`. Buyer is the funded Gateway chain. This is not a pay-chain claim.
-- **MPP on Tempo:** Allium (`agents.allium.so`) serves Tempo `charge` (`WWW-Authenticate: Payment`, method `tempo`) plus an x402 challenge. Pin as `MPP on Tempo`. Buyer is the funded Gateway chain.
-
-## Alchemy — `x402 via Circle Gateway`
+## Alchemy — `x402 via Circle Gateway` (verify: `routed-x402`)
 
 serviceUrl: `https://x402.alchemy.com`
 
-Live-probed price: `$0.001` per call (`GatewayWalletBatched` in `accepts`).
+Live-probed price: `$0.001` per call. `selat skill verify --live-probe`
+prints **`routed-x402`**. The call hops the SELAT Router. Do not describe
+this as a Gateway-batched nanopayment with **no router hop**.
+
 The manifest step is **GET with a query-string `address`** — the same path
 `account-intel` already pins (not the official keyful POST body).
 
@@ -65,32 +78,39 @@ manifest — call via `selat-pay` when the desk needs a symbol print):
 | --- | --- | --- |
 | Spot by symbol | `/prices/v1/tokens/by-symbol` | `symbols` (comma-separated, no `$`) |
 
-## Allium — `MPP on Tempo`
+## Dune — `MPP on Tempo` (verify: `routed-mpp`)
 
-serviceUrl: `https://agents.allium.so`
+serviceUrl: `https://api.dune.com`
 
-Live-probed prices: tokens/search `$0.03` (`30000` USDC base units), prices
-`$0.02` (`20000` units). Both serve Tempo `intent=charge` on a bare probe.
+Live-probed price: `$4.20` router quote on
+`POST /api/v1/sql/execute` (`x402=no`, `mpp=yes` probe-1, Tempo
+`intent=session`, upstream `amount` 4000000 + ~5% markup). Docs list this
+path (and `/v1/execution/:id/results|csv`) as Dune's MPP surface.
 
 | Step | Endpoint | Params |
 | --- | --- | --- |
-| token identity | `GET /api/v1/developer/tokens/search` | `q` (string, required), `chain` (optional lowercase name) |
-| latest price | `POST /api/v1/developer/prices` | JSON **array**: `[{ "chain": "<name>", "token_address": "<0x>" }]` |
+| on-chain SQL | `POST /api/v1/sql/execute` | JSON object: `{ "sql": "<text>" }` |
 
-Price body pattern (string fields only — `${param}` is not type-coerced):
+Body pattern (string fields only — `${param}` is not type-coerced):
 
 ```json
-[{ "chain": "ethereum", "token_address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984" }]
+{ "sql": "SELECT 1" }
 ```
 
-Native ETH uses the zero address on `ethereum`. Do not pass Solana mints.
+Rewrite `sql` to the named wallet or protocol before a paid attempt. Native
+ETH / Solana / Arc / CCTP paths are out of scope.
 
-## SELAT-native Twitter — `x402 via Circle Gateway`
+The $4.20 quote exceeds the selat CLI **$1/call** hard ceiling
+(`HARD_CLI_MAX_AMOUNT_USD`). Manifest `maxAmount` cannot be raised above $1.
+`selat skill verify --live-probe` still returns a real 402 and then flags
+`withinCap`.
+
+## SELAT-native Twitter — `x402 via Circle Gateway` (verify: `routed-x402`)
 
 serviceUrl: `https://catalog.selat.ai`
 
-Live-probed price: `$0.001` per call (`GatewayWalletBatched`). **GET with
-query-string params**, same as `stock-direction-signals`.
+Live-probed price: `$0.001` per call. Verify prints **`routed-x402`**.
+**GET with query-string params**, same as `stock-direction-signals`.
 
 | Capability | Endpoint | Query params |
 | --- | --- | --- |
@@ -101,22 +121,18 @@ Responses are raw tweet objects — no sentiment score is included.
 ## Live probes (free; no wallet)
 
 ```bash
-# x402 via Circle Gateway (GET query)
+# x402 via Circle Gateway — verify prints routed-x402
 selat-pay GET "https://catalog.selat.ai/twitter/tweet/advanced_search?query=uniswap%20OR%20UNI&queryType=Latest" \
-  --chain base --probe-only
+  --chain base --probe-only --live-probe
 selat-pay GET "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=0x1f9840a85d5af5bf1d1762f925bdaddc4201f984" \
-  --chain base --probe-only
+  --chain base --probe-only --live-probe
 
-# MPP on Tempo (GET query + POST body)
-selat-pay GET "https://agents.allium.so/api/v1/developer/tokens/search?q=uniswap&chain=ethereum" \
-  --chain base --probe-only
-selat-pay POST "https://agents.allium.so/api/v1/developer/prices" \
-  --body '[{"chain":"ethereum","token_address":"0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"}]' \
-  --chain base --probe-only
+# MPP on Tempo — verify prints routed-mpp ($4.20)
+selat-pay POST "https://api.dune.com/api/v1/sql/execute" \
+  --body '{"sql":"SELECT 1"}' \
+  --chain base --probe-only --live-probe
 ```
 
 A served endpoint prints `detected ... price=$X`. Twitter and Alchemy show
-`x402 via Circle Gateway`. Allium's bare probe is dual-protocol (Tempo `charge`
-+ x402); default selat-pay mode is `routed-mpp` and the router 500s that
-translation today. Add `--prefer-x402` to the Allium probes to get a live
-router quote (`routed-x402`, $0.0315 / $0.021).
+`mode=routed-x402`. Dune shows `mode=routed-mpp`. Allium is not in this
+manifest; do not add `--pay`.

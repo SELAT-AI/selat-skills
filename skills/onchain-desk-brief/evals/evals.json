@@ -3,25 +3,25 @@
   "evals": [
     {
       "id": "trigger-wallet",
-      "prompt": "Give me a cited on-chain desk brief for wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 — holdings, token identity, and what Twitter is saying.",
-      "expected_output": "Runs onchain-desk-brief with the wallet as --address, retargets twitter_query away from the Uniswap defaults, calls Alchemy token-by-address plus Allium and SELAT Twitter, then fuses a cited non-advisory desk brief.",
+      "prompt": "Give me a cited on-chain desk brief for wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 — holdings, a Dune SQL read, and what Twitter is saying.",
+      "expected_output": "Runs onchain-desk-brief with the wallet as --address, retargets twitter_query and sql away from the Uniswap / SELECT 1 defaults, calls Alchemy token-by-address plus Dune SQL execute and SELAT Twitter, then fuses a cited non-advisory desk brief.",
       "assertions": [
         "onchain-desk-brief is selected",
         "financial-intel is not selected",
         "address is passed through to Alchemy GET /data/v1/assets/tokens/by-address",
-        "uses only Alchemy, Allium, and catalog.selat.ai Twitter endpoints",
+        "uses only Alchemy, Dune, and catalog.selat.ai Twitter endpoints",
         "output is a cited desk brief with source notes, not a buy/hold/avoid asset call"
       ]
     },
     {
       "id": "trigger-protocol",
-      "prompt": "Protocol desk brief on Uniswap — on-chain footprint, Allium token read, and latest X chatter. Cited.",
-      "expected_output": "Runs onchain-desk-brief with --protocol uniswap and UNI-flavored address/tokenAddress/twitter_query, pulling Alchemy, Allium search + prices, and SELAT Twitter, then returns a cited protocol brief.",
+      "prompt": "Protocol desk brief on Uniswap — on-chain footprint, Dune SQL, and latest X chatter. Cited.",
+      "expected_output": "Runs onchain-desk-brief with --protocol uniswap and UNI-flavored address/twitter_query plus a Uniswap-retargeted sql, pulling Alchemy, Dune sql/execute, and SELAT Twitter, then returns a cited protocol brief.",
       "assertions": [
         "onchain-desk-brief is selected",
-        "protocol, tokenAddress, and twitter_query are retargeted to Uniswap/UNI",
-        "Allium tokens/search and Allium prices both run",
-        "does not call Exa, Dune, QuickNode, Nansen, or CoinGecko"
+        "protocol, sql, and twitter_query are retargeted to Uniswap/UNI",
+        "Dune POST /api/v1/sql/execute runs",
+        "does not call Exa, Allium, QuickNode, Nansen, or CoinGecko"
       ]
     },
     {
