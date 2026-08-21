@@ -33,7 +33,7 @@ protocols through the SELAT Router.
   through the SELAT Router. Sourced from the MPP catalog.
 - **SELAT Router x402** — SELAT-native X/Twitter (`catalog.selat.ai`, `x402 via Circle
   Gateway`) and Exa (`api.exa.ai`, `MPP on Tempo`) settle through the SELAT Router.
-  Sourced from SELAT's own catalog and the x402 Bazaar / MPP catalogs.
+  Sourced from SELAT's first-party catalog and the MPP catalog.
 
 ## Live probes (free; no wallet)
 
