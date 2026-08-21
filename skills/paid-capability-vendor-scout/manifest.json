@@ -1,0 +1,53 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "paid-capability-vendor-scout",
+  "description": "Research a paid-capability or agent-commerce vendor by combining website extraction, web discovery, and an Aviato competitor market map over routed MPP payments.",
+  "maxAmount": "0.35",
+  "params": {
+    "company": {
+      "required": false,
+      "default": "SELAT",
+      "description": "Company or product name to investigate"
+    },
+    "website": {
+      "required": false,
+      "default": "https://selat.ai",
+      "description": "Public company website URL"
+    },
+    "research_query": {
+      "required": false,
+      "default": "SELAT AI agent payments competitors x402 MPP Circle Gateway",
+      "description": "Focused web-search query for competitors, positioning, and recent evidence"
+    }
+  },
+  "steps": [
+    {
+      "label": "website evidence — Context.dev markdown scraper",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/context-dev/web/scrape/markdown?url=${website}",
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "external evidence — Context.dev intelligent web search",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/context-dev/web/search",
+      "body": {
+        "query": "${research_query}"
+      },
+      "maxAmount": "0.05"
+    },
+    {
+      "label": "competitor discovery — Aviato market map",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/aviato/marketmap/generate",
+      "body": {
+        "name": "${company}",
+        "website": "${website}"
+      },
+      "maxAmount": "0.25"
+    }
+  ]
+}
