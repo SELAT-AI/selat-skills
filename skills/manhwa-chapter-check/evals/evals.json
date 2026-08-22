@@ -1,0 +1,71 @@
+{
+  "skill_name": "manhwa-chapter-check",
+  "evals": [
+    {
+      "id": "check-any-series",
+      "prompt": "Check if there's a new chapter of Tower of God.",
+      "expected_output": "Latest chapter number and release date for Tower of God.",
+      "assertions": [
+        "The run calls POST https://api.exa.ai/search with query containing 'Tower of God'",
+        "The output reports a chapter number and release date or status",
+        "The series param is passed correctly as 'Tower of God'"
+      ]
+    },
+    {
+      "id": "check-popular-series",
+      "prompt": "What chapter is Solo Leveling on right now?",
+      "expected_output": "The latest chapter number for Solo Leveling.",
+      "assertions": [
+        "The series param is 'Solo Leveling'",
+        "The Exa step searches for Solo Leveling chapter info",
+        "The output includes a chapter number"
+      ]
+    },
+    {
+      "id": "check-non-korean-series",
+      "prompt": "Any new chapter of The Beginning After The End?",
+      "expected_output": "Latest chapter info for The Beginning After The End.",
+      "assertions": [
+        "The series param is 'The Beginning After The End'",
+        "Search steps reference the series name",
+        "The output reports chapter info for the requested series"
+      ]
+    },
+    {
+      "id": "check-webtoon-series",
+      "prompt": "Is there a new chapter of Tower of God this week?",
+      "expected_output": "Whether Tower of God has a new chapter this week, with the latest chapter number and release date.",
+      "assertions": [
+        "The series param is 'Tower of God'",
+        "The Reddit step searches with a query containing 'Tower of God'",
+        "The output reports the latest chapter number and release date or status"
+      ]
+    },
+    {
+      "id": "reddit-search-uses-series",
+      "prompt": "What chapters of Solo Leveling are out, and what are people saying about them on Reddit?",
+      "expected_output": "Latest Solo Leveling chapter number from web search, with Reddit discussion snippets.",
+      "assertions": [
+        "The series param is 'Solo Leveling'",
+        "The StableSocial Reddit search step query contains 'Solo Leveling'",
+        "The output includes both chapter info and Reddit discussion"
+      ]
+    },
+    {
+      "id": "no-trigger-anime-air-dates",
+      "prompt": "When does the next episode of Solo Leveling anime air?",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "manhwa-chapter-check is not selected"
+      ]
+    },
+    {
+      "id": "no-trigger-general-search",
+      "prompt": "Search the web for the latest news on AI agents.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "manhwa-chapter-check is not selected"
+      ]
+    }
+  ]
+}
