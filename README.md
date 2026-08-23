@@ -37,15 +37,43 @@ skills/<name>/
 - **routed** — erc-3009 or tempo-native **MPP**, paid via the SELAT Router, which translates the agent's inbound Gateway-batched payment to the upstream's scheme.
 - **mixed** — a multi-rail skill that uses both in one run (see `market-snapshot`).
 
+## Current coverage
+
+This catalog currently has 20 vetted skills. Coverage is concentrated in two
+families:
+
+- **B2B / GTM enrichment** — lead, person, company, email, prospecting, funding,
+  creator, and VC sourcing workflows.
+- **Financial / social / web research** — market and wallet intelligence,
+  stock-direction research, Twitter/X research, social listening, Perplexity web
+  search, and entity reputation briefs.
+
+The table below mirrors the current `index.json` catalog.
+
 ## Skills
 
 | Skill | Rail | Kind | What it does |
 |---|---|---|---|
-| [token-price](skills/token-price/SKILL.md) | direct | single | Crypto spot prices by symbol (Alchemy) |
-| [wallet-holdings](skills/wallet-holdings/SKILL.md) | direct | single | Multi-chain token holdings (Alchemy) |
-| [web-search](skills/web-search/SKILL.md) | routed | single | Web search via Exa/BlockRun |
-| [allium-price](skills/allium-price/SKILL.md) | routed | single | Latest token price via Allium (MPP) |
-| [market-snapshot](skills/market-snapshot/SKILL.md) | mixed | multi | Spot price (direct) + token price (routed MPP) |
+| [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B person and company enrichment waterfall. |
+| [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Deep multi-source person and company enrichment. |
+| [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Lead enrichment through Hunter, Sixtyfour, and Fiber. |
+| [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Person lookup through Nyne. |
+| [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Cost-conscious GTM enrichment with conditional gap fills. |
+| [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM enrichment through Apollo and Sixtyfour. |
+| [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Prospect-list building, contact lookup, and verification. |
+| [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Email-campaign prospecting and deliverability pipeline. |
+| [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | Recent funding-round discovery. |
+| [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Twitter/X influencer discovery with enrichment. |
+| [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Social data reads across Twitter/X, Instagram, and LinkedIn. |
+| [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Cross-platform social intelligence with web grounding. |
+| [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Economic-agent preflight for market, social, and domain context. |
+| [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Multi-signal market intelligence for assets and tickers. |
+| [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity footprint and reputation intelligence. |
+| [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | VC deal-sourcing scout for AI infrastructure theses. |
+| [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit. |
+| [perplexity-search](skills/perplexity-search/SKILL.md) | routed | single | Perplexity-backed web search through x402. |
+| [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Non-advisory bullish/bearish/mixed stock signal brief. |
+| [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Read-only EVM wallet attribution and holdings brief. |
 
 The `index.json` catalog at the repo root backs `selat skill list --available`.
 
