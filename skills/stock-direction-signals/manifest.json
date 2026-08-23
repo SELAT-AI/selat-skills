@@ -108,9 +108,9 @@
       "url": "https://stableenrich.dev/api/reddit/search",
       "body": {
         "query": "${reddit_query}",
-        "sort": "relevance",
+        "sort": "top",
         "timeframe": "week",
-        "maxResults": 10
+        "maxResults": 25
       },
       "maxAmount": "0.04"
     }
