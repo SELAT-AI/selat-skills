@@ -1,0 +1,33 @@
+{
+  "skill_name": "flight-status",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Is flight GA880 on time today?",
+      "expected_output": "flight-status is selected; runs GoFlightLabs flight-info-by-flight-number (and delay step) and relays on-time/delay status in plain language.",
+      "assertions": [
+        "flight-status is selected",
+        "flight_number GA880 is extracted",
+        "result relays departure/arrival times and delay status"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "What time does SQ232 arrive at Changi tomorrow?",
+      "expected_output": "flight-status is selected; runs with flight_number=SQ232 and the given date, relays arrival time.",
+      "assertions": [
+        "flight-status is selected",
+        "flight_number SQ232 is extracted",
+        "date is passed for tomorrow"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Find me cheap flights from Jakarta to Singapore next week",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "flight-status is not selected"
+      ]
+    }
+  ]
+}
