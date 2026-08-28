@@ -1,0 +1,42 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "weather-brief",
+  "description": "Current weather + 5-day forecast + air quality brief for a city or lat/lon, via OpenWeather over routed MPP through the SELAT Router. Returns current conditions, temperature, forecast, and AQI in one pass. Paid per call (USDC on Base), no API key.",
+  "maxAmount": "0.070",
+  "params": {
+    "lat": {
+      "required": true,
+      "description": "Latitude of the location, e.g. -6.2 for Jakarta. Used as ${lat}."
+    },
+    "lon": {
+      "required": true,
+      "description": "Longitude of the location, e.g. 106.8 for Jakarta. Used as ${lon}."
+    }
+  },
+  "steps": [
+    {
+      "label": "current weather — OpenWeather current-weather (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://openweather.mpp.paywithlocus.com/openweather/current-weather",
+      "body": { "lat": "${lat}", "lon": "${lon}" },
+      "maxAmount": "0.014"
+    },
+    {
+      "label": "5-day forecast — OpenWeather forecast-5day (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://openweather.mpp.paywithlocus.com/openweather/forecast-5day",
+      "body": { "lat": "${lat}", "lon": "${lon}" },
+      "maxAmount": "0.017"
+    },
+    {
+      "label": "air quality — OpenWeather air-quality (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://openweather.mpp.paywithlocus.com/openweather/air-quality",
+      "body": { "lat": "${lat}", "lon": "${lon}" },
+      "maxAmount": "0.014"
+    }
+  ]
+}

@@ -120,6 +120,12 @@
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
       "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
+    },
+    {
+      "name": "weather-brief",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Current weather + 5-day forecast + air quality brief for a city or lat/lon, via OpenWeather over routed MPP through the SELAT Router. Returns current conditions, temperature, forecast, and AQI in one pass. Paid per call (USDC on Base), no API key."
     }
   ]
 }
