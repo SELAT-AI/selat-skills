@@ -3,11 +3,11 @@
   "evals": [
     {
       "id": "trigger-1",
-      "prompt": "Give me a full financial intelligence brief on ETH right now — price, market data, on-chain smart money, fundamentals, and the latest news.",
-      "expected_output": "Runs financial-intel across Alchemy (price), CoinGecko (market data), Nansen (smart money), Messari (funding), and Exa (news), then fuses a multi-signal brief with citations.",
+      "prompt": "Give me a full financial intelligence brief on ETH right now — price, market data, on-chain smart money, and the latest news.",
+      "expected_output": "Runs financial-intel across Alchemy (price), CoinGecko (market data), Nansen (smart money), and Exa (news), then fuses a multi-signal brief with citations.",
       "assertions": [
         "financial-intel is selected",
-        "calls the Alchemy spot-price step plus at least one signal (CoinGecko, Nansen, Messari, or Exa)",
+        "calls the Alchemy spot-price step plus at least one signal (CoinGecko, Nansen, or Exa)",
         "output fuses price + market + on-chain + news signal into a single intelligence brief with source URLs"
       ]
     },

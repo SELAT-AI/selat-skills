@@ -83,7 +83,7 @@
       "name": "financial-intel",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + fundamentals/funding + market news into one brief, paid per call across three rails (Circle Gateway nanopayment + MPP + x402 on Base) via selat-pay (USDC via Circle Gateway)."
+      "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + market news into one brief, paid per call across two rails (Circle Gateway nanopayment + MPP on Tempo) via selat-pay (USDC via Circle Gateway)."
     },
     {
       "name": "account-intel",

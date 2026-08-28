@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "financial-intel",
-  "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + fundamentals/funding + market news into one brief, paid per call across three rails (Circle Gateway nanopayment + MPP + x402 on Base) via selat-pay (USDC via Circle Gateway).",
+  "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + market news into one brief, paid per call across two rails (Circle Gateway nanopayment + MPP on Tempo) via selat-pay (USDC via Circle Gateway).",
   "maxAmount": "1.00",
   "params": {
     "symbol": {
@@ -65,16 +65,9 @@
       "method": "POST",
       "url": "https://api.nansen.ai/api/v1/smart-money/holdings",
       "body": {
-        "chain": "${chain}"
+        "chains": ["${chain}"]
       },
       "maxAmount": "0.10"
-    },
-    {
-      "label": "fundamentals / funding rounds — Messari (x402 on Base)",
-      "rail": "x402 on Base",
-      "method": "GET",
-      "url": "https://api.messari.io/funding/v1/rounds",
-      "maxAmount": "0.25"
     },
     {
       "label": "market news / context — Exa search (MPP on Tempo)",
