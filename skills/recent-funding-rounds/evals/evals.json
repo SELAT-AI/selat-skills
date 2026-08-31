@@ -2,63 +2,83 @@
   "skill_name": "recent-funding-rounds",
   "evals": [
     {
-      "id": "recent-raises-this-week",
-      "prompt": "What companies raised funding this week?",
-      "expected_output": "An MPP-on-Tempo Brave Search news-search for recent funding-round announcements, returning news articles about recently funded companies.",
+      "id": "recent-raises-past-week",
+      "prompt": "What AI startups announced funding in the past week?",
+      "expected_output": "One bounded Brave News Search using an AI-startup focus and the rolling seven-day publication window, followed by a provenance-aware article summary.",
       "assertions": [
-        "The skill issues a single MPP on Tempo step to https://brave.mpp.paywithlocus.com/brave/news-search",
-        "The request body sets q to a query like '<sector> startup funding round announced'",
-        "The output lists recent news articles announcing funding rounds (title, source, date, URL), not structured deal records"
+        "The skill uses focus='artificial intelligence startups' or an equivalent concrete phrase",
+        "The request sets freshness to 'pw' and fixed numeric count to 10",
+        "The output describes news evidence rather than verified structured deal records"
       ]
     },
     {
-      "id": "seed-rounds-this-month",
-      "prompt": "Show me seed rounds from the last month.",
-      "expected_output": "An MPP-on-Tempo Brave news-search whose query wording biases toward seed rounds, since news-search has no structured round-type filter.",
+      "id": "seed-rounds-past-month",
+      "prompt": "Show me climate-tech seed-round announcements from the past month.",
+      "expected_output": "One Brave News Search whose focus contains climate tech and seed-round wording and whose publication freshness is the rolling 31-day preset.",
       "assertions": [
-        "The body's q includes a seed-round phrasing (e.g. 'seed' in the sector wording)",
-        "No date_start/date_end or financing_types fields are sent — recency comes from the news index",
-        "The step rail is 'MPP on Tempo' and method is POST"
+        "The focus combines climate tech and seed-round wording",
+        "The request sets freshness to 'pm' and count to 10",
+        "Returned stages and amounts are reported only when supported by article evidence"
       ]
     },
     {
       "id": "series-a-fintech",
-      "prompt": "What fintech companies recently raised a Series A?",
-      "expected_output": "An MPP-on-Tempo Brave news-search with a query combining fintech and Series A wording.",
+      "prompt": "What fintech companies recently announced a Series A in the past 31 days?",
+      "expected_output": "One bounded fintech-Series-A news search using freshness='pm', with duplicate coverage grouped and uncertainty retained.",
       "assertions": [
-        "The body's q mentions fintech and Series A",
-        "The call targets https://brave.mpp.paywithlocus.com/brave/news-search",
-        "Company names and deal details are extracted from the returned articles rather than structured fields"
+        "The query contains fintech and Series A wording",
+        "The request body includes freshness='pm'",
+        "Duplicate or syndicated articles are grouped as one possible funding event"
       ]
     },
     {
-      "id": "large-raises-cap",
-      "prompt": "List the biggest funding rounds over $10M from the past week.",
-      "expected_output": "An MPP-on-Tempo Brave news-search; deal-size filtering happens client-side by reading the articles, since news-search has no size_min filter.",
+      "id": "large-raises-past-week",
+      "prompt": "List startup funding announcements over $10M from the past seven days.",
+      "expected_output": "One seven-day funding-news search using a deal-size hint, followed by client-side evidence checking because amount is not a structured filter.",
       "assertions": [
-        "No size_min field is sent; size filtering is done from article text",
-        "The per-step maxAmount of 0.40 comfortably covers the $0.03675 live price and is not exceeded",
-        "The skill uses only MPP on Tempo with no Circle-Gateway step"
+        "The focus contains the over-$10M constraint as search wording",
+        "The request uses freshness='pw' and does not send an invented size_min field",
+        "The answer labels amount matching as article-derived rather than guaranteed by the endpoint"
+      ]
+    },
+    {
+      "id": "calendar-week-caveat",
+      "prompt": "Give me funding rounds announced during the current calendar week.",
+      "expected_output": "The agent explains that 'pw' is a rolling seven-day publication filter, obtains a concrete focus, then transparently post-filters publication dates for the calendar boundary.",
+      "assertions": [
+        "The agent does not claim that 'pw' means the current calendar week",
+        "The agent asks for a funding focus if none was supplied",
+        "Any exact calendar filtering is applied transparently to returned publication timestamps"
+      ]
+    },
+    {
+      "id": "required-input-gate",
+      "prompt": "Run the funding-round skill without choosing a topic or time window.",
+      "expected_output": "The run stops before any endpoint call and asks for both a concrete focus and one supported freshness preset.",
+      "assertions": [
+        "The manifest has no default for focus or freshness",
+        "Missing either required parameter fails before a network call",
+        "The agent does not silently default to artificial intelligence or a time window"
       ]
     },
     {
       "id": "probe-only-no-charge",
-      "prompt": "Validate the recent funding rounds endpoint without paying.",
-      "expected_output": "A free 402 probe against the Brave Search news-search endpoint via selat-pay --probe-only.",
+      "prompt": "Validate the recent-funding-rounds endpoint without paying.",
+      "expected_output": "A free selat skill verify --live-probe run that records one reachable routed-MPP quote within the tightened cap.",
       "assertions": [
-        "The validation command uses selat-pay POST https://brave.mpp.paywithlocus.com/brave/news-search with --probe-only",
-        "No payment is broadcast during the probe",
-        "The output reflects the 402 payment requirements rather than a 200 data response"
+        "The validation command supplies both focus and freshness",
+        "The probe does not sign or broadcast payment",
+        "The per-call maxAmount is 0.050 rather than the old 0.40 ceiling"
       ]
     },
     {
-      "id": "no-orth-cli",
-      "prompt": "How does this skill call Brave Search under the hood?",
-      "expected_output": "The skill is declarative: the selat CLI compiles the manifest step into a payment; it never shells out to orth or api.orth.sh.",
+      "id": "paid-failure-no-retry",
+      "prompt": "The paid funding-news call returned an application error. Retry it automatically.",
+      "expected_output": "The agent refuses automatic retry, checks payment history, obtains a fresh quote, and requests new approval because the failed application response may still have charged.",
       "assertions": [
-        "The manifest contains no orth, orth run, or api.orth.sh references",
-        "Execution is via selat skill run / selat-pay over the SELAT Router",
-        "The single step is a plain method+url+body JSON object"
+        "No automatic second paid call is made",
+        "Payment history is inspected before considering a retry",
+        "A retry requires a fresh quote and separate explicit approval"
       ]
     }
   ]

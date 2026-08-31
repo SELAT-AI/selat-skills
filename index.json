@@ -53,7 +53,7 @@
       "name": "recent-funding-rounds",
       "rail": "MPP on Tempo",
       "kind": "single",
-      "description": "Recent funding rounds via Fundable. Paid per call via MPP on Tempo."
+      "description": "One bounded, read-only Brave News Search for recently published startup-funding coverage. Requires an explicit funding-news focus and rolling publication-freshness window, returns up to ten news candidates, and preserves the distinction between article evidence and verified structured deal records."
     },
     {
       "name": "find-twitter-influencers",
