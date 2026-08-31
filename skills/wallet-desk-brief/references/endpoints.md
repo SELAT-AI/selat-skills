@@ -1,66 +1,108 @@
 # Endpoints — wallet-desk-brief
 
-Use only these endpoint families for `wallet-desk-brief`. Hosts below are
-the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
-descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
-is authoritative — `selat skill verify` probes it free.
+This skill runs a fixed pair of read-only requests for one explicit non-zero EVM
+address. Both currently route through the SELAT Router as `routed-x402`. Each is
+quoted and paid independently.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — On-chain holdings | GET | `https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}` | x402 via Circle Gateway | $0.001 |
-| 2 — Wallet attribution | POST | `https://api.arkm.com/x402/intelligence/address` | x402 via Circle Gateway | $0.21 |
+## Live route and cost snapshot
 
-This is a fixed 2-call manifest. The step table matches `manifest.json` exactly.
-CoinGecko simple-price is **not a manifest step**.
+| # | Read | Method | URL | Observed mode | Live quote | Step cap |
+|---|---|---|---|---|---|---|
+| 1 | Five-network token holdings | POST | `https://x402.alchemy.com/data/v1/assets/tokens/by-address` | routed-x402 | $0.001 | $0.002 |
+| 2 | Probabilistic address attribution | POST | `https://api.arkm.com/x402/intelligence/address` | routed-x402 | $0.21 | $0.25 |
 
-- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402). `SELAT_ROUTER_URL` is required — including for Alchemy.
-- **x402 via Circle Gateway:** Alchemy (`x402.alchemy.com`) and Arkham (`api.arkm.com/x402`). Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim and not a no-router-hop claim.
+Free-probe snapshot: 2026-08-31 with SELAT CLI 0.16.15. Expected fixed-run
+total: **$0.211**. Sum of per-step caps and therefore maximum fixed-run exposure:
+**$0.252**. The top-level `maxAmount` is a fallback per-step cap, not a
+cumulative run cap; the armed session budget supplies the cumulative guardrail.
 
-## Alchemy — `x402 via Circle Gateway`
+The live 402 quote and transactability extension are authoritative. Re-probe
+before payment.
 
-serviceUrl: `https://x402.alchemy.com`
+## Transactability snapshot
 
-Live-probed price: `$0.001` per call (`routed-x402`). The manifest step is
-**GET with a query-string `address`**. Same path `account-intel` already pins.
-Do not describe this as a Gateway-batched nanopayment with no router hop.
+- Alchemy: last paid status 200; network-wide 7-day delivery was 80% over five
+  captured payments and all-time delivery was 93% over fifteen. Treat this as a
+  below-100% caution, not a guarantee about the next call.
+- Arkham: last paid status 200 and observed delivery was 100%, but only one
+  captured payment was present. Treat this as low-confidence evidence.
 
-| Capability/Step | Endpoint | Query params |
-| --- | --- | --- |
-| On-chain holdings | `/data/v1/assets/tokens/by-address` | `address` (EVM `0x…`, required) |
+These figures are time-sensitive payment-layer observations. They do not assess
+the accuracy or usefulness of returned holdings or labels.
 
-Query pattern:
+## Alchemy request contract
 
-```text
-https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
-```
-
-## Arkham — `x402 via Circle Gateway`
-
-serviceUrl: `https://api.arkm.com/x402`
-
-Live-probed price: `$0.21` per call (`routed-x402`; upstream list price $0.20).
-The manifest step is **POST with `address` in the JSON body**. Optional `chain`
-is omitted so Arkham auto-detects. Do not invent other Arkham paths.
-
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Wallet attribution | `/intelligence/address` | `address` (EVM `0x…`, required) |
+The official Tokens By Wallet operation is POST and accepts an `addresses`
+array. The manifest sends:
 
 ```json
-{ "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" }
+{
+  "addresses": [
+    {
+      "address": "${address}",
+      "networks": [
+        "eth-mainnet",
+        "base-mainnet",
+        "matic-mainnet",
+        "arb-mainnet",
+        "opt-mainnet"
+      ]
+    }
+  ],
+  "withMetadata": true,
+  "withPrices": true,
+  "includeNativeTokens": true,
+  "includeErc20Tokens": true
+}
 ```
 
-Response includes entity (`arkhamEntity`), label (`arkhamLabel`), chain, and
-contract / user-address flags when Arkham has a match.
+It requests fungible native and ERC-20 holdings, metadata, and available prices
+across exactly five networks. A successful response can still contain top-level
+`partialErrors` for failed networks and per-token errors for metadata or pricing.
+Preserve both. Do not describe the result as all-chain or necessarily complete.
 
-## CoinGecko simple-price — not in the default manifest
+Official contract:
+https://www.alchemy.com/docs/data/portfolio-apis/portfolio-api-endpoints/portfolio-api-endpoints/get-tokens-by-address
 
-serviceUrl: `https://coingecko.mpp.paywithlocus.com`
+## Arkham request contract
 
-Live-probed price: `$0.063` (`routed-mpp`). **Not a manifest step.** The body
-takes CoinGecko coin ids (`ids` + `vs_currencies`), not Alchemy contract
-holdings, so it does not price those holdings.
+The live payment challenge exposes this required body:
 
-| Capability | Endpoint | Body params |
-| --- | --- | --- |
-| Simple price (skipped) | `POST /coingecko/simple-price` | `ids` (coin id), `vs_currencies` (`usd`) |
+```json
+{
+  "address": "${address}"
+}
+```
+
+An optional `chain` field is intentionally omitted. Preserve the chain returned
+by Arkham and do not generalize one label across every chain. Expected fields can
+include entity, label, chain, and contract/user-address flags when a match exists.
+Missing attribution means unlabeled by this response, not safe, anonymous, or
+unowned.
+
+Arkham's official API guide describes address attribution as probabilistic and
+notes that labels evolve as intelligence changes:
+https://arkm.com/docs
+
+## Intentionally omitted
+
+CoinGecko simple-price is not part of this skill. Its request requires known
+CoinGecko coin IDs and cannot safely convert an arbitrary holdings response into
+priced assets inside this declarative fixed pair. Alchemy already requests price
+data where available; missing prices remain missing.
+
+## Live probes (free; no wallet)
+
+```bash
+selat-pay POST "https://x402.alchemy.com/data/v1/assets/tokens/by-address" \
+  --body '{"addresses":[{"address":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045","networks":["eth-mainnet","base-mainnet","matic-mainnet","arb-mainnet","opt-mainnet"]}],"withMetadata":true,"withPrices":true,"includeNativeTokens":true,"includeErc20Tokens":true}' \
+  --chain base --max-amount 0.002 --probe-only --live-probe
+
+selat-pay POST "https://api.arkm.com/x402/intelligence/address" \
+  --body '{"address":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"}' \
+  --chain base --max-amount 0.25 --probe-only --live-probe
+```
+
+These probes read live payment challenges and do not settle payment. Passing
+proves route, quote, reachability, and cap fit—not post-payment business success
+or data accuracy. Do not add `--pay` or `--yes` without fresh explicit approval.

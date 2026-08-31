@@ -1,146 +1,176 @@
 ---
 name: wallet-desk-brief
-description: Use this skill when the user wants a who-is-this-wallet brief on one EVM address — e.g. "who is 0x...", "label this wallet", "wallet desk brief on 0x...", "what tokens does this address hold and who owns it", "Arkham + holdings read of 0x...". Pins Alchemy tokens-by-address (x402 via Circle Gateway; verify prints routed-x402) and Arkham intelligence/address (x402 via Circle Gateway; verify prints routed-x402). Read only. Not financial-intel (asset/ticker brief), not a trade, not a protocol desk. Pays per call via selat-pay (USDC via Circle Gateway), no API keys.
+description: "Use this skill when the user supplies one explicit non-zero EVM address and wants a bounded, read-only wallet attribution-and-holdings snapshot—for example, 'what public label is associated with this wallet?', 'show this address's token footprint on the supported networks', or 'cross-check an Arkham label against holdings context'. It runs a fixed pair: Alchemy token holdings across five named networks and Arkham's probabilistic address intelligence. Require a free live quote and explicit cost approval before paying. It does not prove real-world ownership, cover every EVM chain, provide financial advice, or execute trades."
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet for paid runs. The runner pays on whichever chain holds Gateway USDC. Every paid step hops the SELAT Router (`SELAT_ROUTER_URL`) — including Alchemy. `selat skill verify --live-probe` (no --pay) is free and needs no funded wallet; it prints `routed-x402` for both steps.
+compatibility: "Requires the selat CLI and its bundled selat-pay. Paid runs need a funded Circle Agent Wallet and an armed session budget. Both calls currently traverse the SELAT Router as routed x402. `selat skill verify --live-probe` without `--pay` is free and needs no funded wallet."
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   rail: x402 via Circle Gateway
   kind: multi
 ---
 
 # wallet-desk-brief
 
-One **EVM wallet** in. A **who-is-this-wallet** brief out. Read only.
-Alchemy holdings plus Arkham attribution (`x402 via Circle Gateway`;
-verify prints `routed-x402` for both). The agent synthesizes; the agent
-does **not** place a trade.
-
-This is **not** `financial-intel` (asset/ticker market brief), **not** a
-protocol desk, and **not** trade execution.
+A fixed two-call, read-only snapshot for one explicit EVM address. It retrieves
+token holdings across five named networks and a separate probabilistic address
+label, then returns two raw responses for the calling agent to reconcile. The
+manifest does not prove ownership, merge results, score risk, or place trades.
 
 ## When To Use
 
-Use when the user names **one EVM wallet** (`0x…`) and wants a short
-attribution + holdings read: who the address is labeled as, what tokens
-it holds, and a hedged desk note.
+Use this skill for public-blockchain research on one complete address when the
+user wants both:
 
-Do not use for "is \<asset\> a buy", ticker/macro fusion, protocol desks,
-Solana-inbound addresses, or any request that should place an order. If
-the user asks to trade on the result, decline that part and say so.
+- a bounded token-holdings snapshot; and
+- any label or entity association the attribution provider returns.
 
-## Rails
+Do not use it for an asset/ticker outlook, protocol research, transaction-flow
+analysis, compliance decisions, Solana-only addresses, ENS resolution, private
+identity discovery, or order execution. A request to buy, sell, transfer, or
+freeze assets is outside this read-only workflow.
 
-Both shipped steps settle `x402 via Circle Gateway` (skill `rail` is that
-taxonomy label — not mixed):
+## Input Gate
 
-- **Alchemy** (`x402.alchemy.com`) — `GET /data/v1/assets/tokens/by-address`.
-  Manifest rail stays `x402 via Circle Gateway`.
-  `selat skill verify --live-probe` prints **`routed-x402`** (~$0.001).
-  The call hops the SELAT Router. This is **not** a no-router-hop claim.
-- **Arkham** (`api.arkm.com/x402`) — `POST /intelligence/address`.
-  Same taxonomy. Verify prints **`routed-x402`** (~$0.21 live quote).
-  Already in the SELAT federated catalog / discovery snapshot as
-  `api.arkm.com/x402`.
+Require `address` to match `^0x[0-9a-fA-F]{40}$` and reject the all-zero address.
+Do not accept `0x...`, an ENS name, a transaction hash, or a sample fallback.
+Echo the normalized address and fixed network scope before verification so the
+user can catch a mistargeted query.
 
-CoinGecko `simple-price` is **not** a pin. It live-402s (`MPP on Tempo`,
-~$0.063) but takes CoinGecko **coin ids**, not Alchemy contract holdings.
-Skip it. Do not add a third rail for it.
+Public-chain visibility does not make an attribution infallible. Do not infer a
+private person's identity, intent, criminality, solvency, or control of the
+address from a label or token balance alone.
 
-The `selat` CLI auto-detects protocol at call time. Rail names are **not**
-a pay-chain claim — the buyer is the funded Gateway chain. A reachable
-`SELAT_ROUTER_URL` is required for every shipped step, including Alchemy.
+## Rails And Fixed Pipeline
+
+Both calls currently quote as `routed-x402` through the SELAT Router:
+
+1. **Alchemy token holdings** — one POST request across Ethereum, Base, Polygon
+   PoS, Arbitrum, and Optimism mainnets. Metadata, available USD prices, native
+   tokens, and ERC-20 tokens are requested.
+2. **Arkham address intelligence** — one POST request with the same address.
+   The optional chain field is omitted, so preserve the chain returned by the
+   provider and do not generalize the label to every chain.
+
+This is a fixed pipeline, not a menu or fallback. The runner executes both calls
+in order and may continue after an individual failure.
 
 ## Workflow
 
-1. Install: `selat skill install wallet-desk-brief`
-2. Normalize the ask into **one** EVM `--address`. Lowercase is fine.
-   Refuse Solana addresses, Arc, and CCTP paths.
-3. Tell the user the live quote and **wait for a yes** before spending.
-   Do not pass `--yes`. Do not auto-pay. Do not run `selat init` (or any
-   wallet-creation command) for the user — if setup is missing, **ask
-   and wait**. Live quotes (2026-08-22, probe-only): Alchemy **$0.001**
-   (`routed-x402`), Arkham **$0.21** (`routed-x402`). Full-run cap $0.50.
-4. Paid run (requires an **armed session budget**; the runner will refuse
-   if none is armed):
-   `selat skill run wallet-desk-brief --address <0x>`
-5. The CLI compiles each step into a `selat-pay` call and prints each
-   result. Afterwards, report what was actually spent.
+1. Validate the explicit address locally using the Input Gate above.
+2. Run the free live gate:
 
-Recommended agent procedure (cheapest-first; always retarget `--address`):
+   ```bash
+   selat skill validate ./skills/wallet-desk-brief
+   selat skill verify ./skills/wallet-desk-brief \
+     --address <explicit-non-zero-evm-address> \
+     --live-probe
+   ```
 
-1. **Holdings** — Alchemy `GET /data/v1/assets/tokens/by-address`
-   (~$0.001, `routed-x402`). Token footprint for this wallet.
-2. **Attribution** — Arkham `POST /intelligence/address`
-   (~$0.21, `routed-x402`). Entity, label, contract flag.
-3. **Synthesize** a compact who-is-this-wallet brief: address, Arkham
-   label/entity (or "unlabeled"), holdings snapshot, what would change
-   the read, source notes. Hedged and non-advisory. Do not invent a
-   CoinGecko, Allium, Dune, or Twitter step.
+3. Show both live routes and quotes, the expected cumulative cost, the sum of
+   source-defined per-call caps, the proposed absolute session cap, and current
+   transactability cautions. Explain that a paid application error may still be
+   charged. Stop for explicit approval.
+4. If wallet setup or funding is missing, treat it as a separate action requiring
+   separate approval. Do not run `selat init` or `selat fund` implicitly.
+5. After approval, arm only the approved cumulative session cap, execute exactly
+   once, and disarm immediately after success or failure:
 
-Relay the brief in plain language with the dollar cost. Keep endpoint
-URLs and raw JSON out of what the user sees. When the user only wants
-holdings or only attribution, call that step with `selat-pay` instead
-of the full manifest.
+   ```bash
+   selat budget start --amount <approved-session-cap>
+   selat skill run wallet-desk-brief \
+     --address <the-exact-approved-evm-address>
+   selat budget stop
+   ```
+
+6. Inspect per-step status and payment history before any retry. Refresh the
+   affected quote and obtain new approval; never rerun the whole pair
+   automatically when only one step failed.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `address` | yes | Vitalik `0xd8dA…6045` | EVM wallet for Alchemy + Arkham. Always pass the user's `0x` explicitly. |
+| `address` | yes | none | One explicit non-zero EVM address used unchanged by both reads. |
 
-Output: per-step JSON (Alchemy token footprint, Arkham entity/label)
-that the agent fuses into one non-advisory who-is-this-wallet brief.
+The runner returns two independent raw JSON responses. The calling agent—not
+the manifest—must normalize and synthesize them.
+
+For holdings, preserve:
+
+- the queried address and exact network for every token;
+- raw balance, decimals, symbol/name, and token contract when available;
+- price value and price timestamp when supplied;
+- top-level `partialErrors` and per-token errors;
+- pagination or truncation indicators.
+
+For attribution, preserve:
+
+- returned chain, entity, label, and contract/user-address flags;
+- null or missing attribution as **unlabeled**, not anonymous or safe;
+- provider confidence or evidence fields when present.
+
+## Synthesis Rules
+
+Return a compact, non-advisory brief containing:
+
+1. Exact queried address, retrieval time, and the five-network holdings scope.
+2. Arkham's returned label/entity and chain, explicitly described as a
+   probabilistic provider attribution—not verified ownership.
+3. Holdings by network, with raw balance conversions and price timestamps only
+   when the response supplies enough metadata.
+4. Partial-network failures, missing prices, pagination limits, spam/airdropped
+   token caveats, and other evidence gaps.
+5. Agreements or conflicts between the label and holdings without treating a
+   token balance as proof of identity, intent, endorsement, or control.
+6. Per-step success/failure, any charged error, and final settled cost.
+
+Do not calculate a complete net worth unless every included holding has a valid,
+time-stamped price and the result is demonstrably complete. Do not treat receipt
+of a spam token or dust as evidence that the wallet chose or endorsed it. Keep
+provider endpoint URLs and raw JSON out of the user-facing brief while citing
+appropriate public evidence where available.
 
 ## Gotchas
 
-- **Pinned providers only.** Use Alchemy tokens-by-address and Arkham
-  intelligence/address as wired. Do not substitute Allium, Dune, Exa,
-  Nansen, NeoTrade, Otto perps, token-screen, vault-yield-scout, or
-  in-skill catalog discover. Do not revive a protocol desk.
-- **Alchemy is `routed-x402`.** Verify prints `routed-x402`. Do not claim
-  a Gateway-batched nanopayment with **no router hop**. Do not claim
-  Alchemy skips `SELAT_ROUTER_URL`.
-- **Arkham is POST — `address` goes in `body`.** Alchemy is GET —
-  `address` is a query param. Do not flip them.
-- **CoinGecko simple-price is skipped.** Probe-only 2026-08-22:
-  `POST https://coingecko.mpp.paywithlocus.com/coingecko/simple-price`
-  prints `mode=routed-mpp` ~$0.063. Body requires `ids` (coin slugs),
-  not Alchemy contract addresses, so it does not price those holdings.
-  Not a third rail.
-- **Retarget the default.** Verify uses a well-known EVM wallet so both
-  steps are exercisable. A run for any other address must pass `--address`.
-- **EVM only.** Do not pass Solana addresses, Arc, or CCTP paths.
-- **`maxAmount` is a guardrail, not the price.** Per-step caps $0.01
-  (Alchemy) and $0.40 (Arkham); full-run cap $0.50. Live quotes
-  (2026-08-22): Alchemy $0.001, Arkham $0.21. Do not raise the $1 CLI
-  per-call ceiling.
-- **Verify is free / probe-only.** `selat skill run` requires an armed
-  session budget. No auto-pay. No `--yes`. No `--skip-schema-check`.
-- **The live 402 is the source of truth.** If a step stops serving a
-  challenge, `selat skill verify` flags it — omit it and re-add when
-  the gateway serves it.
-- **Non-advisory, always.** Cite the paid sources; do not present the
-  brief as financial advice. Never place a trade.
+- **The documented Alchemy contract is POST.** The body contains an `addresses`
+  array and explicit networks. A GET/query request can expose a payment challenge
+  but does not prove the post-payment business request is valid.
+- **The network scope is fixed and incomplete.** No holdings on other EVM chains,
+  Solana, Bitcoin, or exchange-internal accounts are retrieved.
+- **Polygon's Portfolio API identifier is `matic-mainnet`.** Do not substitute a
+  node-RPC hostname label in this request body.
+- **Attribution is not ownership proof.** Labels can be incomplete, contested, or
+  revised as intelligence changes.
+- **A 200 can contain partial errors.** Inspect Alchemy's top-level network errors
+  and individual token errors before calling the snapshot complete.
+- **Caps are not prices.** Re-quote before each paid run and use the step-cap sum
+  as the absolute maximum session exposure.
+- **Paid failures may charge.** The runner may continue. Never auto-retry.
+- **No default address.** Missing or malformed input must fail before any probe.
 
 ## Validation
 
-> `--chain base` in the probe commands below is only the flag `selat-pay`
-> requires today — a probe reads a free, chain-independent quote and never
-> settles. A real paid run resolves the settlement chain from your funded
-> Circle Gateway balance, not the manifest.
-
 - Static: `selat skill validate ./skills/wallet-desk-brief`
-- Live gate (free, probe-only — pass `--live-probe`, do **not** add `--pay`):
-  `selat skill verify ./skills/wallet-desk-brief --live-probe --address 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`
-- Single-step probe (no pay):
-  `selat-pay GET "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" --chain base --probe-only --live-probe`
-  `selat-pay POST "https://api.arkm.com/x402/intelligence/address" --body '{"address":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"}' --chain base --probe-only --live-probe`
+- Missing-input gate: `selat skill verify ./skills/wallet-desk-brief --live-probe`
+  must fail before probing either endpoint.
+- Free live gate:
+  `selat skill verify ./skills/wallet-desk-brief --address 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 --live-probe`
+- Single-step free probes: see `references/endpoints.md`.
+- Paid confirmation: add `--pay` only after a fresh quote, explicit approval, and
+  an armed session budget. Never reuse approval after an address, route, quote,
+  or cap changes.
 
 ## References
 
-- `manifest.json` — the machine-readable payment recipe this skill runs.
-- [`references/endpoints.md`](references/endpoints.md) — the pinned endpoints, rails, skipped CoinGecko note, and live prices.
-- [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
-- selat-pay — https://github.com/SELAT-AI/selat-pay
+- `manifest.json` — the machine-readable fixed payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — request contracts,
+  current routes, quotes, and interpretation limits.
+- [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md)
+  — authoring standard.
+- Alchemy Tokens By Wallet documentation —
+  https://www.alchemy.com/docs/data/portfolio-apis/portfolio-api-endpoints/portfolio-api-endpoints/get-tokens-by-address
+- Arkham API Guide — https://arkm.com/docs
+
+Alchemy and Arkham are third-party services. Their names and trademarks belong
+to their respective owners and are used only to identify the endpoints called.

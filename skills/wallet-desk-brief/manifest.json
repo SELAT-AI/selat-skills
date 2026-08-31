@@ -1,32 +1,49 @@
 {
   "schema": "selat-skill/v1",
   "name": "wallet-desk-brief",
-  "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway).",
-  "maxAmount": "0.50",
+  "description": "Fixed two-call, read-only EVM wallet snapshot for one explicit non-zero address: Alchemy token holdings across five named networks plus Arkham's probabilistic address label. It does not prove real-world ownership, cover every chain, or execute a trade. Each step is paid independently through the SELAT Router over x402 via Circle Gateway.",
+  "maxAmount": "0.25",
   "params": {
     "address": {
       "required": true,
-      "default": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-      "description": "EVM wallet address for Alchemy holdings and Arkham intelligence (used as ${address}). Always pass the user's 0x address explicitly."
+      "description": "Explicit non-zero EVM address matching 0x plus 40 hexadecimal characters. Used unchanged for the holdings and attribution reads."
     }
   },
   "steps": [
     {
-      "label": "on-chain token holdings — Alchemy tokens-by-address (x402 via Circle Gateway)",
+      "label": "five-network token holdings — Alchemy tokens-by-wallet",
       "rail": "x402 via Circle Gateway",
-      "method": "GET",
-      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
-      "maxAmount": "0.01"
+      "method": "POST",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address",
+      "body": {
+        "addresses": [
+          {
+            "address": "${address}",
+            "networks": [
+              "eth-mainnet",
+              "base-mainnet",
+              "matic-mainnet",
+              "arb-mainnet",
+              "opt-mainnet"
+            ]
+          }
+        ],
+        "withMetadata": true,
+        "withPrices": true,
+        "includeNativeTokens": true,
+        "includeErc20Tokens": true
+      },
+      "maxAmount": "0.002"
     },
     {
-      "label": "wallet attribution — Arkham intelligence/address (x402 via Circle Gateway)",
+      "label": "probabilistic wallet attribution — Arkham intelligence/address",
       "rail": "x402 via Circle Gateway",
       "method": "POST",
       "url": "https://api.arkm.com/x402/intelligence/address",
       "body": {
         "address": "${address}"
       },
-      "maxAmount": "0.40"
+      "maxAmount": "0.25"
     }
   ]
 }
