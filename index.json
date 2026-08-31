@@ -71,7 +71,7 @@
       "name": "social-intel",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, via the SELAT Router (selat-pay, USDC on Base)."
+      "description": "Fixed two-call, read-only web corroboration bundle for one explicit topic or brand query. Returns independent Exa semantic-search and Tavily advanced-search results for agent-side synthesis; it does not query Reddit, X/Twitter, or other social-platform APIs."
     },
     {
       "name": "self-evolving-agent",
