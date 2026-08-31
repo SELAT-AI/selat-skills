@@ -1,7 +1,9 @@
 # Catalogue Findings
 
 Free SELAT federated-catalogue searches on 2026-06-30 found candidate endpoints
-for the budgeted economic-agent definition.
+for the budgeted economic-agent definition. The three selected manifest
+endpoints were re-probed on 2026-08-31; other entries below remain a historical
+catalogue snapshot and must be re-discovered before use.
 
 ## Social Intelligence
 
@@ -72,9 +74,10 @@ Useful supporting read-only candidates:
 
 ## Manifest Choice
 
-The manifest uses one social signal, one financial signal, and one domain quote
-because those map directly to the user's definition while keeping the preflight
-cheap and reversible.
+The manifest uses one broad social report, one asset-specific financial query,
+and one domain check because those map directly to the definition while keeping
+the preflight bounded and read-only. The runner executes all three calls; this
+is not a conditional or cheapest-first workflow.
 
 AgentMail inbox creation is not in the manifest because it is an identity
 bootstrap action, not an intelligence preflight. It should be quoted and run only
