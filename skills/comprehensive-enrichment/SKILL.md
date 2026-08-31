@@ -1,11 +1,11 @@
 ---
 name: comprehensive-enrichment
-description: Use this skill when the user wants to enrich, look up, or research a lead, contact, person, or company — from an email, name, LinkedIn URL, domain, or company name. Triggers on "enrich this lead", "look up John at Stripe", "who is john@stripe.com", "research stripe.com", "profile this company", "find emails and phone for", "company funding and competitors". Resolves contact info, verified work emails, phone, social profiles, company overview, funding, products, and competitors across many MPP data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Every provider call is through the SELAT Router (MPP).
+description: Use this skill when the user wants one fixed, read-only, multi-source enrichment bundle for a fully specified person and their company. Triggers on "run a comprehensive enrichment bundle", "cross-check this lead across providers", or "research this person and company across Clado, Apollo, Hunter, Company Enrich, Diffbot, Exa, and Firecrawl". Before any paid run, require a known work email, first and last name, matching company and domain, the same person's LinkedIn URL, and a public company pricing/features URL. The CLI runs all 13 MPP steps; partial-identifier and cheap/subset requests should use a smaller enrichment skill instead.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps are MPP on Tempo, so a reachable SELAT Router (SELAT_ROUTER_URL) is required.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet for paid runs. All 13 steps settle through the SELAT Router over MPP on Tempo. `selat skill verify --live-probe` is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   rail: MPP on Tempo
   kind: multi
 ---
@@ -14,67 +14,149 @@ metadata:
 
 ## When To Use
 
-Use when the user wants maximum data plus correctness on a person and/or company — from any single identifier (email, name + company, LinkedIn URL, domain, or company name). The skill fans out across many data providers, cross-references them, and lets the user compile a full profile. Person enrichment naturally cascades into company enrichment: once an employer domain is known, the company steps fill in overview, funding, products, and competitors.
+Use this skill for a **full, fixed 13-call enrichment bundle** on one known
+person and their employer/company. It cross-checks identity and contact data,
+verifies a supplied work email, looks for a phone number from a supplied
+LinkedIn profile, and adds company overview, company email patterns, funding,
+pricing/features, similar companies, and recent research.
 
-All provider calls are **MPP on Tempo** through the SELAT Router. Every step settles through the SELAT Router.
+This is not a single-identifier waterfall. Before a paid run, collect all seven
+inputs and confirm they describe the same target. If the user has only an email,
+name, domain, or LinkedIn URL—or wants to minimize cost—use a smaller enrichment
+skill or free discovery instead.
+
+Every provider call is read-only and settles through the SELAT Router over
+**MPP on Tempo**. The only side effect is the approved USDC spend.
 
 ## Workflow
 
-1. Install: `selat skill install comprehensive-enrichment`
-2. Run: `selat skill run comprehensive-enrichment --email john@stripe.com --firstName John --lastName Doe --company Stripe --domain stripe.com --linkedinUrl https://linkedin.com/in/johndoe --pricingUrl https://stripe.com/pricing`
-3. The CLI compiles each manifest step into a `selat-pay` payment (one capped MPP payment per step, via the SELAT Router), runs them in order, and prints a per-step ✓/✗ status summary.
+1. Install the vetted recipe:
 
-Provide only the params you have — leave the rest empty. Person-only inputs (email, name, LinkedIn) drive the person steps; company inputs (domain, company) drive the company steps. Supplying both yields the full person + company profile.
+   ```bash
+   selat skill install comprehensive-enrichment
+   ```
 
-Step groups (in manifest order):
+2. Collect and validate all required inputs: `email`, `firstName`, `lastName`,
+   `company`, `domain`, `linkedinUrl`, and `pricingUrl`. Refuse obvious identity
+   mixtures—for example, a Stripe email with a LinkedIn profile for a person at
+   Microsoft.
 
-- **Person** — Clado search (natural-language people search, synchronous — no polling); Apollo people-enrichment; Hunter email-enrichment; Hunter email-finder; Hunter email-verifier; Clado contacts (phone, by LinkedIn URL); Exa person research.
-- **Company** — Abstract Company Enrichment lookup; Hunter domain-search; Diffbot KG enhance (funding + investors in one Organization record); Firecrawl extract; Exa findSimilar; Exa company research.
+3. Probe all 13 payment challenges for free before wallet setup or spending:
+
+   ```bash
+   selat skill verify ~/.config/selat/skills/comprehensive-enrichment \
+     --email <known-work-email> \
+     --firstName <first-name> \
+     --lastName <last-name> \
+     --company "<company-name>" \
+     --domain <bare-domain> \
+     --linkedinUrl <person-linkedin-url> \
+     --pricingUrl <public-https-pricing-or-features-url> \
+     --live-probe
+   ```
+
+4. Show the user every live quote, the expected cumulative total, and a proposed
+   absolute session cap. Obtain explicit approval for that exact workload.
+
+5. Only after approval and a spendable Gateway balance, arm the approved
+   cumulative cap, run the fixed bundle, and disarm the budget after success or
+   failure:
+
+   ```bash
+   selat budget start --amount <approved-cumulative-cap>
+   selat skill run comprehensive-enrichment \
+     --email <known-work-email> \
+     --firstName <first-name> \
+     --lastName <last-name> \
+     --company "<company-name>" \
+     --domain <bare-domain> \
+     --linkedinUrl <person-linkedin-url> \
+     --pricingUrl <public-https-pricing-or-features-url>
+   selat budget stop
+   ```
+
+The CLI compiles each manifest step into one independently capped `selat-pay`
+call and continues across steps by default. Inspect the per-step result and
+payment history; do not interpret a final partial failure as “nothing charged.”
+
+### Fixed step groups
+
+- **Person (7 calls)** — Clado deep search; Apollo person enrichment; Hunter
+  email enrichment, email finder, and email verifier; Clado contacts; Exa person
+  research.
+- **Company (6 calls)** — Company Enrich overview; Hunter domain search;
+  Diffbot KG funding/investors; Firecrawl pricing/features extraction; Exa
+  similar-company discovery; Exa company research.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `email` | no | "" | Person work email (drives email-based lookups + the verifier) |
-| `firstName` | no | "" | Person first name |
-| `lastName` | no | "" | Person last name |
-| `company` | no | "" | Company name |
-| `domain` | no | "" | Company domain (drives company + domain email lookups) |
-| `linkedinUrl` | no | "" | LinkedIn person profile URL (required for the phone step — Clado contacts enriches by LinkedIn URL) |
-| `pricingUrl` | no | "" | Company page to scrape for products/pricing |
+| `email` | yes | none | Known work email for the same person; enriched and verified as supplied. |
+| `firstName` | yes | none | Person first name, matching the email and LinkedIn profile. |
+| `lastName` | yes | none | Person last name, matching the email and LinkedIn profile. |
+| `company` | yes | none | Employer/company name corresponding to the domain and pricing URL. |
+| `domain` | yes | none | Bare company domain such as `stripe.com`. |
+| `linkedinUrl` | yes | none | LinkedIn person-profile URL used by Apollo and Clado contacts. |
+| `pricingUrl` | yes | none | Public HTTPS pricing/features page for the same company. |
 
-Outputs: each step returns its provider's JSON (profile objects, email verification verdicts, phone, company overview, funding rounds + investors, products, similar companies, sourced research). Merge across steps, keep both values with source labels when providers disagree, and present a summary card first, then full details.
+Each step returns the provider's JSON plus the CLI's per-step status. Produce a
+summary card first, then source-labelled details. Keep conflicting provider
+values instead of silently overwriting them. Treat the supplied email and
+LinkedIn URL as hypotheses to cross-check, not proof of identity.
 
 ## Gotchas
 
-- **All steps settle via the SELAT Router**: every step needs `SELAT_ROUTER_URL` set and the router reachable. There is no Circle-Gateway fallback.
-- **Per-step caps are ~10x each live price (max $1.00; manifest fallback cap $1.00)**; the sum of live prices (probe-verified 2026-07-10) is ~$0.58 per full run. The priciest steps are Clado search ($0.31815), Hunter domain-search ($0.10815), and Clado contacts ($0.04515); skip Clado search for public megacorps to save cost.
-- **Provide matching params**: a verifier step with an empty `email`, or a domain step with an empty `domain`, will return little of value — pass the identifiers you actually have.
-- **Phone needs a LinkedIn URL**: the phone step is Clado contacts, which enriches by `linkedinUrl` — without it, there is no phone lookup.
-- **Funding + investors are one step**: the Diffbot KG enhance Organization record includes both, so don't look for a separate investors step.
-- **Firecrawl extract** needs a real `pricingUrl`; without one, skip that step.
-- **Steps run independently** (continue-across-steps): one provider can fail while others succeed — check the per-step summary.
-- **Email verification is a single Hunter email-verifier call** — there is no multi-provider consensus fan-out.
+- **Fixed pipeline, not a menu.** `selat skill run` has no step selector and
+  executes all 13 manifest entries. Do not promise that irrelevant or expensive
+  steps will be skipped.
+- **No inter-step dataflow.** The email found by Hunter is not automatically fed
+  into the later verifier, and an employer inferred by one provider does not
+  rewrite company inputs for later steps. This is why all seven coherent inputs
+  are required before the run.
+- **Per-step caps are not a cumulative cap.** The manifest limits each call; the
+  separately armed session budget is the run-wide ceiling. Compute its amount
+  from the fresh probe and the user's approval.
+- **Live quote is authoritative.** Probe-only verification on 2026-08-29 quoted
+  approximately $0.617662 for all 13 steps. Prices can change, so do not reuse
+  that number as approval.
+- **Paid failure can still cost money.** A provider may capture payment and then
+  return an application error. The runner continues to later steps by default.
+  Never retry a failed paid step without a new quote and approval.
+- **Phone lookup requires the supplied LinkedIn URL.** Clado contacts does not
+  derive that URL from a previous step.
+- **Pricing extraction requires a real public HTTPS page.** Empty, private, or
+  login-gated URLs can turn the Firecrawl call into a paid error.
+- **Funding and investors share one Diffbot call.** Do not duplicate it.
 
 ## Validation
 
-> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+Validate structure locally:
 
-Probe any endpoint for free (sends the 402 challenge, never pays) with `--probe-only`:
+```bash
+selat skill validate ./skills/comprehensive-enrichment
+npm run validate
+```
 
-- `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" --body '{"first_name":"John","last_name":"Doe","organization_name":"Stripe"}' --chain base --probe-only`
-- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --probe-only`
-- `selat-pay POST "https://clado.mpp.paywithlocus.com/clado/contacts" --body '{"linkedin_url":"https://linkedin.com/in/johndoe"}' --chain base --probe-only`
-- `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"stripe.com"}' --chain base --probe-only`
-- `selat-pay POST "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance" --body '{"type":"Organization","name":"Stripe"}' --chain base --probe-only`
+Free end-to-end quote validation uses the full coherent parameter set and
+`--live-probe` exactly as shown in Workflow Step 3. A passing receipt must show
+all 13 endpoints reachable and each quote within its per-step cap. Do not add
+`--pay` without separate approval and an armed session budget.
 
-A successful paid run prints `status=200` and a ✓ for each executed step.
+Useful single-endpoint probes while debugging (free; never settle):
+
+- `selat-pay GET "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com" --chain base --max-amount 0.02 --probe-only --live-probe`
+- `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" --body '{"first_name":"John","last_name":"Doe","organization_name":"Stripe"}' --chain base --max-amount 0.05 --probe-only --live-probe`
+- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --max-amount 0.015 --probe-only --live-probe`
 
 ## References
 
-- `manifest.json` — the machine-readable payment recipe this skill runs.
-- [`references/endpoints.md`](references/endpoints.md) — the MPP endpoints, methods, and prices this skill calls.
+- `manifest.json` — the fixed, machine-readable 13-call payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — pinned endpoints, live
+  probe quotes, per-step caps, and input mapping.
 - [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
+- `evals/evals.json` — routing, safety, and approval-behavior evals.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
 
-> Third-party API names (Apollo, Hunter, Clado, Abstract, Diffbot, Exa, Firecrawl) are trademarks of their respective owners; this skill only routes payments to their MPP endpoints.
+> Third-party API names are trademarks of their respective owners; this skill
+> only routes approved payments to their MPP endpoints.
