@@ -59,7 +59,7 @@
       "name": "find-twitter-influencers",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Find Twitter/X influencers (Scrape Creators, Fiber, Exa, Brand.dev, Hunter, Tomba). Paid per call via x402 + MPP."
+      "description": "Fixed five-call, read-only Twitter/X influencer discovery bundle for one company and niche. Cross-checks brand context, curated web roundups, Twitter user search, and live topic chatter; it returns candidate evidence for agent-side deduplication and ranking without purchasing contact data."
     },
     {
       "name": "scrapecreators",
