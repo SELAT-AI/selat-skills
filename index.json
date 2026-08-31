@@ -65,7 +65,7 @@
       "name": "scrapecreators",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Social data via Scrape Creators (Twitter/IG/LinkedIn). Paid per call via x402 + MPP."
+      "description": "Fixed 11-call, read-only public social-media dossier for one coherent target across Twitter/X, LinkedIn, Instagram, and TikTok. Requires nine platform-specific identifiers; every step is paid independently through the SELAT Router over x402 or MPP."
     },
     {
       "name": "social-intel",
