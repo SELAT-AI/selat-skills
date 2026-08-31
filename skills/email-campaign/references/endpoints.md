@@ -1,83 +1,78 @@
-# Endpoints — email-campaign
+# email-campaign — endpoints
 
-Use only these endpoint families for `email-campaign`. Hosts below are
-the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
-descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
-is authoritative — `selat skill verify` probes it free.
+This skill is a fixed, read-only six-call campaign-preparation pipeline. The
+table records the free routed quotes observed on 2026-08-29. A live probe may
+invoke the declared method/body but never settles payment. Re-probe before every
+paid run because prices and availability can change.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Emails by domain | POST | `https://hunter.mpp.paywithlocus.com/hunter/domain-search` | MPP on Tempo | $0.01365 |
-| 2 — Find person email | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-finder` | MPP on Tempo | $0.01365 |
-| 3 — Verify deliverability | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 |
-| 4 — Bounce check | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 |
-| 5 — Enrich lead | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 |
-| 6 — Company context | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 |
+| # | Merchant | Endpoint | Request input | Live routed quote | Per-step cap |
+|---:|---|---|---|---:|---:|
+| 1 | Fiber | `POST mpp.orthogonal.com/fiber/v1/company-search` | `searchParams.industriesV2.anyOf=[industry]`, `employeeCountV2=(50,500]`, `pageSize=10` | $0.210000 | $0.25 |
+| 2 | Hunter | `POST hunter.mpp.paywithlocus.com/hunter/domain-search` | `domain` | $0.108150 | $0.15 |
+| 3 | Hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-finder` | `domain`, `first_name`, `last_name` | $0.013650 | $0.02 |
+| 4 | Hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | supplied `email` | $0.008400 | $0.015 |
+| 5 | Apollo | `POST apollo.mpp.paywithlocus.com/apollo/people-enrichment` | `first_name`, `last_name`, `organization_name` | $0.039900 | $0.05 |
+| 6 | Company Enrich | `GET mpp.orthogonal.com/company-enrich/companies/enrich?domain=…` | `domain` query parameter | $0.012862 | $0.02 |
 
-This is a fixed 6-call manifest. The step table matches `manifest.json` exactly.
-SKILL.md still describes a Fiber company-search step; that call is **not in
-the default manifest**.
+- **Observed expected total:** $0.392962.
+- **Sum of per-step caps:** $0.505. This is a worst-case manifest ceiling only;
+  the separately approved session budget is the cumulative tripwire.
+- All six probes reported `routed-mpp` and were within cap after correction.
 
-- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
-- **MPP on Tempo:** Hunter and Apollo via Locus (`*.mpp.paywithlocus.com`). Orthogonal Company Enrich via `mpp.orthogonal.com`.
+## Request notes
 
-## Hunter MPP — `MPP on Tempo`
+### Fiber company search
 
-serviceUrl: `https://hunter.mpp.paywithlocus.com`
-
-Live-probed prices (`routed-mpp`): domain-search / email-finder `$0.01365`,
-email-verifier `$0.0084`. All endpoints are **POST with a JSON
-body** — never query-string params.
-
-Steps 3 and 4 hit the same `email-verifier` endpoint. Hunter's verdict already
-covers bounce risk and catch-all domains; drop one of the two if a single
-verification is enough.
-
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Emails by domain | `/hunter/domain-search` | `domain` (string, required) |
-| Find person email | `/hunter/email-finder` | `domain`, `first_name`, `last_name` |
-| Verify deliverability | `/hunter/email-verifier` | `email` (string, required) |
-| Bounce check | `/hunter/email-verifier` | `email` (string, required) |
+The current official Fiber schema uses:
 
 ```json
-{ "domain": "stripe.com", "first_name": "John", "last_name": "Doe" }
+{
+  "searchParams": {
+    "industriesV2": {
+      "anyOf": ["Software"]
+    },
+    "employeeCountV2": {
+      "lowerBoundExclusive": 50,
+      "upperBoundInclusive": 500
+    }
+  },
+  "pageSize": 10
+}
 ```
 
-## Apollo MPP — `MPP on Tempo`
+The previous documented body used `industries` and
+`employee_count_min/max`; those fields do not appear in the current payment
+challenge schema. Fiber prices company search dynamically by result count: the
+correct ten-result request quoted $0.21, while an omitted page size quoted
+$0.525. Official schema example: https://docs.fiber.ai/build/sdks.
 
-serviceUrl: `https://apollo.mpp.paywithlocus.com`
+The first Fiber response includes `billing.requestId`. A continuation page must
+pass that value as top-level `parentRequestId` and keep non-pagination filters
+unchanged. Pagination is outside this manifest and requires separate review.
 
-Live-probed price: `$0.0399` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**.
+### Hunter calls
 
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Enrich lead | `/apollo/people-enrichment` | `first_name`, `last_name`, `organization_name` |
+- All Hunter steps use the MPP host and POST JSON bodies, not the stale
+  `hunter.io/hunter/...` validation URLs.
+- The verifier is intentionally present once. Its response already covers
+  deliverability, bounce risk, and catch-all status; a second identical paid
+  request is not an independent check.
+- The verifier evaluates the supplied `email`. The runner does not feed the
+  preceding email-finder output into it.
 
-```json
-{ "first_name": "John", "last_name": "Doe", "organization_name": "Stripe" }
-```
+### Company context replacement
 
-## Orthogonal Company Enrich — `MPP on Tempo`
+The previous Abstract Company Enrichment endpoint remained listed in discovery
+but returned no live x402/MPP challenge during free verification. Company Enrich
+replaced it after a free probe confirmed a required `domain` query parameter,
+`routed-mpp`, and a live routed quote within the new cap.
 
-serviceUrl: `https://mpp.orthogonal.com/company-enrich`
+## Behavioral limits
 
-Live-probed price: `$0.012862` (`routed-mpp`, 2026-09-12). Domain lookup is
-**GET with a query-string `domain`** — the POST variant does **not** accept
-`domain` (it enriches by name or social URL). Replaces the dead Abstract
-Company Enrichment `POST /abstract-company-enrichment/lookup`. Per-step cap
-`$0.02`.
-
-| Capability/Step | Endpoint | Query params |
-| --- | --- | --- |
-| Company context | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
-
-```text
-https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com
-```
-
-## Fiber — not in the default manifest
-
-SKILL.md still documents a Fiber company-search step. It is **not a manifest
-step**. Do not treat it as part of the fixed 6-call run. Price: re-probe.
+- `selat skill run` executes all six calls and has no step selector.
+- The six calls are independent; results do not automatically flow into later
+  request bodies.
+- The skill prepares research and verification data only. It does not draft,
+  schedule, or send email.
+- Technical deliverability does not establish consent or legal permission to
+  contact a recipient.
