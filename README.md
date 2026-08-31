@@ -58,7 +58,7 @@ The table below mirrors the current `index.json` catalog.
 | [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Deep multi-source person and company enrichment. |
 | [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Lead enrichment through Hunter, Sixtyfour, and Fiber. |
 | [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Person lookup through Nyne. |
-| [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Cost-conscious GTM enrichment with conditional gap fills. |
+| [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | MPP on Tempo | multi | Fixed three-call, cost-conscious B2B lead qualification core. |
 | [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM enrichment through Apollo and Sixtyfour. |
 | [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Prospect-list building, contact lookup, and verification. |
 | [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Email-campaign prospecting and deliverability pipeline. |
