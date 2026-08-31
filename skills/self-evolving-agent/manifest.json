@@ -1,54 +1,42 @@
 {
   "schema": "selat-skill/v1",
   "name": "self-evolving-agent",
-  "description": "Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability signals before infrastructure, monetization, or trading decisions.",
-  "maxAmount": "0.035",
+  "description": "Fixed three-call, read-only economic-agent preflight: retrieve a broad crypto KOL sentiment report, market data for one explicit Hyperliquid asset, and availability/price context for one explicit domain candidate. Every step is paid independently through the SELAT Router; the skill does not create identity, buy infrastructure, fund wallets, or place trades.",
+  "maxAmount": "0.012",
   "params": {
-    "mission": {
+    "asset": {
       "required": true,
-      "default": "sustain agent expenses from social and financial intelligence",
-      "description": "The economic objective or niche the agent is evaluating."
+      "description": "One Hyperliquid tradable asset ticker, for example BTC or ETH. This is a data-query input, not permission to trade."
     },
-    "budget_usd": {
+    "domainCandidate": {
       "required": true,
-      "default": "100",
-      "description": "Starting budget for planning and caps. This value is for analysis, not automatic spend."
-    },
-    "asset_universe": {
-      "required": false,
-      "default": "crypto majors and prediction markets",
-      "description": "Markets or assets to research."
-    },
-    "domain_candidate": {
-      "required": false,
-      "default": "agent-alpha-research.com",
       "description": "Domain candidate to check before any purchase."
     }
   },
   "steps": [
     {
-      "label": "Social alpha - Otto KOL sentiment",
-      "rail": "x402 on Base",
+      "label": "Broad crypto social context - Otto KOL sentiment",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://x402.ottoai.services/kol-sentiment",
-      "maxAmount": "0.010"
+      "maxAmount": "0.004"
     },
     {
-      "label": "Financial context - Otto Hyperliquid market",
-      "rail": "x402 on Base",
+      "label": "Asset market context - Otto Hyperliquid market",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://x402.ottoai.services/hyperliquid-market",
-      "maxAmount": "0.010"
+      "url": "https://x402.ottoai.services/hyperliquid-market?asset=${asset}",
+      "maxAmount": "0.002"
     },
     {
-      "label": "Infrastructure quote - StableDomains availability",
+      "label": "Domain availability and price check - StableDomains",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://stabledomains.dev/api/check",
       "body": {
-        "domain": "${domain_candidate}"
+        "domain": "${domainCandidate}"
       },
-      "maxAmount": "0.015"
+      "maxAmount": "0.012"
     }
   ]
 }
