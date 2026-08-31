@@ -1,70 +1,51 @@
 {
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-deep",
-  "description": "Deep GTM lead enrichment from an email (+ optional name). Apollo people enrichment is the primary source for person identity + LinkedIn, Hunter for company data, and Apollo organization enrichment is the fallback for funding. All steps are MPP on Tempo.",
-  "maxAmount": "0.15",
+  "description": "Fixed three-call, read-only GTM enrichment bundle for one known business lead. Cross-checks Apollo professional identity, Hunter firmographics, and Apollo organization funding/revenue using a coherent work email and matching company domain; personal-email and phone revelation are disabled.",
+  "maxAmount": "0.05",
   "params": {
     "email": {
       "required": true,
-      "default": "test@stripe.com",
-      "description": "Lead's email address, e.g. jane@acme.com. The domain is derived from this address."
+      "description": "Known work email for the target business lead. Must belong to the supplied domain; do not use a personal/free-mail address."
     },
     "domain": {
-      "required": false,
-      "default": "stripe.com",
-      "description": "Company domain, e.g. acme.com. Derive from the email if not supplied."
-    },
-    "firstName": {
-      "required": false,
-      "default": "John",
-      "description": "Lead's first name, if known. Improves Apollo match rate."
-    },
-    "lastName": {
-      "required": false,
-      "default": "Doe",
-      "description": "Lead's last name, if known. Improves Apollo match rate."
-    },
-    "company": {
-      "required": false,
-      "default": "Stripe",
-      "description": "Company name, if known. Improves Apollo match rate."
+      "required": true,
+      "description": "Bare employer domain matching the work email, e.g. acme.com."
     }
   },
   "steps": [
     {
-      "label": "enrich person — Apollo (MPP on Tempo)",
+      "label": "professional identity — Apollo people enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
         "email": "${email}",
-        "first_name": "${firstName}",
-        "last_name": "${lastName}",
-        "organization_name": "${company}",
         "domain": "${domain}",
-        "reveal_personal_emails": true
+        "reveal_personal_emails": false,
+        "reveal_phone_number": false
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.05"
     },
     {
-      "label": "enrich company — Hunter (MPP on Tempo)",
+      "label": "company firmographics — Hunter company enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.15"
+      "maxAmount": "0.02"
     },
     {
-      "label": "fallback org enrich — Apollo (MPP on Tempo) — run only if Hunter returned no funding data",
+      "label": "funding and revenue cross-check — Apollo organization enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.05"
     }
   ]
 }

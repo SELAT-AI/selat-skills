@@ -35,7 +35,7 @@
       "name": "gtm-enrichment-deep",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Deep GTM enrichment (Apollo + Sixtyfour). Paid per call via MPP on Tempo."
+      "description": "Fixed three-call GTM enrichment cross-check (Apollo + Hunter) for a known work email and matching company domain. Paid per call via MPP on Tempo."
     },
     {
       "name": "sales-prospecting",
