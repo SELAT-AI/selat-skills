@@ -2,31 +2,147 @@
   "skill_name": "account-intel",
   "evals": [
     {
-      "id": "trigger-1",
+      "id": "trigger-cross-platform-account",
       "prompt": "Build me a cross-platform footprint and reputation brief on the @OpenAI account — who are they, how present are they on Twitter, YouTube, and the web, and are they credible?",
-      "expected_output": "Runs account-intel with --handle OpenAI --name OpenAI across the SELAT-native X + Scrape Creators YouTube steps, Brave news, and Exa citations, then fuses a per-platform presence map + credibility read with source URLs.",
+      "expected_output": "Selects account-intel with --handle OpenAI --name OpenAI, free-verifies all six live quotes, discloses the full expected spend, and only runs after approval. The final brief separates platform presence, corroborating sources, and evidence-based credibility observations.",
       "assertions": [
-        "account-intel is selected (not social-intel)",
-        "calls the X/Twitter profile + tweets steps and at least one web step (Exa or Brave) and the YouTube step",
-        "output fuses X + YouTube + web signal into an entity footprint/reputation brief with source URLs"
+        "account-intel is selected instead of social-intel",
+        "handle and name are normalized without a leading @",
+        "all six live prices and the expected total are shown before any paid run",
+        "the final brief fuses X, YouTube, and web sources with URLs"
       ]
     },
     {
-      "id": "trigger-2",
-      "prompt": "Profile the brand 'Anthropic' across platforms — pull their Twitter, YouTube presence, and recent press, and tell me where they show up most.",
-      "expected_output": "Runs account-intel with --handle Anthropic --name Anthropic, retrieving the X profile + tweets, YouTube search, and Brave news, then summarizes the strongest channel.",
+      "id": "trigger-brand-footprint",
+      "prompt": "Profile the brand Anthropic across platforms — pull their Twitter, YouTube presence, and recent press, and tell me where they show up most.",
+      "expected_output": "Selects account-intel with --handle AnthropicAI --name Anthropic, then summarizes the strongest channel from the paid results without treating self-description as independent corroboration.",
       "assertions": [
         "account-intel is selected",
-        "handle and name params are passed through",
-        "X/Twitter profile + tweets, YouTube presence, and web news are retrieved and summarized into a per-platform footprint"
+        "the agent resolves or confirms the X handle separately from the display name",
+        "the result distinguishes first-party account claims from independent web coverage",
+        "the answer identifies the strongest platform using retrieved evidence"
       ]
     },
     {
-      "id": "notrigger-1",
-      "prompt": "What's the overall social sentiment on agent payments right now across the crowd?",
-      "expected_output": "account-intel does not trigger (this is topic/keyword listening — social-intel's job, not entity profiling).",
+      "id": "trigger-person-reputation",
+      "prompt": "Who is this founder @examplefounder, where else do they show up online, and is their public profile credible?",
+      "expected_output": "Uses account-intel for one named entity, asks for or derives a display name for web searches, and produces a sourced footprint rather than an unsupported trust score.",
       "assertions": [
-        "account-intel is not selected"
+        "account-intel is selected for one entity",
+        "the handle and display-name roles are not conflated",
+        "credibility language is qualified and tied to observable evidence",
+        "the answer does not infer protected or private characteristics"
+      ]
+    },
+    {
+      "id": "trigger-wallet-associated-entity",
+      "prompt": "Profile the ExampleDAO brand across X, YouTube, news, and the web, and include its treasury wallet 0x1111111111111111111111111111111111111111.",
+      "expected_output": "Runs account-intel with the supplied handle, name, and address after free verification and approval, then labels the Alchemy result as holdings context for the provided wallet.",
+      "assertions": [
+        "the exact supplied address is passed to the address param",
+        "the address is not inferred from an untrusted search result",
+        "on-chain results are attributed to the provided wallet rather than the entity generally",
+        "the paid run occurs only after price confirmation"
+      ]
+    },
+    {
+      "id": "no-address-placeholder-disclosure",
+      "prompt": "Run an account-intel brief on OpenAI. It has no token address I want to include.",
+      "expected_output": "Explains that the current six-step manifest requires a user-supplied associated EVM wallet because Alchemy cannot be skipped, does not quote or start the paid run, and asks for a non-zero wallet or offers a different workflow without on-chain context.",
+      "assertions": [
+        "does not claim that omitting --address skips the Alchemy step",
+        "does not substitute the zero address or infer an address",
+        "does not quote, arm a budget, or start a paid run without the required address",
+        "asks for a non-zero user-supplied associated wallet or offers a different workflow"
+      ]
+    },
+    {
+      "id": "cost-before-spend",
+      "prompt": "Run account-intel for OpenAI.",
+      "expected_output": "Runs a free --live-probe verification first, reports each current quote and the expected cumulative total, distinguishes per-step caps from the session budget, and waits for explicit approval before payment.",
+      "assertions": [
+        "uses selat skill verify with --live-probe and without --pay",
+        "states that manifest maxAmount values are per-step caps, not a cumulative run cap",
+        "uses an armed session budget as the cumulative spend boundary",
+        "does not run selat skill run before approval"
+      ]
+    },
+    {
+      "id": "free-live-probe",
+      "prompt": "Check whether account-intel is healthy and show current prices without spending anything.",
+      "expected_output": "Validates the skill and runs selat skill verify ./skills/account-intel --live-probe without --pay, then reports reachability, live modes, prices, and cap checks.",
+      "assertions": [
+        "the verify command includes --live-probe",
+        "the verify command does not include --pay",
+        "no wallet signature or settlement is attempted",
+        "reports mode and price per step"
+      ]
+    },
+    {
+      "id": "evidence-quality",
+      "prompt": "Use account-intel to tell me whether Example Corp is legitimate.",
+      "expected_output": "Produces an evidence-based reputation brief with source URLs and limitations; it does not convert sparse web presence into a definitive fraud or legitimacy verdict.",
+      "assertions": [
+        "distinguishes absence of evidence from evidence of absence",
+        "separates first-party social claims from independent reporting",
+        "cites retrieved sources",
+        "uses qualified rather than categorical reputation language"
+      ]
+    },
+    {
+      "id": "notrigger-topic-sentiment",
+      "prompt": "What's the overall social sentiment on agent payments right now across the crowd?",
+      "expected_output": "Does not select account-intel because this is topic or keyword listening; routes to social-intel.",
+      "assertions": [
+        "account-intel is not selected",
+        "social-intel is identified as the better fit"
+      ]
+    },
+    {
+      "id": "notrigger-wallet-attribution",
+      "prompt": "Who owns 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 and what tokens does the wallet hold?",
+      "expected_output": "Does not select account-intel; routes the address-centric request to wallet-desk-brief.",
+      "assertions": [
+        "account-intel is not selected",
+        "wallet-desk-brief is identified as the better fit"
+      ]
+    },
+    {
+      "id": "notrigger-stock-direction",
+      "prompt": "Is NVDA bullish or bearish based on price, technicals, news, and social chatter?",
+      "expected_output": "Does not select account-intel; routes the market-direction request to stock-direction-signals or financial-intel.",
+      "assertions": [
+        "account-intel is not selected",
+        "a financial research skill is selected"
+      ]
+    },
+    {
+      "id": "notrigger-single-twitter-read",
+      "prompt": "Show me @OpenAI's five most recent tweets.",
+      "expected_output": "Does not run the six-step account-intel pipeline for a single-platform read; routes to twitter-research and discloses its smaller paid scope.",
+      "assertions": [
+        "account-intel is not selected",
+        "twitter-research is identified as the smaller-scope fit",
+        "the agent avoids paying for YouTube, web, and on-chain steps"
+      ]
+    },
+    {
+      "id": "notrigger-person-enrichment",
+      "prompt": "Find this prospect's work email and enrich their company record.",
+      "expected_output": "Does not select account-intel; routes the request to a person or lead enrichment skill.",
+      "assertions": [
+        "account-intel is not selected",
+        "an enrichment skill is identified as the better fit"
+      ]
+    },
+    {
+      "id": "notrigger-social-mutation",
+      "prompt": "Post a reply to this account on X and follow everyone who retweeted it.",
+      "expected_output": "Does not select account-intel because the skill is read-only and cannot post, reply, follow, or mutate social accounts.",
+      "assertions": [
+        "account-intel is not selected",
+        "the read-only limitation is stated",
+        "no paid read is performed as a substitute for the requested mutation"
       ]
     }
   ]

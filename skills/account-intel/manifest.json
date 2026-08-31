@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "account-intel",
-  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans two rails (Circle Gateway + MPP on Tempo), paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
+  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations), with holdings context from a user-supplied associated EVM wallet, into one cross-platform footprint brief. Uses x402 via Circle Gateway and MPP on Tempo, paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
   "maxAmount": "0.50",
   "params": {
     "handle": {
@@ -14,15 +14,9 @@
       "default": "OpenAI",
       "description": "Display name of the person/brand/entity to search YouTube + web news + citations for (used as ${name})."
     },
-    "query": {
-      "required": false,
-      "default": "OpenAI",
-      "description": "Free-text query reserved for additional entity searches (used as ${query})."
-    },
     "address": {
-      "required": false,
-      "default": "0x0000000000000000000000000000000000000000",
-      "description": "EVM contract/token address to pull on-chain asset footprint for any token associated with the entity (used as ${address})."
+      "required": true,
+      "description": "Non-zero EVM wallet or treasury address supplied by the user and associated with the entity, used to retrieve cross-chain token holdings (used as ${address})."
     }
   },
   "steps": [
@@ -74,10 +68,28 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "On-chain token footprint — Alchemy token-by-address (x402 via Circle Gateway)",
+      "label": "On-chain wallet holdings — Alchemy tokens-by-wallet (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
-      "method": "GET",
-      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
+      "method": "POST",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address",
+      "body": {
+        "addresses": [
+          {
+            "address": "${address}",
+            "networks": [
+              "eth-mainnet",
+              "base-mainnet",
+              "polygon-mainnet",
+              "arb-mainnet",
+              "opt-mainnet"
+            ]
+          }
+        ],
+        "withMetadata": true,
+        "withPrices": true,
+        "includeNativeTokens": true,
+        "includeErc20Tokens": true
+      },
       "maxAmount": "0.02"
     }
   ]
