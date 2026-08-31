@@ -17,7 +17,7 @@
       "name": "lead-enrichment",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Lead enrichment via Hunter + Sixtyfour + Fiber. Paid per call via MPP on Tempo."
+      "description": "Fixed five-call, read-only full-contact B2B lead cross-check across Hunter, Apollo, and Clado. Requires six coherent target identifiers; independently derives an email candidate, verifies the supplied work email, cross-checks professional identity, explicitly requests business-phone enrichment, and retrieves employer firmographics."
     },
     {
       "name": "person-lookup",
