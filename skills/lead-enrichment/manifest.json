@@ -1,43 +1,37 @@
 {
   "schema": "selat-skill/v1",
   "name": "lead-enrichment",
-  "description": "Multi-source lead enrichment, fully through the SELAT Router (MPP). Finds and verifies a work email (Hunter), enriches the lead (Apollo), discovers a phone number and contact details (Clado), and enriches the company (Hunter). One run chains three paid MPP merchants across five steps.",
-  "maxAmount": "0.50",
+  "description": "Fixed five-call, read-only full-contact B2B lead cross-check. Requires a coherent name, company, domain, known work email, and LinkedIn person URL; independently finds an email candidate, verifies the supplied email, enriches professional identity, explicitly requests phone enrichment, and retrieves company firmographics.",
+  "maxAmount": "0.15",
   "params": {
     "firstName": {
       "required": true,
-      "default": "John",
-      "description": "Lead first name, e.g. John"
+      "description": "Lead first name. Must identify the same person as linkedinUrl and email."
     },
     "lastName": {
       "required": true,
-      "default": "Doe",
-      "description": "Lead last name, e.g. Doe"
+      "description": "Lead last name. Must identify the same person as linkedinUrl and email."
     },
     "company": {
       "required": true,
-      "default": "Stripe",
-      "description": "Lead company name (sent to Apollo as organization_name), e.g. Stripe"
+      "description": "Current employer name matching domain and the LinkedIn profile."
     },
     "domain": {
       "required": true,
-      "default": "stripe.com",
-      "description": "Company domain used for email finding and company enrichment, e.g. stripe.com"
+      "description": "Bare employer domain matching the supplied work email, e.g. acme.com."
     },
     "email": {
-      "required": false,
-      "default": "test@stripe.com",
-      "description": "Known work email to verify; if omitted, supply the email returned by the Hunter Email Finder step"
+      "required": true,
+      "description": "Known work email to verify independently; its suffix must match domain."
     },
     "linkedinUrl": {
-      "required": false,
-      "default": "https://linkedin.com/in/williamhgates",
-      "description": "LinkedIn profile URL, e.g. https://linkedin.com/in/johndoe — used by Apollo people-enrichment and required for the Clado contacts (phone) step"
+      "required": true,
+      "description": "LinkedIn person-profile URL for the same lead; required for identity and phone matching."
     }
   },
   "steps": [
     {
-      "label": "find email — Hunter Email Finder (MPP on Tempo)",
+      "label": "derive work-email candidate — Hunter email finder (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
@@ -46,50 +40,57 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "0.15"
+      "maxAmount": "0.02"
     },
     {
-      "label": "verify email — Hunter Email Verifier (MPP on Tempo)",
+      "label": "verify supplied work email — Hunter email verifier (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.015"
     },
     {
-      "label": "enrich lead — Apollo People Enrichment (MPP on Tempo)",
+      "label": "professional identity cross-check — Apollo people enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
       "body": {
+        "email": "${email}",
         "first_name": "${firstName}",
         "last_name": "${lastName}",
         "organization_name": "${company}",
-        "linkedin_url": "${linkedinUrl}"
+        "domain": "${domain}",
+        "linkedin_url": "${linkedinUrl}",
+        "reveal_personal_emails": false,
+        "reveal_phone_number": false
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.05"
     },
     {
-      "label": "find phone — Clado Contacts (MPP on Tempo)",
+      "label": "business-phone enrichment — Clado contacts (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
       "body": {
-        "linkedin_url": "${linkedinUrl}"
+        "linkedin_url": "${linkedinUrl}",
+        "email": "${email}",
+        "email_enrichment": false,
+        "phone_enrichment": true
       },
-      "maxAmount": "0.50"
+      "maxAmount": "0.15"
     },
     {
-      "label": "enrich company — Hunter Company Enrichment (MPP on Tempo)",
+      "label": "employer firmographics — Hunter company enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.15"
+      "maxAmount": "0.02"
     }
   ]
 }

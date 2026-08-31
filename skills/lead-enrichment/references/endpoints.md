@@ -1,66 +1,92 @@
 # Endpoints — lead-enrichment
 
-Use only these endpoint families for `lead-enrichment`. Hosts below are
-the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
-descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
-is authoritative — `selat skill verify` probes it free.
+The table records the fixed manifest order and the free routed quotes observed
+on 2026-08-30. The five-step `selat skill verify --live-probe` passed with every
+endpoint reachable and within its repaired cap. A probe sends the declared
+method and body to read the payment challenge but never signs or settles.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Find email | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-finder` | MPP on Tempo | $0.01365 |
-| 2 — Verify email | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 |
-| 3 — Enrich lead | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 |
-| 4 — Find phone | POST | `https://clado.mpp.paywithlocus.com/clado/contacts` | MPP on Tempo | $0.04515 |
-| 5 — Enrich company | POST | `https://hunter.mpp.paywithlocus.com/hunter/company-enrichment` | MPP on Tempo | $0.01365 |
+All calls are read-only MPP services reached through the SELAT Router. A
+per-step cap is a ceiling, not a price and not a cumulative session budget.
 
-This is a fixed 5-call manifest. The step table matches `manifest.json` exactly.
+| # | Purpose | Method and endpoint | Required request data | Live routed quote | Per-step cap |
+|---:|---|---|---|---:|---:|
+| 1 | Derive a work-email candidate | `POST hunter.mpp.paywithlocus.com/hunter/email-finder` | `domain`, `first_name`, `last_name` | $0.013650 | $0.020 |
+| 2 | Verify the supplied work email | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | `email` | $0.008400 | $0.015 |
+| 3 | Cross-check professional identity | `POST apollo.mpp.paywithlocus.com/apollo/people-enrichment` | `email`, `first_name`, `last_name`, `organization_name`, `domain`, `linkedin_url`; both reveal flags fixed `false` | $0.039900 | $0.050 |
+| 4 | Explicitly enrich a business phone | `POST clado.mpp.paywithlocus.com/clado/contacts` | `linkedin_url`, `email`, `email_enrichment=false`, `phone_enrichment=true` | $0.108150 | $0.150 |
+| 5 | Retrieve employer firmographics | `POST hunter.mpp.paywithlocus.com/hunter/company-enrichment` | `domain` | $0.013650 | $0.020 |
 
-- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
-- **MPP on Tempo:** Hunter, Apollo, and Clado via Locus (`*.mpp.paywithlocus.com`).
+- **Observed expected fixed-run total:** $0.183750.
+- **Sum of per-step caps:** $0.255. This is the worst-case manifest exposure;
+  arm a separately approved cumulative session budget no higher than this sum.
+- Re-probe immediately before payment. The current challenge is authoritative
+  if it differs from these recorded values.
 
-## Hunter MPP — `MPP on Tempo`
+## Request-schema mapping
 
-serviceUrl: `https://hunter.mpp.paywithlocus.com`
+The public gateway OpenAPI documents the following shapes. Every `${param}` in
+the manifest substitutes as a string; the boolean flags below are fixed JSON
+literals rather than caller-controlled string parameters.
 
-Live-probed prices (`routed-mpp`): email-finder / company-enrichment `$0.01365`,
-email-verifier `$0.0084`. All endpoints are **POST with a JSON body**.
+| Step | Gateway field | Type | Source |
+|---:|---|---|---|
+| 1 | `domain` | string | `${domain}` |
+| 1 | `first_name` | string | `${firstName}` |
+| 1 | `last_name` | string | `${lastName}` |
+| 2 | `email` | string, required by OpenAPI | `${email}` |
+| 3 | `email` | string | `${email}` |
+| 3 | `first_name` | string | `${firstName}` |
+| 3 | `last_name` | string | `${lastName}` |
+| 3 | `organization_name` | string | `${company}` |
+| 3 | `domain` | string | `${domain}` |
+| 3 | `linkedin_url` | string | `${linkedinUrl}` |
+| 3 | `reveal_personal_emails` | boolean | fixed `false` |
+| 3 | `reveal_phone_number` | boolean | fixed `false` |
+| 4 | `linkedin_url` | string | `${linkedinUrl}` |
+| 4 | `email` | string | `${email}` |
+| 4 | `email_enrichment` | boolean | fixed `false` |
+| 4 | `phone_enrichment` | boolean | fixed `true` |
+| 5 | `domain` | string, required by OpenAPI | `${domain}` |
 
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Find email | `/hunter/email-finder` | `domain`, `first_name`, `last_name` |
-| Verify email | `/hunter/email-verifier` | `email` (string, required) |
-| Enrich company | `/hunter/company-enrichment` | `domain` (string, required) |
+Although the gateway schemas under-declare some fields as optional, the skill
+requires every identity input so providers receive one internally consistent
+target and every fixed paid call has enough information to be useful.
 
-```json
-{ "domain": "stripe.com", "first_name": "John", "last_name": "Doe" }
+## Dataflow and privacy semantics
+
+- The runner executes all five manifest steps independently. It cannot pass
+  step 1's email candidate into step 2. Step 2 therefore verifies the caller's
+  required `email`; compare it with the finder result during synthesis.
+- There are no sample defaults. Validate that the normalized email suffix equals
+  `domain` and that the name, company, and LinkedIn URL refer to the same person
+  before probing or paying.
+- Apollo's optional personal-email and phone reveal flags are explicitly false.
+- Clado pricing is request-dependent. On 2026-08-30, LinkedIn-only quoted
+  $0.045150, explicit phone-only enrichment quoted $0.108150, and combined email
+  plus phone enrichment quoted $0.150150. This skill selects phone-only
+  enrichment because Hunter already covers work email and the advertised task
+  requires an actual phone request.
+- Returned email or phone data is not consent to contact someone. Keep it within
+  the requester-approved legitimate business purpose; the skill sends nothing.
+
+## Free verification
+
+Use synthetic, coherent inputs to inspect current challenges without payment:
+
+```bash
+SELAT_ROUTER_URL=https://router.selat.ai \
+  selat skill verify ./skills/lead-enrichment \
+  --firstName "Research" \
+  --lastName "Lead" \
+  --company "Example" \
+  --domain example.com \
+  --email "research@example.com" \
+  --linkedinUrl "https://www.linkedin.com/in/example-research-lead" \
+  --live-probe
 ```
 
-## Apollo MPP — `MPP on Tempo`
-
-serviceUrl: `https://apollo.mpp.paywithlocus.com`
-
-Live-probed price: `$0.0399` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**.
-
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Enrich lead | `/apollo/people-enrichment` | `first_name`, `last_name`, `organization_name`, `linkedin_url` |
-
-```json
-{ "first_name": "John", "last_name": "Doe", "organization_name": "Stripe", "linkedin_url": "https://linkedin.com/in/williamhgates" }
-```
-
-## Clado MPP — `MPP on Tempo`
-
-serviceUrl: `https://clado.mpp.paywithlocus.com`
-
-Live-probed price: `$0.04515` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**. Phone lookup requires a LinkedIn URL.
-
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Find phone | `/clado/contacts` | `linkedin_url` (string, required) |
-
-```json
-{ "linkedin_url": "https://linkedin.com/in/williamhgates" }
-```
+Missing-input checks must fail before any network probe. A free probe proves
+payability and price, not response quality. The first paid smoke test must use a
+coherent requester-approved target, a fresh quote, explicit approval, and an
+armed session budget. A paid application error can still charge, so never retry
+automatically.
