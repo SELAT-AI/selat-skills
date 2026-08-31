@@ -1,0 +1,82 @@
+{
+  "skill_name": "cowork-space-scout",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "Find the best coworking space websites for design inspiration — ranked list with links, what tech stacks they run, and a preview image or two of the top ones.",
+      "expected_output": "Runs cowork-space-scout: Perplexity design-hub discovery (domain-filtered) + Exa neural search + Twitter chatter, picks the top showcase, then deep-dives it (Firecrawl extract, BuiltWith tech stack, ScreenshotOne preview). Outputs an aggregated JSON shortlist with URLs, tech stacks, and preview asset links plus a plain-language briefing.",
+      "assertions": [
+        "cowork-space-scout is selected",
+        "the agent tells the user the ~$0.15 cost before spending",
+        "showcaseUrl and domain are overridden to the winner from the discovery pass",
+        "output is an aggregated JSON shortlist with per-pick url, stack, preview, and why"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Show me 3D co-working designs and interactive architectural showcases from Awwwards and design hubs. I want to see the best ones with screenshots and know which framework the top entries use.",
+      "expected_output": "Runs cowork-space-scout targeting the Awwwards/design-hub filter (search_domain_filter), deep-dives the top pick via Firecrawl + BuiltWith + ScreenshotOne, and returns the JSON shortlist plus preview assets.",
+      "assertions": [
+        "cowork-space-scout is selected",
+        "the Perplexity step's search_domain_filter covers awwwards.com and other design hubs",
+        "Firecrawl, BuiltWith, and ScreenshotOne deep-dive steps are used on the top pick",
+        "output includes the top entry's tech stack and a preview asset"
+      ]
+    },
+    {
+      "id": "trigger-3",
+      "prompt": "Scout coworking space web design in Berlin — which coworking brands have the slickest sites right now, what stack are they on, and give me preview links.",
+      "expected_output": "Runs cowork-space-scout with a location-scoped topic (e.g. 'coworking space website design Berlin'), discovers, deep-dives the winner, and returns the shortlist JSON with URLs, stacks, and previews.",
+      "assertions": [
+        "cowork-space-scout is selected",
+        "the topic includes the Berlin geography",
+        "the output shortlist entries include url, stack, and preview"
+      ]
+    },
+    {
+      "id": "nearmiss-1",
+      "prompt": "Scout emerging AI inference infrastructure startups for my VC thesis — pull new launches off Hacker News and Product Hunt, scan Twitter for founders, then enrich the top lead.",
+      "expected_output": "cowork-space-scout is not optimally selected; vc-ai-infra-scout (deal-sourcing) is a better match unless the user explicitly wants web-design inspiration.",
+      "assertions": [
+        "cowork-space-scout is not selected for a VC deal-sourcing intent",
+        "the agent routes VC/startup discovery to the appropriate scout skill"
+      ]
+    },
+    {
+      "id": "nearmiss-2",
+      "prompt": "Get me a credit report on the coworking chain WeWork.",
+      "expected_output": "cowork-space-scout is not selected; credit/B2B enrichment is a different capability.",
+      "assertions": [
+        "cowork-space-scout is not selected for credit/intelligence requests"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Write me a Python function that reverses a linked list.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "cowork-space-scout is not selected",
+        "no paid call is made for a coding question"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "What is 17 times 23?",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "cowork-space-scout is not selected"
+      ]
+    },
+    {
+      "id": "output-1",
+      "prompt": "Deep-dive the top coworking design pick: scrape it, get its tech stack, and grab a full-page screenshot.",
+      "expected_output": "Runs the deep-dive steps (Firecrawl extract, BuiltWith domain, ScreenshotOne take) with showcaseUrl/domain overridden, and returns stack + preview for the pick.",
+      "assertions": [
+        "Firecrawl /v1/extract returns structured design detail",
+        "BuiltWith returns the tech stack for the top domain",
+        "ScreenshotOne returns a full-page PNG preview asset",
+        "showcaseUrl and domain match the same top pick"
+      ]
+    }
+  ]
+}
