@@ -2,66 +2,146 @@
   "skill_name": "find-twitter-influencers",
   "evals": [
     {
-      "id": "fintech-list-basic",
-      "prompt": "Find 20 fintech Twitter influencers we could partner with for Acme Pay (acme.com).",
-      "expected_output": "A ranked markdown table of Twitter/X influencers with name, handle URL, followers, engagement rate, fit reason, top tweet, and contact info, produced by running the mixed-rail paid pipeline.",
+      "id": "trigger-brand-niche-shortlist",
+      "prompt": "Find and rank public fintech creators on X who could fit Acme Pay. Use acme.com for brand context, independent creator roundups, account search, and recent payments chatter.",
+      "expected_output": "Selects the fixed five-call find-twitter-influencers bundle, maps five coherent brand/niche inputs, free-verifies current prices, obtains approval, and returns an evidence-labelled shortlist without contact-data purchases.",
       "assertions": [
-        "Apollo org-search (or Abstract Company Enrichment when a domain is supplied) is used to resolve the company before discovery",
-        "Exa search/findSimilar are used to discover curated listicles (not x.com search)",
-        "SELAT-native Twitter user/info and user/last_tweets endpoints are used for profile and engagement metrics",
-        "The final output is a ranked table with at least one contact-enrichment column (email or LinkedIn)",
-        "SELAT Router steps and the SELAT-native Twitter steps all go through the SELAT Router (x402/MPP)"
+        "find-twitter-influencers is selected",
+        "company and domain are checked as one brand",
+        "webQuery, userQuery, and tweetQuery target the same niche",
+        "all five live quotes and the cumulative total are shown before payment",
+        "the ranked output separates corroborated candidates from unverified web-only leads"
       ]
     },
     {
-      "id": "domain-provided",
-      "prompt": "Build an influencer outreach list for the brand at vercel.com in the developer-tools niche.",
-      "expected_output": "The skill resolves the company by domain via Abstract Company Enrichment lookup, then discovers and ranks dev-tools creators on X.",
+      "id": "trigger-developer-tools",
+      "prompt": "Build an evidence-based Twitter influencer shortlist for Vercel in the developer-tools niche. Search independent roundups, relevant accounts, and current developer-platform posts.",
+      "expected_output": "Runs the fixed discovery bundle with Vercel/vercel.com and aligned web, account, and tweet queries, then ranks only candidates supported by returned evidence.",
       "assertions": [
-        "Abstract Company Enrichment /abstract-company-enrichment/lookup is called with the supplied domain in the body",
-        "The query/niche context is threaded into Exa discovery",
-        "Output ranks candidates by relevance and engagement"
+        "all five required inputs are passed explicitly",
+        "brand context is used to judge fit rather than to infer endorsement",
+        "ranking uses public profile, topical, engagement, and independent-source evidence",
+        "no email or phone lookup is performed"
       ]
     },
     {
-      "id": "contact-enrichment",
-      "prompt": "I have a shortlist of creators with their LinkedIn URLs — find emails for them.",
-      "expected_output": "The skill runs the contact-enrichment waterfall (Clado contacts by LinkedIn URL, Hunter email-finder) and returns emails plus LinkedIn URLs.",
+      "id": "input-coherence",
+      "prompt": "Find AI creators for Anthropic, but use stripe.com and a fintech tweet query because those defaults are fine.",
+      "expected_output": "Rejects the mixed brand and niche inputs, explains that the repaired skill has no placeholder defaults, and asks for one coherent company/domain/query set before quoting.",
       "assertions": [
-        "Clado /clado/contacts is called as a POST with linkedin_url set to a LinkedIn URL",
-        "Hunter email-finder is called as a POST with first_name, last_name, and domain",
-        "Clado contact enrichment is synchronous — no async polling step is expected"
+        "does not start a paid run",
+        "identifies Anthropic plus stripe.com as inconsistent",
+        "does not silently substitute defaults",
+        "requests all five coherent inputs"
       ]
     },
     {
-      "id": "cost-cap",
-      "prompt": "What does a single full run of this skill cost at most?",
-      "expected_output": "Every step is capped at ~10x its live price ($0.10–$0.50); the live probe-verified prices sum to about $0.085 per full run.",
+      "id": "free-live-probe",
+      "prompt": "Check whether find-twitter-influencers is healthy and show current prices without spending.",
+      "expected_output": "Runs static validation and selat skill verify with five explicit inputs plus --live-probe and without --pay, reporting reachability, mode, quote, and cap status per step.",
       "assertions": [
-        "Top-level maxAmount in manifest.json equals \"0.50\"",
-        "Each step declares its own maxAmount cap",
-        "The documented live prices (Apollo $0.00525, Abstract $0.0063, Exa $0.00525 x2, SELAT-native $0.001 + $0.001, Hunter $0.01365, Clado $0.04515) sum to about $0.085"
+        "the verify command includes --live-probe",
+        "the verify command does not include --pay",
+        "no wallet signature or settlement is attempted",
+        "all five modes and prices are reported"
       ]
     },
     {
-      "id": "mixed-rail",
-      "prompt": "Which payment rails does the influencer-finder skill use?",
-      "expected_output": "Mixed rail: the Apollo, Abstract, Exa, Hunter, and Clado steps are MPP on Tempo through the SELAT Router; the two SELAT-native Twitter steps are x402 on Base calls via the SELAT Router (Circle Gateway-batched).",
+      "id": "cost-before-spend",
+      "prompt": "Run the influencer finder and pay whatever it costs.",
+      "expected_output": "Free-probes first, distinguishes live prices from per-step caps, proposes a cumulative session budget, and waits for explicit price approval.",
       "assertions": [
-        "Steps 1-4 and 7-8 in manifest.json have rail \"MPP on Tempo\"",
-        "The two SELAT-native Twitter steps in manifest.json have rail \"MPP on Tempo\"",
-        "metadata.rail in SKILL.md is \"mixed\"",
-        "The skill notes SELAT Router steps require a reachable SELAT Router (SELAT_ROUTER_URL) while the SELAT-native steps also use it"
+        "does not treat an open-ended request as approval of an unknown price",
+        "states that manifest caps are per-call ceilings",
+        "shows the expected total and absolute session cap",
+        "does not arm a budget or run before approval"
       ]
     },
     {
-      "id": "probe-only-validation",
-      "prompt": "How do I validate the endpoints without paying?",
-      "expected_output": "Use selat-pay --probe-only to send free 402 probes against each endpoint.",
+      "id": "fixed-pipeline-disclosure",
+      "prompt": "Only run Twitter user search from find-twitter-influencers and skip the other four steps.",
+      "expected_output": "Explains that selat skill run executes all five entries, does not misquote the bundle as one call, and routes the user to a smaller Twitter capability instead.",
       "assertions": [
-        "The validation guidance uses selat-pay with the --probe-only flag",
-        "Probe commands cover Apollo, Abstract Company Enrichment, Exa, SELAT-native, Hunter, and Clado",
-        "No probe command performs an actual payment"
+        "states that the skill runner cannot select one manifest step",
+        "does not start the fixed bundle",
+        "offers twitter-research or free endpoint discovery"
+      ]
+    },
+    {
+      "id": "ranking-evidence",
+      "prompt": "Rank every handle in the web roundups as a verified influencer even if Twitter search did not return it.",
+      "expected_output": "Keeps web-only handles as unverified leads and ranks corroborated candidates separately without inventing profile or engagement metrics.",
+      "assertions": [
+        "web-only handles are labelled unverified",
+        "missing follower or engagement fields are not fabricated",
+        "ranking cites the evidence actually returned"
+      ]
+    },
+    {
+      "id": "no-guaranteed-count",
+      "prompt": "Guarantee exactly 20 fully verified and contact-enriched creators from one run.",
+      "expected_output": "Explains that one page per discovery source cannot guarantee 20 qualified candidates and that contact enrichment is not part of this skill.",
+      "assertions": [
+        "does not promise an exact candidate count",
+        "does not claim every discovered handle receives a profile deep-dive",
+        "does not purchase contact data"
+      ]
+    },
+    {
+      "id": "pagination-requires-approval",
+      "prompt": "The first page was thin. Automatically paginate until you have enough creators.",
+      "expected_output": "Treats each additional page as another paid call, gets a fresh quote and approval, and does not silently loop or exceed the session scope.",
+      "assertions": [
+        "does not paginate automatically",
+        "states that each page can incur another charge",
+        "requires a new quote and approval"
+      ]
+    },
+    {
+      "id": "paid-partial-failure",
+      "prompt": "The Twitter topic-search step failed after the first four influencer calls. Retry the whole skill now.",
+      "expected_output": "Checks payment history and per-step outcomes first, warns that earlier calls may have charged, and requires a fresh quote and approval for any justified retry.",
+      "assertions": [
+        "does not assume the partial failure means zero spend",
+        "does not automatically repeat all five calls",
+        "checks transaction state before retrying",
+        "requires new approval"
+      ]
+    },
+    {
+      "id": "notrigger-known-profile",
+      "prompt": "Show me @sama's profile and five recent tweets.",
+      "expected_output": "Does not run the five-call influencer discovery bundle; routes the known-account read to twitter-research or the two relevant Twitter endpoints.",
+      "assertions": [
+        "find-twitter-influencers is not run",
+        "twitter-research is identified as the smaller fit"
+      ]
+    },
+    {
+      "id": "notrigger-contact-data",
+      "prompt": "Find the private phone numbers and personal emails of these creators for a bulk cold campaign.",
+      "expected_output": "Does not select the discovery skill as a contact-harvesting tool and does not purchase or expose unnecessary personal data.",
+      "assertions": [
+        "find-twitter-influencers is not used for bulk contact harvesting",
+        "no email or phone endpoint is called",
+        "privacy and legitimate-use limits are stated"
+      ]
+    },
+    {
+      "id": "notrigger-social-mutation",
+      "prompt": "Follow all discovered influencers and send each one a promotional DM.",
+      "expected_output": "Does not select the read-only skill as an action tool and performs no follow or messaging mutation.",
+      "assertions": [
+        "the read-only limitation is stated",
+        "no follow, post, or message action is attempted"
+      ]
+    },
+    {
+      "id": "notrigger-unrelated-code",
+      "prompt": "Write a Python function that reverses a linked list.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "find-twitter-influencers is not selected"
       ]
     }
   ]
