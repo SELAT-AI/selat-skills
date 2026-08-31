@@ -1,95 +1,108 @@
 # Endpoints — wallet-desk-brief
 
-Who-is-this-wallet brief over **one rail** (`x402 via Circle Gateway`;
-verify prints `routed-x402` for both steps). Paid per call via selat-pay
-(USDC via Circle Gateway), no API keys. Read only — no agent places a trade.
+This skill runs a fixed pair of read-only requests for one explicit non-zero EVM
+address. Both currently route through the SELAT Router as `routed-x402`. Each is
+quoted and paid independently.
 
-Pinned hosts (no in-skill discover):
+## Live route and cost snapshot
 
-- **Alchemy** — same `x402.alchemy.com` tokens-by-address GET as
-  `account-intel`. Manifest rail `x402 via Circle Gateway`. Verify prints
-  **`routed-x402`** — the call hops the SELAT Router. Not a no-router-hop claim.
-- **Arkham** — `POST https://api.arkm.com/x402/intelligence/address`.
-  Same host already in the SELAT federated catalog / discovery snapshot
-  (`api.arkm.com/x402`). Manifest rail `x402 via Circle Gateway`. Verify
-  prints **`routed-x402`**.
+| # | Read | Method | URL | Observed mode | Live quote | Step cap |
+|---|---|---|---|---|---|---|
+| 1 | Five-network token holdings | POST | `https://x402.alchemy.com/data/v1/assets/tokens/by-address` | routed-x402 | $0.001 | $0.002 |
+| 2 | Probabilistic address attribution | POST | `https://api.arkm.com/x402/intelligence/address` | routed-x402 | $0.21 | $0.25 |
 
-Not pinned:
+Free-probe snapshot: 2026-08-31 with SELAT CLI 0.16.15. Expected fixed-run
+total: **$0.211**. Sum of per-step caps and therefore maximum fixed-run exposure:
+**$0.252**. The top-level `maxAmount` is a fallback per-step cap, not a
+cumulative run cap; the armed session budget supplies the cumulative guardrail.
 
-- **CoinGecko simple-price**
-  `POST https://coingecko.mpp.paywithlocus.com/coingecko/simple-price`
-  live-402s (`MPP on Tempo` / `routed-mpp`, ~$0.063, 2026-08-22) but the
-  body takes CoinGecko **coin ids** (`ids` + `vs_currencies`), not Alchemy
-  contract holdings. It does not price those holdings. Not a third rail.
-  Not a second skill.
+The live 402 quote and transactability extension are authoritative. Re-probe
+before payment.
 
-| Step | Method | URL | Rail (manifest) | Verify prints | ~Price |
-|---|---|---|---|---|---|
-| 1 — On-chain holdings | GET | `https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}` | x402 via Circle Gateway | routed-x402 | $0.001 |
-| 2 — Wallet attribution | POST | `https://api.arkm.com/x402/intelligence/address` | x402 via Circle Gateway | routed-x402 | $0.21 |
+## Transactability snapshot
 
-Full-run cap (`maxAmount`): **$0.50**. Per-step caps **$0.01** (Alchemy) and
-**$0.40** (Arkham). Do not raise the $1 CLI per-call ceiling.
+- Alchemy: last paid status 200; network-wide 7-day delivery was 80% over five
+  captured payments and all-time delivery was 93% over fifteen. Treat this as a
+  below-100% caution, not a guarantee about the next call.
+- Arkham: last paid status 200 and observed delivery was 100%, but only one
+  captured payment was present. Treat this as low-confidence evidence.
 
-- **SELAT Router:** every shipped step, including Alchemy, routes via
-  `https://router.selat.ai`. `SELAT_ROUTER_URL` is required.
-- **x402 via Circle Gateway:** Alchemy and Arkham. Verify prints
-  `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain
-  claim and not a no-router-hop claim.
+These figures are time-sensitive payment-layer observations. They do not assess
+the accuracy or usefulness of returned holdings or labels.
 
-## Alchemy — `x402 via Circle Gateway` (verify: `routed-x402`)
+## Alchemy request contract
 
-serviceUrl: `https://x402.alchemy.com`
+The official Tokens By Wallet operation is POST and accepts an `addresses`
+array. The manifest sends:
 
-Live-probed price (2026-08-22, `--probe-only --live-probe`): `$0.001`.
-`selat skill verify --live-probe` prints **`routed-x402`**. The call hops
-the SELAT Router. Do not describe this as a Gateway-batched nanopayment
-with **no router hop**.
+```json
+{
+  "addresses": [
+    {
+      "address": "${address}",
+      "networks": [
+        "eth-mainnet",
+        "base-mainnet",
+        "matic-mainnet",
+        "arb-mainnet",
+        "opt-mainnet"
+      ]
+    }
+  ],
+  "withMetadata": true,
+  "withPrices": true,
+  "includeNativeTokens": true,
+  "includeErc20Tokens": true
+}
+```
 
-The manifest step is **GET with a query-string `address`** — the same path
-`account-intel` already pins.
+It requests fungible native and ERC-20 holdings, metadata, and available prices
+across exactly five networks. A successful response can still contain top-level
+`partialErrors` for failed networks and per-token errors for metadata or pricing.
+Preserve both. Do not describe the result as all-chain or necessarily complete.
 
-| Capability | Endpoint | Query params |
-| --- | --- | --- |
-| Token holdings (manifest step) | `/data/v1/assets/tokens/by-address` | `address` (EVM `0x…`, required) |
+Official contract:
+https://www.alchemy.com/docs/data/portfolio-apis/portfolio-api-endpoints/portfolio-api-endpoints/get-tokens-by-address
 
-## Arkham — `x402 via Circle Gateway` (verify: `routed-x402`)
+## Arkham request contract
 
-serviceUrl: `https://api.arkm.com/x402`
+The live payment challenge exposes this required body:
 
-Live-probed price (2026-08-22, `--probe-only --live-probe`): `$0.21`
-(upstream list price $0.20; router quote $0.21). Verify prints
-**`routed-x402`**. Under the $1 CLI ceiling.
+```json
+{
+  "address": "${address}"
+}
+```
 
-The manifest step is **POST with `address` in `body`**. Optional `chain`
-is omitted so Arkham auto-detects. Do not invent other Arkham paths.
+An optional `chain` field is intentionally omitted. Preserve the chain returned
+by Arkham and do not generalize one label across every chain. Expected fields can
+include entity, label, chain, and contract/user-address flags when a match exists.
+Missing attribution means unlabeled by this response, not safe, anonymous, or
+unowned.
 
-| Capability | Endpoint | Body |
-| --- | --- | --- |
-| Address intelligence (manifest step) | `POST /intelligence/address` | `{ "address": "<0x>" }` |
+Arkham's official API guide describes address attribution as probabilistic and
+notes that labels evolve as intelligence changes:
+https://arkm.com/docs
 
-Response includes entity (`arkhamEntity`), label (`arkhamLabel`), chain,
-and contract / user-address flags when Arkham has a match.
+## Intentionally omitted
 
-## CoinGecko simple-price — skipped
-
-serviceUrl: `https://coingecko.mpp.paywithlocus.com`
-
-| Endpoint | Body | Probe (2026-08-22, no `--pay`) |
-| --- | --- | --- |
-| `POST /coingecko/simple-price` | `{ "ids": "<coin-id>", "vs_currencies": "usd" }` | `mode=routed-mpp` ~$0.063 |
-
-Skipped: coin-id input does not price Alchemy contract holdings.
+CoinGecko simple-price is not part of this skill. Its request requires known
+CoinGecko coin IDs and cannot safely convert an arbitrary holdings response into
+priced assets inside this declarative fixed pair. Alchemy already requests price
+data where available; missing prices remain missing.
 
 ## Live probes (free; no wallet)
 
 ```bash
-# shipped — verify prints routed-x402
-selat-pay GET "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" \
-  --chain base --probe-only --live-probe
+selat-pay POST "https://x402.alchemy.com/data/v1/assets/tokens/by-address" \
+  --body '{"addresses":[{"address":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045","networks":["eth-mainnet","base-mainnet","matic-mainnet","arb-mainnet","opt-mainnet"]}],"withMetadata":true,"withPrices":true,"includeNativeTokens":true,"includeErc20Tokens":true}' \
+  --chain base --max-amount 0.002 --probe-only --live-probe
+
 selat-pay POST "https://api.arkm.com/x402/intelligence/address" \
   --body '{"address":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"}' \
-  --chain base --probe-only --live-probe
+  --chain base --max-amount 0.25 --probe-only --live-probe
 ```
 
-Do not add `--pay`. Do not add `--yes`. Do not pin CoinGecko simple-price.
+These probes read live payment challenges and do not settle payment. Passing
+proves route, quote, reachability, and cap fit—not post-payment business success
+or data accuracy. Do not add `--pay` or `--yes` without fresh explicit approval.
