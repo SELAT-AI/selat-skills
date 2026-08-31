@@ -1,11 +1,11 @@
 ---
 name: recent-funding-rounds
-description: Use this skill when the user asks about companies that raised funding recently — "what companies raised funding this week?", "recent seed rounds", "latest Series A deals", "what fintech companies recently raised", "this month's funding rounds", or weekly/monthly deal flow. Searches recent news coverage of funding rounds via Brave Search news-search, through the SELAT Router over the MPP rail. Returns news articles announcing raises, not a structured funding database.
+description: Use this skill when the user wants read-only discovery of recently published startup-funding news—for example, "what companies raised funding in the past week?", "recent seed rounds", "latest fintech Series A announcements", or "funding rounds over $10M this month". It makes one bounded Brave News Search call through the SELAT Router over MPP on Tempo, with an explicit search focus and publication-freshness window. It returns news coverage, not verified structured deal records, and never executes investments or outreach.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). The single MPP-on-Tempo step requires a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound payment into an outbound MPP payment to Brave Search (via Locus).
+compatibility: Requires the selat CLI and a reachable SELAT Router. Free live verification needs no wallet; a paid run requires a funded Circle Agent Wallet and explicit approval.
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   rail: MPP on Tempo
   kind: single
 ---
@@ -14,48 +14,141 @@ metadata:
 
 ## When To Use
 
-Use when the user wants to discover companies that have **raised funding recently** in a given sector. Typical triggers: "what companies raised funding this week?", "show me recent seed rounds", "latest Series A deals in fintech". The skill issues a single MPP on Tempo call to Brave Search's `/brave/news-search` and returns recent news articles announcing funding rounds.
+Use for **recently published news coverage** of startup funding rounds within a
+clear topic and relative time window. The skill makes one bounded news search
+and returns up to ten candidate articles for evidence-based deal-flow review.
 
-**Be honest about what comes back:** Brave news-search returns news articles about funding rounds (headline, snippet, source, publish date, URL) — it is **not** a structured funding database. There is no server-side filtering by exact date range, round type, or deal size; those signals live in the article text. Fold them into the query wording (e.g. a "seed" or "Series A" mention in `sector`) and extract deal details from the returned articles.
+This is not a structured funding database. It does not guarantee that every
+article describes a newly closed round, and it cannot prove a company, stage,
+amount, or announcement date beyond what the returned article supports. Use a
+dedicated structured-data capability when the user needs exhaustive coverage or
+database-grade fields.
+
+Do not use this skill for investment execution, personalized financial advice,
+private-contact discovery, or outreach.
 
 ## Workflow
 
-1. Install: `selat skill install recent-funding-rounds`
-2. Run: `selat skill run recent-funding-rounds --sector "artificial intelligence"`
-3. The CLI compiles the single step into a `selat-pay` call, routes it through the SELAT Router (which pays Brave Search via Locus over MPP), and prints a ✓/✗ summary.
+1. Collect both required inputs:
 
-Step:
+   - `focus`: a concrete funding-news topic such as `artificial intelligence
+     startups`, `fintech Series A`, or `startup rounds over $10M`.
+   - `freshness`: one of `pd`, `pw`, `pm`, or `py`, representing the past 24
+     hours, 7 days, 31 days, or 365 days respectively.
 
-- **Step 1 — Brave Search** `POST /brave/news-search` — **MPP on Tempo** via the SELAT Router. Queries `"${sector} startup funding round announced"` against Brave's news index; returns recent news articles covering funding announcements in that sector.
+   Do not silently choose a sector or time window. If either is absent, ask the
+   user. Treat these as rolling publication windows, not exact calendar periods.
 
-To bias toward a round type, include it in `sector` (e.g. `--sector "fintech seed"`); news search naturally surfaces recent coverage, so "this week / this month" style asks are served by the recency of the news index rather than an explicit date filter.
+2. Install the vetted recipe:
+
+   ```bash
+   selat skill install recent-funding-rounds
+   ```
+
+3. Run the free live verification before any wallet setup or paid call:
+
+   ```bash
+   SELAT_ROUTER_URL=https://router.selat.ai \
+     selat skill verify ~/.config/selat/skills/recent-funding-rounds \
+     --focus "artificial intelligence startups" \
+     --freshness "pw" \
+     --live-probe
+   ```
+
+4. Show the user the live quote, the source-skill cap, and the one-call scope.
+   Explain that a paid application error may still charge. Wait for explicit
+   approval of the expected cost and maximum session cap.
+
+5. Only after approval and a spendable Gateway balance, arm a session budget no
+   higher than the approved cap, execute once, and stop the budget after success
+   or failure:
+
+   ```bash
+   selat budget start --amount <approved-cap>
+   selat skill run recent-funding-rounds \
+     --focus "<funding-news-focus>" \
+     --freshness "<pd|pw|pm|py>" \
+     --max-amount <approved-cap>
+   selat budget stop
+   ```
+
+Inspect payment history before any retry. A different focus or freshness window
+is a new paid call and requires a fresh probe and separate approval.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `sector` | yes | `artificial intelligence` | Sector/industry in plain words, interpolated into the news query |
+| `focus` | yes | none | Concrete sector, stage, size hint, or combination used in the news query. |
+| `freshness` | yes | none | Publication window: `pd` (24h), `pw` (7d), `pm` (31d), or `py` (365d). |
 
-Outputs: news-search results — a list of articles, each with title, description/snippet, source, publish age/date, and URL. Company names, round types, and deal sizes must be read out of the article text; the response is news coverage, not structured deal records.
+The fixed request searches for `${focus} funding round announced`, requests ten
+results, and applies the supplied publication-freshness window.
+
+Distill the response into:
+
+1. The supplied focus, rolling publication window, and retrieval time.
+2. Up to ten candidate articles in provider order.
+3. Article title, source, publication time, URL, and snippet only when actually
+   returned.
+4. Company, round stage, amount, investors, and announcement timing only when
+   explicitly supported by the article title or snippet; otherwise mark them
+   unknown.
+5. Duplicate or syndicated coverage grouped as one possible funding event.
+6. A warning when publication recency does not establish that the financing
+   event itself occurred inside the same window.
+7. Call status, observed cost, rail, and any error.
+
+Preserve provenance and uncertainty. Do not turn a headline into a verified
+deal record, invent missing fields, or claim exhaustive market coverage.
 
 ## Gotchas
 
-- The MPP-on-Tempo step needs `SELAT_ROUTER_URL` configured and the router reachable — every step settles through the SELAT Router.
-- Live price is $0.03675 per call (probe-verified 2026-07-10); the manifest's $0.40 caps (~10x live) are a ceiling, not the price.
-- This is a news search, not a funding database: no `date_start`/`date_end`, `financing_types`, or `size_min` filters exist. Encode round type or size hints in the query wording and filter results client-side.
-- Coverage skews toward rounds that got press; small or unannounced raises may not appear at all.
+- **No hidden defaults:** both `focus` and `freshness` are required. Missing
+  input must fail before any endpoint call.
+- **Publication time is not deal-close time:** `freshness` filters news-index
+  publication recency, not the legal close date of a financing.
+- **Rolling windows:** `pw` means the past seven days and `pm` means the past 31
+  days; neither means the current calendar week or month. Apply a transparent
+  client-side date check if the user requests an exact calendar boundary.
+- **Query hints are not structured filters:** stage and deal-size phrases in
+  `focus` improve search relevance but do not guarantee exact matches. Filter
+  and label the returned evidence rather than fabricating database semantics.
+- **Press coverage is incomplete:** small, private, or unannounced rounds may
+  not appear.
+- **Paid failures may charge:** never auto-retry. Inspect history, re-probe, and
+  obtain fresh approval first.
 
 ## Validation
 
-> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+- Static:
 
-- Probe without paying (free 402 probe):
-  - `selat-pay POST "https://brave.mpp.paywithlocus.com/brave/news-search" --body '{"q":"artificial intelligence startup funding round announced"}' --chain base --probe-only`
-- A successful run prints `status=200` and a ✓ summary for the MPP-on-Tempo rail.
+  ```bash
+  selat skill validate ./skills/recent-funding-rounds
+  ```
+
+- Free live gate:
+
+  ```bash
+  SELAT_ROUTER_URL=https://router.selat.ai \
+    selat skill verify ./skills/recent-funding-rounds \
+    --focus "artificial intelligence startups" \
+    --freshness "pw" \
+    --live-probe
+  ```
+
+- Missing-input gate: omit `focus` and `freshness` separately and confirm each
+  command fails before a network call.
+- Paid smoke test: run one requester-approved topic only after a fresh quote,
+  explicit approval, a spendable Gateway balance, and an armed session budget.
 
 ## References
 
-- `manifest.json` — the machine-readable payment recipe this skill runs.
-- [`references/endpoints.md`](references/endpoints.md) — the MPP endpoint this skill calls.
-- `references/agent-skill-authoring-sop.md` — authoring standard.
+- `manifest.json` — machine-readable bounded payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — request schema,
+  freshness semantics, live quote, scope, and free probe.
+- [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
+
+"Brave" is a trademark of its respective owner and is used only for endpoint
+identification. This skill is not affiliated with or endorsed by Brave.
