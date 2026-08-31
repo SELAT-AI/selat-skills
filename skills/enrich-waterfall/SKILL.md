@@ -1,11 +1,21 @@
 ---
 name: enrich-waterfall
-description: Use this skill when the user wants to enrich a person or company from a partial identifier — e.g. "enrich this email", "find the work email and phone for X at Y", "who is this person", "build a lead profile for stripe.com", "company enrichment for this domain", "find their LinkedIn / Twitter", "get me funding and hiring signals", "waterfall enrichment", "verify this email". Runs a cheapest-first B2B enrichment waterfall — resolve the person sub-cent, anchor the company, fan out to signals / social, escalate to premium contact reveals (Clado contacts, Clado people search) only on gaps, then verify the email. Nearly every step is paid MPP on Tempo through the SELAT Router; the SELAT-native X/Twitter step is a x402 via Circle Gateway call via the SELAT Router. The selat CLI compiles each manifest step into a payment.
+description: >-
+  Use this skill for one fixed, read-only, multi-provider person-and-company
+  enrichment bundle when the user has a complete and internally consistent
+  target: known work email, first and last name, company, domain, LinkedIn
+  person URL, Apollo organization ID, and X/Twitter handle. Triggers on "run the
+  full enrichment bundle", "cross-check this lead across providers", "get
+  contact, company, hiring, funding, news, and social context", or "verify this
+  fully specified lead". The CLI runs all 18 paid calls independently; it
+  cannot conditionally stop, skip tiers, or pass outputs between steps.
+  Partial-identifier, subset, or cheapest-first requests should use a smaller
+  skill or free endpoint discovery instead.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.3.1, and a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). All steps, including the SELAT-native X/Twitter call, settle via the SELAT Router, so a reachable one (SELAT_ROUTER_URL) is required.
+compatibility: Requires the selat CLI; its bundled selat-pay is sufficient. Paid runs need a funded Circle Agent Wallet. The 17 MPP calls and one x402 call all settle through the SELAT Router. `selat skill verify --live-probe` is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   rail: mixed
   kind: multi
 ---
@@ -14,136 +24,178 @@ metadata:
 
 ## When To Use
 
-Use when the caller has a **partial identifier** — an email, a name + company, a
-domain, or a LinkedIn URL — and wants a fuller person and/or company profile, with
-contact details (email + phone), tech stack, company signals (funding / news /
-hiring), and social presence.
+Use this skill for a **full, fixed 18-call evidence bundle** on one known person
+and their employer. It cross-checks identity and contact data, compares company
+records, retrieves hiring and recent-news signals, reads a supplied X/Twitter
+profile, and verifies a supplied work email.
 
-The defining behavior is **cheapest-first with escalation**: spend sub-cent calls to
-resolve identity, anchor the company, and fan out to enrichment slices; only reach
-for the premium reveals (Clado contacts, Clado natural-language people search)
-when the cheap tiers leave a gap; verify the email last.
+Despite the historical `enrich-waterfall` name, the current CLI does not execute
+conditional branches. Use this skill only when the user wants the entire bundle
+and supplies every required identifier. If the user has only one partial
+identifier, wants a cheaper subset, or asks for true stop-on-match escalation,
+use a smaller skill or free discovery instead.
 
-Do **not** use this for crypto/market price lookups (see `market-snapshot`,
-`allium-price`) or for a single one-off enrichment call (call that merchant directly).
+All calls are read-only. The only side effect is the explicitly approved USDC
+spend. Use personal and contact data only for a legitimate, lawful purpose; do
+not use the skill for harassment, phishing, sensitive profiling, or unsolicited
+bulk outreach.
 
 ## Workflow
 
-1. Install: `selat skill install enrich-waterfall`
-2. Run: `selat skill run enrich-waterfall [--email ...] [--name ...] [--firstName ...] [--lastName ...] [--domain ...] [--company ...] [--linkedinUrl ...] [--organizationId ...]`
-3. The CLI compiles each manifest step into a `selat-pay` call, runs the steps in
-   order, and prints a per-step `status` + cost summary. Every step is **via the SELAT Router**
-   through the SELAT Router (MPP) except the SELAT-native X/Twitter profile step, which is
-   a **x402 via Circle Gateway** Circle x402 call (Circle Gateway-batched).
+1. Install the vetted recipe:
 
-### The waterfall (cheapest-first, with stop/escalation conditions)
+   ```bash
+   selat skill install enrich-waterfall
+   ```
 
-Steps in `manifest.json` are ordered cheapest-first by tier (and cheapest-first
-within each tier, using live prices probe-verified 2026-07-10). Walk them in order
-and **stop climbing a branch the moment you have what you need**:
+2. Collect all eight inputs: `email`, `firstName`, `lastName`, `domain`,
+   `company`, `linkedinUrl`, `organizationId`, and `xHandle`. Confirm that they
+   describe the same person and company. Do not combine convenient placeholders
+   from unrelated identities.
 
-1. **resolve** ($0.0084–$0.024) — Apollo `people-enrichment` (one call takes email,
-   name+company, domain and LinkedIn URL together), Hunter `email-enrichment` /
-   `combined-enrichment` by email, Clado `linkedin-profile` by LinkedIn URL. Goal:
-   turn the input into a person record + company handle (domain, LinkedIn). **Stop
-   condition:** once a resolve call returns a confident match with a domain and a
-   LinkedIn URL, you do not need the remaining resolve calls.
+3. Probe all 18 payment challenges for free before wallet setup or spending:
 
-2. **anchor** ($0.0053–$0.014) — pin the company: Apollo `org-search` by name (the
-   no-domain fallback), Abstract Company Enrichment `lookup` and Apollo
-   `org-enrichment` by domain, Hunter `company-enrichment`, plus Hunter
-   `email-finder` to derive the canonical address from domain + name. Tech stack
-   (`technology_names`), headcount and industry/SIC now ride along with these
-   anchor calls — there is no separate tech tier. **Capture the Apollo
-   `organization_id`** from `org-enrichment`/`org-search`: the job-postings signals
-   step needs it. **Stop condition:** one good firmographic record + one candidate
-   email is enough to move on.
+   ```bash
+   selat skill verify ~/.config/selat/skills/enrich-waterfall \
+     --email <known-work-email> \
+     --firstName <first-name> \
+     --lastName <last-name> \
+     --domain <bare-domain> \
+     --company "<company-name>" \
+     --linkedinUrl <person-linkedin-url> \
+     --organizationId <apollo-organization-id> \
+     --xHandle <x-username-without-at> \
+     --live-probe
+   ```
 
-3. **social / signals** ($0.0004–$0.063) — enrichment fan-out, run **only the
-   slices the caller asked for**:
-   - *social* — SELAT-native X/Twitter profile (x402 via Circle Gateway, $0.001), Clado `scrape` for
-     LinkedIn person/company posts, StableSocial Instagram/TikTok profiles by handle.
-   - *signals* — Apollo `job-postings` (needs `organizationId` from the anchor
-     tier), Brave news search for company news and funding rounds, Diffbot KG
-     `enhance` for the organization record (funding rounds, investors and business
-     connections all come back in that one call).
+4. Show every live quote, the expected cumulative total, and the sum of the
+   per-step caps. Propose an absolute session cap no higher than that cap sum and
+   obtain explicit approval for the exact 18-call workload.
 
-4. **escalate** ($0.045–$0.32) — premium reveals, run **only on gaps**: if the
-   cheap tiers did not surface a usable email or a phone, climb to Clado
-   `contacts` (contact enrichment incl. phone, from a LinkedIn URL) or Clado
-   `search` (synchronous natural-language people search — e.g. resolving a person
-   from an X/Twitter handle). **Escalation condition:** a missing-or-low-confidence
-   email/phone after tiers 1–3. If you already have a verified work email and no
-   phone was requested, **skip this tier entirely.**
+5. Only after approval and a spendable Gateway balance, arm the approved
+   cumulative cap, run the fixed bundle once, and disarm the budget after success
+   or failure:
 
-5. **verify** ($0.0084) — last: Hunter `email-verifier` confirms the chosen email
-   is deliverable before shipping it.
+   ```bash
+   selat budget start --amount <approved-cumulative-cap>
+   selat skill run enrich-waterfall \
+     --email <known-work-email> \
+     --firstName <first-name> \
+     --lastName <last-name> \
+     --domain <bare-domain> \
+     --company "<company-name>" \
+     --linkedinUrl <person-linkedin-url> \
+     --organizationId <apollo-organization-id> \
+     --xHandle <x-username-without-at>
+   selat budget stop
+   ```
 
-Per-step caps come from each step's `maxAmount` (~10x each live price,
-$0.10–$1.00); the manifest top-level fallback `maxAmount` is `$1.00`. Live prices for all
-20 steps sum to ≈ $0.74, and running every branch is rarely necessary — a typical
-resolve + anchor + one escalate + verify is well under ten cents.
+The CLI compiles every manifest entry into one independently capped `selat-pay`
+call and continues across failures by default. Inspect the per-step status and
+payment history; a final failure does not mean earlier calls were not charged.
+
+### Fixed step groups
+
+- **Person and supplied identity (7 calls)** — Apollo people enrichment; Hunter
+  email and combined enrichment; Clado LinkedIn profile and scrape; Hunter email
+  finder; a five-result Clado person search.
+- **Company and signals (8 calls)** — Apollo company search and enrichment;
+  Company Enrich and Hunter company cross-checks; Apollo job postings; two Brave
+  searches for recent company and funding news; Diffbot organization data.
+- **Contact, social, and verification (3 calls)** — Clado email-and-phone reveal;
+  SELAT-native X/Twitter profile; Hunter verification of the supplied email.
+
+The group labels are for reporting only. They do not create conditional
+execution or data dependencies.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `email` | no | `""` | Person work email — primary resolve key (Hunter email/combined enrichment, Apollo people enrichment). |
-| `name` | no | `""` | Full name — also used as the social handle for the SELAT-native X/Twitter, StableSocial Instagram/TikTok and Clado handle-search steps. |
-| `firstName` | no | `""` | First name — Hunter email-finder, Apollo people enrichment. |
-| `lastName` | no | `""` | Last name — paired with firstName + domain for email-finder/enrichment. |
-| `domain` | no | `""` | Company domain — primary key for the Abstract lookup, Apollo org-enrichment and Hunter company calls. |
-| `company` | no | `""` | Company name — Apollo org-search fallback when no domain; query seed for Brave news and Diffbot KG. |
-| `linkedinUrl` | no | `""` | Person/company LinkedIn URL — Clado linkedin-profile, contacts and scrape (sent in the JSON body; no path encoding). |
-| `organizationId` | no | `""` | Apollo organization id — returned by the org-enrichment/org-search anchor steps; required by the job-postings signals step. |
+| `email` | yes | none | Known work email for the target; enriched and verified as supplied. |
+| `firstName` | yes | none | Target first name matching the email and LinkedIn URL. |
+| `lastName` | yes | none | Target last name matching the email and LinkedIn URL. |
+| `domain` | yes | none | Bare employer domain such as `stripe.com`. |
+| `company` | yes | none | Employer name corresponding to the domain and Apollo organization ID. |
+| `linkedinUrl` | yes | none | LinkedIn person-profile URL for the same target. |
+| `organizationId` | yes | none | Apollo organization ID for the same company. |
+| `xHandle` | yes | none | X/Twitter username without `@`, matching the target. |
 
-All params are optional, but **at least one identifier must be supplied** — supply
-the strongest you have (email > LinkedIn URL > domain + name > company). Each step
-only fires usefully when its required `${...}` placeholders are filled; pass empty
-strings for the rest.
+Return a source-labelled report rather than a raw data dump:
 
-Outputs: per-step JSON from each merchant (person record, firmographics, contact
-points, tech list, signal arrays, social profiles) plus the CLI's per-step
-`status`/cost summary. Treat the highest-confidence email + phone across the tiers as
-the canonical result, and ship only an email that passed the verify tier.
+1. an identity-consistency assessment across the supplied identifiers;
+2. the supplied-email verdict versus any separately inferred email;
+3. person, role, LinkedIn, X/Twitter, and contact findings;
+4. company firmographics, technology, hiring, knowledge-graph, news, and funding
+   signals;
+5. provider disagreements, missing fields, and confidence limits; and
+6. every step's success/failure plus the final settled spend.
+
+Do not silently merge conflicting people or companies. Treat every supplied
+identifier and provider match as a hypothesis to cross-check, not proof of
+identity. Do not expose unnecessary personal data in the final report.
 
 ## Gotchas
 
-- **All via the SELAT Router** — `SELAT_ROUTER_URL` must be set and the router
-  reachable for the 19 SELAT Router steps; the SELAT-native X/Twitter step also settles through the SELAT Router, like the other
-  x402 call and settles via Circle Gateway.
-- **Don't run all 20 steps.** The manifest is a menu ordered cheapest-first; the
-  agent walks it and stops per the stop/escalation conditions above. Blindly running
-  every branch wastes money (≈ $0.74 for everything) even within the per-step caps.
-- **`organizationId` is a chained input** — Apollo `job-postings` takes an
-  organization id, not a domain; pull it from the Apollo org-enrichment/org-search
-  response before firing the hiring-signals step.
-- **Deliberate near-duplicates** — the two Brave `news-search` steps hit the same
-  endpoint with different queries (`"${company} news"` vs `"${company} funding
-  round"`); they are separate on purpose. The Diffbot KG `enhance` call covers
-  funding rounds, investors and connections in one response — do not call it once
-  per slice.
-- **Escalate is expensive** — Clado `search` ($0.32) and Clado `contacts` ($0.045)
-  dominate the cost; gate them behind a real gap.
-- **Verify last, not first** — verifying an email you're about to discard wastes the call.
+- **Fixed bundle, not a conditional waterfall.** `selat skill run` has no step
+  selector and executes all 18 manifest entries. It cannot stop after a match or
+  skip premium calls.
+- **No inter-step dataflow.** Apollo's organization ID, Hunter's inferred email,
+  and any discovered social link are not fed into later requests. That is why all
+  eight coherent inputs are required before the run.
+- **Per-step caps are not cumulative.** The manifest caps each call separately.
+  The armed session budget is the only run-wide tripwire; calculate it from fresh
+  quotes and explicit approval.
+- **Paid failures can still cost money.** Providers may capture payment before
+  validating the body. The runner then continues to later steps by default.
+  Never retry automatically or treat a partial failure as zero spend.
+- **The final verifier checks the supplied `email`.** It does not consume the
+  separate email-finder response.
+- **The X/Twitter call requires a username, not a full name.** Supply `xHandle`
+  without `@`; the skill does not infer it.
+- **The Apollo job-postings call requires a supplied organization ID.** It does
+  not consume the earlier Apollo organization response.
+- **Clado contact enrichment explicitly requests email and phone.** This dynamic
+  option can quote higher than a bare contact lookup; the free probe is the price
+  source of truth.
+- **Clado search is bounded to five results.** This limits the dynamic quote and
+  reduces ambiguous identity matches.
+- **Diffbot requires arrays for `name` and `url`.** The manifest pins both shapes
+  and disables paid refresh.
+- **Live quote is authoritative.** Never reuse a price from this document as
+  approval; run the free probe immediately before every paid session.
 
 ## Validation
 
-> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+Validate the target skill and then the repository:
 
-- Probe any step for free with `selat-pay`'s `--probe-only` (sends the 402 preflight,
-  pays nothing):
-  - `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment" --body '{"email":"test@stripe.com"}' --chain base --probe-only`
-  - `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment" --body '{"domain":"stripe.com"}' --chain base --probe-only`
-  - `selat-pay POST "https://clado.mpp.paywithlocus.com/clado/contacts" --body '{"linkedin_url":"https://linkedin.com/in/williamhgates"}' --chain base --probe-only`
-  - `selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=patrickc" --chain base --probe-only`
-- Validate the recipe locally: `python3 -c "import json; json.load(open('manifest.json'))"`.
-- A clean run prints `status=200` for the steps that fired and a per-step cost
-  summary; the SELAT Router steps each show a SELAT Router hop.
+```bash
+selat skill validate ./skills/enrich-waterfall
+npm run validate
+```
+
+Free end-to-end quote validation uses all eight coherent inputs and
+`--live-probe` as shown in Workflow Step 3. A passing receipt must show all 18
+endpoints reachable and each quote within its per-step cap. Do not add `--pay`
+without separate approval and an armed session budget.
+
+Useful single-endpoint probes while debugging are free and never settle. These
+optional commands require a shell-callable `selat-pay`; the bundled copy is
+sufficient for the full `selat skill verify` command even when it is not on
+`PATH`:
+
+- `selat-pay GET "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=example.com" --chain base --max-amount 0.02 --probe-only --live-probe`
+- `selat-pay POST "https://clado.mpp.paywithlocus.com/clado/contacts" --body '{"linkedin_url":"https://www.linkedin.com/in/example","email_enrichment":true,"phone_enrichment":true}' --chain base --max-amount 0.20 --probe-only --live-probe`
+- `selat-pay POST "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance" --body '{"type":"Organization","name":["Example"],"url":["https://example.com"],"refresh":false,"size":1}' --chain base --max-amount 0.05 --probe-only --live-probe`
 
 ## References
 
-- `manifest.json` — the machine-readable, cheapest-first payment recipe this skill runs.
-- [`references/endpoints.md`](references/endpoints.md) — every endpoint, price, tier, and source.
-- `evals/evals.json` — trigger + output-quality evals.
+- `manifest.json` — the fixed, machine-readable 18-call recipe.
+- [`references/endpoints.md`](references/endpoints.md) — request schemas, free
+  probe quotes, per-step caps, and input mapping.
+- [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
+- `evals/evals.json` — trigger, control-flow, safety, and output-quality evals.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
+
+> Third-party API names are trademarks of their respective owners; this skill
+> only routes explicitly approved payments to their endpoints.
