@@ -60,7 +60,7 @@ The table below mirrors the current `index.json` catalog.
 | [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Person lookup through Nyne. |
 | [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Cost-conscious GTM enrichment with conditional gap fills. |
 | [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM enrichment through Apollo and Sixtyfour. |
-| [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Prospect-list building, contact lookup, and verification. |
+| [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Fixed five-read B2B prospecting bundle: bounded company/people search, privacy-limited professional cross-check, work-email verification, and company context. |
 | [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Email-campaign prospecting and deliverability pipeline. |
 | [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | Recent funding-round discovery. |
 | [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Twitter/X influencer discovery with enrichment. |
