@@ -47,7 +47,7 @@
       "name": "email-campaign",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Email-campaign prospect + verify pipeline (Fiber, Hunter, Sixtyfour, Brand.dev). Paid per call via MPP on Tempo."
+      "description": "Fixed six-call, read-only email-campaign preparation pipeline. Discovers 10 companies by industry and 50-500 employee size, retrieves domain-level email patterns, finds and verifies one known target's work email, enriches that person, and adds company firmographics. Requires a complete, internally consistent target. It does not draft or send email. All calls settle through the SELAT Router over MPP on Tempo."
     },
     {
       "name": "recent-funding-rounds",
