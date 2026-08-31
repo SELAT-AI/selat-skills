@@ -1,156 +1,123 @@
 {
   "schema": "selat-skill/v1",
   "name": "scrapecreators",
-  "description": "Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle Gateway), StableSocial (Instagram + TikTok — MPP, via the SELAT Router), and Clado (LinkedIn — MPP on Tempo): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI.",
-  "maxAmount": "0.75",
+  "description": "Fixed 11-call, read-only public social-media research bundle for one coherent target: Twitter/X profile, recent posts, and one supplied tweet; LinkedIn person, post, and company pages; Instagram profile and recent posts; and TikTok profile, hashtag results, and a regional trending feed. Twitter calls use SELAT-native x402; the remaining calls use synchronous Scrape Creators endpoints over MPP. Every call is paid independently through the SELAT Router.",
+  "maxAmount": "0.03",
   "params": {
-    "handle": {
-      "required": false,
-      "default": "openai",
-      "description": "Social handle without @ (used by the X/Twitter, Instagram, and TikTok profile/posts lookups)."
+    "twitterHandle": {
+      "required": true,
+      "description": "Public Twitter/X handle without @ for the same target represented by the other supplied identifiers."
     },
     "tweetId": {
-      "required": false,
-      "default": "1234567890123456789",
-      "description": "Numeric tweet ID for the X/Twitter tweet-details lookup (catalog.selat.ai takes tweet IDs, not tweet URLs)."
+      "required": true,
+      "description": "Numeric ID of one public tweet from or directly relevant to the target; not a tweet URL."
     },
-    "linkedinUrl": {
-      "required": false,
-      "default": "https://linkedin.com/in/satyanadella",
-      "description": "LinkedIn profile URL."
+    "linkedinProfileUrl": {
+      "required": true,
+      "description": "Full public LinkedIn person-profile URL for the target."
     },
     "linkedinPostUrl": {
-      "required": false,
-      "default": "https://linkedin.com/posts/somepost",
-      "description": "LinkedIn post URL."
+      "required": true,
+      "description": "Full public LinkedIn post or article URL to retrieve."
     },
     "linkedinCompanyUrl": {
-      "required": false,
-      "default": "https://linkedin.com/company/anthropic",
-      "description": "LinkedIn company page URL."
+      "required": true,
+      "description": "Full public LinkedIn company-page URL for the target's company."
     },
     "instagramHandle": {
-      "required": false,
-      "default": "openai",
-      "description": "Instagram handle for the secondary profile lookup (StableSocial resolves profiles by handle; replaces the old numeric userId lookup)."
+      "required": true,
+      "description": "Public Instagram handle without @ for the same target."
     },
-    "hashtag": {
-      "required": false,
-      "default": "tech",
-      "description": "TikTok hashtag to search for, without #."
+    "tiktokHandle": {
+      "required": true,
+      "description": "Public TikTok handle without @ for the same target."
+    },
+    "tiktokHashtag": {
+      "required": true,
+      "description": "TikTok hashtag relevant to the research target, without #."
+    },
+    "region": {
+      "required": true,
+      "description": "Two-letter region code for the TikTok hashtag proxy and trending feed, for example US."
     }
   },
   "steps": [
     {
-      "label": "X/Twitter profile — SELAT Twitter API (x402 via Circle Gateway)",
+      "label": "Twitter/X profile — SELAT Twitter API (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://catalog.selat.ai/twitter/user/info?userName=${handle}",
-      "maxAmount": "0.10"
+      "url": "https://catalog.selat.ai/twitter/user/info?userName=${twitterHandle}",
+      "maxAmount": "0.002"
     },
     {
-      "label": "X/Twitter user tweets — SELAT Twitter API (x402 via Circle Gateway)",
+      "label": "Twitter/X recent posts — SELAT Twitter API (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
-      "maxAmount": "0.10"
+      "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${twitterHandle}",
+      "maxAmount": "0.002"
     },
     {
-      "label": "X/Twitter tweet details — SELAT Twitter API (x402 via Circle Gateway)",
+      "label": "Twitter/X supplied tweet — SELAT Twitter API (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}",
-      "maxAmount": "0.10"
+      "maxAmount": "0.002"
     },
     {
-      "label": "LinkedIn profile — Clado (MPP on Tempo)",
+      "label": "LinkedIn public person profile — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
-      "body": {
-        "linkedin_url": "${linkedinUrl}"
-      },
-      "maxAmount": "0.15"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinProfileUrl}",
+      "maxAmount": "0.03"
     },
     {
-      "label": "LinkedIn post — Clado scrape (MPP on Tempo)",
+      "label": "LinkedIn public post or article — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
-      "body": {
-        "linkedin_url": "${linkedinPostUrl}"
-      },
-      "maxAmount": "0.25"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/post?url=${linkedinPostUrl}",
+      "maxAmount": "0.03"
     },
     {
-      "label": "LinkedIn company page — Clado scrape (MPP on Tempo)",
+      "label": "LinkedIn public company page — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
-      "body": {
-        "linkedin_url": "${linkedinCompanyUrl}"
-      },
-      "maxAmount": "0.25"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/company?url=${linkedinCompanyUrl}",
+      "maxAmount": "0.03"
     },
     {
-      "label": "Instagram profile — StableSocial (MPP on Tempo)",
+      "label": "Instagram public profile — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/instagram/profile",
-      "body": {
-        "handle": "${handle}"
-      },
-      "maxAmount": "0.75"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/instagram/profile?handle=${instagramHandle}&trim=true",
+      "maxAmount": "0.03"
     },
     {
-      "label": "Instagram profile by handle — StableSocial (MPP on Tempo)",
+      "label": "Instagram public recent posts — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/instagram/profile",
-      "body": {
-        "handle": "${instagramHandle}"
-      },
-      "maxAmount": "0.75"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v2/instagram/user/posts?handle=${instagramHandle}&trim=true",
+      "maxAmount": "0.03"
     },
     {
-      "label": "Instagram recent posts — StableSocial (MPP on Tempo)",
+      "label": "TikTok public profile — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/instagram/posts",
-      "body": {
-        "handle": "${handle}"
-      },
-      "maxAmount": "0.75"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/profile?handle=${tiktokHandle}",
+      "maxAmount": "0.03"
     },
     {
-      "label": "TikTok profile — StableSocial (MPP on Tempo)",
+      "label": "TikTok hashtag results — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/tiktok/profile",
-      "body": {
-        "handle": "${handle}"
-      },
-      "maxAmount": "0.75"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/search/hashtag?hashtag=${tiktokHashtag}&region=${region}&trim=true",
+      "maxAmount": "0.03"
     },
     {
-      "label": "TikTok hashtag search — StableSocial (MPP on Tempo)",
+      "label": "TikTok regional trending feed — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/tiktok/search-hashtag",
-      "body": {
-        "hashtag": "${hashtag}"
-      },
-      "maxAmount": "0.75"
-    },
-    {
-      "label": "TikTok trending via keyword search — StableSocial (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/tiktok/search",
-      "body": {
-        "query": "trending"
-      },
-      "maxAmount": "0.75"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/tiktok/get-trending-feed?region=${region}&trim=true",
+      "maxAmount": "0.03"
     }
   ]
 }
