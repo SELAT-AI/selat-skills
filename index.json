@@ -89,7 +89,7 @@
       "name": "account-intel",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans three rails (Circle Gateway nanopayment + MPP + x402 on Base), paid per call over selat-pay (USDC via Circle Gateway), no API keys."
+      "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations), with holdings context from a user-supplied associated EVM wallet, into one cross-platform footprint brief. Uses x402 via Circle Gateway and MPP on Tempo, paid per call over selat-pay (USDC via Circle Gateway), no API keys."
     },
     {
       "name": "vc-ai-infra-scout",
