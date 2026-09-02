@@ -14,12 +14,13 @@
     },
     {
       "id": "trigger-2",
-      "prompt": "Check what the weather looks like in Mount Bromo this week and where the IP 1.1.1.1 is located.",
-      "expected_output": "Agent runs selat skill run travel-brief --location \"Mount Bromo\" --ip 1.1.1.1 and reports the forecast plus the IP's city/country/ISP.",
+      "prompt": "We're driving to Mount Bromo this weekend - what's the outlook, and make me a QR code for the maps link.",
+      "expected_output": "Agent runs selat skill run travel-brief --location \"Mount Bromo\" --data \"<maps URL>\" and relays the 7-day forecast plus confirmation that the destination QR is ready.",
       "assertions": [
         "travel-brief is selected",
-        "both location and ip params are passed",
-        "ip geolocation result includes country and city"
+        "location param is set to the destination",
+        "data param carries the maps URL",
+        "forecast days are summarized in plain language, not raw JSON"
       ]
     },
     {
@@ -33,9 +34,17 @@
     {
       "id": "notrigger-2",
       "prompt": "Generate a QR code for my Wi-Fi password.",
-      "expected_output": "Skill does not trigger on its own (single-purpose QR request; agent should prefer a dedicated QR capability or use only the qr step contextually).",
+      "expected_output": "Skill does not trigger on its own (single-purpose QR request; the QR step exists only inside a travel brief).",
       "assertions": [
         "travel-brief is not selected as a whole-skill match for an isolated QR task"
+      ]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "Which country is the IP 8.8.8.8 located in?",
+      "expected_output": "Skill does not trigger (IP lookups are out of scope for a travel brief).",
+      "assertions": [
+        "travel-brief is not selected for IP geolocation tasks"
       ]
     }
   ]

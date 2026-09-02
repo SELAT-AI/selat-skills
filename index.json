@@ -119,7 +119,7 @@
       "name": "travel-brief",
       "rail": "routed",
       "kind": "multi",
-      "description": "One-shot pre-travel brief for any city: 7-day weather forecast, geolocation context for a reference IP, and a scannable QR code linking to the destination - paid per call in USDC, no API keys."
+      "description": "One-shot pre-travel brief for any city: 7-day weather forecast plus a scannable QR code linking to the destination - paid per call in USDC, no API keys."
     }
   ]
 }
