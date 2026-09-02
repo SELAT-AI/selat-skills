@@ -1,83 +1,57 @@
 {
   "schema": "selat-skill/v1",
   "name": "find-twitter-influencers",
-  "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the company (Apollo org search, Abstract Company Enrichment), discovers curated listicles (Exa), pulls Twitter profiles and engagement (SELAT-native, Circle x402 catalog), and enriches contacts (Hunter, Clado). Mixed rail: most steps are MPP-via the SELAT Router; the SELAT-native Twitter steps are x402 on Base calls via the SELAT Router.",
-  "maxAmount": "0.50",
+  "description": "Fixed five-call, read-only Twitter/X influencer discovery bundle for one company and niche. Cross-checks brand context, curated web roundups, Twitter user search, and live topic chatter; it returns candidate evidence for agent-side deduplication and ranking without purchasing contact data.",
+  "maxAmount": "0.02",
   "params": {
     "company": {
       "required": true,
-      "default": "Stripe",
-      "description": "Company or brand name to find influencers for (used for Apollo org search)."
+      "description": "Company or brand name whose audience and partnership fit should guide influencer ranking."
     },
     "domain": {
-      "required": false,
-      "default": "stripe.com",
-      "description": "Company domain (e.g. acme.com). When provided, Abstract Company Enrichment lookup is used for richer context."
+      "required": true,
+      "description": "Bare domain for the same company, e.g. acme.com."
     },
-    "query": {
-      "required": false,
-      "default": "best fintech Twitter accounts to follow",
-      "description": "Exa search query for curated influencer listicles in the target niche."
+    "webQuery": {
+      "required": true,
+      "description": "Web query for independent curated influencer roundups in the target niche, e.g. best fintech Twitter X creators to follow."
     },
-    "similarUrl": {
-      "required": false,
-      "default": "https://example.com/top-fintech-twitter-influencers",
-      "description": "A strong listicle URL to expand from via Exa findSimilar."
+    "userQuery": {
+      "required": true,
+      "description": "Concise Twitter user-search keyword for relevant accounts, e.g. fintech payments."
     },
-    "handle": {
-      "required": false,
-      "default": "examplehandle",
-      "description": "Twitter/X handle (no @) to fetch a profile and recent tweets for (SELAT-native userName query param)."
-    },
-    "linkedinUrl": {
-      "required": false,
-      "default": "https://linkedin.com/in/janesmith",
-      "description": "LinkedIn profile URL for Clado contact enrichment (email + phone)."
-    },
-    "firstName": {
-      "required": false,
-      "default": "Jane",
-      "description": "First name for Hunter email-finder."
-    },
-    "lastName": {
-      "required": false,
-      "default": "Smith",
-      "description": "Last name for Hunter email-finder."
-    },
-    "contactDomain": {
-      "required": false,
-      "default": "janesmithcreative.com",
-      "description": "Personal/company domain for Hunter email-finder."
+    "tweetQuery": {
+      "required": true,
+      "description": "Twitter advanced-search query for current topical authors; supports X operators such as lang:en, min_faves:, since:, and hashtags."
     }
   },
   "steps": [
     {
-      "label": "resolve company by name — Apollo org search (MPP on Tempo)",
+      "label": "brand context by name — Apollo org search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
       "body": {
-        "q_organization_name": "${company}"
+        "q_organization_name": "${company}",
+        "per_page": 5,
+        "page": 1
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.01"
     },
     {
-      "label": "resolve company by domain — Abstract Company Enrichment (MPP on Tempo)",
+      "label": "brand context by domain — Company Enrich (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     },
     {
-      "label": "discover curated influencer listicles — Exa search (MPP on Tempo)",
+      "label": "curated influencer roundups — Exa search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://exa.mpp.tempo.xyz/search",
       "body": {
-        "query": "${query}",
+        "query": "${webQuery}",
         "numResults": 10,
         "contents": {
           "text": {
@@ -85,59 +59,21 @@
           }
         }
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.01"
     },
     {
-      "label": "expand from a strong listicle — Exa findSimilar (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://exa.mpp.tempo.xyz/findSimilar",
-      "body": {
-        "url": "${similarUrl}",
-        "numResults": 5,
-        "contents": {
-          "text": {
-            "maxCharacters": 5000
-          }
-        }
-      },
-      "maxAmount": "0.10"
-    },
-    {
-      "label": "fetch Twitter profile + counts — SELAT Twitter API (x402 via Circle Gateway)",
+      "label": "candidate account search — SELAT Twitter user search (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://catalog.selat.ai/twitter/user/info?userName=${handle}",
-      "maxAmount": "0.10"
+      "url": "https://catalog.selat.ai/twitter/user/search?query=${userQuery}",
+      "maxAmount": "0.002"
     },
     {
-      "label": "fetch top tweets + engagement — SELAT Twitter API (x402 via Circle Gateway)",
+      "label": "current niche authors — SELAT Twitter advanced search (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
-      "maxAmount": "0.10"
-    },
-    {
-      "label": "find email by name + domain — Hunter email-finder (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
-      "body": {
-        "domain": "${contactDomain}",
-        "first_name": "${firstName}",
-        "last_name": "${lastName}"
-      },
-      "maxAmount": "0.15"
-    },
-    {
-      "label": "LinkedIn-to-contact (email + phone) — Clado contacts (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
-      "body": {
-        "linkedin_url": "${linkedinUrl}"
-      },
-      "maxAmount": "0.50"
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${tweetQuery}&queryType=Latest",
+      "maxAmount": "0.002"
     }
   ]
 }
