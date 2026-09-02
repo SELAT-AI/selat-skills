@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "city-weather",
-  "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC on Base), no API key.",
+  "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC), no API key.",
   "maxAmount": "0.01",
   "params": {
     "location": {

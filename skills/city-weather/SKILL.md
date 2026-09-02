@@ -1,6 +1,6 @@
 ---
 name: city-weather
-description: Use this skill when the user asks about live weather — e.g. "what's the weather in <city>", "is it raining in <city> today", "3-day forecast for <city>", "how cold will it get in <city>". Runs weather.payapi.market's x402 endpoints (current conditions + forecast) paid per call over the SELAT Router (USDC on Base). Returns temperature, feels-like, humidity, precipitation, wind, and a human-readable description.
+description: Use this skill when the user asks about live weather — e.g. "what's the weather in <city>", "is it raining in <city> today", "3-day forecast for <city>", "how cold will it get in <city>". Runs weather.payapi.market's x402 endpoints (current conditions + forecast) paid per call over the SELAT Router (USDC). Returns temperature, feels-like, humidity, precipitation, wind, and a human-readable description.
 license: Apache-2.0
 compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Gateway balance (settles on whichever supported chain the balance sits on). The routed steps need a reachable SELAT Router (SELAT_ROUTER_URL); `selat skill verify` (without --pay) is free and needs no funded wallet.
 metadata:
@@ -35,7 +35,7 @@ references).
 Two paid steps, native x402, both **routed** through the SELAT Router (`rail: routed`):
 
 - **routed x402** — `POST /current` resolves as `mode=routed-x402`, settled
-  Gateway-batched in USDC on Base. Live quote ≈ $0.00105.
+  Gateway-batched in USDC. Live quote ≈ $0.00105.
 - **routed x402** — `POST /forecast` resolves identically. Live quote ≈ $0.00105.
 
 Full-run cost ≈ **$0.0021**, capped at `maxAmount: $0.01`.

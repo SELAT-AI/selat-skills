@@ -1,7 +1,7 @@
 # Endpoints — city-weather
 
 weather.payapi.market's **Weather Data API** exposed as x402 endpoints, paid per
-call via selat-pay (USDC on Base), **routed** through the SELAT Router. No API key.
+call via selat-pay (USDC), **routed** through the SELAT Router. No API key.
 
 Schemas below are pinned from the upstream's own OpenAPI (`GET
 https://weather.payapi.market/openapi.json`, title "Weather Data API", OpenAPI

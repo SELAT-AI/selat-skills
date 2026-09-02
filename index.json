@@ -119,7 +119,7 @@
       "name": "city-weather",
       "rail": "routed",
       "kind": "multi",
-      "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC on Base), no API key."
+      "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC), no API key."
     }
   ]
 }
