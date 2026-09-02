@@ -1,12 +1,12 @@
 ---
 name: gtm-enrichment-smart
-description: Use this skill when the user wants to enrich a sales lead or GTM prospect from an email address — e.g. "enrich this lead", "who is jane@acme.com", "look up this prospect", "GTM enrichment", "find the person and company behind this email", "qualify this lead with buying signals". Runs a cost-efficient multi-provider waterfall (Apollo, Hunter, and Abstract Company Enrichment via Locus, plus SELAT-native Twitter) mostly via the SELAT Router (MPP), including a SELAT-native Twitter x402 step, to return person + company data, funding, AI/B2B classification, and buying signals with confidence scoring.
+description: Use this skill when the user wants a cost-conscious, read-only qualification brief for one known B2B lead from a work email and matching company domain—for example, "enrich this lead", "who is jane@acme.com", or "qualify this prospect before outreach". It runs a fixed three-call core for combined professional/company context, work-email deliverability, and an independent domain-based company profile. Require a legitimate business purpose, coherent inputs, a free live probe, fresh cost disclosure, and explicit approval. It does not reveal personal emails or phone numbers, supply live buying signals, or send outreach.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Steps 1-7 are MPP on Tempo, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for them; the SELAT-native Twitter step is x402 via Circle Gateway.
+compatibility: "Requires the selat CLI and selat-pay with a funded Circle Agent Wallet for paid runs. All three calls currently traverse the SELAT Router as routed MPP on Tempo. `selat skill verify --live-probe` is free and needs no funded wallet."
 metadata:
   author: SELAT-AI
-  version: "1.0"
-  rail: mixed
+  version: "1.1"
+  rail: MPP on Tempo
   kind: multi
 ---
 
@@ -14,65 +14,160 @@ metadata:
 
 ## When To Use
 
-Use when the user hands you a lead's email (optionally a name/domain) and wants enriched person + company intelligence: title, LinkedIn, location, email deliverability, company description, funding, AI/B2B classification, and buying signals. The skill spends proportionally to lead quality — cheap primary calls first, conditional gap-fills only when earlier results leave gaps. Steps 1-7 are **MPP on Tempo** payments through the SELAT Router; the final Twitter social-proof step is a **via the SELAT Router** x402 call to SELAT-native via the SELAT Router (Circle Gateway-batched).
+Use this skill for a **known B2B lead** when the user supplies both a work email
+and the matching bare employer domain and wants a compact qualification brief:
+
+- professional identity, role, public social/profile links, and employer context;
+- work-email deliverability and confidence;
+- company description, industry, location, headcount, revenue, funding,
+  technology, and public social links; and
+- explicit source agreement, conflicts, missing fields, and limitations.
+
+This is the cost-conscious core. Use `gtm-enrichment-deep` when the user needs an
+additional independent person source and a separate organization-level funding
+and revenue cross-check. This skill does not retrieve current hiring, product,
+pricing, or Twitter activity.
+
+Use only for a legitimate business purpose. Do not use a personal/free-mail
+address, infer sensitive traits, reveal personal emails or phone numbers, or
+send outreach. Email deliverability is not consent to contact someone.
 
 ## Workflow
 
-1. Install: `selat skill install gtm-enrichment-smart`
-2. Run: `selat skill run gtm-enrichment-smart --email jane@acme.com [--domain acme.com] [--organizationId <apollo_org_id>] [--twitterHandle acmehq]`
-3. The CLI compiles each manifest step into a `selat-pay` call (capped at its per-step `maxAmount`), runs them in order, and prints a per-step ✓/✗ summary.
+1. Install the vetted recipe:
 
-Waterfall order (the manifest runs them sequentially; later steps are conditional and should be gated by the caller on earlier results). Prices are live router quotes, probe-verified 2026-07-10:
+   ```bash
+   selat skill install gtm-enrichment-smart
+   ```
 
-- **Step 1 — Apollo (via Locus)** `POST /apollo/people-enrichment` ($0.0084) — primary person + embedded company/funding. Capture `organization.id` for the job-postings step. This is also the person fallback: the old separate AI person-fallback step mapped to this same endpoint with the same params, so the two were merged into this single step.
-- **Step 2 — Hunter (via Locus)** `POST /hunter/combined-enrichment` ($0.02415) — combined person+company cross-reference from the email.
-- **Step 3 — Hunter (via Locus)** `POST /hunter/email-verifier` ($0.0084) — email deliverability (valid/risky/undeliverable).
-- **Step 4 — Abstract Company Enrichment (via Locus)** `POST /abstract-company-enrichment/lookup` ($0.0063) — company description, industry/SIC, and firmographics. Skip for free-email domains.
-- **Step 5 — Apollo (via Locus)** `POST /apollo/org-enrichment` ($0.0084) — funding/headcount gap-fill, only if step 1 returned no funding.
-- **Step 6 — Hunter (via Locus)** `POST /hunter/email-enrichment` ($0.01365) — person tie-breaker, only if Apollo and Hunter disagree on name/title.
-- **Step 7 — Hunter (via Locus)** `POST /hunter/company-enrichment` ($0.01365) — company fallback, only if major gaps remain and the company has >500 employees.
-- **Step 8 — SELAT-native (x402 via Circle Gateway)** `GET /twitter/user/info?userName=…` ($0.001) — follower social proof, only if a Twitter handle was found. x402 via Circle Gateway.
-- **Optional caller-invoked signal (not a manifest step) — Apollo (via Locus)** `POST /apollo/job-postings` body `{"organization_id":"${organizationId}"}` ($0.00525) — hiring signals. The `organization_id` comes from the step-1 people-enrichment (or an org-search) result; only invoke it once an org id was captured.
+2. Collect both required inputs:
+
+   - `email`: the lead's known work email;
+   - `domain`: the bare domain belonging to the same employer.
+
+   Lowercase both for comparison and confirm that the text after `@` equals the
+   supplied domain. Stop if they differ or if the address uses a consumer
+   free-mail domain. The manifest does not derive one parameter from another.
+
+3. Probe all three payment challenges for free:
+
+   ```bash
+   SELAT_ROUTER_URL=https://router.selat.ai \
+     selat skill verify ~/.config/selat/skills/gtm-enrichment-smart \
+     --email "<work-email>" \
+     --domain <matching-bare-domain> \
+     --live-probe
+   ```
+
+4. Show every live quote, the expected three-call total, and the sum of the
+   per-step caps. Propose a cumulative session budget no higher than that cap
+   sum, explain that all three calls execute, and wait for explicit approval.
+
+5. Only after approval and a spendable Gateway balance, arm the approved
+   cumulative budget, execute the fixed bundle once, and stop the budget after
+   success or failure:
+
+   ```bash
+   selat budget start --amount <approved-cumulative-cap>
+   selat skill run gtm-enrichment-smart \
+     --email "<work-email>" \
+     --domain <matching-bare-domain>
+   selat budget stop
+   ```
+
+The CLI runs every manifest step in order and continues after an individual
+failure. Check per-step results and payment history before any retry; obtain a
+fresh quote and separate approval for the retry.
+
+## Fixed Steps
+
+1. **Combined person and company enrichment** — retrieves professional identity,
+   role, location, public profile links, and embedded company context from the
+   supplied work email.
+2. **Work-email verification** — checks mail infrastructure and deliverability
+   signals for the exact supplied address. It does not establish consent.
+3. **Independent company-domain profile** — retrieves firmographics, revenue,
+   funding, technology, and public social context for the matching domain.
+
+This is a fixed qualification core, not a conditional waterfall. The current
+SELAT manifest format has no result-dependent branching, so `selat skill run`
+always executes all three calls.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `email` | yes | — | Lead email; drives people-enrichment, combined-enrichment, email-verifier, email-enrichment |
-| `domain` | no | — | Company domain from the email; drives Abstract lookup, Apollo org-enrichment, Hunter company-enrichment |
-| `organizationId` | no | — | Apollo org id from step 1; required for the job-postings step |
-| `twitterHandle` | no | — | Twitter/X handle from enrichment data; required for the SELAT-native Twitter step (sent as `userName`) |
+| `email` | yes | none | Known work email for the target B2B lead. |
+| `domain` | yes | none | Matching bare employer domain. |
 
-Outputs: a merged JSON object with `person` (name, title, linkedin_url, location, email_verified, confidence, source), `company` (name, domain, description, funding, classification.is_ai / is_b2b_saas, buying_signals), and `meta` (per-call status, cost, phases run). Cross-reference Apollo + Hunter + Abstract for confidence (high = 2+ sources agree).
+The runner returns three independent raw responses. The agent—not the manifest—
+must normalize and merge them into:
+
+1. `target`: supplied email and domain, plus retrieval time;
+2. `person`: supported professional name, title, location, public profile links,
+   employer match, and field-level source/confidence;
+3. `email_status`: deliverability category, confidence, and technical caveats;
+4. `company`: supported name, description, industry, location, employee count,
+   revenue, funding, technology, and public social links;
+5. `qualification`: evidence-based fit observations and unresolved gaps, not an
+   automated contact or rejection decision; and
+6. `meta`: every call's status, observed cost, rail, and any error.
+
+Prefer directly returned fields over inference. Mark high confidence only when
+independent sources agree, medium when one source returns a field, and low when
+the value is inferred. Never silently average conflicting headcount, revenue,
+or funding values. No endpoint returns a reliable AI/B2B-SaaS classification;
+if requested, infer it from descriptions or technologies and label it low
+confidence.
+
+## Rails And Costs
+
+- All three calls currently route as `routed-mpp` over MPP on Tempo through the
+  SELAT Router.
+- Free live verification on 2026-08-30 quoted `$0.024150` for combined
+  enrichment, `$0.008400` for email verification, and `$0.012862` for the
+  independent company profile, for an expected fixed-run total of `$0.045412`.
+- The three per-step caps are `$0.03`, `$0.015`, and `$0.02`; their sum is
+  `$0.065`. Caps are ceilings, not price estimates, and are not pooled.
+- Re-probe before every paid run because prices, rails, and availability can
+  change. The live quote is authoritative.
 
 ## Gotchas
 
-- **Mixed rail**: steps 1-7 are MPP on Tempo and need `SELAT_ROUTER_URL` set and the router reachable; the SELAT-native Twitter step (step 8) is x402 via Circle Gateway (Gateway-batched).
-- The old separate expensive AI person-fallback step was **merged into step 1**: its replacement resolved to the same Apollo `people-enrichment` endpoint with the same params, so a separate fallback call would just repeat step 1. If step 1 finds no person, the Hunter steps (2 and 6) are the remaining person sources.
-- The product/pricing buying-signal call (formerly Brand.dev `ai/products`) has **no equivalent** among the replacement merchants and was removed from the workflow — a capability gap, not an oversight.
-- The source skill's free GitHub-stars step is **dropped**: GitHub's public API is not a payable merchant, so it cannot be expressed as an inert payment step.
-- Live prices sum to ≈ $0.083 for all 8 manifest steps (worst case); a typical waterfall (steps 1-4 + the org gap-fill) costs ≈ $0.056. Per-step `maxAmount` values are ~10x each live price ($0.10–$0.25) — ceilings, not price estimates.
-- Steps run independently: gate the conditional steps (5-8 and job-postings) on prior results so you do not pay for gap-fill or buying-signal calls on unqualified leads.
-- The Abstract Company Enrichment lookup should be skipped for free-email providers (gmail/yahoo/outlook/etc.) to save $0.0063.
-- All calls in this waterfall are synchronous — no async polling.
-- The job-postings call takes `organization_id` in the **body** (no path substitution); if it is empty the merchant returns an error — only invoke it once step 1 yields an org id.
+- **Fixed pipeline:** all three calls run. There are no conditional fallbacks or
+  skipped steps in the manifest runner.
+- **No automatic domain derivation:** the caller passes both `email` and
+  `domain`; validate their relationship before probing or paying.
+- **No inter-step dataflow:** a provider result cannot automatically supply a
+  Twitter handle or organization ID to another manifest step.
+- **No live buying signals:** hiring, product, pricing, and social-activity reads
+  were removed rather than represented with unrelated defaults.
+- **Deliverability is not consent:** never turn a positive verifier result into
+  automatic outreach.
+- **No automatic merge:** synthesize the three raw responses with provenance and
+  keep conflicting values visible.
+- **Paid failures may charge:** the runner continues after a failed step. Check
+  history and never auto-retry.
 
 ## Validation
 
-> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
-
-Probe each endpoint for free (402 challenge, no payment) before a paid run:
-
-- `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" --body '{"email":"jane@acme.com","reveal_personal_emails":true}' --chain base --probe-only`
-- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment" --body '{"email":"jane@acme.com"}' --chain base --probe-only`
-- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"jane@acme.com"}' --chain base --probe-only`
-- `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"acme.com"}' --chain base --probe-only`
-- `selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=elonmusk" --chain base --probe-only`
-
-A successful run prints `status=200` for each executed step and a ✓ summary; gated/skipped steps appear as skipped in the run summary.
+- Static:
+  `selat skill validate ./skills/gtm-enrichment-smart`
+- Live gate, free:
+  `selat skill verify ./skills/gtm-enrichment-smart --email "research@example.com" --domain example.com --live-probe`
+- Missing-input gate: omit either required parameter and confirm verification
+  fails before any endpoint call.
+- Paid smoke test: only after coherent user-approved inputs, fresh quotes,
+  explicit approval, and an armed cumulative session budget; add `--pay` to the
+  verification command or run the skill once.
 
 ## References
 
-- `manifest.json` — the machine-readable payment recipe this skill runs.
-- [`references/endpoints.md`](references/endpoints.md) — merchant / method+path / price / rail table for every step.
+- `manifest.json` — machine-readable fixed payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — live schema, price,
+  privacy, removed-call, and interpretation notes.
+- [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
+
+Provider names and trademarks belong to their respective owners and are used
+only for endpoint identification.
