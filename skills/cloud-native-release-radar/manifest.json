@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "cloud-native-release-radar",
-  "description": "Monitor official and community Twitter/X signals for releases, upgrade issues, and security advisories around a cloud-native project.",
+  "description": "Monitor official and community Twitter/X signals for releases, upgrade issues, and security advisories around a cloud-native project through x402 via Circle Gateway.",
   "maxAmount": "0.01",
   "params": {
     "handle": {
@@ -18,14 +18,14 @@
   "steps": [
     {
       "label": "official project release signals — recent account posts",
-      "rail": "direct",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
       "maxAmount": "0.005"
     },
     {
       "label": "community release and incident signals — advanced search",
-      "rail": "direct",
+      "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${query}&queryType=Latest",
       "maxAmount": "0.005"

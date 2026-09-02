@@ -1,12 +1,12 @@
 ---
 name: cloud-native-release-radar
-description: Use this skill when the user wants current community signals about a release, upgrade problem, CVE, or security advisory for Kubernetes, Terraform, Argo CD, Istio, Cilium, Helm, or another cloud-native/DevOps project. Cross-checks the project's official Twitter/X account with broader community search through SELAT-native direct endpoints and produces an operator-focused signal brief with explicit uncertainty.
+description: Use this skill when the user wants current community signals about a release, upgrade problem, CVE, or security advisory for Kubernetes, Terraform, Argo CD, Istio, Cilium, Helm, or another cloud-native/DevOps project. Cross-checks the project's official Twitter/X account with broader community search through SELAT-native x402 endpoints via Circle Gateway and produces an operator-focused signal brief with explicit uncertainty.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Gateway balance.
+compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Gateway balance for x402 settlement.
 metadata:
   author: Messi304
   version: "1.0"
-  rail: direct
+  rail: x402 via Circle Gateway
   kind: multi
 ---
 
@@ -17,6 +17,17 @@ metadata:
 Use when an operator needs a current, corroborated brief before upgrading or reviewing a cloud-native dependency. Typical requests mention the latest release, release notes, upgrade risk, breaking changes, deprecations, CVEs, or security advisories for a named project.
 
 Do not present social posts as authoritative release documentation. Use the skill as an early-warning and community-signal layer, then tell the user which claims still need confirmation against project-owned release notes or advisories.
+
+### Why this is a separate skill, not a `twitter-research` preset
+
+The two steps here call the same `catalog.selat.ai` endpoints (`user/last_tweets`, `tweet/advanced_search`) that `twitter-research` already exposes, so this is fairly read as a query-preset over that capability. It is registered separately anyway, for reasons that go beyond "different defaults":
+
+- **Different selection contract.** `twitter-research` is an explicit 9-endpoint *menu*: "do NOT run all 9 … select only the endpoint(s) the request needs." This skill's two calls are not an optional subset of each other — the safety property (corroborate the official account against community reports, surface conflicts) only holds if both run together, every time. That is a fixed pipeline, the opposite contract from a menu.
+- **Domain interpretation is mandatory, not left to the caller.** The non-authoritative framing, the required brief structure (versions/CVEs/regressions/conflicts), and the "absence of a result is not absence of an advisory" caveat in Gotchas are load-bearing for an upgrade/incident decision. `twitter-research` is deliberately provider-agnostic and does not editorialize about how callers should interpret results — baking release-risk interpretation into it would encode one downstream use case into a generic read menu used by many callers (including other skills; see next point).
+- **Matches existing repo precedent.** `account-intel` already re-reads these same two `catalog.selat.ai` endpoints as one signal inside its own cross-platform brief, and `social-intel` does the analogous thing for Reddit/web fusion — both are registered as their own skills rather than as `twitter-research` presets, even though `account-intel`'s case is the easier one (it also adds new providers). The repo's established pattern is: `twitter-research` stays a stable, unopinionated menu; domain-specific packaging with a mandatory synthesis/safety contract gets its own entry.
+- **Discoverability.** An agent facing "is it safe to upgrade Argo CD" or "any CVEs for Cilium" is more likely to select a description that names releases/CVEs/advisories/upgrade-risk directly than to first land on a general Twitter-research menu and then have to independently reconstruct the two-call pairing and the non-authoritative framing on every invocation.
+
+If a maintainer would rather fold this in as a `twitter-research` preset instead, the concrete cost is moving the fixed-pairing and interpretation contract above into the generic skill, which changes its menu contract for one downstream use case — happy to do that instead if preferred, but the separate entry is the smaller, more contained change.
 
 ## Workflow
 

@@ -111,7 +111,7 @@
     },
     {
       "name": "cloud-native-release-radar",
-      "rail": "direct",
+      "rail": "x402 via Circle Gateway",
       "kind": "multi",
       "description": "Monitor official and community Twitter/X signals for releases, upgrade issues, and security advisories around a cloud-native project."
     }
