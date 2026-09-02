@@ -1,43 +1,36 @@
 {
   "schema": "selat-skill/v1",
   "name": "comprehensive-enrichment",
-  "description": "Comprehensive person + company enrichment across many MPP on Tempo data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Resolves contact info, verified emails, phone, social profiles, company overview, funding, products, and competitors. All steps are through the SELAT Router (MPP).",
-  "maxAmount": "1.00",
+  "description": "Fixed 13-call, read-only person + company enrichment bundle across Clado, Apollo, Hunter, Company Enrich, Diffbot KG, Exa, and Firecrawl. Requires a complete, internally consistent set of person and company identifiers; every step runs independently through the SELAT Router over MPP on Tempo.",
+  "maxAmount": "0.40",
   "params": {
     "email": {
-      "required": false,
-      "default": "test@stripe.com",
-      "description": "Person work email, e.g. john@stripe.com. Drives person enrichment and email-based lookups."
+      "required": true,
+      "description": "Known person work email belonging to the same person named by firstName/lastName and linkedinUrl. Drives email enrichment and verification."
     },
     "firstName": {
-      "required": false,
-      "default": "John",
-      "description": "Person first name, e.g. John."
+      "required": true,
+      "description": "Person first name, matching email and linkedinUrl."
     },
     "lastName": {
-      "required": false,
-      "default": "Doe",
-      "description": "Person last name, e.g. Doe."
+      "required": true,
+      "description": "Person last name, matching email and linkedinUrl."
     },
     "company": {
-      "required": false,
-      "default": "Stripe",
-      "description": "Company name, e.g. Stripe."
+      "required": true,
+      "description": "Employer/company name corresponding to domain and pricingUrl."
     },
     "domain": {
-      "required": false,
-      "default": "stripe.com",
-      "description": "Company domain, e.g. stripe.com. Drives company enrichment and domain-based email lookups."
+      "required": true,
+      "description": "Bare company domain, e.g. stripe.com, matching company and pricingUrl."
     },
     "linkedinUrl": {
-      "required": false,
-      "default": "https://linkedin.com/in/williamhgates",
-      "description": "LinkedIn person profile URL, e.g. https://linkedin.com/in/johndoe. Required for the phone lookup step (Clado contacts)."
+      "required": true,
+      "description": "LinkedIn person profile URL for the same person; required by Apollo and the Clado phone lookup."
     },
     "pricingUrl": {
-      "required": false,
-      "default": "",
-      "description": "A company page to scrape for products/pricing, e.g. https://stripe.com/pricing."
+      "required": true,
+      "description": "Public HTTPS company page to scrape for products/pricing, on the same company domain when possible."
     }
   },
   "steps": [
@@ -49,7 +42,7 @@
       "body": {
         "query": "${firstName} ${lastName} ${company}"
       },
-      "maxAmount": "1.00"
+      "maxAmount": "0.40"
     },
     {
       "label": "person enrichment — Apollo people-enrichment (MPP on Tempo)",
@@ -62,7 +55,7 @@
         "organization_name": "${company}",
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.05"
     },
     {
       "label": "email enrich — Hunter email-enrichment (MPP on Tempo)",
@@ -72,7 +65,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.15"
+      "maxAmount": "0.02"
     },
     {
       "label": "find work email — Hunter email-finder",
@@ -84,7 +77,7 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "0.15"
+      "maxAmount": "0.02"
     },
     {
       "label": "verify email — Hunter email-verifier",
@@ -94,7 +87,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.015"
     },
     {
       "label": "phone — Clado contacts (MPP on Tempo)",
@@ -104,7 +97,7 @@
       "body": {
         "linkedin_url": "${linkedinUrl}"
       },
-      "maxAmount": "0.50"
+      "maxAmount": "0.06"
     },
     {
       "label": "person research — Exa search (MPP on Tempo)",
@@ -114,17 +107,14 @@
       "body": {
         "query": "${firstName} ${lastName} ${company} recent news interviews talks"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.01"
     },
     {
-      "label": "company overview — Abstract Company Enrichment lookup (MPP on Tempo)",
+      "label": "company overview — Company Enrich lookup by domain (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     },
     {
       "label": "company emails — Hunter domain-search",
@@ -134,7 +124,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "1.00"
+      "maxAmount": "0.15"
     },
     {
       "label": "funding + investors — Diffbot KG enhance (MPP on Tempo)",
@@ -145,7 +135,7 @@
         "type": "Organization",
         "name": "${company}"
       },
-      "maxAmount": "0.40"
+      "maxAmount": "0.05"
     },
     {
       "label": "pricing/features — Firecrawl extract (MPP on Tempo)",
@@ -158,7 +148,7 @@
         ],
         "prompt": "Extract all products, pricing tiers, and features"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.01"
     },
     {
       "label": "competitors — Exa findSimilar",
@@ -172,7 +162,7 @@
           "text": true
         }
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.01"
     },
     {
       "label": "company research — Exa search (MPP on Tempo)",
@@ -182,7 +172,7 @@
       "body": {
         "query": "${company} recent news funding announcements partnerships press releases"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.01"
     }
   ]
 }
