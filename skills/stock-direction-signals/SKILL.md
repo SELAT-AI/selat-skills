@@ -2,7 +2,7 @@
 name: stock-direction-signals
 description: Use this skill when the user wants a bullish, bearish, or mixed directional read on a US stock — e.g. "is NVDA bullish or bearish right now", "give me a directional read on AAPL", "is MAG7 sentiment turning", "what do the chart, news, and social say about AMD", "signal brief on SPY". Covers MAG7 names, semiconductor and AI-infrastructure stocks, tokenized-stock watchlists, and index proxies like SPY/QQQ. Composes only Alpha Vantage MPP (price, technicals, news, earnings), SELAT-native Twitter (social chatter), Circle StableEnrich (Reddit), and Circle Otto (TradFi macro) into a non-advisory signal brief. Pays per call via selat-pay (USDC via Circle Gateway), no API keys.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet. Every step settles through the SELAT Router (MPP on Tempo or x402 on Base), so a reachable SELAT Router is required. `selat skill verify` (no --pay) is free and needs no funded wallet.
+compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet (the runner pays on whichever chain holds Gateway USDC). Every step routes through the SELAT Router across three rails (`x402 via Circle Gateway`, `x402 on Base`, `MPP on Tempo`), so a reachable SELAT Router is required. `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.0"
@@ -34,18 +34,19 @@ brief; if the user asks to trade on the result, decline that part and say so.
 
 ## Rails
 
-Every step settles through the SELAT Router across **two settlement modes**, so
-the skill's `rail` is `mixed`:
+This skill spans **three settlement modes**, so the skill's `rail` is `mixed`:
 
+- **x402 via Circle Gateway** — SELAT-native Twitter (`catalog.selat.ai`)
+  settles `x402 via Circle Gateway` through the SELAT Router.
+- **x402 on Base** — Circle Otto (`x402.ottoai.services`) settles
+  `x402 on Base` through the SELAT Router.
 - **MPP on Tempo** — the six Alpha Vantage steps
   (`alphavantage.mpp.paywithlocus.com`) and Circle StableEnrich
-  (`stableenrich.dev`) settle `routed-mpp` on Tempo.
-- **x402 on Base** — SELAT-native Twitter (`catalog.selat.ai`) and Circle Otto
-  (`x402.ottoai.services`) serve native x402 challenges the router settles
-  (`routed-x402`).
+  (`stableenrich.dev`) settle `MPP on Tempo` through the SELAT Router.
 
 The `selat` CLI auto-detects each step's protocol and settlement mode at call
-time (rails above are the live-probe detections from `selat skill verify`).
+time. The runner pays on whichever chain holds Gateway USDC — rail names are
+not a pay-chain claim. A reachable SELAT Router is required.
 
 ## Workflow
 

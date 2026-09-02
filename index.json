@@ -120,6 +120,12 @@
       "rail": "routed",
       "kind": "multi",
       "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC), no API key."
+    },
+    {
+      "name": "wallet-desk-brief",
+      "rail": "x402 via Circle Gateway",
+      "kind": "multi",
+      "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
     }
   ]
 }
