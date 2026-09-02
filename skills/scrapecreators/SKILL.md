@@ -1,11 +1,11 @@
 ---
 name: scrapecreators
-description: Use this skill when the user wants to scrape or pull social media data — Instagram, TikTok, LinkedIn, or X/Twitter profiles, posts, tweets, company pages, hashtags, or trending content. Triggers on "social scraper", "get this TikTok profile", "pull a LinkedIn profile", "fetch tweets for", "Instagram profile data", "trending TikToks", "influencer research", "social listening", "competitor social analysis". Multi-merchant — X/Twitter via SELAT-native (catalog.selat.ai; via the SELAT Router, Circle Gateway-batched), Instagram + TikTok via StableSocial (MPP, via the SELAT Router), LinkedIn via Clado (MPP on Tempo) — each capability compiled into a selat-pay call by the selat CLI.
+description: Use this skill for a comprehensive, read-only public social-media dossier on one coherent target across Twitter/X, LinkedIn, Instagram, and TikTok. It runs a fixed 11-call bundle covering account profiles, recent posts, one supplied Twitter post, one supplied LinkedIn post, a LinkedIn company page, a relevant TikTok hashtag, and a regional TikTok trending feed. Before payment, require all nine target identifiers, free-verify every call, disclose the live total and cumulative cap, and obtain explicit approval. Do not use for a one-platform lookup, private or protected content, contact enrichment, outreach, posting, following, or engagement manipulation.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). The SELAT Router steps (StableSocial, Clado) need a reachable SELAT Router (SELAT_ROUTER_URL) to translate the inbound Gateway-batched payment into an outbound MPP payment; the SELAT-native steps also settle through the SELAT Router (Circle Gateway-batched).
+compatibility: "Requires the selat CLI and selat-pay with a funded Circle Agent Wallet for paid runs. All 11 calls currently traverse the SELAT Router: three as routed x402 and eight as routed MPP. `selat skill verify --live-probe` is free and needs no funded wallet."
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   rail: mixed
   kind: multi
 ---
@@ -14,53 +14,176 @@ metadata:
 
 ## When To Use
 
-Use when the user wants social media data scraped from Instagram, TikTok, LinkedIn, or X/Twitter — profiles, recent posts, tweets, company pages, hashtag searches, or trending content. Common contexts: influencer research, social listening, competitive analysis, content research, and lead generation. This is a **multi-merchant** skill: X/Twitter capabilities are **via the SELAT Router** SELAT-native calls (catalog.selat.ai, Circle Gateway-batched via the SELAT Router), while Instagram/TikTok (StableSocial) and LinkedIn (Clado) capabilities run as **via the SELAT Router** MPP payments through the SELAT Router. (The skill name is historical — it was originally backed by a single "Scrape Creators" merchant.)
+Use this skill when the user needs one **comprehensive public social-media
+dossier** that deliberately spans Twitter/X, LinkedIn, Instagram, and TikTok.
+It retrieves public profile and content evidence for one coherent target and
+adds a relevant TikTok hashtag plus a region-specific trending baseline.
+
+This is a fixed, paid bundle—not an endpoint menu. Do not use it for one simple
+profile or post lookup; choose the smallest matching endpoint or a narrower
+skill instead. It does not retrieve protected/private content, reveal contact
+details, send messages, post, follow, like, or otherwise mutate an account.
 
 ## Workflow
 
-1. Install: `selat skill install scrapecreators`
-2. Run: `selat skill run scrapecreators [--handle openai] [--hashtag tech] [--tweetId ...] [--linkedinUrl ...] [--instagramHandle ...]`
-3. The CLI compiles each step in `manifest.json` into a `selat-pay` call — SELAT-native steps pay upstream Gateway-batched; StableSocial and Clado steps settle through the SELAT Router (MPP) — runs the steps in order, and prints a per-step ✓/✗ summary.
+1. Install the vetted recipe:
 
-Only pass the params for the capabilities you actually need; unused steps still run against their defaults unless you scope the run.
+   ```bash
+   selat skill install scrapecreators
+   ```
+
+2. Collect all nine required inputs and verify that they describe one coherent
+   research target:
+
+   - `twitterHandle` and `tweetId`;
+   - `linkedinProfileUrl`, `linkedinPostUrl`, and `linkedinCompanyUrl`;
+   - `instagramHandle`;
+   - `tiktokHandle`, `tiktokHashtag`, and `region`.
+
+   Handles may differ across platforms. Remove leading `@` and `#` characters.
+   Confirm that the tweet and LinkedIn post are public and relevant to the same
+   subject; do not substitute unrelated examples or placeholders.
+
+3. Probe every payment challenge for free:
+
+   ```bash
+   selat skill verify ~/.config/selat/skills/scrapecreators \
+     --twitterHandle "satyanadella" \
+     --tweetId "1632748758613241857" \
+     --linkedinProfileUrl "https://www.linkedin.com/in/satyanadella/" \
+     --linkedinPostUrl "https://www.linkedin.com/posts/satyanadella_its-been-a-busy-few-weeks-between-today-activity-7323480567562276865-F2mk" \
+     --linkedinCompanyUrl "https://www.linkedin.com/company/microsoft/" \
+     --instagramHandle "microsoft" \
+     --tiktokHandle "microsoft" \
+     --tiktokHashtag "microsoft" \
+     --region "US" \
+     --live-probe
+   ```
+
+4. Show the 11 current live quotes, their expected cumulative total, and the
+   sum of all per-step caps. Wait for explicit approval of a cumulative session
+   budget no higher than the cap sum. A free verification is not evidence that
+   a particular public identity will return useful provider data.
+
+5. After approval and a spendable Gateway balance, arm only the approved
+   cumulative budget, run the fixed bundle once, and disarm the budget after
+   success or failure:
+
+   ```bash
+   selat budget start --amount <approved-cumulative-cap>
+   selat skill run scrapecreators \
+     --twitterHandle "<twitter-handle>" \
+     --tweetId "<numeric-tweet-id>" \
+     --linkedinProfileUrl "<linkedin-person-url>" \
+     --linkedinPostUrl "<linkedin-post-or-article-url>" \
+     --linkedinCompanyUrl "<linkedin-company-url>" \
+     --instagramHandle "<instagram-handle>" \
+     --tiktokHandle "<tiktok-handle>" \
+     --tiktokHashtag "<hashtag-without-#>" \
+     --region "<two-letter-region>"
+   selat budget stop
+   ```
+
+The CLI executes every manifest step independently and continues after an
+individual failure. Inspect per-step results and payment history; a partial
+failure does not mean earlier calls were uncharged. Never retry until history
+is checked, prices are re-probed, and the retry is separately approved.
+
+## Fixed Steps
+
+1. Twitter/X public account profile.
+2. Twitter/X recent public posts for the same handle.
+3. Details for one supplied public tweet ID.
+4. LinkedIn public person profile.
+5. One supplied public LinkedIn post or article.
+6. LinkedIn public company page.
+7. Instagram public profile, including the provider's recent-profile context.
+8. One page of public Instagram posts in trimmed form.
+9. TikTok public profile metadata.
+10. One page of public TikTok posts for a relevant hashtag and region.
+11. A trimmed TikTok trending feed for the same region.
+
+The calls do not pass data between steps. The agent must correlate identifiers,
+normalize returned records, and synthesize the final report after the run.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `handle` | no | `openai` | Handle without @ for X/Twitter, Instagram, and TikTok profile/posts lookups |
-| `tweetId` | no | `1234567890123456789` | Numeric tweet ID for tweet-details (catalog.selat.ai takes IDs, not tweet URLs) |
-| `linkedinUrl` | no | `https://linkedin.com/in/satyanadella` | LinkedIn profile URL |
-| `linkedinPostUrl` | no | `https://linkedin.com/posts/somepost` | LinkedIn post URL |
-| `linkedinCompanyUrl` | no | `https://linkedin.com/company/anthropic` | LinkedIn company page URL |
-| `instagramHandle` | no | `openai` | Instagram handle for the secondary profile lookup (replaces the old numeric userId) |
-| `hashtag` | no | `tech` | TikTok hashtag (without #) |
+| `twitterHandle` | yes | none | Public Twitter/X handle without `@`. |
+| `tweetId` | yes | none | Numeric public tweet ID, not a URL. |
+| `linkedinProfileUrl` | yes | none | Full public LinkedIn person-profile URL. |
+| `linkedinPostUrl` | yes | none | Full public LinkedIn post or article URL. |
+| `linkedinCompanyUrl` | yes | none | Full public LinkedIn company-page URL. |
+| `instagramHandle` | yes | none | Public Instagram handle without `@`. |
+| `tiktokHandle` | yes | none | Public TikTok handle without `@`. |
+| `tiktokHashtag` | yes | none | Relevant hashtag without `#`. |
+| `region` | yes | none | Two-letter TikTok proxy/feed region such as `US`. |
 
-Outputs: each step returns the merchant's JSON payload for that endpoint (profile objects, tweet/post arrays, company metadata, hashtag/search video lists). The CLI prints `status` and the response body per step.
+Return:
+
+1. target identity and retrieval time;
+2. a platform-by-platform evidence table with source URL, profile/content facts,
+   observed engagement fields, and limitations;
+3. cross-platform consistencies and conflicts;
+4. TikTok hashtag and regional-trend context clearly separated from facts about
+   the target account; and
+5. per-step status plus final settled dollar cost.
+
+Do not imply that the TikTok region filter limits results to creators located
+in that region: it selects the provider's proxy/feed context. Do not calculate
+engagement rates when the required denominator is absent, infer sensitive
+traits, or treat public availability as consent for outreach.
+
+## Rails And Costs
+
+- The three SELAT-native Twitter calls currently resolve as `routed-x402` via
+  Circle Gateway at about `$0.001` each.
+- The eight synchronous Scrape Creators calls currently resolve as
+  `routed-mpp` over MPP on Tempo at about `$0.021` each.
+- Every step requires a reachable `SELAT_ROUTER_URL`.
+
+`maxAmount` is a per-call ceiling, not a price or cumulative run cap. The three
+Twitter caps are `$0.002` each and the eight Scrape Creators caps are `$0.03`
+each, for a cumulative cap sum of **$0.246**. The top-level `$0.03` is only a
+fallback for a future step without its own override.
+
+The free live probe on 2026-08-31 quoted an expected total of **$0.171**. Always
+re-probe before payment because prices, rails, and endpoint health can change.
 
 ## Gotchas
 
-- **Mixed rails**: the StableSocial and Clado steps settle via MPP on Tempo and need `SELAT_ROUTER_URL` configured with the SELAT Router reachable; the SELAT-native X/Twitter steps are through the SELAT Router.
-- Per-step caps (`maxAmount`) are ~10x each live price ($0.10–$0.75; full-run fallback $0.75); live prices total ≈ $0.45 across all 12 steps (see `references/endpoints.md`).
-- Handles must be passed **without** the leading `@`; hashtags **without** the leading `#`.
-- Tweet details take a **numeric tweet ID** (`tweetId`), not a tweet URL.
-- The LinkedIn steps expect a full URL and POST it as `linkedin_url` in the body via Clado.
-- Instagram lookups are **by handle** — there is no numeric-userId or single-post-by-URL endpoint; the recent-posts step returns the handle's latest posts instead of one post.
-- TikTok "trending" is served by StableSocial keyword search (`{"query":"trending"}`); there is no region-scoped trending-feed endpoint.
-- Steps run independently (continue-across-steps): one capability can succeed while another fails — check the per-step summary.
+- **Fixed pipeline.** `selat skill run` executes all 11 calls; there is no
+  platform selector or conditional branch in the current manifest runner.
+- **No inter-step dataflow.** Returned user IDs, cursors, and URLs are not
+  automatically inserted into later calls.
+- **Only the first page is included.** Additional Instagram/TikTok pages are
+  separate calls. Re-probe and obtain approval before pagination.
+- **Identifiers are platform-specific.** Do not assume one handle is shared
+  across Twitter, Instagram, and TikTok.
+- **LinkedIn URL types matter.** Person, post/article, and company endpoints
+  require their matching URL type.
+- **Public, read-only scope.** Protected/private records and account mutations
+  are out of scope.
+- **A paid application error may still charge.** Check history before retrying.
 
 ## Validation
 
-> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
-
-- Probe without paying (free 402 probe per repo convention):
-  - `selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=openai" --chain base --probe-only`
-  - `selat-pay POST "https://stablesocial.dev/api/tiktok/profile" --body '{"handle":"openai"}' --chain base --probe-only`
-  - `selat-pay POST "https://clado.mpp.paywithlocus.com/clado/linkedin-profile" --body '{"linkedin_url":"https://linkedin.com/in/satyanadella"}' --chain base --probe-only`
-- A `--probe-only` call returns the 402 payment requirements without settling; a successful paid run prints `status=200` and a ✓ for each step.
+- Static: `selat skill validate ./skills/scrapecreators`
+- Live gate, free: run the full `selat skill verify` command shown above with
+  coherent public inputs and `--live-probe`.
+- Paid verification: only after fresh quotes, explicit approval, and an armed
+  cumulative session budget, add `--pay`; every call may settle independently.
+- Provider request schemas and single-step free probes are documented in
+  `references/endpoints.md`.
 
 ## References
 
-- `manifest.json` — the machine-readable payment recipe this skill runs.
-- [`references/endpoints.md`](references/endpoints.md) — the merchant endpoints, methods, and live prices (probe-verified 2026-07-10) this skill calls.
+- `manifest.json` — machine-readable fixed payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — request schemas,
+  current modes/prices, and QC corrections.
+- [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
+
+Provider and product names are used only for endpoint identification. This
+skill is not affiliated with X, LinkedIn, Instagram, TikTok, or Scrape Creators.
