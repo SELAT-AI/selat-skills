@@ -23,7 +23,7 @@
       "name": "person-lookup",
       "rail": "MPP on Tempo",
       "kind": "single",
-      "description": "Person lookup via Nyne. Paid per call via MPP on Tempo."
+      "description": "Read-only, company-filtered public professional lookup via one bounded five-result Clado people search. Requires a full name and known current company, returns candidates for transparent disambiguation, and does not request private contact data or send outreach."
     },
     {
       "name": "gtm-enrichment-smart",
