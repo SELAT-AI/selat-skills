@@ -116,10 +116,10 @@
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
     },
     {
-      "name": "wallet-desk-brief",
-      "rail": "x402 via Circle Gateway",
+      "name": "read-pdf-documents",
+      "rail": "routed",
       "kind": "multi",
-      "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
+      "description": "Cheapest-first PDF reading over routed x402: extract page-delimited Markdown and metadata from a public PDF URL, then use OCR only for scanned or image-only documents."
     }
   ]
 }
