@@ -120,6 +120,12 @@
       "rail": "routed",
       "kind": "multi",
       "description": "One-shot pre-travel brief for any city: 7-day weather forecast plus a scannable QR code linking to the destination - paid per call in USDC, no API keys."
+    },
+    {
+      "name": "wallet-desk-brief",
+      "rail": "x402 via Circle Gateway",
+      "kind": "multi",
+      "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
     }
   ]
 }

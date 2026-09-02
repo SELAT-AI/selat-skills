@@ -1,0 +1,32 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "wallet-desk-brief",
+  "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway).",
+  "maxAmount": "0.50",
+  "params": {
+    "address": {
+      "required": true,
+      "default": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+      "description": "EVM wallet address for Alchemy holdings and Arkham intelligence (used as ${address}). Always pass the user's 0x address explicitly."
+    }
+  },
+  "steps": [
+    {
+      "label": "on-chain token holdings — Alchemy tokens-by-address (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "wallet attribution — Arkham intelligence/address (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "POST",
+      "url": "https://api.arkm.com/x402/intelligence/address",
+      "body": {
+        "address": "${address}"
+      },
+      "maxAmount": "0.40"
+    }
+  ]
+}
