@@ -1,0 +1,56 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "ai-research-scout",
+  "version": "1.0.0",
+  "description": "Current due-diligence scout for AI, robotics, semiconductor, and deep-tech entities. The manifest pins a small paid menu: Serper Scrape as the primary official-news/page scraper, StableEnrich Firecrawl Scrape as a fallback scraper, and AIsa stock snapshot for public tickers. Company-enrichment endpoints that showed charge-on-failure behavior are intentionally excluded. The agent selects only the steps needed for the entity and synthesizes recent activity, stock signal, missing-data notes, and receipts.",
+  "maxAmount": "0.08",
+  "params": {
+    "entity": {
+      "required": true,
+      "default": "NVIDIA",
+      "description": "Company, lab, or project name to scout. Used in labels and final synthesis."
+    },
+    "url": {
+      "required": true,
+      "default": "https://nvidianews.nvidia.com/",
+      "description": "Official newsroom, blog, press-release, or recent-activity URL to scrape. Required by Serper Scrape and Firecrawl."
+    },
+    "ticker": {
+      "required": false,
+      "default": "NVDA",
+      "description": "Public equity ticker for the AIsa real-time stock snapshot. Leave empty and skip the stock step for private entities."
+    }
+  },
+  "steps": [
+    {
+      "label": "primary recent activity scrape — Serper Scrape for ${entity}",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://mpp.orthogonal.com/serper-scrape/",
+      "body": {
+        "url": "${url}"
+      },
+      "maxAmount": "0.03"
+    },
+    {
+      "label": "fallback recent activity scrape — StableEnrich Firecrawl Scrape for ${entity}",
+      "rail": "routed MPP",
+      "method": "POST",
+      "url": "https://stableenrich.dev/api/firecrawl/scrape",
+      "body": {
+        "url": "${url}",
+        "formats": [
+          "markdown"
+        ]
+      },
+      "maxAmount": "0.02"
+    },
+    {
+      "label": "public-market stock snapshot — AIsa prices snapshot for ${ticker}",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://api.aisa.one/apis/v2/financial/prices/snapshot?ticker=${ticker}",
+      "maxAmount": "0.04"
+    }
+  ]
+}
