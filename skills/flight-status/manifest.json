@@ -1,0 +1,35 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "flight-status",
+  "description": "Real-time flight status lookup for a commercial flight by airline + flight number: current status, departure/arrival times, gate/terminal, and delay info. Combines GoFlightLabs (primary) and AviationStack (fallback) over routed MPP via the SELAT Router. Paid per call (USDC on Base), no API key.",
+  "maxAmount": "0.030",
+  "params": {
+    "flight_number": {
+      "required": true,
+      "description": "Airline IATA code + flight number, e.g. GA880, SQ232, UA900. Used as ${flight_number} and mapped to the upstream flight_iata / flight_number field."
+    }
+  },
+  "steps": [
+    {
+      "label": "flight info by number — GoFlightLabs (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://goflightlabs.mpp.tempo.xyz/flight-info-by-flight-number?flight_number=${flight_number}",
+      "maxAmount": "0.012"
+    },
+    {
+      "label": "delay info — GoFlightLabs (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://goflightlabs.mpp.tempo.xyz/flight-delay?flight_number=${flight_number}&delay=1&type=departure",
+      "maxAmount": "0.012"
+    },
+    {
+      "label": "real-time flight fallback — AviationStack (routed MPP via SELAT Router)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://aviationstack.mpp.tempo.xyz/v1/flights?flight_iata=${flight_number}",
+      "maxAmount": "0.012"
+    }
+  ]
+}

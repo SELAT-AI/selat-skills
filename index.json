@@ -120,6 +120,12 @@
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
       "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
+    },
+    {
+      "name": "flight-status",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Real-time flight status lookup for a commercial flight by airline + flight number: current status, departure/arrival times, gate/terminal, and delay info. Combines GoFlightLabs (primary) and AviationStack (fallback) over routed MPP via the SELAT Router. Paid per call (USDC on Base), no API key."
     }
   ]
 }
