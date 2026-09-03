@@ -1,0 +1,44 @@
+{
+  "skill_name": "token-safety-screen",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "I'm about to ape into this new memecoin called WIFJR on Solana — is it a rug? Check it before I buy.",
+      "expected_output": "Runs token-safety-screen with --token WIFJR --network solana, then relays a plain-language verdict (GREEN/YELLOW/RED + confidence) backed by scam-report hits, live X chatter recency, and smart-money positioning, plus an explicit list of what was not checked.",
+      "assertions": [
+        "token-safety-screen is selected",
+        "network param is passed through to the Nansen step (solana)",
+        "output fuses web reports + X chatter + smart-money signals into a single verdict brief in plain language, with dates",
+        "the agent states what the screen did not check (contract code, honeypot simulation)"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Do a safety check on PEPE before I add more.",
+      "expected_output": "Runs token-safety-screen with --token PEPE (default network ethereum), confirms the chain when ambiguous, and relays the verdict with evidence.",
+      "assertions": [
+        "token-safety-screen is selected",
+        "the agent confirms which chain's PEPE is meant before spending",
+        "the agent tells the user the approximate cost before running the paid screen",
+        "output is a verdict brief, not raw JSON"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "What's the current ETH price and market cap?",
+      "expected_output": "Skill does not trigger — this is a market-data question (use financial-intel), not a safety screen.",
+      "assertions": [
+        "token-safety-screen is not selected",
+        "financial-intel or a price source is used instead"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Who owns the wallet 0x1234...abcd and what do they hold?",
+      "expected_output": "Skill does not trigger — this is wallet attribution (use wallet-desk-brief), not token safety screening.",
+      "assertions": [
+        "token-safety-screen is not selected"
+      ]
+    }
+  ]
+}

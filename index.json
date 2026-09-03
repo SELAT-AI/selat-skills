@@ -120,6 +120,12 @@
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
       "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
+    },
+    {
+      "name": "token-safety-screen",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Pre-buy safety screen for any crypto token — fuses web scam/rugpull reports (Exa), live X/Twitter chatter for honeypot/rug signals (SELAT Twitter advanced_search), and smart-money positioning (Nansen holdings) into one verdict brief, paid per call across two rails (Circle Gateway nanopayment + MPP on Tempo) via selat-pay (USDC via Circle Gateway). Answers 'is this token a trap?' — a different question from price/market briefs."
     }
   ]
 }
