@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the selat CLI, selat-pay >= 0.3.2, and a funded Circle Gateway balance (settles on whichever supported chain the balance sits on).
 metadata:
   author: kiyeps
-  version: "1.0"
+  version: "1.1"
   rail: routed
   kind: multi
 ---
@@ -23,14 +23,22 @@ searching fare prices or booking — use a price/booking skill for that.
 ## Workflow
 
 1. Install: `selat skill install flight-status`
-2. Run: `selat skill run flight-status --flight_number GA880 [--date 2026-08-28]`
+2. Run: `selat skill run flight-status --flight_number GA880`
 3. The CLI compiles each step into a `selat-pay` call and prints the result.
 
-Steps (ordered cheapest-first, all routed MPP via the SELAT Router):
+Steps (all routed MPP via the SELAT Router):
 
 - **GoFlightLabs** `GET /flight-info-by-flight-number` — primary status lookup by flight number.
-- **GoFlightLabs** `GET /flight-delay` — delay/on-time detail for the same flight + date.
-- **AviationStack** `GET /v1/flights` — real-time fallback by IATA flight number if the primary returns nothing useful.
+- **GoFlightLabs** `GET /flight-delay` — delay/on-time detail for the same flight (`delay=1&type=departure`).
+- **AviationStack** `GET /v1/flights` — real-time fallback by IATA flight number.
+
+**Fallback behavior (important):** the manifest is linear — it runs the steps in
+order. If a GoFlightLabs step returns a 5xx, times out, fails to connect, or
+returns an empty/unusable body (the provider has been observed returning 502),
+do NOT stop — continue to the next step. AviationStack is the healthy fallback
+and carries the status/delay capability when GoFlightLabs is down. Relay the
+first usable result you get; prefer the most recent step that returned valid
+flight data.
 
 Tell the user: "This costs about $0.005 per call — proceed?" before any paid run,
 then relay the status in plain language (on time / delayed X min / cancelled /
@@ -42,7 +50,6 @@ addresses out of what you relay.
 | Param | Required | Default | Description |
 |---|---|---|---|
 | `flight_number` | yes | — | Airline IATA code + number, e.g. `GA880`. |
-| `date` | no | today | Flight date `YYYY-MM-DD` (UTC); omit for live status. |
 
 Output: flight status fields — current phase (scheduled/departed/landed),
 departure + arrival times, terminal/gate, and delay minutes where available.
@@ -51,11 +58,13 @@ departure + arrival times, terminal/gate, and delay minutes where available.
 
 - `flight_number` must be the IATA code + digits (e.g. `GA880`), not just a number
   or a full airline name. AviationStack maps it to `flight_iata`.
-- `date` is optional and defaults to today; pass it for a specific day's status.
+- There is no date parameter: the endpoints return current/live status for the
+  flight. For a historical day use a different skill or the provider's
+  date-scoped endpoints directly.
 - Each step is a separate paid call (~$0.005). The manifest caps the whole run at
   $0.030; a normal 1–2 step lookup lands around $0.005–0.010.
-- The manifest is linear — it runs the steps in order. If the primary returns
-  nothing, the agent should try the next step rather than stopping.
+- If the primary (GoFlightLabs) returns nothing useful, the agent should try the
+  next step rather than stopping — see Fallback behavior above.
 
 ## Validation
 

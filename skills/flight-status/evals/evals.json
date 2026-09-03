@@ -13,12 +13,12 @@
     },
     {
       "id": "trigger-2",
-      "prompt": "What time does SQ232 arrive at Changi tomorrow?",
-      "expected_output": "flight-status is selected; runs with flight_number=SQ232 and the given date, relays arrival time.",
+      "prompt": "What time does SQ232 arrive at Changi?",
+      "expected_output": "flight-status is selected; runs with flight_number=SQ232, relays arrival time.",
       "assertions": [
         "flight-status is selected",
         "flight_number SQ232 is extracted",
-        "date is passed for tomorrow"
+        "result relays arrival time"
       ]
     },
     {

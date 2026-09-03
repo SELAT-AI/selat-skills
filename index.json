@@ -125,7 +125,7 @@
       "name": "flight-status",
       "rail": "routed",
       "kind": "multi",
-      "description": "Real-time flight status lookup for a commercial flight by airline + flight number (and optional date): current status, departure/arrival times, gate/terminal, and delay info. Combines GoFlightLabs (primary) and AviationStack (fallback) over routed MPP via the SELAT Router. Paid per call (USDC on Base), no API key."
+      "description": "Real-time flight status lookup for a commercial flight by airline + flight number: current status, departure/arrival times, gate/terminal, and delay info. Combines GoFlightLabs (primary) and AviationStack (fallback) over routed MPP via the SELAT Router. Paid per call (USDC on Base), no API key."
     }
   ]
 }
