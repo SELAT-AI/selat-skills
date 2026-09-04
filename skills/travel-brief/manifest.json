@@ -1,0 +1,40 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "travel-brief",
+  "description": "One-shot pre-travel brief for any city: 7-day weather forecast plus a scannable QR code linking to the destination - paid per call in USDC, no API keys.",
+  "maxAmount": "0.01",
+  "params": {
+    "location": {
+      "required": true,
+      "default": "London",
+      "description": "City or place name for the weather forecast (e.g. \"Jakarta\", \"London\", \"Mount Bromo\") - used as ${location} in the weather step body. Always pass the user's destination explicitly; never let the default silently brief another city."
+    },
+    "data": {
+      "required": false,
+      "default": "https://selat.ai",
+      "description": "URL to encode into the QR code (e.g. a maps or itinerary link for the destination) - used as ${data} in the qr step body."
+    }
+  },
+  "steps": [
+    {
+      "label": "7-day weather forecast - payapi.market (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://weather.payapi.market/forecast",
+      "body": {
+        "location": "${location}"
+      },
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "Destination QR code - klymax402 (x402 via SELAT Router)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://qr-code.api.klymax402.com/api/qr",
+      "body": {
+        "data": "${data}"
+      },
+      "maxAmount": "0.01"
+    }
+  ]
+}

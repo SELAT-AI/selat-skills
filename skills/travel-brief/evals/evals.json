@@ -1,0 +1,51 @@
+{
+  "skill_name": "travel-brief",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "I'm flying to Tokyo next week - give me a quick travel brief with the forecast and a QR code for the hotel map link.",
+      "expected_output": "Agent runs selat skill run travel-brief --location \"Tokyo\" --data \"<hotel maps URL>\" and relays a plain-language 7-day forecast summary, notes the QR image is generated, and mentions total cost was under 0.01 USDC.",
+      "assertions": [
+        "travel-brief is selected",
+        "location param is set to the destination city",
+        "agent tells the user the expected cost before paying",
+        "forecast days are summarized in plain language, not raw JSON"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "We're driving to Mount Bromo this weekend - what's the outlook, and make me a QR code for the maps link.",
+      "expected_output": "Agent runs selat skill run travel-brief --location \"Mount Bromo\" --data \"<maps URL>\" and relays the 7-day forecast plus confirmation that the destination QR is ready.",
+      "assertions": [
+        "travel-brief is selected",
+        "location param is set to the destination",
+        "data param carries the maps URL",
+        "forecast days are summarized in plain language, not raw JSON"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Summarize this article about renewable energy for me.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "travel-brief is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Generate a QR code for my Wi-Fi password.",
+      "expected_output": "Skill does not trigger on its own (single-purpose QR request; the QR step exists only inside a travel brief).",
+      "assertions": [
+        "travel-brief is not selected as a whole-skill match for an isolated QR task"
+      ]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "Which country is the IP 8.8.8.8 located in?",
+      "expected_output": "Skill does not trigger (IP lookups are out of scope for a travel brief).",
+      "assertions": [
+        "travel-brief is not selected for IP geolocation tasks"
+      ]
+    }
+  ]
+}
