@@ -1,0 +1,123 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "cowork-space-scout",
+  "description": "Scouts coworking-space web design and interactive architectural showcases from Awwwards and design hubs, deep-dives the top pick (scrape, tech stack, full-page preview), and aggregates a JSON shortlist of URLs, tech stacks, and preview assets. Paid per call across mixed rails (routed x402 via Perplexity / BuiltWith / ScreenshotOne + MPP on Tempo via Exa / Parallel / Firecrawl) via selat-pay (USDC via Circle Gateway), no API keys.",
+  "maxAmount": "0.30",
+  "params": {
+    "topic": {
+      "required": true,
+      "default": "coworking space website design",
+      "description": "The core discovery subject (used as ${topic} in the Perplexity, Exa, Product Hunt, and Twitter queries). Pan for architecture/interior focus: try '3d coworking space site', 'coworking space architecture portfolio', 'coworking interior design showcase'. Add a city for geography, e.g. 'coworking space website design Berlin'."
+    },
+    "showcaseUrl": {
+      "required": false,
+      "default": "https://www.awwwards.com/websites/co-working-space/",
+      "description": "The top showcase URL the agent deep-dives (Firecrawl extract + ScreenshotOne preview). MUST be overridden to the best pick surfaced by the discovery steps; the default is only a fallback so verify can exercise the steps."
+    },
+    "domain": {
+      "required": false,
+      "default": "zenhouse.io",
+      "description": "The domain of the top pick for the BuiltWith tech-stack step. MUST be overridden to the top pick's real domain."
+    }
+  },
+  "steps": [
+    {
+      "label": "design-hub discovery — Perplexity /search domain-filtered to Awwwards + design hubs (routed x402)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://pplx.x402.paysponge.com/search",
+      "body": {
+        "query": "${topic}",
+        "max_results": 10,
+        "search_recency_filter": "month",
+        "search_domain_filter": [
+          "awwwards.com",
+          "behance.net",
+          "dribbble.com",
+          "siteinspire.com",
+          "land-book.com",
+          "godly.website"
+        ]
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "web discovery — Exa neural search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://api.exa.ai/search",
+      "body": {
+        "query": "${topic}",
+        "numResults": 10,
+        "type": "neural",
+        "contents": {
+          "text": {
+            "maxCharacters": 800
+          }
+        }
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "product discovery — Parallel Product Hunt search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://parallelmpp.dev/api/search",
+      "body": {
+        "objective": "${topic} coworking space Product Hunt launches",
+        "search_queries": [
+          "${topic} site:producthunt.com"
+        ],
+        "max_results": 10
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "design chatter — SELAT Twitter advanced_search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
+      "method": "GET",
+      "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${topic}&queryType=Latest",
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "depth on the top pick — Firecrawl /v1/extract (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://firecrawl.mpp.tempo.xyz/v1/extract",
+      "body": {
+        "urls": [
+          "${showcaseUrl}"
+        ],
+        "prompt": "Describe this coworking space's web design: layout, typography, color palette, 3D / interactive / WebGL features, architectural showcase elements, and branding. Return concise bullet points."
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "tech stack of the top pick — BuiltWith /builtwith/domain (routed x402)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://builtwith.x402.paywithlocus.com/builtwith/domain",
+      "body": {
+        "domain": "${domain}"
+      },
+      "maxAmount": "0.10"
+    },
+    {
+      "label": "preview asset — ScreenshotOne full-page screenshot (routed x402)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://screenshotone.x402.paywithlocus.com/screenshotone/take",
+      "body": {
+        "url": "${showcaseUrl}",
+        "format": "png",
+        "full_page": true,
+        "viewport_width": 1280,
+        "viewport_height": 1024,
+        "device_scale_factor": 1,
+        "block_cookie_banners": true,
+        "block_ads": true
+      },
+      "maxAmount": "0.10"
+    }
+  ]
+}

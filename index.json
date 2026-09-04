@@ -120,6 +120,12 @@
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
       "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
+    },
+    {
+      "name": "cowork-space-scout",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Scouts coworking-space web design and interactive architectural showcases from Awwwards and design hubs, deep-dives the top pick (scrape, tech stack, full-page preview), and aggregates a JSON shortlist of URLs, tech stacks, and preview assets. Paid per call across mixed rails (routed x402 via Perplexity / BuiltWith / ScreenshotOne + MPP on Tempo via Exa / Parallel / Firecrawl) via selat-pay (USDC via Circle Gateway), no API keys."
     }
   ]
 }
