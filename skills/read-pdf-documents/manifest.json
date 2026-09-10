@@ -1,0 +1,38 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "read-pdf-documents",
+  "description": "Cheapest-first PDF reading over routed x402: extract page-delimited Markdown and metadata from a public PDF URL, then use OCR only for scanned or image-only documents.",
+  "maxAmount": "0.09",
+  "params": {
+    "pdfUrl": {
+      "required": true,
+      "default": "https://api.utilia.ink/.well-known/utilia/examples/document.pdf",
+      "description": "Public HTTPS PDF URL. Must not contain credentials or resolve to a private/local network address."
+    },
+    "title": {
+      "required": false,
+      "default": "Document intake",
+      "description": "Short document title used in the Markdown extraction output (maximum 200 characters)."
+    }
+  },
+  "steps": [
+    {
+      "label": "text-layer extraction - Utilia PDF to Markdown (routed x402; run first)",
+      "rail": "routed",
+      "method": "POST",
+      "url": "https://api.utilia.ink/base/v1/pdf/to-markdown",
+      "body": {
+        "url": "${pdfUrl}",
+        "title": "${title}"
+      },
+      "maxAmount": "0.01"
+    },
+    {
+      "label": "scanned-PDF OCR fallback - Visual OCR (routed x402; run only if needed)",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://visual.hugen.tokyo/visual/ocr?url=${pdfUrl}&max_pages=50",
+      "maxAmount": "0.075"
+    }
+  ]
+}
