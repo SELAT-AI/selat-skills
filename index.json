@@ -5,7 +5,7 @@
       "name": "enrich-waterfall",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Cheapest-first B2B person+company enrichment waterfall across 14 MPP merchants. Paid per call via x402 + MPP."
+      "description": "Fixed 18-call, read-only person and company enrichment bundle across Apollo, Hunter, Clado, Company Enrich, Brave Search, Diffbot KG, and SELAT-native X/Twitter. Requires eight coherent target identifiers; every step runs independently through the SELAT Router over MPP or x402."
     },
     {
       "name": "comprehensive-enrichment",
