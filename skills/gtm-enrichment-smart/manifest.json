@@ -1,108 +1,45 @@
 {
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-smart",
-  "description": "Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step (via the SELAT Router). Takes an email (+ optional name) and returns person + company data by cross-referencing cheap MPP-on-Tempo APIs first (Apollo, Hunter, Abstract Company Enrichment via Locus), with buying-signal and SELAT-native Twitter (x402 via Circle Gateway) social-proof gap-fills.",
-  "maxAmount": "0.25",
+  "description": "Fixed three-call, read-only B2B lead qualification bundle. Uses a known work email and matching company domain to retrieve combined professional/company context, verify work-email deliverability, and cross-check an independent company profile; it does not reveal personal contact data or run outreach.",
+  "maxAmount": "0.03",
   "params": {
     "email": {
       "required": true,
-      "default": "test@stripe.com",
-      "description": "The lead's email address, e.g. jane@acme.com. Used by the people-enrichment, combined-enrichment, email-verifier, and email-enrichment steps."
+      "description": "Known work email for the target B2B lead. Must belong to the supplied domain; do not use a personal/free-mail address."
     },
     "domain": {
-      "required": false,
-      "default": "stripe.com",
-      "description": "Company domain extracted from the email (e.g. acme.com). Used by the Abstract Company Enrichment lookup, Apollo org-enrichment, and Hunter company-enrichment steps."
-    },
-    "organizationId": {
-      "required": false,
-      "default": "",
-      "description": "Apollo organization id captured from the people-enrichment step; required for the Apollo job-postings buying-signal step."
-    },
-    "twitterHandle": {
-      "required": false,
-      "default": "elonmusk",
-      "description": "Twitter/X handle discovered in enrichment data; used by the SELAT-native Twitter user-info social-proof step (sent as the userName query param)."
+      "required": true,
+      "description": "Bare employer domain matching the work email, e.g. acme.com."
     }
   },
   "steps": [
     {
-      "label": "person enrich — Apollo people-enrichment (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
-      "body": {
-        "email": "${email}",
-        "reveal_personal_emails": true
-      },
-      "maxAmount": "0.10"
-    },
-    {
-      "label": "person + company combined — Hunter combined-enrichment (MPP on Tempo)",
+      "label": "person and company core — Hunter combined enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment",
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.25"
+      "maxAmount": "0.03"
     },
     {
-      "label": "email deliverability — Hunter email-verifier (MPP on Tempo)",
+      "label": "work-email deliverability — Hunter email verifier (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.015"
     },
     {
-      "label": "company brand — Abstract Company Enrichment lookup (MPP on Tempo; skip for free email)",
+      "label": "independent company profile — Company Enrich by domain (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
-    },
-    {
-      "label": "company gap-fill — Apollo org-enrichment (MPP on Tempo; only if funding missing)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
-    },
-    {
-      "label": "person tie-breaker — Hunter email-enrichment (MPP on Tempo; only if sources conflict)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
-      "body": {
-        "email": "${email}"
-      },
-      "maxAmount": "0.15"
-    },
-    {
-      "label": "company fallback — Hunter company-enrichment (MPP on Tempo; only if major gaps + >500 employees)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.15"
-    },
-    {
-      "label": "social proof — SELAT Twitter user-info API (x402 via Circle Gateway; only if Twitter handle found)",
-      "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://catalog.selat.ai/twitter/user/info?userName=${twitterHandle}",
-      "maxAmount": "0.10"
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     }
   ]
 }
