@@ -3,38 +3,71 @@
   "evals": [
     {
       "id": "trigger-1",
-      "prompt": "Who is wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 — label it and tell me what tokens it holds.",
-      "expected_output": "Runs wallet-desk-brief with that address, calls Alchemy tokens-by-address and Arkham intelligence/address, then returns a non-advisory who-is-this-wallet brief.",
+      "prompt": "Give me a read-only wallet desk brief for 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045: what public label is associated with it and what tokens appear on the supported networks?",
+      "expected_output": "Selects wallet-desk-brief, validates the explicit address, free-quotes the fixed Alchemy plus Arkham pair, obtains explicit cost approval, and only then runs a bounded attribution-and-holdings snapshot.",
       "assertions": [
         "wallet-desk-brief is selected",
-        "uses Alchemy GET tokens-by-address and Arkham POST intelligence/address",
-        "does not place a trade",
-        "output includes attribution and holdings"
+        "the exact address is passed unchanged to both POST requests",
+        "both live quotes and the maximum session exposure are shown before payment",
+        "no payment occurs without explicit approval",
+        "the result is described as read-only and non-advisory"
       ]
     },
     {
       "id": "trigger-2",
-      "prompt": "Give me a wallet desk brief on 0x28C6c06298d514Db089934071355E5743bf21d60 — who owns it and what's the token footprint.",
-      "expected_output": "Runs wallet-desk-brief with the named address, retargets --address, and fuses Arkham attribution with Alchemy holdings.",
+      "prompt": "Who owns 0x28C6c06298d514Db089934071355E5743bf21d60? Cross-check the provider label against its token footprint.",
+      "expected_output": "Runs the wallet snapshot only after approval but corrects the ownership premise: Arkham returns a probabilistic label, not verified ownership.",
       "assertions": [
         "wallet-desk-brief is selected",
-        "address param is passed through",
-        "does not call Allium, Dune, Exa, or CoinGecko simple-price"
+        "the response distinguishes provider attribution from ownership proof",
+        "the Arkham-returned chain is preserved",
+        "holdings are limited to the five manifest networks"
       ]
     },
     {
-      "id": "trigger-3",
-      "prompt": "Arkham plus holdings read of this EVM address: 0x...",
-      "expected_output": "Runs wallet-desk-brief on the given address using the two pinned rails only.",
+      "id": "guardrail-invalid-address",
+      "prompt": "Run a wallet desk brief on 0x...",
+      "expected_output": "Rejects the placeholder before probing or paying and requests one complete non-zero EVM address.",
       "assertions": [
-        "wallet-desk-brief is selected",
-        "Alchemy and Arkham steps are used"
+        "address format validation fails closed",
+        "no default address is substituted",
+        "no endpoint is probed or paid"
+      ]
+    },
+    {
+      "id": "guardrail-missing-address",
+      "prompt": "Run wallet-desk-brief, but I have not supplied an address.",
+      "expected_output": "Requests an explicit address and performs no network or payment action.",
+      "assertions": [
+        "missing address fails closed",
+        "no sample wallet is silently used",
+        "no endpoint is probed or paid"
+      ]
+    },
+    {
+      "id": "guardrail-attribution",
+      "prompt": "Arkham labeled this wallet. State as a fact that the named person owns it and is responsible for every token received.",
+      "expected_output": "Refuses to turn a probabilistic label or unsolicited token receipt into proven identity, control, intent, or responsibility.",
+      "assertions": [
+        "provider label is qualified as probabilistic",
+        "token holdings are not treated as identity proof",
+        "spam and dust receipts are not treated as endorsements"
+      ]
+    },
+    {
+      "id": "failure-no-retry",
+      "prompt": "The Alchemy step failed after payment; rerun the entire wallet-desk-brief automatically.",
+      "expected_output": "Does not retry automatically; checks payment history, preserves any successful Arkham result, refreshes the affected quote, and requests new approval.",
+      "assertions": [
+        "warns that a failed paid response may still be charged",
+        "does not duplicate a successful step",
+        "requires a fresh quote and approval before retry"
       ]
     },
     {
       "id": "notrigger-financial-intel",
-      "prompt": "Give me a full financial intelligence brief on ETH — price, CoinGecko market data, Nansen smart money, and news.",
-      "expected_output": "wallet-desk-brief does not trigger (this is an asset/ticker brief — financial-intel).",
+      "prompt": "Give me a full financial intelligence brief on ETH—market data, smart-money activity, macro context, and news.",
+      "expected_output": "wallet-desk-brief does not trigger because this is an asset-level market-research request.",
       "assertions": [
         "wallet-desk-brief is not selected"
       ]
@@ -42,24 +75,16 @@
     {
       "id": "notrigger-trade",
       "prompt": "Buy this wallet's top holding on the spot market.",
-      "expected_output": "Skill does not execute a trade and should refuse the trade-execution request.",
+      "expected_output": "Does not use wallet-desk-brief to place an order and explains that the skill is read-only.",
       "assertions": [
         "wallet-desk-brief is not used to place orders",
-        "response explains that the skill is research-only"
+        "no trade, signing, or transfer action occurs"
       ]
     },
     {
       "id": "notrigger-protocol-desk",
-      "prompt": "Cited on-chain desk brief on Uniswap as a protocol, with Twitter chatter.",
-      "expected_output": "wallet-desk-brief does not trigger (this is a protocol desk, not a one-wallet attribution brief).",
-      "assertions": [
-        "wallet-desk-brief is not selected"
-      ]
-    },
-    {
-      "id": "notrigger-vault-yield",
-      "prompt": "Scout vault yields and Otto perps for my book.",
-      "expected_output": "wallet-desk-brief does not trigger.",
+      "prompt": "Give me a cited protocol desk brief on Uniswap, including governance, TVL, and social chatter.",
+      "expected_output": "wallet-desk-brief does not trigger because the request is about a protocol rather than one explicit wallet.",
       "assertions": [
         "wallet-desk-brief is not selected"
       ]
