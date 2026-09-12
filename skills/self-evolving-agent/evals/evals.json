@@ -3,13 +3,24 @@
   "evals": [
     {
       "id": "trigger-economic-agent",
-      "prompt": "Build a self-evolving agent with a $100 budget that buys compute, hosting, and a domain, gathers social and financial intelligence, and uses profits from trading or reports to sustain expenses.",
+      "prompt": "Build a self-evolving agent with a $100 budget, BTC as its first research asset, and agent-alpha-research.com as a domain candidate. It should evaluate compute, hosting, social and financial intelligence, and whether reports or paper-trading could sustain expenses.",
       "expected_output": "The skill triggers and produces a budgeted economic-agent plan with treasury, infrastructure, intelligence, monetization, paper-trading, P&L, reinvestment, and shutdown controls.",
       "assertions": [
         "The response defines budget, expenses, revenue, P&L, and runway.",
         "The response requires explicit approval before purchases, funding, or live trades.",
         "The response starts with intelligence gathering and paper-trading before live execution.",
         "The response includes a shutdown or pause rule if the agent is not sustainable."
+      ]
+    },
+    {
+      "id": "trigger-paid-preflight-contract",
+      "prompt": "Run the self-evolving-agent paid preflight for BTC and check agent-alpha-research.com before I decide whether to buy any infrastructure.",
+      "expected_output": "The skill explains the fixed three-call preflight, refreshes free quotes, and requests approval for the expected total and cumulative cap before payment.",
+      "assertions": [
+        "The Hyperliquid request includes asset=BTC.",
+        "The domain check sends agent-alpha-research.com in the JSON body.",
+        "The response distinguishes three per-call caps from the cumulative session cap.",
+        "The response does not claim that the domain is purchased or reserved."
       ]
     },
     {
@@ -39,6 +50,14 @@
       "expected_output": "Skill does not trigger.",
       "assertions": [
         "self-evolving-agent is not selected for ordinary weather lookup."
+      ]
+    },
+    {
+      "id": "notrigger-single-market-quote",
+      "prompt": "What is the current BTC price?",
+      "expected_output": "Skill does not trigger for a simple single-market-data lookup.",
+      "assertions": [
+        "The response does not propose identity, treasury, infrastructure, or reinvestment planning."
       ]
     }
   ]
