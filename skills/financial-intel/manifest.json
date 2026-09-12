@@ -1,33 +1,28 @@
 {
   "schema": "selat-skill/v1",
   "name": "financial-intel",
-  "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + market news into one brief, paid per call across two rails (Circle Gateway nanopayment + MPP on Tempo) via selat-pay (USDC via Circle Gateway).",
-  "maxAmount": "1.00",
+  "description": "Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and Exa. Requires coherent asset, benchmark, chain, and news inputs; every step is paid independently through the SELAT Router over x402 or MPP.",
+  "maxAmount": "0.08",
   "params": {
     "symbol": {
       "required": true,
-      "default": "ETH",
-      "description": "Token symbol (no $) for the Alchemy spot-price lookup (used as ${symbol})."
+      "description": "Crypto token symbol without $, e.g. ETH, for the Alchemy spot-price lookup."
     },
     "coin": {
-      "required": false,
-      "default": "ethereum",
-      "description": "CoinGecko coin id (lowercase slug) for token market data (used as ${coin})."
+      "required": true,
+      "description": "CoinGecko coin ID for the same asset, e.g. ethereum for ETH."
     },
     "ticker": {
-      "required": false,
-      "default": "AAPL",
-      "description": "Equity ticker for the Alpha Vantage global-quote macro/equities pull (used as ${ticker})."
+      "required": true,
+      "description": "US equity or ETF ticker used only as an explicit market benchmark, e.g. QQQ or SPY."
     },
-    "chain": {
-      "required": false,
-      "default": "ethereum",
-      "description": "Chain name for the Nansen smart-money holdings query (used as ${chain})."
+    "assetChain": {
+      "required": true,
+      "description": "Nansen-supported data chain for chain-level smart-money holdings, e.g. ethereum or solana. This is not a settlement-chain flag."
     },
     "query": {
-      "required": false,
-      "default": "ethereum ETF flows",
-      "description": "Free-text search for the Exa market-news/context step (used as ${query})."
+      "required": true,
+      "description": "Asset-specific current-news query, e.g. Ethereum ETH ETF flows regulation August 2026."
     }
   },
   "steps": [
@@ -36,7 +31,7 @@
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://x402.alchemy.com/prices/v1/tokens/by-symbol?symbols=${symbol}",
-      "maxAmount": "0.01"
+      "maxAmount": "0.002"
     },
     {
       "label": "token market data — CoinGecko coins-markets (MPP on Tempo)",
@@ -45,32 +40,38 @@
       "url": "https://coingecko.mpp.paywithlocus.com/coingecko/coins-markets",
       "body": {
         "vs_currency": "usd",
-        "ids": "${coin}"
+        "ids": "${coin}",
+        "per_page": 1,
+        "page": 1,
+        "sparkline": true,
+        "price_change_percentage": "1h,24h,7d"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.08"
     },
     {
-      "label": "equities / macro quote — Alpha Vantage global-quote (MPP on Tempo)",
+      "label": "equity benchmark quote — Alpha Vantage global-quote (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote",
       "body": {
         "symbol": "${ticker}"
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.015"
     },
     {
-      "label": "on-chain smart-money holdings — Nansen (MPP on Tempo)",
+      "label": "chain-level smart-money holdings — Nansen (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.nansen.ai/api/v1/smart-money/holdings",
       "body": {
-        "chains": ["${chain}"]
+        "chains": [
+          "${assetChain}"
+        ]
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.07"
     },
     {
-      "label": "market news / context — Exa search (MPP on Tempo)",
+      "label": "news and market context — Exa search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.exa.ai/search",
@@ -83,7 +84,7 @@
           }
         }
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.02"
     }
   ]
 }
