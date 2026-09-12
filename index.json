@@ -41,7 +41,7 @@
       "name": "sales-prospecting",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Sales prospecting list-build + enrich (Fiber, Hunter, Sixtyfour, Brand.dev). Paid per call via MPP on Tempo."
+      "description": "Fixed five-read, read-only B2B prospecting bundle across Apollo and Hunter: bounded ICP company search, bounded professionals at one known company, privacy-limited enrichment of one known professional, independent supplied-work-email verification, and company firmographics. Requires nine coherent inputs; no personal-email/phone revelation, outreach, or CRM mutation."
     },
     {
       "name": "email-campaign",

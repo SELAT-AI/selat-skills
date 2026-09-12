@@ -1,92 +1,121 @@
 {
   "schema": "selat-skill/v1",
   "name": "sales-prospecting",
-  "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Hunter email finder), verifies deliverability (Hunter email verifier), and enriches with company data (Abstract Company Enrichment).",
-  "maxAmount": "1.00",
+  "description": "Fixed five-read, read-only B2B prospecting bundle: bounded ICP company search, bounded professional search at one known company, privacy-limited enrichment of one known professional, independent verification of a supplied work email, and company enrichment. Requires nine coherent inputs, reveals no personal emails or phone numbers, and sends no outreach.",
+  "maxAmount": "0.050",
   "params": {
-    "companyQuery": {
-      "required": false,
-      "default": "B2B SaaS startups in San Francisco with 50-200 employees Series A or B funded",
-      "description": "Free-form natural-language description of the target companies (ICP) for the Fiber company search."
-    },
-    "jobTitles": {
-      "required": false,
-      "default": "CTO,VP Engineering,Head of Engineering",
-      "description": "Comma-separated decision-maker job titles for the Fiber people search."
-    },
-    "companyNames": {
-      "required": false,
-      "default": "Stripe,Figma,Notion",
-      "description": "Comma-separated company names to scope the Fiber people search."
-    },
-    "locations": {
-      "required": false,
-      "default": "San Francisco",
-      "description": "Comma-separated locations to scope the Fiber people search."
-    },
-    "domain": {
+    "companyKeywords": {
       "required": true,
-      "default": "stripe.com",
-      "description": "Company domain used for Hunter domain-search, the Hunter email-finder lookup, and the Abstract Company Enrichment lookup."
+      "description": "Concise ICP keywords for company discovery, such as 'B2B SaaS'."
+    },
+    "location": {
+      "required": true,
+      "description": "One target geography used by the company and professional searches."
+    },
+    "employeeRange": {
+      "required": true,
+      "description": "One employee-count range in provider format 'lower,upper', such as '51,200'."
+    },
+    "jobTitle": {
+      "required": true,
+      "description": "One professional title to search at the known target company."
+    },
+    "seniority": {
+      "required": true,
+      "description": "One supported seniority: founder, c_suite, partner, vp, head, director, manager, senior, entry, or intern."
+    },
+    "companyDomain": {
+      "required": true,
+      "description": "One bare company domain, without scheme or path, used for professional and company research."
     },
     "firstName": {
-      "required": false,
-      "default": "Sarah",
-      "description": "First name of the specific contact whose email the Hunter email finder should find."
+      "required": true,
+      "description": "First name of one known professional at the target company."
     },
     "lastName": {
-      "required": false,
-      "default": "Chen",
-      "description": "Last name of the specific contact whose email the Hunter email finder should find."
+      "required": true,
+      "description": "Last name of one known professional at the target company."
     },
-    "email": {
-      "required": false,
-      "default": "sarah@stripe.com",
-      "description": "Email address to verify for deliverability via the Hunter email verifier before adding to a sequence."
+    "workEmail": {
+      "required": true,
+      "description": "One authorized work email to verify independently for deliverability."
     }
   },
   "steps": [
     {
-      "label": "all emails for domain — Hunter domain search (MPP on Tempo)",
+      "label": "bounded ICP company search — Apollo (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
       "body": {
-        "domain": "${domain}"
+        "q_keywords": "${companyKeywords}",
+        "organization_locations": [
+          "${location}"
+        ],
+        "organization_num_employees_ranges": [
+          "${employeeRange}"
+        ],
+        "per_page": 10,
+        "page": 1
       },
-      "maxAmount": "1.00"
+      "maxAmount": "0.008"
     },
     {
-      "label": "find specific contact email — Hunter email finder (MPP on Tempo)",
+      "label": "bounded professionals at known company — Apollo (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
       "body": {
-        "domain": "${domain}",
+        "person_titles": [
+          "${jobTitle}"
+        ],
+        "person_locations": [
+          "${location}"
+        ],
+        "q_organization_domains": [
+          "${companyDomain}"
+        ],
+        "person_seniorities": [
+          "${seniority}"
+        ],
+        "per_page": 10,
+        "page": 1
+      },
+      "maxAmount": "0.008"
+    },
+    {
+      "label": "privacy-limited known-professional enrichment — Apollo (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
+      "body": {
         "first_name": "${firstName}",
-        "last_name": "${lastName}"
+        "last_name": "${lastName}",
+        "domain": "${companyDomain}",
+        "reveal_personal_emails": false,
+        "reveal_phone_number": false
       },
-      "maxAmount": "0.15"
+      "maxAmount": "0.050"
     },
     {
-      "label": "verify email deliverability — Hunter email verifier (MPP on Tempo)",
+      "label": "independent work-email deliverability check — Hunter (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
-        "email": "${email}"
+        "email": "${workEmail}"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.012"
     },
     {
-      "label": "enrich with company data — Abstract Company Enrichment lookup (MPP on Tempo)",
+      "label": "known-company firmographics — Hunter (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
+      "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
       "body": {
-        "domain": "${domain}"
+        "domain": "${companyDomain}"
       },
-      "maxAmount": "0.10"
+      "maxAmount": "0.020"
     }
   ]
 }
