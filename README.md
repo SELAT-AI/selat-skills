@@ -56,7 +56,7 @@ The table below mirrors the current `index.json` catalog.
 |---|---|---|---|
 | [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B person and company enrichment waterfall. |
 | [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Deep multi-source person and company enrichment. |
-| [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Lead enrichment through Hunter, Sixtyfour, and Fiber. |
+| [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Fixed five-call, full-contact B2B lead cross-check through Hunter, Apollo, and Clado. |
 | [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Person lookup through Nyne. |
 | [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Cost-conscious GTM enrichment with conditional gap fills. |
 | [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM enrichment through Apollo and Sixtyfour. |
