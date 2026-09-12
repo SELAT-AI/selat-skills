@@ -119,7 +119,7 @@
       "name": "wallet-desk-brief",
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
-      "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
+      "description": "Fixed two-call, read-only EVM wallet snapshot for one explicit non-zero address: Alchemy token holdings across Ethereum, Base, Polygon PoS, Arbitrum, and Optimism plus Arkham's probabilistic address attribution. It does not prove ownership, cover every chain, or execute trades."
     }
   ]
 }

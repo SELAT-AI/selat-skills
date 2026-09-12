@@ -73,7 +73,7 @@ The table below mirrors the current `index.json` catalog.
 | [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit. |
 | [perplexity-search](skills/perplexity-search/SKILL.md) | routed | single | Perplexity-backed web search through x402. |
 | [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Non-advisory bullish/bearish/mixed stock signal brief. |
-| [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Read-only EVM wallet attribution and holdings brief. |
+| [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Fixed two-call EVM wallet snapshot: five-network token holdings plus probabilistic address attribution. |
 
 The `index.json` catalog at the repo root backs `selat skill list --available`.
 
