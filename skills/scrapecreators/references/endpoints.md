@@ -5,14 +5,18 @@ the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
 is authoritative — `selat skill verify` probes it free.
 
+LinkedIn public-page reads use Scrape Creators sync endpoints on
+`mpp.orthogonal.com` (already the YouTube host in `account-intel`). Dead Clado
+`/linkedin-profile` and `/scrape` were removed.
+
 | Step | Method | URL | Rail | ~Price |
 |---|---|---|---|---|
 | 1 — X/Twitter profile | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 |
 | 2 — X/Twitter user tweets | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}` | x402 via Circle Gateway | $0.001 |
 | 3 — X/Twitter tweet details | GET | `https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}` | x402 via Circle Gateway | $0.001 |
-| 4 — LinkedIn profile | POST | `https://clado.mpp.paywithlocus.com/clado/linkedin-profile` | MPP on Tempo | $0.01365 |
-| 5 — LinkedIn post | POST | `https://clado.mpp.paywithlocus.com/clado/scrape` | MPP on Tempo | $0.02415 |
-| 6 — LinkedIn company page | POST | `https://clado.mpp.paywithlocus.com/clado/scrape` | MPP on Tempo | $0.02415 |
+| 4 — LinkedIn profile | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}` | MPP on Tempo | $0.021 |
+| 5 — LinkedIn post | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/post?url=${linkedinPostUrl}` | MPP on Tempo | $0.021 |
+| 6 — LinkedIn company page | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/company?url=${linkedinCompanyUrl}` | MPP on Tempo | $0.021 |
 | 7 — Instagram profile | POST | `https://stablesocial.dev/api/instagram/profile` | MPP on Tempo | $0.063 |
 | 8 — Instagram profile by handle | POST | `https://stablesocial.dev/api/instagram/profile` | MPP on Tempo | $0.063 |
 | 9 — Instagram recent posts | POST | `https://stablesocial.dev/api/instagram/posts` | MPP on Tempo | $0.063 |
@@ -25,7 +29,7 @@ exactly. Live total across all 12 steps ≈ $0.45.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim.
-- **MPP on Tempo:** Clado via Locus (`clado.mpp.paywithlocus.com`). StableSocial (`stablesocial.dev`) is MPP on Tempo but not Locus.
+- **MPP on Tempo:** Scrape Creators (`mpp.orthogonal.com/scrapecreators`) and StableSocial (`stablesocial.dev`).
 
 ## SELAT-native Twitter — `x402 via Circle Gateway`
 
@@ -46,24 +50,25 @@ Query pattern:
 https://catalog.selat.ai/twitter/tweets?tweet_ids=1234567890123456789
 ```
 
-## Clado MPP — `MPP on Tempo`
+## Scrape Creators LinkedIn — `MPP on Tempo`
 
-serviceUrl: `https://clado.mpp.paywithlocus.com`
+serviceUrl: `https://mpp.orthogonal.com/scrapecreators`
 
-Last documented prices (`routed-mpp`): linkedin-profile `$0.01365`, scrape
-`$0.02415`. Today's live probe did not surface a 402 — re-probe. All
-endpoints are **POST with a JSON body**. Steps 5 and 6 hit the same scrape
-path with different LinkedIn URLs.
+Live-probed price: `$0.021` per call (`routed-mpp`, 2026-09-12). All three
+LinkedIn endpoints are **GET with a query-string `url`**. Each expects a
+different URL type. Per-step cap `$0.03`.
 
-| Capability/Step | Endpoint | Body params |
+| Capability/Step | Endpoint | Query params |
 | --- | --- | --- |
-| LinkedIn profile | `/clado/linkedin-profile` | `linkedin_url` (string, required) |
-| LinkedIn post | `/clado/scrape` | `linkedin_url` (string — post URL) |
-| LinkedIn company page | `/clado/scrape` | `linkedin_url` (string — company page URL) |
+| LinkedIn profile | `/v1/linkedin/profile` | `url` — public person-profile URL |
+| LinkedIn post | `/v1/linkedin/post` | `url` — public post or article URL |
+| LinkedIn company page | `/v1/linkedin/company` | `url` — public company-page URL |
 
-```json
-{ "linkedin_url": "https://linkedin.com/in/satyanadella" }
+```text
+https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=https://linkedin.com/in/satyanadella
 ```
+
+Do not call Clado `/linkedin-profile` or `/scrape` (dead — no 402).
 
 ## StableSocial — `MPP on Tempo`
 

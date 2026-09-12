@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "email-campaign",
-  "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company firmographic context — all via MPP merchants (Hunter, Apollo, Abstract Company Enrichment via Locus) through the SELAT Router.",
+  "description": "Build verified outreach lists: find target companies, pull domain emails, find a specific person's email, verify deliverability, enrich a lead, and pull company firmographic context — all via MPP merchants (Hunter, Apollo, Orthogonal Company Enrich) through the SELAT Router.",
   "maxAmount": "1.00",
   "params": {
     "industry": {
@@ -12,7 +12,7 @@
     "domain": {
       "required": true,
       "default": "stripe.com",
-      "description": "Target company domain for Hunter domain-search, email-finder, and the Abstract Company Enrichment lookup"
+      "description": "Target company domain for Hunter domain-search, email-finder, and the Orthogonal Company Enrich lookup"
     },
     "firstName": {
       "required": false,
@@ -91,14 +91,11 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "company context — Abstract Company Enrichment (MPP on Tempo)",
+      "label": "company context — Orthogonal Company Enrich by domain (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     }
   ]
 }

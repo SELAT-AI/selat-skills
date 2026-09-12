@@ -8,7 +8,7 @@ is authoritative — `selat skill verify` probes it free.
 | Step | Method | URL | Rail | ~Price |
 |---|---|---|---|---|
 | 1 — Resolve company by name | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-search` | MPP on Tempo | $0.00525 |
-| 2 — Resolve company by domain | POST | `https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup` | MPP on Tempo | $0.0063 |
+| 2 — Resolve company by domain | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 |
 | 3 — Discover curated listicles | POST | `https://exa.mpp.tempo.xyz/search` | MPP on Tempo | $0.00525 |
 | 4 — Expand from a strong listicle | POST | `https://exa.mpp.tempo.xyz/findSimilar` | MPP on Tempo | $0.00525 |
 | 5 — Fetch Twitter profile + counts | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 |
@@ -20,7 +20,7 @@ This is a fixed 8-call manifest. The step table matches `manifest.json` exactly.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim.
-- **MPP on Tempo:** Apollo, Abstract Company Enrichment, Hunter, and Clado via Locus (`*.mpp.paywithlocus.com`). Exa (`exa.mpp.tempo.xyz`) is MPP on Tempo but not Locus.
+- **MPP on Tempo:** Apollo, Hunter, and Clado contacts via Locus (`*.mpp.paywithlocus.com`). Exa (`exa.mpp.tempo.xyz`) is MPP on Tempo but not Locus. Orthogonal Company Enrich via `mpp.orthogonal.com`.
 
 ## Apollo MPP — `MPP on Tempo`
 
@@ -37,19 +37,20 @@ with a JSON body**.
 { "q_organization_name": "Stripe" }
 ```
 
-## Abstract Company Enrichment — `MPP on Tempo`
+## Orthogonal Company Enrich — `MPP on Tempo`
 
-serviceUrl: `https://abstract-company-enrichment.mpp.paywithlocus.com`
+serviceUrl: `https://mpp.orthogonal.com/company-enrich`
 
-Last documented price: `$0.0063` per call (`routed-mpp`). Today's live probe
-did not surface a 402 — re-probe. All endpoints are **POST with a JSON body**.
+Live-probed price: `$0.012862` (`routed-mpp`, 2026-09-12). Domain lookup is
+**GET with a query-string `domain`**. Replaces the dead Abstract Company
+Enrichment `POST /abstract-company-enrichment/lookup`. Per-step cap `$0.02`.
 
-| Capability/Step | Endpoint | Body params |
+| Capability/Step | Endpoint | Query params |
 | --- | --- | --- |
-| Resolve company by domain | `/abstract-company-enrichment/lookup` | `domain` (string, required) |
+| Resolve company by domain | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
 
-```json
-{ "domain": "stripe.com" }
+```text
+https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com
 ```
 
 ## Exa MPP — `MPP on Tempo`
@@ -57,7 +58,8 @@ did not surface a 402 — re-probe. All endpoints are **POST with a JSON body**.
 serviceUrl: `https://exa.mpp.tempo.xyz`
 
 Live-probed price: `$0.00525` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**.
+with a JSON body**. x.com / twitter.com profiles are not in Exa's index —
+search for listicle pages.
 
 | Capability/Step | Endpoint | Body params |
 | --- | --- | --- |
@@ -101,12 +103,14 @@ with a JSON body**.
 { "domain": "janesmithcreative.com", "first_name": "Jane", "last_name": "Smith" }
 ```
 
-## Clado MPP — `MPP on Tempo`
+## Clado contacts — `MPP on Tempo`
 
 serviceUrl: `https://clado.mpp.paywithlocus.com`
 
-Live-probed price: `$0.04515` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**. Requires a LinkedIn URL.
+Live-probed price: `$0.04515` per call (`routed-mpp`, re-probed 2026-09-12).
+All endpoints are **POST with a JSON body**. Requires a LinkedIn URL. Keep
+this route; Clado `/search`, `/linkedin-profile`, and `/scrape` are dead and
+are not used here.
 
 | Capability/Step | Endpoint | Body params |
 | --- | --- | --- |

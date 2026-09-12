@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-smart",
-  "description": "Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step (via the SELAT Router). Takes an email (+ optional name) and returns person + company data by cross-referencing cheap MPP-on-Tempo APIs first (Apollo, Hunter, Abstract Company Enrichment via Locus), with buying-signal and SELAT-native Twitter (x402 via Circle Gateway) social-proof gap-fills.",
+  "description": "Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step (via the SELAT Router). Takes an email (+ optional name) and returns person + company data by cross-referencing cheap MPP-on-Tempo APIs first (Apollo, Hunter, Orthogonal Company Enrich), with buying-signal and SELAT-native Twitter (x402 via Circle Gateway) social-proof gap-fills.",
   "maxAmount": "0.25",
   "params": {
     "email": {
@@ -12,7 +12,7 @@
     "domain": {
       "required": false,
       "default": "stripe.com",
-      "description": "Company domain extracted from the email (e.g. acme.com). Used by the Abstract Company Enrichment lookup, Apollo org-enrichment, and Hunter company-enrichment steps."
+      "description": "Company domain extracted from the email (e.g. acme.com). Used by the Orthogonal Company Enrich lookup, Apollo org-enrichment, and Hunter company-enrichment steps."
     },
     "organizationId": {
       "required": false,
@@ -58,14 +58,11 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "company brand — Abstract Company Enrichment lookup (MPP on Tempo; skip for free email)",
+      "label": "company brand — Orthogonal Company Enrich by domain (MPP on Tempo; skip for free email)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     },
     {
       "label": "company gap-fill — Apollo org-enrichment (MPP on Tempo; only if funding missing)",

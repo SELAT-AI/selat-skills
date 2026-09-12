@@ -10,14 +10,14 @@ is authoritative — `selat skill verify` probes it free.
 | 1 — All emails for domain | POST | `https://hunter.mpp.paywithlocus.com/hunter/domain-search` | MPP on Tempo | $0.01365 |
 | 2 — Find specific contact email | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-finder` | MPP on Tempo | $0.01365 |
 | 3 — Verify email deliverability | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 |
-| 4 — Enrich with company data | POST | `https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup` | MPP on Tempo | $0.0063 |
+| 4 — Enrich with company data | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 |
 
 This is a fixed 4-call manifest. The step table matches `manifest.json` exactly.
 SKILL.md still describes Fiber company-search and people-search steps; those
 calls are **not in the default manifest**.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
-- **MPP on Tempo:** Hunter and Abstract Company Enrichment via Locus (`*.mpp.paywithlocus.com`).
+- **MPP on Tempo:** Hunter via Locus (`hunter.mpp.paywithlocus.com`). Orthogonal Company Enrich via `mpp.orthogonal.com`.
 
 ## Hunter MPP — `MPP on Tempo`
 
@@ -37,19 +37,20 @@ body** — never query-string params.
 { "domain": "stripe.com", "first_name": "Sarah", "last_name": "Chen" }
 ```
 
-## Abstract Company Enrichment — `MPP on Tempo`
+## Orthogonal Company Enrich — `MPP on Tempo`
 
-serviceUrl: `https://abstract-company-enrichment.mpp.paywithlocus.com`
+serviceUrl: `https://mpp.orthogonal.com/company-enrich`
 
-Last documented price: `$0.0063` per call (`routed-mpp`). Today's live probe
-did not surface a 402 — re-probe. All endpoints are **POST with a JSON body**.
+Live-probed price: `$0.012862` (`routed-mpp`, 2026-09-12). Domain lookup is
+**GET with a query-string `domain`**. Replaces the dead Abstract Company
+Enrichment `POST /abstract-company-enrichment/lookup`. Per-step cap `$0.02`.
 
-| Capability/Step | Endpoint | Body params |
+| Capability/Step | Endpoint | Query params |
 | --- | --- | --- |
-| Enrich with company data | `/abstract-company-enrichment/lookup` | `domain` (string, required) |
+| Enrich with company data | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
 
-```json
-{ "domain": "stripe.com" }
+```text
+https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com
 ```
 
 ## Fiber — not in the default manifest

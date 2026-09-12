@@ -25,7 +25,7 @@ Use when the user wants a ranked, enriched list of Twitter/X influencers for a c
 Steps (**MPP on Tempo** via the SELAT Router unless marked x402 via Circle Gateway):
 
 - **Step 1 — Apollo** `POST /apollo/org-search` — resolve the company by name (`q_organization_name`) to get its Apollo org record, domain, and industry.
-- **Step 2 — Abstract Company Enrichment** `POST /abstract-company-enrichment/lookup` — resolve by domain when one is supplied (richer firmographic context, industry/SIC fields).
+- **Step 2 — Orthogonal Company Enrich** `GET /companies/enrich?domain=` — resolve by domain when one is supplied (richer firmographic context, industry/size/funding). Cap `$0.02`.
 - **Step 3 — Exa** `POST /search` — discover curated influencer listicles (request `contents.text` to parse handles from page text; x.com is NOT in Exa's index).
 - **Step 4 — Exa** `POST /findSimilar` — expand from a strong listicle URL to find more lists.
 - **Step 5 — SELAT-native (x402 via Circle Gateway)** `GET /twitter/user/info?userName=` — fetch a candidate's Twitter profile and follower counts.
@@ -40,7 +40,7 @@ For batch discovery (many handles), re-run steps 5/6 per `--handle`; the manifes
 | Param | Required | Default | Description |
 |---|---|---|---|
 | `company` | yes | — | Company/brand name (Apollo org-search `q_organization_name`) |
-| `domain` | no | (empty) | Company domain for Abstract Company Enrichment lookup |
+| `domain` | no | (empty) | Company domain for Orthogonal Company Enrich lookup |
 | `query` | no | `best fintech Twitter accounts to follow` | Exa listicle search query |
 | `similarUrl` | no | `https://example.com/top-fintech-twitter-influencers` | Listicle URL for Exa findSimilar |
 | `handle` | no | `examplehandle` | Twitter/X handle (no @) for the SELAT-native `userName` query param |
@@ -49,12 +49,12 @@ For batch discovery (many handles), re-run steps 5/6 per `--handle`; the manifes
 | `lastName` | no | `Smith` | Last name for Hunter email-finder |
 | `contactDomain` | no | `janesmithcreative.com` | Domain for Hunter email-finder |
 
-Outputs (per step): Apollo org-search returns organization records (name, domain, industry); Abstract returns a firmographic company record; Exa returns `{results:[{url,text,...}]}`; SELAT-native returns Twitter profile and tweet JSON with follower and engagement counts; Hunter returns `{data:{email,...}}`; Clado returns a contact record (email + phone) for a LinkedIn URL. The agent parses, dedupes handles, scores (relevance 40% / engagement 25% / followers 15% / quality 10% / alignment 10%), and renders a ranked markdown table.
+Outputs (per step): Apollo org-search returns organization records (name, domain, industry); Orthogonal Company Enrich returns a firmographic company record; Exa returns `{results:[{url,text,...}]}`; SELAT-native returns Twitter profile and tweet JSON with follower and engagement counts; Hunter returns `{data:{email,...}}`; Clado contacts returns a contact record (email + phone) for a LinkedIn URL. The agent parses, dedupes handles, scores (relevance 40% / engagement 25% / followers 15% / quality 10% / alignment 10%), and renders a ranked markdown table.
 
 ## Gotchas
 
 - **Mixed rail.** Steps 1–4 and 7–8 are MPP on Tempo and need `SELAT_ROUTER_URL` configured and the router reachable; steps 5–6 (SELAT-native) are x402 via Circle Gateway calls via the SELAT Router (Circle Gateway-batched).
-- **Caps are ceilings, not prices.** Every step carries a `maxAmount` of ~10x its live price ($0.10–$0.50); live prices (probe-verified 2026-07-10) sum to about $0.085 per full run: Apollo $0.00525, Abstract $0.0063, Exa $0.00525 ×2, SELAT-native $0.001 + $0.001, Hunter $0.01365, Clado $0.04515 — see `references/endpoints.md`.
+- **Caps are ceilings, not prices.** Most steps carry a `maxAmount` of ~10x live price ($0.10–$0.50); Company Enrich is capped at `$0.02`. Live prices sum to about $0.090 per full run: Apollo $0.00525, Company Enrich $0.012862, Exa $0.00525 ×2, SELAT-native $0.001 + $0.001, Hunter $0.01365, Clado contacts $0.04515 — see `references/endpoints.md`.
 - **Hunter is POST in MPP.** The MPP route is `POST hunter.mpp.paywithlocus.com/hunter/email-finder` with a JSON body (`domain`, `first_name`, `last_name`) — not the upstream `GET /v2/email-finder`. The manifest grounds to the MPP host/path/method.
 - **Exa cannot search Twitter.** x.com / twitter.com profiles are not in Exa's index; always search for listicle pages and parse handles from `contents.text`.
 - **SELAT-native keys on `userName`.** Both Twitter endpoints take the bare handle (no @) as the `userName` query param.
@@ -68,7 +68,7 @@ Outputs (per step): Apollo org-search returns organization records (name, domain
 Free 402 probes (no payment) per the selat-pay repo convention:
 
 - `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/org-search" --body '{"q_organization_name":"Acme"}' --chain base --probe-only`
-- `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"acme.com"}' --chain base --probe-only`
+- `selat-pay GET "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=acme.com" --chain base --probe-only --live-probe`
 - `selat-pay POST "https://exa.mpp.tempo.xyz/search" --body '{"query":"best fintech Twitter accounts to follow","numResults":10,"contents":{"text":{"maxCharacters":5000}}}' --chain base --probe-only`
 - `selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=examplehandle" --chain base --probe-only`
 - `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-finder" --body '{"domain":"janesmithcreative.com","first_name":"Jane","last_name":"Smith"}' --chain base --probe-only`
@@ -83,4 +83,4 @@ A successful run prints `status=200` per step and a ✓ summary for each rail.
 - [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
 
-Third-party APIs (Apollo, Abstract, Exa, SELAT-native, Hunter, Clado) are the property of their respective owners; this skill calls them via the SELAT Router MPP rail or the Circle x402 catalog and asserts no affiliation.
+Third-party APIs (Apollo, Orthogonal Company Enrich, Exa, SELAT-native, Hunter, Clado) are the property of their respective owners; this skill calls them via the SELAT Router MPP rail or the Circle x402 catalog and asserts no affiliation.

@@ -8,7 +8,7 @@
       "assertions": [
         "The skill activates on a 'who is [name]?' question",
         "The query param includes 'Dario Amodei'",
-        "The MPP-on-Tempo step POSTs to https://clado.mpp.paywithlocus.com/clado/search",
+        "The MPP-on-Tempo step POSTs to https://apollo.mpp.paywithlocus.com/apollo/people-search",
         "The step rail is 'MPP on Tempo'"
       ]
     },
@@ -19,27 +19,29 @@
       "assertions": [
         "The query param combines name and company ('Sam Altman' and 'OpenAI')",
         "Exactly one step is executed",
-        "The step body is {\"query\": \"<query>\"}"
+        "The step body is {\"q_keywords\": \"<query>\"}"
       ]
     },
     {
       "id": "find-contact-info",
-      "prompt": "Find contact info and social profiles for Jensen Huang, NVIDIA CEO",
-      "expected_output": "person-lookup runs and surfaces social profiles and contact information for Jensen Huang.",
+      "prompt": "Find public professional profiles for Jensen Huang, NVIDIA CEO",
+      "expected_output": "person-lookup runs and surfaces public professional profile fields for Jensen Huang. It does not advertise private email or phone retrieval.",
       "assertions": [
-        "The skill activates on a contact-info / social-profile request about a named person",
+        "The skill activates on a named-person research request",
         "The query includes disambiguating context (company or title)",
-        "The maxAmount cap is respected (full-run cap $1.00)"
+        "The maxAmount cap is respected (full-run cap $0.02)",
+        "No private contact-reveal endpoint is promised"
       ]
     },
     {
       "id": "probe-only-no-payment",
       "prompt": "Probe the person-lookup endpoint without paying to confirm it's reachable.",
-      "expected_output": "A free 402 probe is issued against https://clado.mpp.paywithlocus.com/clado/search using --probe-only; no payment is made.",
+      "expected_output": "A free 402 probe is issued against https://apollo.mpp.paywithlocus.com/apollo/people-search using --probe-only --live-probe; no payment is made.",
       "assertions": [
-        "The command uses selat-pay with --probe-only",
-        "The target URL is https://clado.mpp.paywithlocus.com/clado/search",
-        "No actual payment / settlement occurs"
+        "The command uses selat-pay with --probe-only and --live-probe",
+        "The target URL is https://apollo.mpp.paywithlocus.com/apollo/people-search",
+        "No actual payment / settlement occurs",
+        "Dead Clado /clado/search is not called"
       ]
     },
     {
@@ -58,7 +60,7 @@
       "expected_output": "person-lookup does NOT trigger; this is a market-price request, not a person lookup.",
       "assertions": [
         "The person-lookup skill does not activate",
-        "No call is made to https://clado.mpp.paywithlocus.com/clado/search"
+        "No call is made to https://apollo.mpp.paywithlocus.com/apollo/people-search"
       ]
     }
   ]

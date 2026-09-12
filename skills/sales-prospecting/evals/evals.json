@@ -4,7 +4,7 @@
     {
       "id": "full-pipeline-stripe",
       "prompt": "Build me a prospect list of CTOs at SaaS startups and get verified emails for stripe.com.",
-      "expected_output": "The skill runs the full MPP-on-Tempo pipeline (company search, people search, Hunter domain emails, Hunter email finder, Hunter email verification, Abstract Company Enrichment) and returns a per-step summary with the prospect data and a deliverability verdict.",
+      "expected_output": "The skill runs the MPP-on-Tempo pipeline (Hunter domain emails, Hunter email finder, Hunter email verification, Orthogonal Company Enrich) and returns a per-step summary with the prospect data and a deliverability verdict.",
       "assertions": [
         "All six steps use rail \"MPP on Tempo\"",
         "The Hunter step is a POST to https://hunter.mpp.paywithlocus.com/hunter/domain-search with domain in the body",
@@ -15,7 +15,7 @@
     {
       "id": "domain-emails-only-intent",
       "prompt": "Get me all the emails at notion.so.",
-      "expected_output": "The skill runs with domain=notion.so; the Hunter domain-search step returns the emails found at the domain, and the Abstract Company Enrichment step enriches the company.",
+      "expected_output": "The skill runs with domain=notion.so; the Hunter domain-search step returns the emails found at the domain, and the Orthogonal Company Enrich step enriches the company.",
       "assertions": [
         "The domain param is set to notion.so",
         "The Hunter domain-search step host is hunter.mpp.paywithlocus.com",
@@ -45,7 +45,7 @@
     {
       "id": "mpp-rail-and-caps",
       "prompt": "How much could a full sales-prospecting run cost and which payment rail does it use?",
-      "expected_output": "Explains that every step is MPP on Tempo, per-step caps are ~10x each live price ($0.10–$1.00), and the live prices (probe-verified 2026-07-10) are $0.10815 domain-search, $0.01365 email-finder, $0.0084 email-verifier, and $0.0063 company-enrichment lookup.",
+      "expected_output": "Explains that every step is MPP on Tempo, per-step caps are ~10x each live price except Company Enrich ($0.02), and the live prices are $0.10815 domain-search, $0.01365 email-finder, $0.0084 email-verifier, and $0.012862 Company Enrich.",
       "assertions": [
         "The answer states all steps settle via MPP on Tempo",
         "The answer cites the 1.00 top-level maxAmount fallback cap as a ceiling, distinct from the live prices",
@@ -55,7 +55,7 @@
     {
       "id": "probe-only-validation",
       "prompt": "I want to check the sales-prospecting endpoints are payable before spending anything.",
-      "expected_output": "Recommends running selat-pay --probe-only against the Fiber, Hunter, and Abstract Company Enrichment endpoints to get the 402 payment requirements without paying.",
+      "expected_output": "Recommends running selat-pay --probe-only --live-probe against the Hunter and Orthogonal Company Enrich endpoints to get the 402 payment requirements without paying.",
       "assertions": [
         "The guidance uses selat-pay with --probe-only",
         "Probe commands target the same hosts as the manifest steps",

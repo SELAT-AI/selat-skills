@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "scrapecreators",
-  "description": "Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle Gateway), StableSocial (Instagram + TikTok — MPP, via the SELAT Router), and Clado (LinkedIn — MPP on Tempo): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI.",
+  "description": "Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle Gateway), StableSocial (Instagram + TikTok — MPP, via the SELAT Router), and Scrape Creators (LinkedIn — MPP on Tempo): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI.",
   "maxAmount": "0.75",
   "params": {
     "handle": {
@@ -63,34 +63,25 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "LinkedIn profile — Clado (MPP on Tempo)",
+      "label": "LinkedIn public person profile — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
-      "body": {
-        "linkedin_url": "${linkedinUrl}"
-      },
-      "maxAmount": "0.15"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}",
+      "maxAmount": "0.03"
     },
     {
-      "label": "LinkedIn post — Clado scrape (MPP on Tempo)",
+      "label": "LinkedIn public post — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
-      "body": {
-        "linkedin_url": "${linkedinPostUrl}"
-      },
-      "maxAmount": "0.25"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/post?url=${linkedinPostUrl}",
+      "maxAmount": "0.03"
     },
     {
-      "label": "LinkedIn company page — Clado scrape (MPP on Tempo)",
+      "label": "LinkedIn public company page — Scrape Creators (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
-      "body": {
-        "linkedin_url": "${linkedinCompanyUrl}"
-      },
-      "maxAmount": "0.25"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/company?url=${linkedinCompanyUrl}",
+      "maxAmount": "0.03"
     },
     {
       "label": "Instagram profile — StableSocial (MPP on Tempo)",

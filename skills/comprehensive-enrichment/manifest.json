@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "comprehensive-enrichment",
-  "description": "Comprehensive person + company enrichment across many MPP on Tempo data providers (Apollo, Hunter, Clado, Abstract Company Enrichment, Diffbot KG, Exa, Firecrawl). Resolves contact info, verified emails, phone, social profiles, company overview, funding, products, and competitors. All steps are through the SELAT Router (MPP).",
+  "description": "Comprehensive person + company enrichment across many MPP on Tempo data providers (Apollo, Hunter, Clado contacts, Orthogonal Company Enrich, Diffbot KG, Exa, Firecrawl). Resolves contact info, verified emails, phone, social profiles, company overview, funding, products, and competitors. All steps are through the SELAT Router (MPP).",
   "maxAmount": "1.00",
   "params": {
     "email": {
@@ -41,16 +41,6 @@
     }
   },
   "steps": [
-    {
-      "label": "person deep search — Clado search (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/search",
-      "body": {
-        "query": "${firstName} ${lastName} ${company}"
-      },
-      "maxAmount": "1.00"
-    },
     {
       "label": "person enrichment — Apollo people-enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
@@ -117,14 +107,11 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "company overview — Abstract Company Enrichment lookup (MPP on Tempo)",
+      "label": "company overview — Orthogonal Company Enrich by domain (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     },
     {
       "label": "company emails — Hunter domain-search",

@@ -15,21 +15,21 @@
     {
       "id": "trigger-who-is",
       "prompt": "Who is the person behind founder@stripe.com and what does their company do?",
-      "expected_output": "Activates the skill, derives domain stripe.com, runs people-enrichment + combined-enrichment + Abstract Company Enrichment lookup, returns person and company description.",
+      "expected_output": "Activates the skill, derives domain stripe.com, runs people-enrichment + combined-enrichment + Orthogonal Company Enrich, returns person and company description.",
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
         "The domain param resolves to stripe.com",
-        "An Abstract Company Enrichment lookup step (https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup) is included for the non-free domain",
+        "An Orthogonal Company Enrich step (https://mpp.orthogonal.com/company-enrich/companies/enrich) is included for the non-free domain",
         "Output includes a company description and an is_b2b_saas classification"
       ]
     },
     {
       "id": "free-email-skips-company-lookup",
       "prompt": "Look up the prospect bob@gmail.com",
-      "expected_output": "Recognizes gmail.com as a free-email provider and skips the Abstract Company Enrichment lookup step to save cost.",
+      "expected_output": "Recognizes gmail.com as a free-email provider and skips the Orthogonal Company Enrich lookup step to save cost.",
       "assertions": [
         "The skill gtm-enrichment-smart is selected",
-        "The Abstract Company Enrichment lookup step is marked skipped (free email provider)",
+        "The Orthogonal Company Enrich lookup step is marked skipped (free email provider)",
         "Apollo people-enrichment and Hunter email-verifier still run"
       ]
     },
