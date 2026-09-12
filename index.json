@@ -77,7 +77,7 @@
       "name": "self-evolving-agent",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Budgeted economic agent preflight for social sentiment, market context, and domain availability before infrastructure, monetization, or trading decisions."
+      "description": "Fixed three-call, read-only economic-agent preflight for broad crypto KOL sentiment, one explicit Hyperliquid asset, and one explicit domain candidate. It does not create identity, buy infrastructure, fund wallets, or place trades."
     },
     {
       "name": "financial-intel",

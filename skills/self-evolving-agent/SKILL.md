@@ -2,7 +2,7 @@
 name: self-evolving-agent
 description: Use this skill when the user wants to design or operate a budgeted economic agent with its own operational identity, AgentMail address, agent-wallet treasury, infrastructure budget, social and financial intelligence loop, monetization or trading hypotheses, and reinvestment policy. The skill enforces treasury controls, paper-trading first, compliance checks, and explicit approval before any paid inbox creation, wallet funding, purchase, or live trade.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, Node.js 18+, and a reachable SELAT Router. Paid intelligence/infrastructure steps need a funded Circle Gateway balance. Live trading requires separately configured, user-approved venues and must comply with applicable law.
+compatibility: Tested with SELAT CLI 0.16.15 and Node.js 18+; requires a reachable SELAT Router. Paid preflight steps need a funded Circle Gateway balance. Live trading is outside the manifest and requires separately configured, user-approved venues and compliance with applicable law.
 metadata:
   author: SELAT-CLI local agent
   version: "2.0"
@@ -138,15 +138,25 @@ Profit sustainability is an objective to test, not an assumption.
 
 ## Inputs And Outputs
 
+Planning inputs belong to the operating playbook and are **not** manifest flags:
+
+- mission and success metric;
+- starting budget and runway target;
+- risk profile and loss limits;
+- allowed asset universe; and
+- allowed monetization paths.
+
+The executable manifest accepts only the inputs its provider requests consume:
+
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `mission` | yes | `sustain agent expenses from social and financial intelligence` | The economic objective or niche. |
-| `budget_usd` | yes | `100` | Starting operating budget, not a guarantee of spend. |
-| `risk_profile` | no | `conservative` | `conservative`, `balanced`, or `aggressive`; affects suggested caps only. |
-| `asset_universe` | no | `crypto majors and prediction markets` | Markets or assets the agent may research. |
-| `monetization` | no | `reports, alerts, dashboards, paper-trading` | Allowed revenue paths. |
+| `asset` | yes | none | One Hyperliquid ticker such as `BTC` or `ETH`; research input only, not trading authorization. |
+| `domainCandidate` | yes | none | One full domain such as `example.com`; availability check only, not purchase authorization. |
 
-Outputs:
+Both inputs must be supplied explicitly. The manifest returns three independent
+provider responses; it does not synthesize them, carry data between steps, or
+generate the complete operating plan by itself. The agent using this playbook
+should turn those responses and the planning inputs into:
 
 - operating charter;
 - operational identity and mailbox plan;
@@ -159,17 +169,19 @@ Outputs:
 
 ## Manifest Steps
 
-The manifest is an optional intelligence preflight. It does not purchase
+The manifest is a fixed three-call intelligence preflight. It does not purchase
 infrastructure, create inboxes, fund wallets, or place trades.
 
-Current candidate steps from SELAT discovery:
+Current manifest steps from SELAT discovery:
 
 1. **Otto KOL sentiment** for market-moving social intelligence.
-2. **Otto Hyperliquid market data** for funding, open interest, and price context.
-3. **StableDomains availability check** for infrastructure/domain planning.
+2. **Otto Hyperliquid market data** for the explicit `asset` ticker's funding,
+   open interest, and price context.
+3. **StableDomains availability check** for the explicit `domainCandidate`.
 
 AgentMail inbox creation is intentionally not in the manifest because it is an
-identity-provisioning action with a live catalogue price near `$2.00`; perform it
+identity-provisioning action. A 2026-06-30 catalogue snapshot quoted it near
+`$2.00`; re-probe before relying on that historical price and perform creation
 only during the identity bootstrap with explicit user approval.
 
 Trade-capable catalogue endpoints may be referenced as **available but locked
@@ -223,6 +235,22 @@ these files.
 
 ## Gotchas
 
+- `selat skill run` executes all three calls in order. It does not choose the
+  cheapest provider, skip an irrelevant step, or stop after a useful result.
+- Every paid call settles independently. A later provider-side validation error
+  may still follow an already accepted payment; inspect history before retrying.
+- A free 402 probe proves reachability and quote compatibility, not successful
+  post-payment business output. The Hyperliquid endpoint's live schema requires
+  `asset`, which is why the manifest includes it in the query string.
+- CLI validation checks that inputs are present, not that they are meaningful.
+  Before approval, confirm `asset` is a simple supported Hyperliquid ticker and
+  `domainCandidate` is a syntactically valid full domain on a TLD supported by
+  the live provider schema.
+- The KOL report is broad rather than filtered by `asset`. Preserve the
+  provider's `dataAsOf`, `generatedAt`, `degraded`, and source-health fields and
+  do not imply that every narrative in the report concerns the requested asset.
+- A domain availability response is only a point-in-time check, not a
+  reservation or purchase.
 - Revenue must be realized, not marked-to-market wishfulness.
 - Data APIs can be right, late, partial, or stale; assign expiry windows.
 - Social sentiment can be adversarial and manipulated.
@@ -233,13 +261,12 @@ these files.
 
 ## Validation
 
-> `--chain base` below is only the flag `selat-pay` requires for a probe. Probing
-> reads a free, chain-independent quote and never settles. A paid run resolves
-> settlement from the funded Gateway balance.
-
 - Static check: `selat skill validate ./skills/self-evolving-agent`
-- Free live-price check: `selat skill verify ./skills/self-evolving-agent`
-- Paid check only after approval: `selat skill verify ./skills/self-evolving-agent --pay`
+- Required-input gate: `selat skill verify ./skills/self-evolving-agent --live-probe`
+  must fail before network probing.
+- Free live-price check: `selat skill verify ./skills/self-evolving-agent --asset BTC --domainCandidate agent-alpha-research.com --live-probe`
+- Paid check only after a fresh quote, explicit approval of the expected total
+  and cumulative cap, and an armed session budget: add `--pay` to that command.
 
 If live verification fails, use this skill as a local guidance skill and do not
 submit it as a paid SELAT catalogue skill until at least one manifest endpoint
@@ -255,3 +282,6 @@ quotes within cap.
 - `references/clawhub-patterns.md` - prior ClawHub self-improvement patterns.
 - `references/verification.md` - current validation and live-probe status.
 - `../../references/agent-skill-authoring-sop.md` - SELAT skill authoring standard.
+
+Provider and product names identify third-party services only. This skill does
+not imply provider endorsement and is not investment advice.

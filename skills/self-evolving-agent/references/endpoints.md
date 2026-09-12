@@ -1,10 +1,31 @@
 # Endpoints - self-evolving-agent
 
-| Step | Method | URL | Rail | Live price | Cap |
-|---|---|---|---|---|---|
-| KOL sentiment | GET | `https://x402.ottoai.services/kol-sentiment` | x402 on Base | $0.0021 | $0.010 |
-| Hyperliquid market context | GET | `https://x402.ottoai.services/hyperliquid-market` | x402 on Base | $0.00105 | $0.010 |
-| Domain availability | POST | `https://stabledomains.dev/api/check` | MPP on Tempo | $0.0105 | $0.015 |
+Free live probes on 2026-08-31 with SELAT CLI 0.16.15 produced the routed prices
+below. Re-probe before payment because quotes and routing can change.
+
+| Step | Method and request | Observed SELAT mode | Raw provider price | Routed quote | Per-call cap |
+|---|---|---|---:|---:|---:|
+| KOL sentiment | `GET https://x402.ottoai.services/kol-sentiment` | `routed-x402` | $0.003 | $0.00315 | $0.004 |
+| Hyperliquid market context | `GET https://x402.ottoai.services/hyperliquid-market?asset=${asset}` | `routed-x402` | $0.001 | $0.00105 | $0.002 |
+| Domain availability | `POST https://stabledomains.dev/api/check` with `{"domain":"${domainCandidate}"}` | `routed-mpp` | $0.010 | $0.0105 | $0.012 |
+
+Expected total at that probe was **$0.01470**. The sum of the three independent
+per-call caps is **$0.018**. The top-level manifest cap is only a fallback; the
+runner does not treat it as a pooled session budget.
+
+## Live Request Contracts
+
+- **KOL sentiment:** no request parameters. The 402 response advertises Base
+  and Solana x402 options. The report is broad and may expose freshness and
+  degradation metadata; preserve those fields in analysis.
+- **Hyperliquid market:** the live Bazaar input schema requires an `asset` query
+  parameter such as `BTC`. The 402 response advertises Base x402. A bare URL can
+  still return a valid quote, so quote-only verification would not catch the
+  missing business input.
+- **StableDomains:** the live schema requires a JSON body containing only
+  `domain`. The endpoint advertises Base/Solana x402 offers and a Tempo payment
+  challenge; SELAT classified the tested route as `routed-mpp`. The check does
+  not register or reserve the domain.
 
 ## Provenance
 
@@ -14,7 +35,8 @@ The endpoints came from free SELAT federated-catalogue searches for:
 - `financial intelligence crypto price market data on-chain prediction markets`
 - `compute hosting domain infrastructure deploy website server`
 
-Other useful catalogue candidates found:
+Other useful catalogue candidates found in the 2026-06-30 snapshot (not
+re-verified on 2026-08-31):
 
 - Alchemy token prices by address.
 - AIsa CoinGecko market chart.
@@ -26,10 +48,12 @@ Other useful catalogue candidates found:
 
 ## Available But Locked Behind Policy
 
-The following endpoints appear capable of moving assets, placing orders, or
-preparing transactions. They are not manifest steps. Treat them as unavailable
-for live execution until a separate trading policy is approved and the run has
-explicit authorization and caps.
+The following endpoints appeared capable of moving assets, placing orders, or
+preparing transactions in the 2026-06-30 catalogue snapshot. Their present
+availability and schemas were not re-verified. They are not manifest steps.
+Treat them as unavailable for live execution until they are re-discovered, a
+separate trading policy is approved, and the run has explicit authorization and
+caps.
 
 | Capability | Method | URL | Policy gate |
 |---|---|---|---|
@@ -49,5 +73,6 @@ quote within cap:
 - `GET https://x402.ottoai.services/transaction-history`
 - `GET https://x402.ottoai.services/supported-tokens`
 
-Live 402 probe results are authoritative. Do not submit this skill until the
-manifest endpoints verify live within cap.
+Live 402 probe results are authoritative for payment compatibility, not proof of
+successful post-payment data delivery. A paid smoke test still requires a fresh
+quote, a cumulative cap, an armed session budget, and explicit approval.
