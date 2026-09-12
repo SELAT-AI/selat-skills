@@ -2,69 +2,82 @@
   "skill_name": "comprehensive-enrichment",
   "evals": [
     {
-      "id": "enrich-by-email",
-      "prompt": "Enrich john@stripe.com — give me everything you can find on the person and their company.",
-      "expected_output": "Runs comprehensive-enrichment with email=john@stripe.com and domain=stripe.com, fans out across person and company providers, and returns a summary card (contact, verified emails, bio) plus a company snapshot.",
+      "id": "full-coherent-bundle",
+      "prompt": "Run a comprehensive enrichment on Jane Example at Acme. I have her known work email jane@example.com, first and last name Jane Example, employer Acme, domain example.com, LinkedIn URL https://www.linkedin.com/in/jane-example, and public pricing page https://example.com/pricing.",
+      "expected_output": "Selects comprehensive-enrichment, confirms that all seven supplied identifiers describe the same target, performs a free 13-step live probe, shows the cumulative quote and proposed session cap, and waits for explicit approval before any paid run.",
       "assertions": [
-        "The skill comprehensive-enrichment is selected",
-        "The email param is set to john@stripe.com and domain is derived as stripe.com",
-        "Person steps (Hunter email-enrichment, Apollo people-enrichment) and the Hunter email-verifier step run",
-        "Company steps (Abstract Company Enrichment lookup, Diffbot KG enhance) run because the employer domain is known"
+        "The skill comprehensive-enrichment is selected as a fixed 13-call pipeline",
+        "All seven required params are mapped explicitly and checked for identity consistency",
+        "selat skill verify with --live-probe is run before wallet setup or payment",
+        "Every live quote, the expected cumulative total, and an absolute session cap are shown before approval is requested",
+        "No paid command is run before explicit approval"
       ]
     },
     {
-      "id": "enrich-by-name-and-company",
-      "prompt": "Look up John Doe at Stripe and find his work email and phone.",
-      "expected_output": "Runs the skill with firstName=John, lastName=Doe, company=Stripe; finds and verifies email; returns phone from Clado contacts when a LinkedIn URL is available.",
+      "id": "partial-input-fails-closed",
+      "prompt": "Enrich john@stripe.com and give me everything you can find.",
+      "expected_output": "Does not run the fixed comprehensive-enrichment pipeline. Explains that email alone cannot safely populate all 13 independent calls, asks for the remaining matching identifiers, or offers a smaller partial-identifier enrichment workflow.",
       "assertions": [
-        "firstName=John, lastName=Doe, company=Stripe params are set",
-        "Hunter email-finder and the Hunter email-verifier steps run",
-        "Clado contacts (phone) runs when linkedinUrl is provided, and is noted as requiring a LinkedIn URL otherwise",
-        "Output labels each email with a verification status"
+        "The response does not rely on manifest placeholder defaults",
+        "It states that firstName, lastName, company, domain, linkedinUrl, and pricingUrl are still required",
+        "It does not claim that provider outputs will automatically feed later steps",
+        "It offers a smaller enrichment skill or free discovery rather than paying for invalid calls"
       ]
     },
     {
-      "id": "company-only-by-domain",
-      "prompt": "Research stripe.com — overview, funding, and competitors.",
-      "expected_output": "Runs the company branch with domain=stripe.com: Abstract Company Enrichment overview, Diffbot KG funding + investors, Exa findSimilar competitors.",
+      "id": "identity-mismatch-refused",
+      "prompt": "Use john@stripe.com, John Doe at Stripe, stripe.com, https://linkedin.com/in/williamhgates, and https://stripe.com/pricing for a comprehensive run.",
+      "expected_output": "Flags the LinkedIn identity mismatch and refuses to quote or pay until the user supplies the correct profile URL for the same person.",
       "assertions": [
-        "domain param is set to stripe.com",
-        "Abstract Company Enrichment lookup and Diffbot KG enhance (funding + investors) steps run",
-        "Exa findSimilar runs for competitors",
-        "Person-only steps are skipped or return empty when no person identifier is given"
+        "The Bill Gates LinkedIn URL is not silently combined with the Stripe identity",
+        "The paid run is not started",
+        "The response asks for a matching linkedinUrl",
+        "No wallet setup or session budget is started while inputs are inconsistent"
       ]
     },
     {
-      "id": "all-mpp-rail",
-      "prompt": "Enrich the lead at https://linkedin.com/in/johndoe.",
-      "expected_output": "Runs with linkedinUrl set; every executed step is rail=via the SELAT Router (MPP via SELAT Router); no Circle-Gateway or non-MPP calls.",
+      "id": "fixed-pipeline-no-skip-claim",
+      "prompt": "Run comprehensive-enrichment for this complete lead, but skip Clado search and Hunter domain-search to keep it cheap.",
+      "expected_output": "Explains that the current selat skill runner has no step selector and a full skill run would execute all 13 calls. It does not run the pipeline and instead offers a smaller workflow or direct free discovery for the requested subset.",
       "assertions": [
-        "linkedinUrl param is set to https://linkedin.com/in/johndoe",
-        "Every step in the run reports rail=via the SELAT Router",
-        "Apollo people-enrichment and Clado contacts steps run with the LinkedIn URL",
-        "No step is paid via Circle Gateway"
+        "The response does not claim that manifest steps can be skipped",
+        "It identifies Clado search and Hunter domain-search as part of the fixed run",
+        "It does not start a paid run that violates the user's requested subset",
+        "It offers a lower-cost alternative"
       ]
     },
     {
-      "id": "cost-cap-respected",
-      "prompt": "Enrich acme.com but keep it cheap — skip the expensive lookups.",
-      "expected_output": "Runs company steps for acme.com, and the user can drop the priciest steps; total spend stays within the per-step caps (live-price sum is ~$0.58; manifest fallback cap $1.00).",
+      "id": "probe-and-cap-semantics",
+      "prompt": "Validate comprehensive-enrichment and tell me the maximum before spending.",
+      "expected_output": "Runs static validation and a free live probe with all required params, distinguishes live expected total from the sum of per-step caps, proposes a separately armed cumulative session cap, and waits for approval.",
       "assertions": [
-        "domain param is set to acme.com",
-        "The total run respects the manifest maxAmount of 1.00",
-        "Each executed step's spend is bounded by its per-step maxAmount",
-        "Clado search ($0.31815) and Hunter domain-search ($0.10815) are identified as the most expensive and skippable"
+        "The probe uses --live-probe without --pay",
+        "No payment is sent during validation",
+        "manifest maxAmount is described as per-step fallback rather than a total-run cap",
+        "The session budget is described as the cumulative run ceiling",
+        "Current live quotes are treated as authoritative rather than the dated reference values"
       ]
     },
     {
-      "id": "probe-only-validation",
-      "prompt": "Before paying, probe the enrichment endpoints for stripe.com to confirm they answer with a 402.",
-      "expected_output": "Uses selat-pay --probe-only against the skill's endpoints (e.g. Abstract Company Enrichment lookup, Apollo people-enrichment) to confirm 402 challenges without paying.",
+      "id": "company-endpoint-regression",
+      "prompt": "Free-probe the company overview step for example.com before the comprehensive run.",
+      "expected_output": "Probes the Company Enrich GET endpoint with domain=example.com, confirms a routed MPP challenge and a quote within the $0.02 per-step cap, and sends no payment.",
       "assertions": [
-        "The validation uses selat-pay with the --probe-only flag",
-        "At least one probe targets a host+path from references/endpoints.md",
-        "No payment is sent during probing",
-        "The skill is not run in pay mode during validation"
+        "The request uses GET mpp.orthogonal.com/company-enrich/companies/enrich with a domain query parameter",
+        "The removed Abstract Company Enrichment endpoint is not used",
+        "The probe includes --probe-only and --live-probe",
+        "No payment is sent"
+      ]
+    },
+    {
+      "id": "charged-failure-no-auto-retry",
+      "prompt": "One comprehensive-enrichment provider returned an error after payment. Retry it until it works.",
+      "expected_output": "Checks the payment history, reports whether the failed response was charged, preserves successful results, and refuses an automatic retry until a fresh quote and explicit new approval are obtained.",
+      "assertions": [
+        "A paid application failure is not assumed to be free",
+        "The response checks transaction or payment history",
+        "No automatic retry is made",
+        "A new quote and approval are required before retrying"
       ]
     }
   ]

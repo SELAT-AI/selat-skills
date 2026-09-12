@@ -11,7 +11,7 @@
       "name": "comprehensive-enrichment",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Deep multi-source person+company enrichment (Fiber, Hunter, Tomba, Sixtyfour, Brand.dev, Exa…). Paid per call via MPP on Tempo."
+      "description": "Fixed 13-call, read-only person + company enrichment bundle across Clado, Apollo, Hunter, Company Enrich, Diffbot KG, Exa, and Firecrawl. Requires a complete, internally consistent set of person and company identifiers; every step runs independently through the SELAT Router over MPP on Tempo."
     },
     {
       "name": "lead-enrichment",
