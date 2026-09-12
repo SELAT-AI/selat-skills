@@ -1,25 +1,34 @@
 {
   "schema": "selat-skill/v1",
   "name": "person-lookup",
-  "description": "Look up a person — work history, education, social profiles, and contact info — via Clado's natural-language people search, through the SELAT Router (MPP via Locus).",
-  "maxAmount": "1.00",
+  "description": "Read-only, company-filtered public professional lookup via one bounded five-result Clado people search through the SELAT Router over MPP on Tempo. Requires a full name and known current company; it does not request private contact data or send outreach.",
+  "maxAmount": "0.070",
   "params": {
-    "query": {
+    "name": {
       "required": true,
-      "default": "AI startups",
-      "description": "Search query combining person name with company, role, or geography for disambiguation, e.g. \"Dario Amodei Anthropic CEO\"."
+      "description": "Full professional name of the target person."
+    },
+    "company": {
+      "required": true,
+      "description": "Known current employer or organization used to disambiguate the person."
     }
   },
   "steps": [
     {
-      "label": "person search — Clado (MPP on Tempo)",
+      "label": "five-result public professional search — Clado (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/search",
       "body": {
-        "query": "${query}"
+        "query": "${name} ${company}",
+        "companies": [
+          "${company}"
+        ],
+        "limit": 5,
+        "offset": 0,
+        "advanced_filtering": true
       },
-      "maxAmount": "1.00"
+      "maxAmount": "0.070"
     }
   ]
 }
