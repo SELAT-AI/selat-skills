@@ -1,18 +1,17 @@
 {
   "schema": "selat-skill/v1",
   "name": "social-intel",
-  "description": "Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches (Exa neural + Tavily advanced) for corroborated results with citations, paid per call over x402, via the SELAT Router (selat-pay, USDC via Circle Gateway).",
-  "maxAmount": "0.10",
+  "description": "Fixed two-call, read-only web corroboration bundle for one explicit topic or brand query. It returns independent Exa semantic-search and Tavily advanced-search results for agent-side synthesis; it does not query Reddit, X/Twitter, or other social-platform APIs. Each step is paid independently through the SELAT Router over MPP or x402.",
+  "maxAmount": "0.015",
   "params": {
     "topic": {
       "required": true,
-      "default": "agent payments",
-      "description": "Keyword/topic to search the web for (used as ${topic} in both search queries)."
+      "description": "Explicit natural-language web-search topic or query used unchanged in both searches. Add dates or recency terms when freshness matters."
     }
   },
   "steps": [
     {
-      "label": "web context — Exa search (MPP on Tempo)",
+      "label": "semantic web context — Exa search",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://api.exa.ai/search",
@@ -25,11 +24,11 @@
           }
         }
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.010"
     },
     {
-      "label": "web corroboration — Tavily search (x402 on Base)",
-      "rail": "x402 on Base",
+      "label": "advanced web corroboration — Tavily search",
+      "rail": "x402 via Circle Gateway",
       "method": "POST",
       "url": "https://x402.tavily.com/search",
       "body": {
@@ -37,7 +36,7 @@
         "search_depth": "advanced",
         "max_results": 10
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.015"
     }
   ]
 }

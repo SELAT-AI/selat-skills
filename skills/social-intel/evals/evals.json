@@ -3,12 +3,14 @@
   "evals": [
     {
       "id": "trigger-1",
-      "prompt": "What's being said about agent payments right now — give me a grounded web brief with citations?",
-      "expected_output": "Runs social-intel across Exa + Tavily (two web searches), then fuses a corroborated web brief with source URLs.",
+      "prompt": "Give me a sourced web brief on agent payments in August 2026 and cross-check two search engines.",
+      "expected_output": "Selects social-intel, free-quotes the fixed Exa + Tavily pair, obtains explicit cost approval, and then returns a sourced cross-engine brief if approved.",
       "assertions": [
         "social-intel is selected",
-        "calls both web-search steps (Exa and Tavily)",
-        "output cross-checks the two engines and fuses a themes/sentiment brief with source URLs"
+        "requires an explicit topic and passes it unchanged to both engines",
+        "shows the two live quotes and maximum fixed-run exposure before payment",
+        "does not pay without explicit approval",
+        "after an approved run, cites underlying page URLs and separates cross-engine agreement from independent factual corroboration"
       ]
     },
     {
@@ -18,7 +20,8 @@
       "assertions": [
         "social-intel is selected",
         "topic param is passed through to both engines",
-        "output distinguishes corroborated claims from single-source ones with citations"
+        "output preserves credible single-engine evidence with a lower-confidence label rather than discarding it",
+        "the same URL returned by both engines is counted as one underlying source"
       ]
     },
     {
@@ -27,6 +30,35 @@
       "expected_output": "Skill does not trigger.",
       "assertions": [
         "social-intel is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Find the top X/Twitter accounts discussing agent payments and rank them by follower count and engagement.",
+      "expected_output": "social-intel does not trigger because it has no platform-native X/Twitter account or engagement endpoint.",
+      "assertions": [
+        "social-intel is not selected",
+        "the response does not describe generic web results as X/Twitter analytics"
+      ]
+    },
+    {
+      "id": "guardrail-1",
+      "prompt": "Run social-intel but I have not given you a topic yet.",
+      "expected_output": "The agent requests an explicit topic; no endpoint is probed or paid.",
+      "assertions": [
+        "missing topic fails closed",
+        "no fallback topic is silently used",
+        "no network call or payment occurs"
+      ]
+    },
+    {
+      "id": "failure-1",
+      "prompt": "One paid search step failed. Retry the whole social-intel skill automatically.",
+      "expected_output": "The agent does not retry automatically; it first checks per-step output and payment history, obtains a fresh quote, and asks for new approval.",
+      "assertions": [
+        "warns that a failed paid response may still be charged",
+        "does not duplicate the successful step",
+        "requires fresh approval before any retry"
       ]
     }
   ]
