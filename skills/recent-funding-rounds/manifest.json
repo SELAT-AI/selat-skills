@@ -1,25 +1,30 @@
 {
   "schema": "selat-skill/v1",
   "name": "recent-funding-rounds",
-  "description": "Find recent funding rounds via Brave Search news-search (MPP on Tempo). Searches recent news articles announcing startup funding rounds in a sector — returns news coverage of raises, not a structured funding database — all via MPP on Tempo through the SELAT Router.",
-  "maxAmount": "0.40",
+  "description": "One bounded, read-only Brave News Search for recently published startup-funding coverage. Requires an explicit funding-news focus and rolling publication-freshness window; returns news evidence rather than verified structured deal records.",
+  "maxAmount": "0.050",
   "params": {
-    "sector": {
+    "focus": {
       "required": true,
-      "default": "artificial intelligence",
-      "description": "Sector or industry to search funding-round news for, in plain words, e.g. 'artificial intelligence', 'fintech', 'climate tech'. Interpolated into the news query '${sector} startup funding round announced'."
+      "description": "Concrete funding-news focus, such as 'artificial intelligence startups', 'fintech Series A', or 'startup rounds over $10M'."
+    },
+    "freshness": {
+      "required": true,
+      "description": "Rolling publication window supported by Brave News Search: 'pd' (24 hours), 'pw' (7 days), 'pm' (31 days), or 'py' (365 days)."
     }
   },
   "steps": [
     {
-      "label": "recent funding-round news — Brave Search (MPP on Tempo)",
+      "label": "bounded recent funding-news search — Brave Search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
       "body": {
-        "q": "${sector} startup funding round announced"
+        "q": "${focus} funding round announced",
+        "count": 10,
+        "freshness": "${freshness}"
       },
-      "maxAmount": "0.40"
+      "maxAmount": "0.050"
     }
   ]
 }
