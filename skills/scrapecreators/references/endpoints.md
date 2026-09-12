@@ -1,29 +1,89 @@
-# scrapecreators — endpoints
+# Endpoints — scrapecreators
 
-Multi-merchant social scraping across **SELAT-native** (X/Twitter — catalog.selat.ai, via the SELAT Router, Circle Gateway-batched), **StableSocial** (Instagram + TikTok — MPP, via the SELAT Router), and **Clado** (LinkedIn — MPP on Tempo). Every endpoint below is probe-verified live-payable (`selat-pay --probe-only`, 2026-07-10). Caps (`maxAmount`) are ~10x each live price, not the live price.
+Use only these endpoint families for `scrapecreators`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify` probes it free.
 
-## Endpoints used
+| Step | Method | URL | Rail | ~Price |
+|---|---|---|---|---|
+| 1 — X/Twitter profile | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 |
+| 2 — X/Twitter user tweets | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}` | x402 via Circle Gateway | $0.001 |
+| 3 — X/Twitter tweet details | GET | `https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}` | x402 via Circle Gateway | $0.001 |
+| 4 — LinkedIn profile | POST | `https://clado.mpp.paywithlocus.com/clado/linkedin-profile` | MPP on Tempo | $0.01365 |
+| 5 — LinkedIn post | POST | `https://clado.mpp.paywithlocus.com/clado/scrape` | MPP on Tempo | $0.02415 |
+| 6 — LinkedIn company page | POST | `https://clado.mpp.paywithlocus.com/clado/scrape` | MPP on Tempo | $0.02415 |
+| 7 — Instagram profile | POST | `https://stablesocial.dev/api/instagram/profile` | MPP on Tempo | $0.063 |
+| 8 — Instagram profile by handle | POST | `https://stablesocial.dev/api/instagram/profile` | MPP on Tempo | $0.063 |
+| 9 — Instagram recent posts | POST | `https://stablesocial.dev/api/instagram/posts` | MPP on Tempo | $0.063 |
+| 10 — TikTok profile | POST | `https://stablesocial.dev/api/tiktok/profile` | MPP on Tempo | $0.063 |
+| 11 — TikTok hashtag search | POST | `https://stablesocial.dev/api/tiktok/search-hashtag` | MPP on Tempo | $0.063 |
+| 12 — TikTok trending via keyword | POST | `https://stablesocial.dev/api/tiktok/search` | MPP on Tempo | $0.063 |
 
-| # | Step | Method | URL | Rail | Live price |
-|---|---|---|---|---|---|
-| 1 | X/Twitter profile — SELAT-native | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 2 | X/Twitter user tweets — SELAT-native | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 3 | X/Twitter tweet details — SELAT-native | GET | `https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}` | x402 via Circle Gateway | $0.001 |
-| 4 | LinkedIn profile — Clado | POST | `https://clado.mpp.paywithlocus.com/clado/linkedin-profile` body `{"linkedin_url":"${linkedinUrl}"}` | MPP on Tempo | $0.01365 |
-| 5 | LinkedIn post — Clado scrape | POST | `https://clado.mpp.paywithlocus.com/clado/scrape` body `{"linkedin_url":"${linkedinPostUrl}"}` | MPP on Tempo | $0.02415 |
-| 6 | LinkedIn company page — Clado scrape | POST | `https://clado.mpp.paywithlocus.com/clado/scrape` body `{"linkedin_url":"${linkedinCompanyUrl}"}` | MPP on Tempo | $0.02415 |
-| 7 | Instagram profile — StableSocial | POST | `https://stablesocial.dev/api/instagram/profile` body `{"handle":"${handle}"}` | MPP on Tempo | $0.063 |
-| 8 | Instagram profile by handle — StableSocial | POST | `https://stablesocial.dev/api/instagram/profile` body `{"handle":"${instagramHandle}"}` | MPP on Tempo | $0.063 |
-| 9 | Instagram recent posts — StableSocial | POST | `https://stablesocial.dev/api/instagram/posts` body `{"handle":"${handle}"}` | MPP on Tempo | $0.063 |
-| 10 | TikTok profile — StableSocial | POST | `https://stablesocial.dev/api/tiktok/profile` body `{"handle":"${handle}"}` | MPP on Tempo | $0.063 |
-| 11 | TikTok hashtag search — StableSocial | POST | `https://stablesocial.dev/api/tiktok/search-hashtag` body `{"hashtag":"${hashtag}"}` | MPP on Tempo | $0.063 |
-| 12 | TikTok trending via keyword search — StableSocial | POST | `https://stablesocial.dev/api/tiktok/search` body `{"query":"trending"}` | MPP on Tempo | $0.063 |
+This is a fixed 12-call manifest. The step table matches `manifest.json`
+exactly. Live total across all 12 steps ≈ $0.45.
 
-Per-step caps (`maxAmount`): **~10x each live price ($0.10–$0.75)**; full-run fallback cap **$0.75**. Live total across all 12 steps ≈ **$0.45**.
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim.
+- **MPP on Tempo:** Clado via Locus (`clado.mpp.paywithlocus.com`). StableSocial (`stablesocial.dev`) is MPP on Tempo but not Locus.
 
-## Capability notes
+## SELAT-native Twitter — `x402 via Circle Gateway`
 
-- **Tweet details take a tweet ID, not a URL** (step 3): SELAT-native's `tweet_ids` param is the numeric tweet ID. The old `tweetUrl` param was renamed to `tweetId`.
-- **Instagram lookups are by handle, not numeric userId** (step 8): StableSocial resolves profiles by handle. The old `instagramUserId` param was renamed to `instagramHandle`.
-- **No single-Instagram-post-by-URL endpoint** (step 9): the closest equivalent is StableSocial's recent-posts-by-handle. The old `instagramPostUrl` param was removed; step 9 uses `${handle}`.
-- **No TikTok trending-feed endpoint** (step 12): the closest equivalent is StableSocial's keyword search with `{"query":"trending"}`. The old `region` param was removed.
+serviceUrl: `https://catalog.selat.ai`
+
+Live-probed price: `$0.001` per call (`routed-x402`). All endpoints are **GET
+with query-string params**. Tweet details take a numeric tweet ID, not a URL.
+
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| X/Twitter profile | `/twitter/user/info` | `userName` (string, required — handle, no `@`) |
+| X/Twitter user tweets | `/twitter/user/last_tweets` | `userName` (string, required) |
+| X/Twitter tweet details | `/twitter/tweets` | `tweet_ids` (comma-separated numeric IDs) |
+
+Query pattern:
+
+```text
+https://catalog.selat.ai/twitter/tweets?tweet_ids=1234567890123456789
+```
+
+## Clado MPP — `MPP on Tempo`
+
+serviceUrl: `https://clado.mpp.paywithlocus.com`
+
+Last documented prices (`routed-mpp`): linkedin-profile `$0.01365`, scrape
+`$0.02415`. Today's live probe did not surface a 402 — re-probe. All
+endpoints are **POST with a JSON body**. Steps 5 and 6 hit the same scrape
+path with different LinkedIn URLs.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| LinkedIn profile | `/clado/linkedin-profile` | `linkedin_url` (string, required) |
+| LinkedIn post | `/clado/scrape` | `linkedin_url` (string — post URL) |
+| LinkedIn company page | `/clado/scrape` | `linkedin_url` (string — company page URL) |
+
+```json
+{ "linkedin_url": "https://linkedin.com/in/satyanadella" }
+```
+
+## StableSocial — `MPP on Tempo`
+
+serviceUrl: `https://stablesocial.dev`
+
+Live-probed price: `$0.063` per call (`routed-mpp`). All endpoints are **POST
+with a JSON body**. Instagram lookups are by handle, not numeric userId. There
+is no single-Instagram-post-by-URL endpoint — the closest equivalent is
+recent-posts-by-handle. There is no TikTok trending-feed endpoint — the closest
+equivalent is keyword search with `{"query":"trending"}`.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Instagram profile | `/api/instagram/profile` | `handle` (string — `${handle}`) |
+| Instagram profile by handle | `/api/instagram/profile` | `handle` (string — `${instagramHandle}`) |
+| Instagram recent posts | `/api/instagram/posts` | `handle` (string) |
+| TikTok profile | `/api/tiktok/profile` | `handle` (string) |
+| TikTok hashtag search | `/api/tiktok/search-hashtag` | `hashtag` (string, no `#`) |
+| TikTok trending via keyword | `/api/tiktok/search` | `query` (string — manifest sends `"trending"`) |
+
+```json
+{ "handle": "openai" }
+```
