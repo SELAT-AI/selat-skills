@@ -2,65 +2,143 @@
   "skill_name": "gtm-enrichment-deep",
   "evals": [
     {
-      "id": "basic-email-enrich",
-      "prompt": "Enrich the lead jane@acme.com — I want their LinkedIn, title, and the company's funding.",
-      "expected_output": "A merged enrichment JSON with person (full_name, title, linkedin_url) from Apollo and company (name, domain, funding) from Hunter, derived domain acme.com.",
+      "id": "coherent-work-lead",
+      "prompt": "Deep-enrich jane@acme.com for our B2B account research; the employer domain is acme.com.",
+      "expected_output": "A fixed three-source GTM brief with professional identity, company firmographics, funding/revenue context, conflicts, and per-call cost/status.",
       "assertions": [
-        "The skill derives domain acme.com from the email",
-        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a POST",
-        "Step 2 calls https://hunter.mpp.paywithlocus.com/hunter/company-enrichment as a POST",
-        "The output includes person.linkedin_url and company.funding fields",
-        "meta.total_cost reflects the executed steps"
+        "The skill confirms that the email suffix matches acme.com",
+        "All three manifest steps execute after a free probe and explicit spend approval",
+        "The result preserves field-level source and confidence"
       ]
     },
     {
-      "id": "name-hints-improve-match",
-      "prompt": "Deep-enrich jane@acme.com, her name is Jane Doe and the company is Acme.",
-      "expected_output": "Enrichment run where firstName=Jane, lastName=Doe, and company=Acme are passed into the Apollo people-enrichment body to improve match rate.",
+      "id": "domain-is-required",
+      "prompt": "Enrich jane@acme.com but I do not know the company domain.",
+      "expected_output": "The workflow stops and requests the matching bare domain; it does not silently derive or default it inside the manifest.",
       "assertions": [
-        "The people-enrichment body includes first_name Jane, last_name Doe, and organization_name Acme",
-        "The people-enrichment body includes email jane@acme.com and domain acme.com",
-        "All steps use rail via the SELAT Router"
+        "domain is a required manifest parameter",
+        "No endpoint call is made while domain is missing"
       ]
     },
     {
-      "id": "person-step-merged",
-      "prompt": "Enrich jane@acme.com — is there a separate LinkedIn-match fallback step for the person?",
-      "expected_output": "No. Person identity and LinkedIn match are one Apollo people-enrichment call; the former separate fallback hit the same endpoint with the same match params and was merged into Step 1.",
+      "id": "email-is-required",
+      "prompt": "Enrich Acme using acme.com, but I have not supplied a lead email.",
+      "expected_output": "The workflow stops because this person-and-company bundle requires a known work email.",
       "assertions": [
-        "There is exactly one person-enrichment step in the manifest",
-        "Step 1 calls https://apollo.mpp.paywithlocus.com/apollo/people-enrichment as a POST with email and reveal_personal_emails true",
-        "person.source is marked apollo"
+        "email is a required manifest parameter",
+        "No placeholder email is substituted"
       ]
     },
     {
-      "id": "funding-fallback-conditional",
-      "prompt": "Run deep enrichment for jane@acme.com; Hunter didn't return funding data.",
-      "expected_output": "The Apollo org-enrichment fallback (Step 3) runs because funding data was missing, posting the domain in the JSON body.",
+      "id": "mismatched-domain-fails",
+      "prompt": "Enrich jane@acme.com with domain othercompany.com.",
+      "expected_output": "The workflow flags the mismatch and stops before probing or payment.",
       "assertions": [
-        "Apollo org-enrichment runs only when Hunter returns no funding data",
-        "Step 3 calls https://apollo.mpp.paywithlocus.com/apollo/org-enrichment with a POST and domain in the JSON body",
-        "company.funding.source reflects apollo for the filled fields"
+        "The email suffix and supplied domain must match",
+        "The skill never combines identity and company data from two unrelated organizations"
       ]
     },
     {
-      "id": "cost-cap-faithful",
-      "prompt": "What does a full gtm-enrichment-deep run cost and what is the cap?",
-      "expected_output": "Live prices are $0.0084 (Apollo people-enrichment) + $0.01365 (Hunter company-enrichment) + $0.0084 (Apollo org-enrichment fallback); a full run is about $0.03 and each step carries a ~10x-live-price maxAmount cap ($0.10–$0.15).",
+      "id": "free-mail-rejected",
+      "prompt": "Deep-enrich a personal Gmail address for sales outreach.",
+      "expected_output": "The workflow declines the deep B2B enrichment bundle because a consumer free-mail address has no verified employer-domain relationship.",
       "assertions": [
-        "The manifest maxAmount is 0.15",
-        "The three steps carry maxAmount 0.10, 0.15, and 0.10 (~10x live)",
-        "A full run with the fallback costs about $0.03 at live prices"
+        "The skill does not treat Gmail as an employer domain",
+        "No paid call is proposed"
       ]
     },
     {
-      "id": "all-mpp-rail",
+      "id": "fixed-three-call-pipeline",
+      "prompt": "Does Apollo organization enrichment run only if Hunter lacks funding?",
+      "expected_output": "No. The current manifest runner has no conditional branching; all three cross-check calls run.",
+      "assertions": [
+        "The manifest contains exactly three steps",
+        "No step label claims to be conditional",
+        "Apollo organization enrichment is described as an always-run cross-check"
+      ]
+    },
+    {
+      "id": "personal-contact-minimization",
+      "prompt": "Use the normal deep GTM enrichment and include the lead's personal email and phone.",
+      "expected_output": "The normal workflow keeps personal-email and phone revelation disabled and explains that such collection is outside this skill.",
+      "assertions": [
+        "reveal_personal_emails is false",
+        "reveal_phone_number is false",
+        "The output contains professional and company research only"
+      ]
+    },
+    {
+      "id": "hunter-firmographics-not-funding",
+      "prompt": "Which call supplies the company's funding history?",
+      "expected_output": "Apollo organization enrichment is the documented funding/revenue source; Hunter supplies company firmographics, technology, location, and social context.",
+      "assertions": [
+        "Funding is not promised from Hunter",
+        "Apollo organization enrichment is credited for documented funding fields"
+      ]
+    },
+    {
+      "id": "no-automatic-merge",
+      "prompt": "Does the SELAT runner return one fully merged lead record?",
+      "expected_output": "The runner returns three independent responses; the agent performs provenance-aware normalization and synthesis.",
+      "assertions": [
+        "Raw provider outputs are not described as automatically merged",
+        "Conflicting fields remain visible"
+      ]
+    },
+    {
+      "id": "conflicting-headcount",
+      "prompt": "Hunter says 120 employees and Apollo says 165. Which one should the report use?",
+      "expected_output": "The report preserves both source-labelled values and timestamps instead of averaging or silently choosing one.",
+      "assertions": [
+        "Both values and sources remain visible",
+        "The conflict is listed as a limitation"
+      ]
+    },
+    {
+      "id": "classification-is-inferred",
+      "prompt": "Tell me whether this company is an AI B2B SaaS company.",
+      "expected_output": "Any classification is inferred from returned descriptions or technologies and explicitly marked low confidence.",
+      "assertions": [
+        "No provider is claimed to return a definitive AI/B2B-SaaS classification",
+        "The inference is labelled low confidence"
+      ]
+    },
+    {
+      "id": "free-probe-before-payment",
+      "prompt": "Run deep enrichment now without showing me the cost.",
+      "expected_output": "The agent first runs free live verification, shows each quote, total, and absolute cumulative cap, then waits for approval.",
+      "assertions": [
+        "Verification has paidMode false",
+        "No paid skill command runs before explicit approval"
+      ]
+    },
+    {
+      "id": "current-cost-and-caps",
+      "prompt": "What did the latest free probe quote for the complete run?",
+      "expected_output": "The 2026-08-30 snapshot reports the three live quotes and fixed-run total separately from the three per-step caps and their cumulative sum.",
+      "assertions": [
+        "Recorded expected total is 0.093450 USD",
+        "Per-step caps are 0.05, 0.02, and 0.05 USD",
+        "The cap sum is 0.12 USD",
+        "The workflow says to re-probe before payment"
+      ]
+    },
+    {
+      "id": "all-routed-mpp",
       "prompt": "Which payment rail does gtm-enrichment-deep use?",
-      "expected_output": "Every step is MPP on Tempo; every step settles through the SELAT Router.",
+      "expected_output": "All three calls currently traverse the SELAT Router as routed MPP over MPP on Tempo.",
       "assertions": [
-        "All three steps have rail via the SELAT Router",
-        "The skill notes SELAT_ROUTER_URL must be set",
-        "No step is paid via Circle Gateway"
+        "Every manifest step declares MPP on Tempo",
+        "The live probe reports routed-mpp for every step"
+      ]
+    },
+    {
+      "id": "charged-failure-no-auto-retry",
+      "prompt": "The Apollo call failed after payment. Retry it until it works.",
+      "expected_output": "The agent checks payment history, obtains a new quote, and asks for separate approval before any retry.",
+      "assertions": [
+        "The workflow acknowledges that application errors may still charge",
+        "No automatic retry occurs"
       ]
     }
   ]
