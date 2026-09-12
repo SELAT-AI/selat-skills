@@ -1,11 +1,11 @@
 ---
 name: email-campaign
-description: Use this skill when the user wants to build a verified cold-email or outreach list — e.g. "build an email campaign", "find and verify emails for a domain", "find someone's work email", "verify these emails before I send", "enrich a lead for personalized outreach", "get company brand context for outreach". Runs a 7-step pipeline across MPP merchants (Fiber company search, Hunter domain/email lookup + verification + bounce check, Apollo lead enrichment, Abstract Company Enrichment company context), all through the SELAT Router.
+description: Use this skill for one fixed, read-only email-campaign preparation bundle when the user has a complete target with a supported industry, company domain and name, target person's first and last name, and a matching known work email. Triggers on "prepare an outreach research bundle", "build a verified campaign seed list around this lead", or "cross-check this work email and company before outreach". It discovers 10 similar-size industry companies, retrieves domain email patterns, finds and verifies the target email, enriches the person, and adds company context. It does not draft or send email. The CLI runs all six paid MPP steps; verification-only, discovery-only, and subset requests should use a smaller workflow.
 license: Apache-2.0
-compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a MPP on Tempo payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the run.
+compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet for paid runs. All six steps settle through the SELAT Router over MPP on Tempo. `selat skill verify --live-probe` is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   rail: MPP on Tempo
   kind: multi
 ---
@@ -14,66 +14,164 @@ metadata:
 
 ## When To Use
 
-Use when the user wants to assemble a targeted, verified outreach list end-to-end: discover target companies, pull emails for a domain, find a specific person's email, verify deliverability, enrich the lead for personalization, and pull company brand context. Every step is paid per-call through MPP merchants and via the SELAT Router — no API keys to manage.
+Use this skill to prepare a **research and verification bundle** for one known
+business lead and a small prospect-company seed list. It combines:
+
+- ten companies matching an industry and 50–500 employee filter;
+- domain-level email patterns and addresses;
+- one target person's inferred work email;
+- technical deliverability verification of a supplied work email;
+- person enrichment for personalization; and
+- company firmographic context.
+
+This skill does **not** compose, schedule, or send messages. It does not prove
+that the recipient consented to contact. Use the results only for lawful,
+targeted business outreach; honor suppression lists and opt-outs, and do not use
+it for phishing, harassment, sensitive targeting, or bulk unsolicited spam.
+
+The manifest is a fixed six-call pipeline. If the user wants only email
+verification, only company discovery, or a cheaper subset, use a smaller direct
+workflow instead of running this skill.
 
 ## Workflow
 
-1. Install: `selat skill install email-campaign`
-2. Run: `selat skill run email-campaign --domain stripe.com --email john@stripe.com [--industry SaaS] [--firstName John] [--lastName Doe] [--company Stripe]`
-3. The CLI compiles each step into a `selat-pay` call (one MPP on Tempo payment per step), runs them in order, and prints a per-step status + summary.
+1. Install the vetted recipe:
 
-Steps (in order):
+   ```bash
+   selat skill install email-campaign
+   ```
 
-- **Step 1 — Fiber** `POST /v1/company-search` — find target companies by industry and headcount.
-- **Step 2 — Hunter** `POST /hunter/domain-search` — all emails found for the target domain.
-- **Step 3 — Hunter** `POST /hunter/email-finder` — a specific person's email at that domain.
-- **Step 4 — Hunter** `POST /hunter/email-verifier` — deliverability check for a single email.
-- **Step 5 — Hunter** `POST /hunter/email-verifier` — second-pass bounce-risk check (Hunter's verdict covers catch-all domains; drop this step if one verification is enough).
-- **Step 6 — Apollo** `POST /apollo/people-enrichment` — enrich the lead with contact + company details for personalization.
-- **Step 7 — Abstract Company Enrichment** `POST /abstract-company-enrichment/lookup` — industry, description, size, and location for the company (no logo/color brand assets).
+2. Collect all six inputs and check that `email`, `firstName`, `lastName`,
+   `company`, and `domain` describe the same target. Use a supported Fiber
+   industry value such as `Software`.
+
+3. Probe all six payment challenges for free before wallet setup or spending:
+
+   ```bash
+   selat skill verify ~/.config/selat/skills/email-campaign \
+     --industry Software \
+     --domain <bare-domain> \
+     --firstName <first-name> \
+     --lastName <last-name> \
+     --company "<company-name>" \
+     --email <known-work-email> \
+     --live-probe
+   ```
+
+4. Show every live quote, the expected cumulative total, and a proposed absolute
+   session cap. Obtain explicit approval for that exact workload.
+
+5. Only after approval and a spendable Gateway balance, arm the approved
+   cumulative cap, run the bundle once, and disarm the budget after success or
+   failure:
+
+   ```bash
+   selat budget start --amount <approved-cumulative-cap>
+   selat skill run email-campaign \
+     --industry Software \
+     --domain <bare-domain> \
+     --firstName <first-name> \
+     --lastName <last-name> \
+     --company "<company-name>" \
+     --email <known-work-email>
+   selat budget stop
+   ```
+
+The CLI compiles each manifest entry into an independently capped `selat-pay`
+call and continues across steps by default. Check the per-step result and
+payment history before reporting success or considering a retry.
+
+### Fixed steps
+
+1. **Fiber company search** — return up to ten companies using the supplied
+   industry and a fixed 50–500 employee range.
+2. **Hunter domain search** — retrieve domain-level email patterns and results.
+3. **Hunter email finder** — infer the named target's work email from domain and
+   name.
+4. **Hunter email verifier** — evaluate technical deliverability for the
+   separately supplied `email` once.
+5. **Apollo people enrichment** — add person and employer context.
+6. **Company Enrich lookup** — add company firmographics by domain.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `industry` | no | `SaaS` | Industry filter for the Fiber company-search step |
-| `domain` | yes | `stripe.com` | Target domain for Hunter domain-search, email-finder, and the Abstract Company Enrichment lookup |
-| `firstName` | no | `John` | First name for Hunter email-finder and Apollo people-enrichment |
-| `lastName` | no | `Doe` | Last name for Hunter email-finder and Apollo people-enrichment |
-| `company` | no | `Stripe` | Company name (sent as `organization_name`) for the Apollo people-enrichment step |
-| `email` | yes | `john@stripe.com` | Email to verify and bounce-check (both Hunter email-verifier) |
+| `industry` | yes | none | Supported Fiber industry value, such as `Software`. |
+| `domain` | yes | none | Bare target company domain matching company and email. |
+| `firstName` | yes | none | Target person's first name. |
+| `lastName` | yes | none | Target person's last name. |
+| `company` | yes | none | Target company name corresponding to the domain. |
+| `email` | yes | none | Known work email to verify; must match the target identity. |
 
-Outputs: Hunter returns email lists / verification verdicts (deliverability + bounce/catch-all); Fiber returns matching companies; Apollo returns enriched lead fields; Abstract Company Enrichment returns company firmographics (industry, description, size, location — not logos/colors).
+Return a source-labelled preparation report, not a raw-data dump:
+
+1. target identity and company consistency check;
+2. supplied email verdict versus the separately inferred email;
+3. person/company fields useful for careful personalization;
+4. ten-company discovery results as a seed list, not automatically approved
+   recipients;
+5. provider disagreements, missing data, and confidence limits; and
+6. per-step success/failure and final spend.
 
 ## Gotchas
 
-- All seven steps are **via the SELAT Router** MPP payments — the run needs `SELAT_ROUTER_URL` configured and the router reachable; every step settles through the SELAT Router.
-- The MPP on Tempo Hunter endpoints are **POST** with a JSON body (`{domain}`, `{email}`, `{domain,first_name,last_name}`) — not the GET/query form from the upstream Hunter docs.
-- Per-step live prices (probe-verified 2026-07-10): $0.10815 + $0.01365 + $0.0084 + $0.0084 + $0.0084 + $0.0063 ≈ **$0.1533** for a full manifest run; per-step `maxAmount` caps are ~10x each live price ($0.10–$1.00; top-level fallback $1.00) — a ceiling, not the price.
-- Hunter `domain-search` is the most expensive step ($0.10815) — drop it if you already know your target person and only need find + verify + enrich.
-- The bounce check (step 5) is a second pass through the same Hunter `email-verifier` endpoint as step 4 — Hunter's verdict already covers bounce risk and catch-all domains, so drop one of the two if a single verification is enough.
-- Steps run independently: a later step can succeed even if an earlier one fails; always read the per-step summary.
-- Every manifest step is POST with a JSON body — no query-string endpoints remain.
+- **Campaign preparation only.** No manifest step drafts or sends email.
+- **Fixed pipeline, not a menu.** The current CLI has no step selector and runs
+  all six calls. Do not promise that Fiber, domain search, or enrichment can be
+  skipped within `selat skill run`.
+- **No inter-step dataflow.** Fiber results are not fed into Hunter; Hunter's
+  inferred email is not automatically passed to the verifier. The verifier
+  checks the user-supplied `email`, which is why all inputs are required.
+- **One verifier call only.** Hunter's verifier already reports deliverability,
+  bounce risk, and catch-all status. Paying for the identical request twice does
+  not create independent confirmation.
+- **Fiber request shape matters.** Use `industriesV2.anyOf` and
+  `employeeCountV2` bounds. The older `industries` and
+  `employee_count_min/max` fields are not the current schema. This manifest pins
+  `pageSize` to ten.
+- **Pagination is not in this skill.** A continuation needs the first response's
+  `billing.requestId` as `parentRequestId` with unchanged filters. Handle that as
+  a separately reviewed operation.
+- **Per-step caps are not cumulative.** The manifest limits individual calls;
+  the separately armed session budget is the run-wide ceiling.
+- **Live quote is authoritative.** Preliminary free probes on 2026-08-29 quoted
+  approximately $0.392962 for all six corrected calls. Re-probe before every
+  approval because prices can change.
+- **Paid failure can still cost money.** The runner continues to later steps by
+  default. Never retry a charged failure without a fresh quote and approval.
+- **Deliverability is not permission.** A technically valid address does not
+  establish consent or make outreach lawful.
 
 ## Validation
 
-> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+Validate structure locally:
 
-Probe each endpoint for a free 402 challenge (no payment sent) with `--probe-only`:
+```bash
+selat skill validate ./skills/email-campaign
+npm run validate
+```
 
-- `selat-pay POST "https://api.fiber.ai/v1/company-search" --body '{"searchParams":{"industries":["SaaS"],"employee_count_min":50,"employee_count_max":500}}' --chain base --probe-only`
-- `selat-pay POST "https://hunter.io/hunter/domain-search" --body '{"domain":"stripe.com"}' --chain base --probe-only`
-- `selat-pay POST "https://hunter.io/hunter/email-finder" --body '{"domain":"stripe.com","first_name":"John","last_name":"Doe"}' --chain base --probe-only`
-- `selat-pay POST "https://hunter.io/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --probe-only`
-- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --probe-only` (bounce check — same endpoint as the deliverability step)
-- `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" --body '{"first_name":"John","last_name":"Doe","organization_name":"Stripe"}' --chain base --probe-only`
-- `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"stripe.com"}' --chain base --probe-only`
+Free end-to-end quote validation uses all six coherent inputs and `--live-probe`
+as shown in Workflow Step 3. A passing receipt must report six reachable
+`routed-mpp` calls, each within its per-step cap. Do not add `--pay` without
+separate approval and an armed session budget.
 
-A probe returns the merchant's 402 payment requirements without charging. A successful paid run prints `status=200` and a ✓ for each step.
+Useful single-endpoint probes while debugging (free; never settle):
+
+- `selat-pay POST "https://mpp.orthogonal.com/fiber/v1/company-search" --body '{"searchParams":{"industriesV2":{"anyOf":["Software"]},"employeeCountV2":{"lowerBoundExclusive":50,"upperBoundInclusive":500}},"pageSize":10}' --chain base --max-amount 0.25 --probe-only --live-probe`
+- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --max-amount 0.015 --probe-only --live-probe`
+- `selat-pay GET "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com" --chain base --max-amount 0.02 --probe-only --live-probe`
 
 ## References
 
-- `manifest.json` — the machine-readable payment recipe this skill runs.
-- [`references/endpoints.md`](references/endpoints.md) — the MPP endpoints, methods, and prices this skill calls.
+- `manifest.json` — the fixed, machine-readable six-call payment recipe.
+- [`references/endpoints.md`](references/endpoints.md) — pinned endpoints, request
+  shapes, current quotes, and caps.
 - [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
+- `evals/evals.json` — routing, safety, and approval-behavior evals.
+- Fiber company-search schema — https://docs.fiber.ai/build/sdks
 - selat-pay — https://github.com/SELAT-AI/selat-pay
+
+> Third-party API names are trademarks of their respective owners; this skill
+> only routes approved payments to their MPP endpoints.
