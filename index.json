@@ -27,9 +27,9 @@
     },
     {
       "name": "gtm-enrichment-smart",
-      "rail": "mixed",
+      "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Smart GTM enrichment (Apollo, Tomba, Brand.dev, Sixtyfour, Scrape Creators). Paid per call via x402 + MPP."
+      "description": "Fixed three-call, cost-conscious B2B lead qualification bundle: combined professional/company context, work-email deliverability, and an independent company-domain profile. Paid per call via MPP on Tempo."
     },
     {
       "name": "gtm-enrichment-deep",
