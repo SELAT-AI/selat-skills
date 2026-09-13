@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "find-twitter-influencers",
-  "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the company (Apollo org search, Abstract Company Enrichment), discovers curated listicles (Exa), pulls Twitter profiles and engagement (SELAT-native, Circle x402 catalog), and enriches contacts (Hunter, Clado). Mixed rail: most steps are MPP-via the SELAT Router; the SELAT-native Twitter steps are x402 on Base calls via the SELAT Router.",
+  "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the company (Apollo org search, Orthogonal Company Enrich), discovers curated listicles (Exa), pulls Twitter profiles and engagement (SELAT-native, Circle x402 catalog), and enriches contacts (Hunter, Clado contacts). Mixed rail: most steps are MPP-via the SELAT Router; the SELAT-native Twitter steps are x402 on Base calls via the SELAT Router.",
   "maxAmount": "0.50",
   "params": {
     "company": {
@@ -12,7 +12,7 @@
     "domain": {
       "required": false,
       "default": "stripe.com",
-      "description": "Company domain (e.g. acme.com). When provided, Abstract Company Enrichment lookup is used for richer context."
+      "description": "Company domain (e.g. acme.com). When provided, Orthogonal Company Enrich lookup is used for richer context."
     },
     "query": {
       "required": false,
@@ -62,14 +62,11 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "resolve company by domain — Abstract Company Enrichment (MPP on Tempo)",
+      "label": "resolve company by domain — Orthogonal Company Enrich (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     },
     {
       "label": "discover curated influencer listicles — Exa search (MPP on Tempo)",

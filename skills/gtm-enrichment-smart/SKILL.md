@@ -1,6 +1,6 @@
 ---
 name: gtm-enrichment-smart
-description: Use this skill when the user wants to enrich a sales lead or GTM prospect from an email address — e.g. "enrich this lead", "who is jane@acme.com", "look up this prospect", "GTM enrichment", "find the person and company behind this email", "qualify this lead with buying signals". Runs a cost-efficient multi-provider waterfall (Apollo, Hunter, and Abstract Company Enrichment via Locus, plus SELAT-native Twitter) mostly via the SELAT Router (MPP), including a SELAT-native Twitter x402 step, to return person + company data, funding, AI/B2B classification, and buying signals with confidence scoring.
+description: Use this skill when the user wants to enrich a sales lead or GTM prospect from an email address — e.g. "enrich this lead", "who is jane@acme.com", "look up this prospect", "GTM enrichment", "find the person and company behind this email", "qualify this lead with buying signals". Runs a cost-efficient multi-provider waterfall (Apollo, Hunter, and Orthogonal Company Enrich, plus SELAT-native Twitter) mostly via the SELAT Router (MPP), including a SELAT-native Twitter x402 step, to return person + company data, funding, AI/B2B classification, and buying signals with confidence scoring.
 license: Apache-2.0
 compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Steps 1-7 are MPP on Tempo, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for them; the SELAT-native Twitter step is x402 via Circle Gateway.
 metadata:
@@ -27,7 +27,7 @@ Waterfall order (the manifest runs them sequentially; later steps are conditiona
 - **Step 1 — Apollo (via Locus)** `POST /apollo/people-enrichment` ($0.0084) — primary person + embedded company/funding. Capture `organization.id` for the job-postings step. This is also the person fallback: the old separate AI person-fallback step mapped to this same endpoint with the same params, so the two were merged into this single step.
 - **Step 2 — Hunter (via Locus)** `POST /hunter/combined-enrichment` ($0.02415) — combined person+company cross-reference from the email.
 - **Step 3 — Hunter (via Locus)** `POST /hunter/email-verifier` ($0.0084) — email deliverability (valid/risky/undeliverable).
-- **Step 4 — Abstract Company Enrichment (via Locus)** `POST /abstract-company-enrichment/lookup` ($0.0063) — company description, industry/SIC, and firmographics. Skip for free-email domains.
+- **Step 4 — Orthogonal Company Enrich** `GET /companies/enrich?domain=` ($0.012862) — company description, industry, size, funding, and firmographics. Skip for free-email domains. Cap `$0.02`.
 - **Step 5 — Apollo (via Locus)** `POST /apollo/org-enrichment` ($0.0084) — funding/headcount gap-fill, only if step 1 returned no funding.
 - **Step 6 — Hunter (via Locus)** `POST /hunter/email-enrichment` ($0.01365) — person tie-breaker, only if Apollo and Hunter disagree on name/title.
 - **Step 7 — Hunter (via Locus)** `POST /hunter/company-enrichment` ($0.01365) — company fallback, only if major gaps remain and the company has >500 employees.
@@ -39,11 +39,11 @@ Waterfall order (the manifest runs them sequentially; later steps are conditiona
 | Param | Required | Default | Description |
 |---|---|---|---|
 | `email` | yes | — | Lead email; drives people-enrichment, combined-enrichment, email-verifier, email-enrichment |
-| `domain` | no | — | Company domain from the email; drives Abstract lookup, Apollo org-enrichment, Hunter company-enrichment |
+| `domain` | no | — | Company domain from the email; drives Orthogonal Company Enrich, Apollo org-enrichment, Hunter company-enrichment |
 | `organizationId` | no | — | Apollo org id from step 1; required for the job-postings step |
 | `twitterHandle` | no | — | Twitter/X handle from enrichment data; required for the SELAT-native Twitter step (sent as `userName`) |
 
-Outputs: a merged JSON object with `person` (name, title, linkedin_url, location, email_verified, confidence, source), `company` (name, domain, description, funding, classification.is_ai / is_b2b_saas, buying_signals), and `meta` (per-call status, cost, phases run). Cross-reference Apollo + Hunter + Abstract for confidence (high = 2+ sources agree).
+Outputs: a merged JSON object with `person` (name, title, linkedin_url, location, email_verified, confidence, source), `company` (name, domain, description, funding, classification.is_ai / is_b2b_saas, buying_signals), and `meta` (per-call status, cost, phases run). Cross-reference Apollo + Hunter + Company Enrich for confidence (high = 2+ sources agree).
 
 ## Gotchas
 
@@ -53,7 +53,7 @@ Outputs: a merged JSON object with `person` (name, title, linkedin_url, location
 - The source skill's free GitHub-stars step is **dropped**: GitHub's public API is not a payable merchant, so it cannot be expressed as an inert payment step.
 - Live prices sum to ≈ $0.083 for all 8 manifest steps (worst case); a typical waterfall (steps 1-4 + the org gap-fill) costs ≈ $0.056. Per-step `maxAmount` values are ~10x each live price ($0.10–$0.25) — ceilings, not price estimates.
 - Steps run independently: gate the conditional steps (5-8 and job-postings) on prior results so you do not pay for gap-fill or buying-signal calls on unqualified leads.
-- The Abstract Company Enrichment lookup should be skipped for free-email providers (gmail/yahoo/outlook/etc.) to save $0.0063.
+- The Orthogonal Company Enrich lookup should be skipped for free-email providers (gmail/yahoo/outlook/etc.) to save ~$0.013.
 - All calls in this waterfall are synchronous — no async polling.
 - The job-postings call takes `organization_id` in the **body** (no path substitution); if it is empty the merchant returns an error — only invoke it once step 1 yields an org id.
 
@@ -66,7 +66,7 @@ Probe each endpoint for free (402 challenge, no payment) before a paid run:
 - `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" --body '{"email":"jane@acme.com","reveal_personal_emails":true}' --chain base --probe-only`
 - `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment" --body '{"email":"jane@acme.com"}' --chain base --probe-only`
 - `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"jane@acme.com"}' --chain base --probe-only`
-- `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"acme.com"}' --chain base --probe-only`
+- `selat-pay GET "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=acme.com" --chain base --probe-only --live-probe`
 - `selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=elonmusk" --chain base --probe-only`
 
 A successful run prints `status=200` for each executed step and a ✓ summary; gated/skipped steps appear as skipped in the run summary.

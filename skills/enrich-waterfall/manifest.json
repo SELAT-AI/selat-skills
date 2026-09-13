@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "enrich-waterfall",
-  "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the SELAT Router. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts, Clado natural-language people search) only on gaps, and verifies the email last. 20 deduplicated steps across Apollo, Hunter, Clado, Brave Search, Diffbot KG and Abstract Company Enrichment (via Locus), StableSocial (MPP merchant), and SELAT-native (catalog.selat.ai).",
+  "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the SELAT Router. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts) only on gaps, and verifies the email last. Deduplicated steps across Apollo, Hunter, Clado contacts, Brave Search, Diffbot KG, Orthogonal Company Enrich, Scrape Creators LinkedIn, StableSocial (MPP merchant), and SELAT-native (catalog.selat.ai).",
   "maxAmount": "1.00",
   "params": {
     "email": {
@@ -12,7 +12,7 @@
     "name": {
       "required": false,
       "default": "John Doe",
-      "description": "Full name; also used as the social handle for the SELAT-native X/Twitter profile, StableSocial Instagram/TikTok profile, and Clado handle-to-person search steps."
+      "description": "Full name; also used as the social handle for the SELAT-native X/Twitter profile and StableSocial Instagram/TikTok profile steps."
     },
     "firstName": {
       "required": false,
@@ -27,7 +27,7 @@
     "domain": {
       "required": false,
       "default": "stripe.com",
-      "description": "Company domain (e.g. stripe.com); primary key for the Abstract lookup, Apollo org-enrichment, Hunter company-enrichment and email-finder calls."
+      "description": "Company domain (e.g. stripe.com); primary key for the Orthogonal Company Enrich lookup, Apollo org-enrichment, Hunter company-enrichment and email-finder calls."
     },
     "company": {
       "required": false,
@@ -37,7 +37,7 @@
     "linkedinUrl": {
       "required": false,
       "default": "https://linkedin.com/in/williamhgates",
-      "description": "Person or company LinkedIn URL; used by the Clado linkedin-profile, contacts and scrape calls (JSON body, no path encoding needed)."
+      "description": "Person LinkedIn URL; used by Scrape Creators public-profile read and Clado contacts (JSON body for contacts)."
     },
     "organizationId": {
       "required": false,
@@ -74,14 +74,11 @@
       "tier": "resolve"
     },
     {
-      "label": "person resolve by LinkedIn URL — Clado LinkedIn profile (MPP on Tempo)",
+      "label": "person resolve by LinkedIn URL — Scrape Creators LinkedIn profile (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
-      "body": {
-        "linkedin_url": "${linkedinUrl}"
-      },
-      "maxAmount": "0.15",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}",
+      "maxAmount": "0.03",
       "tier": "resolve"
     },
     {
@@ -107,14 +104,11 @@
       "tier": "anchor"
     },
     {
-      "label": "company anchor — Abstract Company Enrichment lookup by domain (MPP on Tempo)",
+      "label": "company anchor — Orthogonal Company Enrich by domain (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10",
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02",
       "tier": "anchor"
     },
     {
@@ -158,17 +152,6 @@
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/info?userName=${name}",
       "maxAmount": "0.10",
-      "tier": "social"
-    },
-    {
-      "label": "LinkedIn person/company posts — Clado scrape (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
-      "body": {
-        "linkedin_url": "${linkedinUrl}"
-      },
-      "maxAmount": "0.25",
       "tier": "social"
     },
     {
@@ -247,17 +230,6 @@
         "linkedin_url": "${linkedinUrl}"
       },
       "maxAmount": "0.50",
-      "tier": "escalate"
-    },
-    {
-      "label": "person search by handle / natural language — Clado search (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/search",
-      "body": {
-        "query": "person with X/Twitter handle @${name}"
-      },
-      "maxAmount": "1.00",
       "tier": "escalate"
     },
     {

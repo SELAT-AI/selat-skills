@@ -1,25 +1,25 @@
 {
   "schema": "selat-skill/v1",
   "name": "person-lookup",
-  "description": "Look up a person — work history, education, social profiles, and contact info — via Clado's natural-language people search, through the SELAT Router (MPP via Locus).",
-  "maxAmount": "1.00",
+  "description": "Look up a person — work history, title, employer, and public professional profiles — via Apollo people-search through the SELAT Router (MPP via Locus).",
+  "maxAmount": "0.02",
   "params": {
     "query": {
       "required": true,
-      "default": "AI startups",
+      "default": "Dario Amodei Anthropic CEO",
       "description": "Search query combining person name with company, role, or geography for disambiguation, e.g. \"Dario Amodei Anthropic CEO\"."
     }
   },
   "steps": [
     {
-      "label": "person search — Clado (MPP on Tempo)",
+      "label": "person search — Apollo people-search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/search",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
       "body": {
-        "query": "${query}"
+        "q_keywords": "${query}"
       },
-      "maxAmount": "1.00"
+      "maxAmount": "0.02"
     }
   ]
 }

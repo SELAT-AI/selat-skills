@@ -8,17 +8,17 @@
       "assertions": [
         "The skill enrich-waterfall is selected",
         "The first calls are resolve-tier endpoints keyed on email (e.g. apollo.mpp.paywithlocus.com/apollo/people-enrichment, hunter.mpp.paywithlocus.com/hunter/email-enrichment or /hunter/combined-enrichment)",
-        "The run does NOT call any escalate-tier endpoint (Clado contacts, Clado search) when resolve already returns a confident match",
+        "The run does NOT call the escalate-tier endpoint (Clado contacts) when resolve already returns a confident match",
         "Every step executed is rail=via the SELAT Router (the SELAT-native X/Twitter social lookup step is conditional and a pure resolve request does not run it)"
       ]
     },
     {
       "id": "company-enrichment-from-domain",
       "prompt": "Build a company profile for stripe.com — firmographics plus recent funding and hiring signals.",
-      "expected_output": "Runs enrich-waterfall, anchors the company via domain (Abstract Company Enrichment lookup / Apollo org-enrichment / Hunter company-enrichment), captures the Apollo organization_id, then fans out into the signals slices (Brave news-search for funding rounds, Apollo job-postings, Diffbot KG enhance) — staying in the cheap anchor + signals tiers.",
+      "expected_output": "Runs enrich-waterfall, anchors the company via domain (Orthogonal Company Enrich / Apollo org-enrichment / Hunter company-enrichment), captures the Apollo organization_id, then fans out into the signals slices (Brave news-search for funding rounds, Apollo job-postings, Diffbot KG enhance) — staying in the cheap anchor + signals tiers.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "An anchor-tier company endpoint is called with domain=stripe.com (e.g. abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup or apollo.mpp.paywithlocus.com/apollo/org-enrichment)",
+        "An anchor-tier company endpoint is called with domain=stripe.com (e.g. mpp.orthogonal.com/company-enrich/companies/enrich or apollo.mpp.paywithlocus.com/apollo/org-enrichment)",
         "Signals endpoints for funding and hiring are called (brave.mpp.paywithlocus.com/brave/news-search with a funding-round query, and apollo.mpp.paywithlocus.com/apollo/job-postings using the organization_id from the anchor step)",
         "No person-contact escalate endpoints are called for a pure company-profile request"
       ]
@@ -36,10 +36,10 @@
     {
       "id": "escalation-on-gap",
       "prompt": "Find me a phone number and personal email for the person at this LinkedIn profile: https://linkedin.com/in/someone — spend what it takes.",
-      "expected_output": "Runs enrich-waterfall, tries cheap resolve/anchor first (Clado linkedin-profile, Apollo people-enrichment), and because phone + personal email are requested and not surfaced cheaply, escalates to the premium reveals (Clado contacts by LinkedIn URL, Clado search).",
+      "expected_output": "Runs enrich-waterfall, tries cheap resolve/anchor first (Scrape Creators LinkedIn profile, Apollo people-enrichment), and because phone + personal email are requested and not surfaced cheaply, escalates to the premium reveal (Clado contacts by LinkedIn URL).",
       "assertions": [
         "Cheaper resolve/anchor tiers are attempted before any escalate-tier call",
-        "At least one escalate-tier endpoint is called (clado.mpp.paywithlocus.com/clado/contacts or /clado/search)",
+        "The escalate-tier endpoint is called (clado.mpp.paywithlocus.com/clado/contacts)",
         "The escalation is justified by a phone/personal-email gap left by the cheaper tiers",
         "The per-step maxAmount caps ($0.10–$1.00, ~10x each live price) are respected"
       ]
@@ -47,21 +47,22 @@
     {
       "id": "tech-stack-detection",
       "prompt": "What technologies does acme.com run? Just the tech stack.",
-      "expected_output": "Runs enrich-waterfall and calls only the domain-keyed anchor endpoints that return tech data (Apollo org-enrichment for technology_names, Abstract Company Enrichment lookup for industry/SIC) — no contact or signals fan-out.",
+      "expected_output": "Runs enrich-waterfall and calls only the domain-keyed anchor endpoints that return tech data (Apollo org-enrichment for technology_names, Orthogonal Company Enrich for industry/firmographics) — no contact or signals fan-out.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "Tech-bearing anchor endpoints are called with domain=acme.com (apollo.mpp.paywithlocus.com/apollo/org-enrichment and/or abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup)",
+        "Tech-bearing anchor endpoints are called with domain=acme.com (apollo.mpp.paywithlocus.com/apollo/org-enrichment and/or mpp.orthogonal.com/company-enrich/companies/enrich)",
         "No person-resolve or escalate contact endpoints are called for a tech-only request"
       ]
     },
     {
       "id": "social-presence-lookup",
       "prompt": "Find the social profiles — Twitter, Instagram, LinkedIn — for this founder so I can see their recent posts.",
-      "expected_output": "Runs enrich-waterfall and uses the social-tier endpoints (SELAT-native X/Twitter user info, StableSocial Instagram/TikTok profiles, Clado scrape for LinkedIn posts) rather than the contact-reveal escalate tier.",
+      "expected_output": "Runs enrich-waterfall and uses the social-tier endpoints (SELAT-native X/Twitter user info, StableSocial Instagram/TikTok profiles) plus the resolve-tier Scrape Creators LinkedIn profile rather than the contact-reveal escalate tier.",
       "assertions": [
         "The skill enrich-waterfall is selected",
-        "Social-tier endpoints are called (e.g. catalog.selat.ai/twitter/user/info, stablesocial.dev/api/instagram/profile, clado.mpp.paywithlocus.com/clado/scrape)",
-        "The run does not escalate to Clado contacts/search reveals just to satisfy a social-profile request"
+        "Social-tier endpoints are called (e.g. catalog.selat.ai/twitter/user/info, stablesocial.dev/api/instagram/profile)",
+        "The run does not escalate to Clado contacts just to satisfy a social-profile request",
+        "Dead Clado /scrape and /search are not called"
       ]
     }
   ]

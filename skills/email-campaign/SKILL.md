@@ -1,6 +1,6 @@
 ---
 name: email-campaign
-description: Use this skill when the user wants to build a verified cold-email or outreach list — e.g. "build an email campaign", "find and verify emails for a domain", "find someone's work email", "verify these emails before I send", "enrich a lead for personalized outreach", "get company brand context for outreach". Runs a 7-step pipeline across MPP merchants (Fiber company search, Hunter domain/email lookup + verification + bounce check, Apollo lead enrichment, Abstract Company Enrichment company context), all through the SELAT Router.
+description: Use this skill when the user wants to build a verified cold-email or outreach list — e.g. "build an email campaign", "find and verify emails for a domain", "find someone's work email", "verify these emails before I send", "enrich a lead for personalized outreach", "get company brand context for outreach". Runs a 6-step pipeline across MPP merchants (Hunter domain/email lookup + verification + bounce check, Apollo lead enrichment, Orthogonal Company Enrich company context), all through the SELAT Router.
 license: Apache-2.0
 compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet (the runner pays on whichever chain holds your Gateway balance). Every step is a MPP on Tempo payment, so a reachable SELAT Router (SELAT_ROUTER_URL) is required for the run.
 metadata:
@@ -30,26 +30,26 @@ Steps (in order):
 - **Step 4 — Hunter** `POST /hunter/email-verifier` — deliverability check for a single email.
 - **Step 5 — Hunter** `POST /hunter/email-verifier` — second-pass bounce-risk check (Hunter's verdict covers catch-all domains; drop this step if one verification is enough).
 - **Step 6 — Apollo** `POST /apollo/people-enrichment` — enrich the lead with contact + company details for personalization.
-- **Step 7 — Abstract Company Enrichment** `POST /abstract-company-enrichment/lookup` — industry, description, size, and location for the company (no logo/color brand assets).
+- **Step 6 — Orthogonal Company Enrich** `GET /companies/enrich?domain=` — industry, description, size, location, funding, and social links for the company.
 
 ## Inputs And Outputs
 
 | Param | Required | Default | Description |
 |---|---|---|---|
 | `industry` | no | `SaaS` | Industry filter for the Fiber company-search step |
-| `domain` | yes | `stripe.com` | Target domain for Hunter domain-search, email-finder, and the Abstract Company Enrichment lookup |
+| `domain` | yes | `stripe.com` | Target domain for Hunter domain-search, email-finder, and the Orthogonal Company Enrich lookup |
 | `firstName` | no | `John` | First name for Hunter email-finder and Apollo people-enrichment |
 | `lastName` | no | `Doe` | Last name for Hunter email-finder and Apollo people-enrichment |
 | `company` | no | `Stripe` | Company name (sent as `organization_name`) for the Apollo people-enrichment step |
 | `email` | yes | `john@stripe.com` | Email to verify and bounce-check (both Hunter email-verifier) |
 
-Outputs: Hunter returns email lists / verification verdicts (deliverability + bounce/catch-all); Fiber returns matching companies; Apollo returns enriched lead fields; Abstract Company Enrichment returns company firmographics (industry, description, size, location — not logos/colors).
+Outputs: Hunter returns email lists / verification verdicts (deliverability + bounce/catch-all); Apollo returns enriched lead fields; Orthogonal Company Enrich returns company firmographics (industry, description, size, location, funding).
 
 ## Gotchas
 
 - All seven steps are **via the SELAT Router** MPP payments — the run needs `SELAT_ROUTER_URL` configured and the router reachable; every step settles through the SELAT Router.
 - The MPP on Tempo Hunter endpoints are **POST** with a JSON body (`{domain}`, `{email}`, `{domain,first_name,last_name}`) — not the GET/query form from the upstream Hunter docs.
-- Per-step live prices (probe-verified 2026-07-10): $0.10815 + $0.01365 + $0.0084 + $0.0084 + $0.0084 + $0.0063 ≈ **$0.1533** for a full manifest run; per-step `maxAmount` caps are ~10x each live price ($0.10–$1.00; top-level fallback $1.00) — a ceiling, not the price.
+- Per-step live prices: $0.10815 + $0.01365 + $0.0084 + $0.0084 + $0.0084 + $0.012862 ≈ **$0.160** for a full manifest run; Company Enrich is capped at `$0.02` (quote ~$0.013). Other per-step `maxAmount` caps are ~10x each live price ($0.10–$1.00; top-level fallback $1.00) — a ceiling, not the price.
 - Hunter `domain-search` is the most expensive step ($0.10815) — drop it if you already know your target person and only need find + verify + enrich.
 - The bounce check (step 5) is a second pass through the same Hunter `email-verifier` endpoint as step 4 — Hunter's verdict already covers bounce risk and catch-all domains, so drop one of the two if a single verification is enough.
 - Steps run independently: a later step can succeed even if an earlier one fails; always read the per-step summary.
@@ -67,7 +67,7 @@ Probe each endpoint for a free 402 challenge (no payment sent) with `--probe-onl
 - `selat-pay POST "https://hunter.io/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --probe-only`
 - `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --probe-only` (bounce check — same endpoint as the deliverability step)
 - `selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" --body '{"first_name":"John","last_name":"Doe","organization_name":"Stripe"}' --chain base --probe-only`
-- `selat-pay POST "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup" --body '{"domain":"stripe.com"}' --chain base --probe-only`
+- `selat-pay GET "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com" --chain base --probe-only --live-probe`
 
 A probe returns the merchant's 402 payment requirements without charging. A successful paid run prints `status=200` and a ✓ for each step.
 

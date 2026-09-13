@@ -10,7 +10,7 @@ is authoritative — `selat skill verify` probes it free.
 | 1 — Person enrich | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 |
 | 2 — Person + company combined | POST | `https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment` | MPP on Tempo | $0.02415 |
 | 3 — Email deliverability | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 |
-| 4 — Company brand | POST | `https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup` | MPP on Tempo | $0.0063 |
+| 4 — Company brand | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 |
 | 5 — Company gap-fill | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | MPP on Tempo | $0.0399 |
 | 6 — Person tie-breaker | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-enrichment` | MPP on Tempo | $0.01365 |
 | 7 — Company fallback | POST | `https://hunter.mpp.paywithlocus.com/hunter/company-enrichment` | MPP on Tempo | $0.01365 |
@@ -22,7 +22,7 @@ Apollo `job-postings` is **not a manifest step**.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim.
-- **MPP on Tempo:** Apollo, Hunter, and Abstract Company Enrichment via Locus (`*.mpp.paywithlocus.com`).
+- **MPP on Tempo:** Apollo and Hunter via Locus (`*.mpp.paywithlocus.com`). Orthogonal Company Enrich via `mpp.orthogonal.com`.
 
 ## Apollo MPP — `MPP on Tempo`
 
@@ -68,20 +68,21 @@ All endpoints are **POST with a JSON body**.
 { "email": "test@stripe.com" }
 ```
 
-## Abstract Company Enrichment — `MPP on Tempo`
+## Orthogonal Company Enrich — `MPP on Tempo`
 
-serviceUrl: `https://abstract-company-enrichment.mpp.paywithlocus.com`
+serviceUrl: `https://mpp.orthogonal.com/company-enrich`
 
-Last documented price: `$0.0063` per call (`routed-mpp`). Today's live probe
-did not surface a 402 — re-probe. All endpoints are **POST with a JSON body**.
-Skip for free-email domains.
+Live-probed price: `$0.012862` (`routed-mpp`, 2026-09-12). Domain lookup is
+**GET with a query-string `domain`**. Replaces the dead Abstract Company
+Enrichment `POST /abstract-company-enrichment/lookup`. Skip for free-email
+domains. Per-step cap `$0.02`.
 
-| Capability/Step | Endpoint | Body params |
+| Capability/Step | Endpoint | Query params |
 | --- | --- | --- |
-| Company brand | `/abstract-company-enrichment/lookup` | `domain` (string, required) |
+| Company brand | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
 
-```json
-{ "domain": "stripe.com" }
+```text
+https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com
 ```
 
 ## SELAT-native Twitter — `x402 via Circle Gateway`

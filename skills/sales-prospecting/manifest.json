@@ -1,7 +1,7 @@
 {
   "schema": "selat-skill/v1",
   "name": "sales-prospecting",
-  "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Hunter email finder), verifies deliverability (Hunter email verifier), and enriches with company data (Abstract Company Enrichment).",
+  "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Hunter email finder), verifies deliverability (Hunter email verifier), and enriches with company data (Orthogonal Company Enrich).",
   "maxAmount": "1.00",
   "params": {
     "companyQuery": {
@@ -27,7 +27,7 @@
     "domain": {
       "required": true,
       "default": "stripe.com",
-      "description": "Company domain used for Hunter domain-search, the Hunter email-finder lookup, and the Abstract Company Enrichment lookup."
+      "description": "Company domain used for Hunter domain-search, the Hunter email-finder lookup, and the Orthogonal Company Enrich lookup."
     },
     "firstName": {
       "required": false,
@@ -79,14 +79,11 @@
       "maxAmount": "0.10"
     },
     {
-      "label": "enrich with company data — Abstract Company Enrichment lookup (MPP on Tempo)",
+      "label": "enrich with company data — Orthogonal Company Enrich by domain (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-      "body": {
-        "domain": "${domain}"
-      },
-      "maxAmount": "0.10"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"
     }
   ]
 }

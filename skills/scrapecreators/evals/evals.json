@@ -24,11 +24,12 @@
     {
       "id": "linkedin-company",
       "prompt": "Pull the LinkedIn company page data for https://linkedin.com/company/anthropic.",
-      "expected_output": "The MPP-on-Tempo Clado scrape step runs with the supplied company URL and returns the company page data.",
+      "expected_output": "The MPP-on-Tempo Scrape Creators LinkedIn company step runs with the supplied company URL and returns the company page data.",
       "assertions": [
-        "The linkedinCompanyUrl param flows into the Clado scrape step body as linkedin_url",
-        "The step method is POST and rail via the SELAT Router",
-        "The host is clado.mpp.paywithlocus.com"
+        "The linkedinCompanyUrl param flows into the Scrape Creators company step as the url query parameter",
+        "The step method is GET and rail via the SELAT Router",
+        "The host is mpp.orthogonal.com/scrapecreators",
+        "Dead Clado /scrape is not called"
       ]
     },
     {
@@ -44,11 +45,11 @@
     {
       "id": "full-run-cap",
       "prompt": "Run the full scrapecreators skill with defaults.",
-      "expected_output": "All 12 steps run — 3 x402-via-Circle-Gateway SELAT-native steps plus 9 MPP-on-Tempo StableSocial/Clado steps — and the run cost is capped at the manifest maxAmount.",
+      "expected_output": "All 12 steps run — 3 x402-via-Circle-Gateway SELAT-native steps plus 9 MPP-on-Tempo StableSocial/Scrape Creators steps — and the run cost is capped at the manifest maxAmount.",
       "assertions": [
         "manifest.json parses as valid JSON",
-        "Top-level maxAmount is 0.75 (fallback cap; live total is about 0.45)",
-        "SELAT-native Twitter steps are rail via the SELAT Router via catalog.selat.ai; StableSocial and Clado steps are rail via the SELAT Router"
+        "Top-level maxAmount is 0.75 (fallback cap)",
+        "SELAT-native Twitter steps use catalog.selat.ai; StableSocial and Scrape Creators LinkedIn steps settle via the SELAT Router"
       ]
     },
     {
@@ -57,7 +58,7 @@
       "expected_output": "The scrapecreators skill does NOT trigger; this is unrelated to social media scraping.",
       "assertions": [
         "The scrapecreators skill is not selected",
-        "No SELAT-native, StableSocial, or Clado social-scraping endpoint is called"
+        "No SELAT-native, StableSocial, or Scrape Creators social-scraping endpoint is called"
       ]
     }
   ]

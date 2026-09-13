@@ -56,11 +56,12 @@
     {
       "id": "brand-context",
       "prompt": "Get the brand colors and description for stripe.com for my outreach template.",
-      "expected_output": "Abstract Company Enrichment lookup POST with domain=stripe.com, returning firmographic context (industry, description, size); note that this merchant does not return brand assets like logos or colors.",
+      "expected_output": "Orthogonal Company Enrich GET with domain=stripe.com, returning firmographic context (industry, description, size, funding).",
       "assertions": [
-        "The company-context step is POST to abstract-company-enrichment.mpp.paywithlocus.com/abstract-company-enrichment/lookup",
-        "The domain is passed in the JSON body bound to stripe.com",
-        "The step rail is 'MPP on Tempo'"
+        "The company-context step is GET to mpp.orthogonal.com/company-enrich/companies/enrich with domain=stripe.com",
+        "The domain is passed as a query parameter bound to stripe.com",
+        "The step rail is 'MPP on Tempo'",
+        "The removed Abstract Company Enrichment endpoint is not used"
       ]
     }
   ]
