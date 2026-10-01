@@ -15,10 +15,12 @@ is authoritative — `selat skill verify` probes it free.
 | 6 — MACD | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/macd` | MPP on Tempo | $0.0084 |
 | 7 — News | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/news-sentiment` | MPP on Tempo | $0.0084 |
 | 8 — Earnings | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/earnings` | MPP on Tempo | $0.0084 |
-| 9 — Reddit | POST | `https://stableenrich.dev/api/reddit/search` | MPP on Tempo | $0.021 |
+| 9 — Smart money | GET | `https://pay.smartmoney.market/api/ticker/${ticker}` | MPP on Solana | $0.0105 |
+| 10 — Reddit | POST | `https://stableenrich.dev/api/reddit/search` | MPP on Tempo | $0.021 |
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 on Base / Polygon:** Settles via Circle Gateway batched nanopayments. Buyer is the funded Gateway chain. This is not a pay-chain claim.
+- **MPP on Solana:** smartmoney-market's Pay / MPP gateway (`pay.smartmoney.market`), paid in Solana USDC by the router.
 - **MPP on Tempo:** Alpha Vantage via Locus (`alphavantage.mpp.paywithlocus.com`). Circle StableEnrich (`stableenrich.dev`) is MPP on Tempo but not Locus.
 
 ## Alpha Vantage MPP — `MPP on Tempo`
@@ -84,6 +86,30 @@ https://catalog.selat.ai/twitter/tweet/advanced_search?query=$NVDA%20OR%20NVIDIA
 ```
 
 Responses are raw tweet objects — no sentiment score is included.
+
+## smartmoney-market — `MPP on Solana`
+
+serviceUrl: `https://pay.smartmoney.market`
+
+Live-probed price: `$0.0105` for the ticker summary (`routed-mpp`, upstream
+`$0.01` MPP charge on Solana). Paid 200s confirmed 2026-09-30 for every
+ticker endpoint below (NVDA). All endpoints are **GET**; the Pay / MPP gateway
+uses the direct `/api/...` route shape with the ticker in the path. Free
+discovery: `GET /api`, `GET /llms.txt`, `GET /api/insider-tracked-stocks?q=`.
+
+| Capability | Endpoint | ~Price |
+| --- | --- | --- |
+| Ticker summary (manifest step) | `/api/ticker/{symbol}` | $0.01 |
+| Fund-holder positions | `/api/ticker/{symbol}/funds` | $0.02 |
+| Fund Form 4 updates | `/api/ticker/{symbol}/funds-updates` | $0.01 |
+| Company insider summary | `/api/ticker/{symbol}/insider` | $0.01 — check `/api/insider-tracked-stocks?q=` first (charged even when untracked) |
+| Insider details | `/api/ticker/{symbol}/insider-details` | $0.01 |
+| House PTR trades | `/api/ticker/{symbol}/congress` | $0.01 |
+
+The same data is also served as x402 on Base at `https://x402.smartmoney.market`
+under clean aliases (`/ticker-summary?symbol=`, `/ticker-funds?symbol=`, …).
+Do not pay `/api/...` paths on the x402 gateway, and do not use the alias
+paths on the Pay / MPP gateway.
 
 ## Circle StableEnrich — `MPP on Tempo`
 

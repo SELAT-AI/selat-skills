@@ -113,7 +113,7 @@
       "name": "stock-direction-signals",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (MPP on Tempo + x402 on Base) via the SELAT Router."
+      "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, smartmoney-market for 13F fund and insider positioning, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (x402 via Circle Gateway + x402 on Base + MPP on Tempo + MPP on Solana) via the SELAT Router."
     },
     {
       "name": "wallet-desk-brief",

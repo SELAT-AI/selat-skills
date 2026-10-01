@@ -4,11 +4,11 @@
     {
       "id": "trigger-1",
       "prompt": "Give me a bullish or bearish read on NVDA using chart, news, Twitter, Reddit, and macro context.",
-      "expected_output": "Runs stock-direction-signals with NVDA, uses Alpha Vantage MPP, SELAT-native Twitter, Circle StableEnrich Reddit, and Circle Otto TradFi data, then returns a non-advisory directional brief.",
+      "expected_output": "Runs stock-direction-signals with NVDA, uses Alpha Vantage MPP, smartmoney-market, SELAT-native Twitter, Circle StableEnrich Reddit, and Circle Otto TradFi data, then returns a non-advisory directional brief.",
       "assertions": [
         "stock-direction-signals is selected",
-        "uses only Alpha Vantage MPP, SELAT-native Twitter, Circle StableEnrich, and Circle Otto endpoints",
-        "output includes verdict, confidence, technicals, catalysts, social sentiment, macro context, and risks"
+        "uses only Alpha Vantage MPP, smartmoney-market, SELAT-native Twitter, Circle StableEnrich, and Circle Otto endpoints",
+        "output includes verdict, confidence, technicals, catalysts, institutional positioning, social sentiment, macro context, and risks"
       ]
     },
     {

@@ -1,11 +1,11 @@
 ---
 name: stock-direction-signals
-description: Use this skill when the user wants a bullish, bearish, or mixed directional read on a US stock — e.g. "is NVDA bullish or bearish right now", "give me a directional read on AAPL", "is MAG7 sentiment turning", "what do the chart, news, and social say about AMD", "signal brief on SPY". Covers MAG7 names, semiconductor and AI-infrastructure stocks, tokenized-stock watchlists, and index proxies like SPY/QQQ. Composes only Alpha Vantage MPP (price, technicals, news, earnings), SELAT-native Twitter (social chatter), Circle StableEnrich (Reddit), and Circle Otto (TradFi macro) into a non-advisory signal brief. Pays per call via selat-pay (USDC via Circle Gateway), no API keys.
+description: Use this skill when the user wants a bullish, bearish, or mixed directional read on a US stock — e.g. "is NVDA bullish or bearish right now", "give me a directional read on AAPL", "is MAG7 sentiment turning", "what do the chart, news, and social say about AMD", "signal brief on SPY". Covers MAG7 names, semiconductor and AI-infrastructure stocks, tokenized-stock watchlists, and index proxies like SPY/QQQ. Composes only Alpha Vantage MPP (price, technicals, news, earnings), smartmoney-market (13F fund and insider positioning), SELAT-native Twitter (social chatter), Circle StableEnrich (Reddit), and Circle Otto (TradFi macro) into a non-advisory signal brief. Pays per call via selat-pay (USDC via Circle Gateway), no API keys.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet (the runner pays on whichever chain holds Gateway USDC). Every step routes through the SELAT Router across three rails (`x402 via Circle Gateway`, `x402 on Base`, `MPP on Tempo`), so a reachable SELAT Router is required. `selat skill verify` (no --pay) is free and needs no funded wallet.
+compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet (the runner pays on whichever chain holds Gateway USDC). Every step routes through the SELAT Router across four rails (`x402 via Circle Gateway`, `x402 on Base`, `MPP on Tempo`, `MPP on Solana`), so a reachable SELAT Router is required. `selat skill verify` (no --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
-  version: "1.0"
+  version: "1.1"
   rail: mixed
   kind: multi
 ---
@@ -14,11 +14,12 @@ metadata:
 
 Directional research on one US equity ticker or index proxy. The skill gathers
 paid signal from a **fixed provider filter** — Alpha Vantage MPP (quote, chart,
-RSI, MACD, news sentiment, earnings), SELAT-native Twitter (raw chatter), Circle
-StableEnrich (Reddit threads), and Circle Otto (TradFi macro regime) — and the
+RSI, MACD, news sentiment, earnings), smartmoney-market (13F fund and insider
+positioning), SELAT-native Twitter (raw chatter), Circle StableEnrich (Reddit
+threads), and Circle Otto (TradFi macro regime) — and the
 agent fuses it into one brief: verdict (bullish / bearish / mixed / insufficient
-data), confidence, the technical setup, catalysts, social sentiment, macro
-backdrop, and the contrarian risks that would invalidate the read. Research
+data), confidence, the technical setup, catalysts, institutional positioning,
+social sentiment, macro backdrop, and the contrarian risks that would invalidate the read. Research
 only — never trade execution or financial advice.
 
 ## When To Use
@@ -34,7 +35,7 @@ brief; if the user asks to trade on the result, decline that part and say so.
 
 ## Rails
 
-This skill spans **three settlement modes**, so the skill's `rail` is `mixed`:
+This skill spans **four settlement modes**, so the skill's `rail` is `mixed`:
 
 - **x402 via Circle Gateway** — SELAT-native Twitter (`catalog.selat.ai`)
   settles `x402 via Circle Gateway` through the SELAT Router.
@@ -43,6 +44,8 @@ This skill spans **three settlement modes**, so the skill's `rail` is `mixed`:
 - **MPP on Tempo** — the six Alpha Vantage steps
   (`alphavantage.mpp.paywithlocus.com`) and Circle StableEnrich
   (`stableenrich.dev`) settle `MPP on Tempo` through the SELAT Router.
+- **MPP on Solana** — smartmoney-market's Pay / MPP gateway
+  (`pay.smartmoney.market`) settles `MPP on Solana` through the SELAT Router.
 
 The `selat` CLI auto-detects each step's protocol and settlement mode at call
 time. The runner pays on whichever chain holds Gateway USDC — rail names are
@@ -56,8 +59,8 @@ not a pay-chain claim. A reachable SELAT Router is required.
 3. The CLI compiles each step into a `selat-pay` call and prints each result.
 
 Before running, tell the user what it costs: a full run quotes at roughly
-**$0.08** live (nine paid calls, capped at $0.25 total) — say "this pulls nine
-paid data feeds for about eight cents — proceed?" and wait for a yes before
+**$0.09** live (ten paid calls, capped at $0.25 total) — say "this pulls ten
+paid data feeds for about nine cents — proceed?" and wait for a yes before
 spending. Afterwards, report what was actually spent.
 
 Recommended agent procedure (manifest steps are ordered cheapest-first; retarget
@@ -77,11 +80,15 @@ different company):
    (~$0.008 each): last price, chart trend, momentum, and trend acceleration.
 5. **Catalysts** — Alpha Vantage news-sentiment and earnings (~$0.008 each):
    news tone, catalyst clustering, earnings surprise history.
-6. **Retail texture** — Circle StableEnrich Reddit search (~$0.02): community
+6. **Smart money** — smartmoney-market ticker summary (~$0.0105): 13F
+   fund-holder coverage and qualified projected trend across 511 curated
+   managers, plus company insider and House PTR summaries when available.
+   Quarterly filings lag — treat it as positioning, not a timing signal.
+7. **Retail texture** — Circle StableEnrich Reddit search (~$0.02): community
    debate and long-form reactions; weight recency, comment quality, and claims
    repeated across communities.
-7. **Synthesize** a compact brief: verdict, confidence, price and technical
-   setup, catalysts and fundamentals, social sentiment, macro/regime, contrarian
+8. **Synthesize** a compact brief: verdict, confidence, price and technical
+   setup, catalysts and fundamentals, institutional positioning, social sentiment, macro/regime, contrarian
    risks, and source notes. Label it bullish, bearish, mixed, or insufficient
    data — and say what would invalidate it.
 
@@ -92,8 +99,8 @@ full manifest. For multiple tickers, repeat the run per ticker.
 
 For deeper dives, the provider filter also offers optional endpoints not in the
 manifest (intraday/weekly/monthly series, SMA/EMA/BBANDS, earnings-call
-transcripts, financial statements, tweet replies, Reddit post comments, Otto
-derivatives context) — see `references/endpoints.md`; call them individually via
+transcripts, financial statements, smartmoney fund-holder and insider details,
+tweet replies, Reddit post comments, Otto derivatives context) — see `references/endpoints.md`; call them individually via
 `selat-pay` within the same provider filter.
 
 ## Inputs And Outputs
@@ -105,14 +112,14 @@ derivatives context) — see `references/endpoints.md`; call them individually v
 | `reddit_query` | no | `NVDA stock` | StableEnrich Reddit query; add company/product terms. |
 
 Output: per-step JSON (tweets, macro data, quote, OHLCV series, RSI, MACD, news
-sentiment, earnings history, Reddit posts) that the agent fuses into a
+sentiment, earnings history, smart-money ticker summary, Reddit posts) that the agent fuses into a
 non-advisory directional brief — what moved the signal, what would invalidate
 it, and which paid endpoints were used.
 
 ## Gotchas
 
-- **The provider filter is the skill.** Use only Alpha Vantage MPP, SELAT-native
-  Twitter, Circle StableEnrich, and Circle Otto. Do not substitute AIsa,
+- **The provider filter is the skill.** Use only Alpha Vantage MPP,
+  smartmoney-market, SELAT-native Twitter, Circle StableEnrich, and Circle Otto. Do not substitute AIsa,
   BlockRun, Serper, Apollo, Exa, CoinGecko, Nansen, or other catalogue matches
   even if they rank higher.
 - **Retarget the defaults.** All three params default to NVDA-flavored values so
@@ -125,13 +132,20 @@ it, and which paid endpoints were used.
 - **SELAT-native Twitter returns raw social objects.** Never claim a finished
   sentiment score unless the response explicitly includes one; the scoring is
   the agent's job.
+- **smartmoney-market is GET with the ticker in the path** on its Pay / MPP
+  gateway (`/api/ticker/{symbol}`). Its x402 gateway (`x402.smartmoney.market`,
+  x402 on Base) serves the same data under different paths
+  (`/ticker-summary?symbol=`) — do not mix the two path shapes. The gateway
+  does not validate input before payment — an unknown or misspelled ticker
+  still quotes the full $0.01 — so normalize the ticker before paying. Thin or
+  missing positioning is "insufficient data" for that leg, not a bearish signal.
 - **Reddit is noisy and momentum-skewed.** Use it for thesis texture; weight
   recency, comment quality, and repetition across communities.
 - **Otto is macro-first here.** `tradfi-data` is the default; use Otto's
   crypto/perp endpoints only when the user explicitly connects the stock to
   tokenized equity, crypto beta, or derivatives spillover.
 - **`maxAmount` is a guardrail, not the price.** Per-step caps ($0.01–$0.04,
-  $0.25 full-run) sit well above live quotes (measured full run ≈ $0.0756);
+  $0.25 full-run) sit well above live quotes (measured full run ≈ $0.0861);
   gateway prices can run above the catalogue listing.
 - **The live 402 is the source of truth.** If a step stops serving a challenge
   or the live price drifts, `selat skill verify` flags it — report the live
