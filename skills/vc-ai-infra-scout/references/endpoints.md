@@ -95,9 +95,8 @@ https://catalog.selat.ai/twitter/tweet/advanced_search?query=AI%20infra%20founde
 serviceUrl: `https://apollo.mpp.paywithlocus.com`
 
 Live-probed prices (`routed-mpp`): people-search `$0.00525`, org-enrichment
-`$0.0399`. All endpoints are **POST with a JSON body**. Override `${domain}`
-to the top company the pipeline surfaced — the default `modal.com` is a
-placeholder.
+`$0.0399`. All endpoints are **POST with a JSON body**. `${domain}` is a
+required param with no default: pass the one company you want enriched.
 
 | Capability/Step | Endpoint | Body params |
 | --- | --- | --- |
