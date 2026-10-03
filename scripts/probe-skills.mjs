@@ -17,7 +17,7 @@
  * Self-contained (no selat-cli import) but mirrors lib/skill-registry.mjs
  * (compileStep + parseProbeStdout) so probe argv and parsing match the CLI.
  *
- * Requires `selat-pay` (>= 0.3.2) on PATH. Honors SELAT_ROUTER_URL (for routed
+ * Requires `selat-pay` (>= 0.12.0) on PATH. Honors SELAT_ROUTER_URL (for routed
  * steps) via selat-pay's own dotenv/env. Always exits 0 unless it cannot run at
  * all — a down upstream is data to record, not a CI failure.
  */
@@ -139,7 +139,7 @@ function probeStep(manifest, step, params) {
 
   const url = argv[1];
   const t0 = Date.now();
-  const r = spawnSync("selat-pay", [...argv, "--probe-only"], { encoding: "utf8", timeout: TIMEOUT_MS, maxBuffer: 16 * 1024 * 1024 });
+  const r = spawnSync("selat-pay", [...argv, "--probe-only", "--live-probe"], { encoding: "utf8", timeout: TIMEOUT_MS, maxBuffer: 16 * 1024 * 1024 });
   const latencyMs = Date.now() - t0;
 
   if (r.error) {
