@@ -35,14 +35,18 @@ The manifest is the **inert payment recipe** the `selat` CLI compiles into
 
 ## Field rules
 
-- **`url`** — always the catalogue `serviceUrl` + the endpoint path. Put GET
+- **`url`** — always the payable `endpoint.url` from `selat search` (catalogue
+  `serviceUrl` + the endpoint path), never the provider host. Put GET
   params in the query string; put POST/PUT/PATCH/DELETE params in `body`.
 - **`${param}`** — substituted from `params` (with the caller's overrides or the
   `default`). Use the same names in `url`/`body` and `params`.
 - **`maxAmount`** — string USD. Top-level is the full-run cap; per-step overrides
   it for that call. Treat as a guardrail; set with headroom over the live quote.
-- **`rail`** — `direct` (Circle nanopayment, paid to the upstream), `routed` (MPP
-  via the SELAT Router), or `mixed` (a multi-step skill using both).
+- **`rail`** — a descriptive label: `direct` (Circle nanopayment, paid to the
+  upstream), `routed` (via the SELAT Router), or `mixed` (a multi-step skill using
+  both). It feeds `index.json` and the listing; it does not choose how the step
+  pays — `selat-pay` detects the mode from the live 402 at run time. Set it from
+  the `mode` that `selat skill verify` reports.
 - **`chain` — optional, normally omitted.** Settlement chain is resolved at
   runtime from where the agent wallet's Circle Gateway balance actually sits (an
   emergent property of the deposit flow), so a paid call settles on a funded

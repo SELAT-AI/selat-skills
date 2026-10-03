@@ -21,8 +21,8 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
 1. **`selat skill new`** — scaffolds `skills/my-skill/` (`manifest.json`,
    `SKILL.md`, `references/endpoints.md`, `evals/evals.json`). Offline equivalent:
    `node meta/skill-creator/scripts/new-skill.mjs my-skill`.
-2. **Author** — replace every `TODO`. Wire steps to the catalogue `serviceUrl`
-   (not the provider host); POST params in `body`; `maxAmount` with headroom.
+2. **Author** — replace every `TODO`. Wire steps to the payable `endpoint.url`
+   from `selat search` (not the provider host); POST params in `body`; `maxAmount` with headroom.
 3. **`selat skill validate ./skills/my-skill`** — static SOP check (schema, name ==
    folder, no `TODO`, evals present). Same check CI runs per skill.
 4. **`selat skill verify ./skills/my-skill`** — **the gate.** Probes each step's
@@ -53,7 +53,8 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
 ## Pre-submit checklist
 
 - [ ] Folder, `manifest.name`, `SKILL.md` `name`, `evals` `skill_name` all match (kebab-case).
-- [ ] Every step uses the catalogue `serviceUrl`, not the provider `url`.
+- [ ] Every step uses the payable `endpoint.url` from `selat search`, not the provider URL.
+- [ ] No Apify prepaid-token Actor URLs as steps.
 - [ ] POST/PUT params in `body`; GET params in the query string.
 - [ ] Params have real defaults; `maxAmount` set as a generous filter.
 - [ ] First-party provider chosen over a proxy where equivalent.

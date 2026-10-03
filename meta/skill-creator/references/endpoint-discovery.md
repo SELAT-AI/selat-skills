@@ -1,45 +1,63 @@
 # Finding payable endpoints in the federated catalogue
 
-The federated catalogue merges five sources — **Circle**, **x402 Bazaar**,
-**MPP** (which includes the Orthogonal- and Locus-routed merchants), **Apify**,
-and **SELAT's first-party catalog**. Discover
-with the runtime-integration scripts:
+Discover endpoints with **`selat search`** — the same live, hosted federated
+catalogue that `selat run` ranks at payment time, so the endpoints you wire are
+the ones agents are actually routed to. It is free: no wallet, no spend.
 
 ```bash
-# all services, or filter
-node discover_federated_catalog.mjs --search enrich
-node discover_federated_catalog.mjs --source mpp --json
-node discover_federated_catalog.mjs --payable-now --max-price 0.05
+# ranked shortlist for a capability
+selat search "enrich a person by email" --top 10
+
+# machine-readable: endpoint URL, method, price, payment schemes per result
+selat search "enrich a person by email" --top 10 --json
+
+# why each match is (or isn't) payable right now
+selat search "enrich a person by email" --explain
+
+# re-fetch the catalogue first if you suspect drift
+selat search "enrich a person by email" --refresh
 ```
 
-For raw per-endpoint detail (method, path, price, payment), inspect the MPP
-catalogue cache (`mpp-catalog.json`) — each service lists `endpoints[]` with a
-`payment` block.
+Narrow to a known kind of service with `--capability <name>` (e.g.
+`--capability web.search`). Don't wire endpoints from a stale local catalogue
+dump or a cached registry file — the hosted catalogue is the one `selat run`
+uses.
 
 ## The `serviceUrl` rule (read this twice)
 
-Every catalogue record carries **two** URLs:
+Every catalogue record carries **two** URLs. In `selat search --json` output:
 
 | Field | Example | Use it for |
 |---|---|---|
-| `url` (provider) | `https://api.tomba.io` | documentation only — **NOT payable** |
-| `serviceUrl` (gateway) | `https://mpp.orthogonal.com/tomba` | the endpoint your manifest calls |
+| `service.url` (provider) | `https://api.fiber.ai/` | documentation only — **NOT payable** |
+| `endpoint.url` (payable) | `https://mpp.orthogonal.com/fiber/v1/email-to-person/single` | the `url` your manifest step calls |
 
-The x402/MPP **402 challenge is served only at the `serviceUrl`**. For
+The x402/MPP **402 challenge is served only at the payable host** (the
+catalogue's `serviceUrl`; `endpoint.url` is `serviceUrl` + path). For
 Orthogonal-routed merchants it is `mpp.orthogonal.com/<merchant>`; for Locus,
 `<merchant>.mpp.paywithlocus.com`; for Tempo, `<merchant>.mpp.tempo.xyz`. A direct
 merchant's `serviceUrl` equals its own host.
 
-**Manifest `url` = `serviceUrl` + the endpoint path.** Example:
+**Manifest `url` = `endpoint.url`**, with `${param}` placeholders added to the
+query string (GET) — POST params go in `body`. Example:
 
 ```
-serviceUrl   https://mpp.orthogonal.com/tomba
-path         /v1/enrich
-manifest url https://mpp.orthogonal.com/tomba/v1/enrich?email=${email}
+endpoint.url  https://mpp.orthogonal.com/tomba/v1/enrich
+manifest url  https://mpp.orthogonal.com/tomba/v1/enrich?email=${email}
 ```
 
 Wiring the provider host (`api.tomba.io/v1/enrich`) returns "no x402/MPP
 challenge" and a `down` skill. This is the single most common authoring mistake.
+
+## Endpoints a skill step can't use
+
+- **Apify Actors** (`payments[].scheme` = `prepaid-token`, URL on
+  `api.apify.com`). They are paid by a prepaid token bought once and drawn down,
+  not per call at the Actor URL, so a manifest step that `selat-pay`s the Actor
+  URL won't work. `selat skill verify --pay` skips them. Use a per-call endpoint
+  instead, or leave the capability to `selat run`.
+- **Endpoints with no price in the catalogue** (`priceUnknown: true`) — wire
+  them only after a probe shows a live price you can cap.
 
 ## Confirm an endpoint is live before you wire it
 

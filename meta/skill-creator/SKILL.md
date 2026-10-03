@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires Node.js 18+, the selat CLI, and selat-pay >= 0.7.0 on PATH. Verifying routed skills needs SELAT_ROUTER_URL set; `selat skill verify` (without --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
-  version: "1.1"
+  version: "1.2"
   kind: guidance
 ---
 
@@ -39,13 +39,14 @@ npm run validate                                # 6. whole-repo check (what CI r
 selat skill submit   ./skills/my-skill          # 7. open the PR
 ```
 
-1. **Define + scaffold.** One skill = one coherent capability; pick the **rail**
-   (`direct` Circle nanopayment / `routed` MPP via the SELAT Router / `mixed`).
-   Then `selat skill new <name> --dir skills` writes `skills/<name>/` with
+1. **Define + scaffold.** One skill = one coherent capability. `selat skill new
+   <name> --dir skills` writes `skills/<name>/` with
    `manifest.json`, `SKILL.md`, `references/endpoints.md`, `evals/evals.json`.
    (No CLI handy? `scripts/new-skill.mjs` does the same scaffolding offline.)
-2. **Discover endpoints** in the federated catalogue and record each merchant's
-   **`serviceUrl`** (NOT the descriptive provider `url`), method, path, price.
+2. **Discover endpoints** with `selat search "<capability>" --json` — the live
+   hosted catalogue `selat run` ranks — and record each result's payable
+   **`endpoint.url`** (NOT the descriptive provider `service.url`), method, and
+   price. Skip Apify prepaid-token Actors; a step can't pay them per call.
    See `references/endpoint-discovery.md` — this is where most skills break.
 3. **Enrich each endpoint's schema** — pin the real request shape *before* writing
    any `body`/`${param}`, from a **free** source, because a wrong param name or shape
@@ -62,7 +63,10 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
 4. **Author** — replace every `TODO`:
    - `manifest.json` — `name` (== folder), `maxAmount` (cap *with
      headroom*, a filter not a price), `params` (real defaults), `steps[]` with
-     `url` = `serviceUrl` + path, `${param}` substitution, `body` for POST.
+     `url` = the payable `endpoint.url`, `${param}` substitution, `body` for POST.
+     Each step's `rail` is a descriptive label — set it from the `mode` that
+     `verify` reports, since the actual payment mode is detected from the live
+     402 at run time, not read from the manifest.
    - `SKILL.md` — frontmatter + sections (When To Use, Workflow, Inputs And
      Outputs, Gotchas, Validation, References). No `TODO` may remain.
    - `references/endpoints.md` and `evals/evals.json` (`skill_name` == folder).
@@ -81,6 +85,10 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
    `index.json` entry, pushes, and opens a PR with the receipt as provenance. No
    write access? It prints fork-and-PR commands. A maintainer paid-re-verifies
    before merge.
+10. **After merge:** a scheduled CI job re-probes every skill (free) and records
+   its status in `reliability.json` (`ok` / `degraded` / `down`), which
+   `selat skill list --available` shows as a badge. A step that stops being
+   served turns the skill `degraded` — fix or drop it.
 
 ## Authoring Voice
 
@@ -106,7 +114,7 @@ user. Author for that split:
 | Input | What you provide |
 |---|---|
 | Capability | The one task the skill performs |
-| Endpoints | Catalogue `serviceUrl` + path + method + price per step |
+| Endpoints | Payable `endpoint.url` + method + price per step, from `selat search` |
 | Params | Named inputs with sensible defaults |
 
 Output: a skill that passes `validate`, has a passing `verify` receipt, and is
@@ -114,10 +122,14 @@ ready for `submit`.
 
 ## Gotchas
 
-- **Wire steps to the catalogue `serviceUrl`, NOT the provider `url`.** A record
-  has a *descriptive* `url` (`https://api.tomba.io`) and a *payable* `serviceUrl`
-  (`https://mpp.orthogonal.com/tomba`). The 402 is served only at the `serviceUrl`;
-  the provider host yields "no challenge" and a failed verify.
+- **Wire steps to the payable URL, NOT the provider URL.** A record has a
+  *descriptive* provider URL (`service.url`, e.g. `https://api.tomba.io`) and a
+  *payable* one (`endpoint.url`, on the catalogue `serviceUrl` host, e.g.
+  `https://mpp.orthogonal.com/tomba/...`). The 402 is served only at the payable
+  host; the provider host yields "no challenge" and a failed verify.
+- **Discover from `selat search`, not a cached catalogue file.** It reads the same
+  hosted catalogue `selat run` ranks; a stale local dump wires endpoints agents
+  are no longer routed to.
 - **POST/PUT params go in `body`, not the query string** — a POST with `?k=v`
   often returns no challenge.
 - **`maxAmount` is a spending filter, not the price.** Set it with headroom over
@@ -171,7 +183,7 @@ does not declare one.
 
 - [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — repo-level quick reference that points back to this skill.
 - `references/manifest-reference.md` — `selat-skill/v1` manifest schema, params, rails, examples.
-- `references/endpoint-discovery.md` — finding endpoints in the catalogue and the `serviceUrl` rule.
+- `references/endpoint-discovery.md` — finding endpoints with `selat search` and the `serviceUrl` rule.
 - `references/schema-enrichment.md` — pinning each endpoint's request schema from OpenAPI / the 402 `bazaar` extension / upstream docs, and verifying it against the live API.
 - `references/submission-checklist.md` — the `selat skill` command sequence + pre-PR checklist.
 - [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — the authoring standard.
