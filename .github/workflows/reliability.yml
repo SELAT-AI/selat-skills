@@ -33,7 +33,7 @@ jobs:
           node-version: "22"
 
       - name: Install selat-pay
-        run: npm install -g @selat-ai/selat-pay@^0.3.2
+        run: npm install -g @selat-ai/selat-pay@^0.12.0
 
       - name: Probe skills
         env:
