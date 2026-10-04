@@ -136,6 +136,12 @@ budget you arm with `selat budget start`.
 
 ## Gotchas
 
+- **A found email can be a pattern guess.** On accept-all (catch-all) domains,
+  Hunter's email finder returns `source_type: "generated"` (built from the
+  domain's email pattern, with no published source) yet still marks it
+  `verification.status: "valid"`. If `source_type` is `generated` or
+  `accept_all` is true, report the address as an unconfirmed pattern guess, not
+  a verified contact.
 - **Fixed pipeline, not a menu.** `selat skill run` has no step selector and
   executes all 12 manifest entries every time. Do not promise that irrelevant
   or expensive steps will be skipped.

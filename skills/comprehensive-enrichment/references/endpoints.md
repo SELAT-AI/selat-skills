@@ -68,6 +68,14 @@ quoted `$0.10815`), so `limit: 10` is a fixed numeric literal.
 { "domain": "stripe.com", "limit": 10 }
 ```
 
+
+**Paid smoke (2026-10-04):** paid `email-finder` and `domain-search` calls
+through the router both returned 200 with real data ($0.01365 each), so the
+transactability index's 0% readings (last 502s, Aug 12–14) were stale, not
+current. On an accept-all domain, the finder returned `source_type: "generated"`
+with `verification.status: "valid"`: a pattern guess, not a published address.
+`email-enrichment` has not been re-tested since its August 502s.
+
 ## Clado contacts — `MPP on Tempo`
 
 serviceUrl: `https://clado.mpp.paywithlocus.com`
