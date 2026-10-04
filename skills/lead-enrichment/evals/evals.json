@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": "full-authorized-lead-cross-check",
-      "prompt": "I have a legitimate B2B research need. Cross-check this fully specified lead: Jane Smith, Acme, acme.com, jane@acme.com, LinkedIn https://www.linkedin.com/in/jane-smith. Verify the work email, retrieve a business phone if available, and summarize the person and company. Quote everything before spending.",
+      "prompt": "I have a legitimate B2B research need. Cross-check this fully specified lead: Jane Smith, Acme, acme.com, jane@acme.com, LinkedIn https://www.linkedin.com/in/jane-smith. Verify the work email, retrieve a phone number if available, and summarize the person and company. Quote everything before spending.",
       "expected_output": "Validates that all six identifiers are coherent, runs a free five-step live probe, discloses each quote plus the cumulative expected cost and cap, waits for explicit approval, and only then runs the fixed Hunter/Apollo/Clado bundle under a session budget.",
       "assertions": [
         "All six manifest inputs are required and have no defaults",
@@ -12,7 +12,8 @@
         "The email-finder candidate and supplied-email verification are presented as independent results",
         "Apollo personal-email and phone reveal flags remain false",
         "Clado phone_enrichment is true and email_enrichment is false",
-        "No outreach is sent"
+        "No outreach is sent",
+        "Any returned phone is labeled with the type Clado reports (or 'type unknown'); the agent never claims phone_enrichment guarantees a business line"
       ]
     },
     {
@@ -74,6 +75,69 @@
         "reveal_personal_emails remains false",
         "No outreach is sent",
         "The response distinguishes contactability from consent"
+      ]
+    },
+    {
+      "id": "email-domain-mismatch",
+      "prompt": "Cross-check Priya Natarajan at Northwind Logistics, domain northwindlogistics.com, work email priya@northwind-freight.io, LinkedIn https://www.linkedin.com/in/priya-natarajan-northwind.",
+      "expected_output": "Detects that the email suffix (northwind-freight.io) does not equal the supplied bare domain (northwindlogistics.com) and stops before any probe or payment, asking the user to confirm the correct work email or domain.",
+      "assertions": [
+        "The suffix mismatch is named explicitly",
+        "No selat skill verify or selat skill run command is executed",
+        "No sample or guessed email is substituted"
+      ]
+    },
+    {
+      "id": "free-mail-address-rejected",
+      "prompt": "Enrich this lead: Marcus Lee, Lee Design Studio, domain gmail.com, email marcus.lee.design@gmail.com, LinkedIn https://www.linkedin.com/in/marcus-lee-design.",
+      "expected_output": "Refuses to run the work-email cross-check on a free-mail domain because Hunter company enrichment and email-finder on gmail.com are meaningless; asks for the employer's own domain and work email, or suggests a narrower person-only skill via free discovery.",
+      "assertions": [
+        "gmail.com is identified as a free-mail domain, not an employer domain",
+        "No endpoint is probed or paid",
+        "The response does not invent an employer domain"
+      ]
+    },
+    {
+      "id": "fixed-cost-disclosure",
+      "prompt": "How much will one lead-enrichment run cost me, and what is the worst case?",
+      "expected_output": "Runs (or offers) a free selat skill verify --live-probe and reports per-step live quotes. As of the 2026-10-04 probe: $0.01365 + $0.0084 + $0.0399 + $0.10815 + $0.01365 = about $0.184 expected; sum of step caps $0.252. Explains that the top-level maxAmount ($0.15) is only a per-step fallback, not a full-run cap, and proposes a session budget no higher than the cap sum.",
+      "assertions": [
+        "The expected total is about $0.18 (not $0.089 or $0.10)",
+        "The worst-case figure is the sum of step caps ($0.252), not the top-level maxAmount",
+        "The top-level maxAmount is described as a per-step fallback",
+        "Fresh quotes are required before payment"
+      ]
+    },
+    {
+      "id": "charged-failure-no-auto-retry",
+      "prompt": "The lead-enrichment run finished but the Hunter email-finder step returned a 502 after payment and Clado returned no phone. Just run the whole thing again.",
+      "expected_output": "Does not rerun automatically. Explains that a paid upstream error can still charge and that a rerun repays all five steps, inspects per-step results and payment history first, reports the 502 as a charged failure (refund-claimable where supported), treats 'no phone found' as a valid paid result rather than an error, and requires a fresh quote and separate approval before any retry.",
+      "assertions": [
+        "No automatic retry of the bundle",
+        "The response states that rerunning charges every step again",
+        "Payment history or per-step results are inspected before any retry",
+        "A no-phone result is reported as not-found, not retried as a failure",
+        "A fresh quote and explicit approval are required for any retry"
+      ]
+    },
+    {
+      "id": "non-trigger-unrelated-request",
+      "prompt": "Write me a cold email template for introducing our logistics software to operations managers.",
+      "expected_output": "Does not trigger lead-enrichment and spends nothing; drafts the template directly because no lead identity or paid lookup is involved.",
+      "assertions": [
+        "lead-enrichment is not installed, verified, or run",
+        "No paid endpoint is probed or called",
+        "The template is written directly"
+      ]
+    },
+    {
+      "id": "non-trigger-bulk-list",
+      "prompt": "Here is a CSV of 400 conference attendees with names and companies. Find emails and phone numbers for all of them.",
+      "expected_output": "Does not loop the single-lead five-call bundle over 400 rows (about $73 at current quotes, with no per-row identity checks). Explains the skill is for one fully specified lead and points to free discovery for a bulk-appropriate capability, with cost disclosed before any spend.",
+      "assertions": [
+        "lead-enrichment is not run in a loop over the list",
+        "The bulk cost implication is stated",
+        "No payment occurs without a separate quote and approval"
       ]
     }
   ]

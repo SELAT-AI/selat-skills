@@ -50,7 +50,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.015"
+      "maxAmount": "0.012"
     },
     {
       "label": "professional identity cross-check — Apollo people enrichment (MPP on Tempo)",
@@ -70,7 +70,7 @@
       "maxAmount": "0.05"
     },
     {
-      "label": "business-phone enrichment — Clado contacts (MPP on Tempo)",
+      "label": "phone enrichment — Clado contacts (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
