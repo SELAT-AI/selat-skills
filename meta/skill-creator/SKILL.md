@@ -2,7 +2,7 @@
 name: skill-creator
 description: Use this skill when a contributor wants to build, author, scaffold, verify, or submit a new skill to the SELAT skill hub (selat-skills) — e.g. "create a skill", "build a selat skill", "add a skill to the hub", "contribute a skill", "how do I write a manifest.json", "verify my skill", "submit my skill", "wrap an MPP endpoint as a skill". Guides you through the official `selat skill` flow (new → author → validate → verify → register → submit) and encodes the gotchas that make a skill actually pay.
 license: Apache-2.0
-compatibility: Requires Node.js 18+, the selat CLI, and selat-pay >= 0.7.0 on PATH. Verifying routed skills needs SELAT_ROUTER_URL set; `selat skill verify` (without --pay) is free and needs no funded wallet.
+compatibility: Requires Node.js 18+, the selat CLI, and selat-pay >= 0.12.0 on PATH. Verifying routed skills needs SELAT_ROUTER_URL set; `selat skill verify --live-probe` (without --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.2"
@@ -33,8 +33,8 @@ The whole loop (matches `CONTRIBUTING.md`):
 selat skill new my-skill --dir skills           # 1. scaffold
 #   …edit the files (replace every TODO)…        # 2. author
 selat skill validate ./skills/my-skill          # 3. static SOP check
-selat skill verify   ./skills/my-skill [--pay]  # 4. live-402 check (THE GATE)
-selat skill register ./skills/my-skill          # 5. add index.json entry
+selat skill verify   ./skills/my-skill --live-probe [--pay]  # 4. live-402 check (THE GATE)
+npm run catalog                                 # 5. regenerate index.json + README table
 npm run validate                                # 6. whole-repo check (what CI runs)
 selat skill submit   ./skills/my-skill          # 7. open the PR
 ```
@@ -71,14 +71,14 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
      Outputs, Gotchas, Validation, References). No `TODO` may remain.
    - `references/endpoints.md` and `evals/evals.json` (`skill_name` == folder).
 5. **Validate (static):** `selat skill validate ./skills/<name>`.
-6. **Verify (the gate):** `selat skill verify ./skills/<name>` probes each step's
+6. **Verify (the gate):** `selat skill verify ./skills/<name> --live-probe` probes each step's
    real 402 price/rail (free) and checks it ≤ `maxAmount`; `--pay` makes a capped
    real call to confirm it settles 200. Pass required params as flags. This writes
    `skills/<name>/.selat/verify-receipt.json` — the provenance `submit` attaches to
    the PR and that **gates merge**. Fix any step that's unreachable or over cap;
    prefer **first-party** providers over proxies.
-7. **Register:** `selat skill register ./skills/<name>` auto-adds/updates the
-   `index.json` entry from the manifest.
+7. **Register:** `npm run catalog` regenerates `index.json` and the README skills
+   table from the manifests. Never hand-edit either file.
 8. **Whole-repo check:** `npm run validate` (exactly what CI runs).
 9. **Submit:** `selat skill submit ./skills/<name>` (use `--dry-run` first). It
    requires a passing verify receipt, then branches, commits `skills/<name>` + the
@@ -161,7 +161,7 @@ ready for `submit`.
 Before `submit`, all must hold:
 
 - `selat skill validate ./skills/<name>` → passes (also the per-skill CI check).
-- `selat skill verify ./skills/<name>` → every step reachable and ≤ `maxAmount`
+- `selat skill verify ./skills/<name> --live-probe` → every step reachable and ≤ `maxAmount`
   (writes the verify receipt). `--pay` confirms a real settled 200.
 - `npm run validate` → 0 errors (whole-repo + `index.json` consistency).
 - No `TODO`, secrets, or `orth`/CLI/`subprocess` calls — the skill is declarative.
@@ -170,7 +170,7 @@ Underlying free single-step probe (what `verify` runs per step):
 
 ```bash
 selat-pay POST "https://mpp.orthogonal.com/<merchant>/<path>" \
-  --body '{"<param>":"<value>"}' --chain base --probe-only
+  --body '{"<param>":"<value>"}' --chain base --probe-only --live-probe
 # success prints: detected mpp=yes, mode=routed-mpp, price=$X on eip155:8453
 ```
 
