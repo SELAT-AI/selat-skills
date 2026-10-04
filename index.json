@@ -35,7 +35,7 @@
       "name": "find-twitter-influencers",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the company (Apollo org search, Orthogonal Company Enrich), discovers curated listicles (Exa), pulls Twitter profiles and engagement (SELAT-native, Circle x402 catalog), and enriches contacts (Hunter, Clado contacts). Mixed rail: most steps are MPP-via the SELAT Router; the SELAT-native Twitter steps are x402 on Base calls via the SELAT Router."
+      "description": "Fixed five-call, read-only Twitter/X influencer discovery bundle for one company and niche. Cross-checks brand context, curated web roundups, Twitter user search, and live topic chatter; it returns candidate evidence for agent-side deduplication and ranking without purchasing contact data."
     },
     {
       "name": "gtm-enrichment-deep",

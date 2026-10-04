@@ -71,7 +71,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Fixed six-call, read-only email-campaign preparation pipeline. |
 | [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Fixed 17-call, read-only person and company enrichment bundle across Apollo, Hunter, Scrape Creators… |
 | [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and… |
-| [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Discover, score, and enrich Twitter/X influencers for a company or niche. |
+| [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Fixed five-call, read-only Twitter/X influencer discovery bundle for one company and niche. |
 | [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Fixed three-call, read-only GTM enrichment bundle for one known business lead. |
 | [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | MPP on Tempo | multi | Fixed three-call, read-only B2B lead qualification bundle. |
 | [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Multi-source lead enrichment, fully through the SELAT Router (MPP). |
