@@ -70,7 +70,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Comprehensive person + company enrichment across many MPP on Tempo data providers (Apollo, Hunter, Clado… |
 | [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Build verified outreach lists: find target companies, pull domain emails, find a specific person's email… |
 | [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the… |
-| [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token… |
+| [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and… |
 | [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Discover, score, and enrich Twitter/X influencers for a company or niche. |
 | [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM lead enrichment from an email (+ optional name). |
 | [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step… |
