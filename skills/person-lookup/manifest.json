@@ -1,8 +1,8 @@
 {
   "schema": "selat-skill/v1",
   "name": "person-lookup",
-  "description": "Read-only, company-filtered public professional lookup via one bounded five-result Clado people search through the SELAT Router over MPP on Tempo. Requires a full name and known current company; it does not request private contact data or send outreach.",
-  "maxAmount": "0.070",
+  "description": "Read-only public professional lookup for one named person at a known company via one bounded five-result Apollo people-search through the SELAT Router over MPP on Tempo. Requires a full name and current company; it does not request private contact data or send outreach.",
+  "maxAmount": "0.0075",
   "params": {
     "name": {
       "required": true,
@@ -10,25 +10,21 @@
     },
     "company": {
       "required": true,
-      "description": "Known current employer or organization used to disambiguate the person."
+      "description": "Known current employer or organization, added to the search keywords to disambiguate the person."
     }
   },
   "steps": [
     {
-      "label": "five-result public professional search — Clado (MPP on Tempo)",
+      "label": "five-result public professional search — Apollo people-search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/search",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
       "body": {
-        "query": "${name} ${company}",
-        "companies": [
-          "${company}"
-        ],
-        "limit": 5,
-        "offset": 0,
-        "advanced_filtering": true
+        "q_keywords": "${name} ${company}",
+        "per_page": 5,
+        "page": 1
       },
-      "maxAmount": "0.070"
+      "maxAmount": "0.0075"
     }
   ]
 }

@@ -23,7 +23,7 @@
       "name": "person-lookup",
       "rail": "MPP on Tempo",
       "kind": "single",
-      "description": "Read-only, company-filtered public professional lookup via one bounded five-result Clado people search. Requires a full name and known current company, returns candidates for transparent disambiguation, and does not request private contact data or send outreach."
+      "description": "Read-only public professional lookup via one bounded five-result Apollo people-search (name + company keywords). Requires a full name and known current company, returns candidates for transparent disambiguation, and does not request private contact data or send outreach. Paid per call via MPP on Tempo."
     },
     {
       "name": "gtm-enrichment-smart",

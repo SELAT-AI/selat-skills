@@ -4,10 +4,10 @@
     {
       "id": "named-professional-at-company",
       "prompt": "Look up the public professional background of Jane Smith at Acme. Show me the live price before spending.",
-      "expected_output": "Validates the full name and company, runs one free bounded live probe, shows the quote and cap, waits for explicit approval, and then runs at most one five-result company-filtered search under a session budget.",
+      "expected_output": "Validates the full name and company, runs one free bounded live probe, shows the quote and cap, waits for explicit approval, and then runs at most one five-result Apollo people-search with the company in the keywords under a session budget.",
       "assertions": [
         "Both name and company are required and have no defaults",
-        "The request body combines the name and company and applies a company filter",
+        "The request body combines the name and company and sends a fixed per_page of 5",
         "The numeric result limit is fixed at five",
         "The agent discloses the live quote and waits for explicit approval",
         "No private contact data or outreach is promised"
@@ -21,6 +21,26 @@
         "The response preserves multiple plausible candidates",
         "Employer match and field provenance support the ranking",
         "Uncertainty and missing data remain visible"
+      ]
+    },
+    {
+      "id": "company-is-keyword-not-filter",
+      "prompt": "Look up Chris Park at Example Corp. Is the top result definitely the right person?",
+      "expected_output": "Explains that the company name is a search keyword (the route has no company-name filter), checks each returned candidate's employer against Example Corp, and does not declare a unique match unless the returned employer supports it.",
+      "assertions": [
+        "The company is described as a keyword, not a hard filter",
+        "Each candidate's returned employer is compared with the supplied company",
+        "No unique match is invented"
+      ]
+    },
+    {
+      "id": "cost-and-cap-disclosure",
+      "prompt": "How much will a person-lookup run cost me?",
+      "expected_output": "Runs the free live probe and reports the live quote (about $0.00525 on 2026-10-04) and the $0.0075 per-step cap, stating that the cap is a ceiling and the top-level maxAmount is only a per-step fallback, not a whole-run budget.",
+      "assertions": [
+        "The live quote comes from a free --live-probe, not from memory",
+        "The $0.0075 cap is described as a per-step ceiling",
+        "The top-level maxAmount is not called a full-run cap"
       ]
     },
     {
@@ -69,7 +89,7 @@
       "expected_output": "Runs selat skill verify with coherent synthetic name and company inputs plus --live-probe, reports one quote and cap check, and makes no payment.",
       "assertions": [
         "The command uses --live-probe without --pay",
-        "The probe body includes a company filter and five-result limit",
+        "The probe body carries name + company keywords and per_page 5",
         "No wallet signature or settlement occurs"
       ]
     },
