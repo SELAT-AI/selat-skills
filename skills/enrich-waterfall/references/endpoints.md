@@ -86,6 +86,14 @@ email-verifier `$0.0084`. All endpoints are **POST with a JSON body**.
 { "domain": "stripe.com", "first_name": "Patrick", "last_name": "Collison" }
 ```
 
+
+**Paid smoke (2026-10-04):** paid `email-finder` and `domain-search` calls
+through the router both returned 200 with real data ($0.01365 each), so the
+transactability index's 0% readings (last 502s, Aug 12–14) were stale, not
+current. On an accept-all domain, the finder returned `source_type: "generated"`
+with `verification.status: "valid"`: a pattern guess, not a published address.
+`email-enrichment` has not been re-tested since its August 502s.
+
 ## Scrape Creators LinkedIn — `MPP on Tempo`
 
 serviceUrl: `https://mpp.orthogonal.com/scrapecreators`
