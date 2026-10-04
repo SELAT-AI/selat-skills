@@ -1,6 +1,6 @@
 ---
 name: email-campaign
-description: Use this skill for one fixed, read-only email-campaign preparation bundle when the user has a complete target with a supported industry, company domain and name, target person's first and last name, and a matching known work email. Triggers on "prepare an outreach research bundle", "build a verified campaign seed list around this lead", or "cross-check this work email and company before outreach". It discovers 10 similar-size industry companies, retrieves domain email patterns, finds and verifies the target email, enriches the person, and adds company context. It does not draft or send email. The CLI runs all six paid MPP steps; verification-only, discovery-only, and subset requests should use a smaller workflow.
+description: Use this skill for one fixed, read-only email-campaign preparation bundle when the user has a complete target with a supported industry, company domain and name, target person's first and last name, and a matching known work email. Triggers on "prepare an outreach research bundle", "build a verified campaign seed list around this lead", or "cross-check this work email and company before outreach". It discovers 10 similar-size industry companies, retrieves domain email patterns, infers the target's email from name and domain, separately verifies the supplied email, enriches the person, and adds company context. It does not draft or send email. The CLI runs all six paid MPP steps; verification-only, discovery-only, and subset requests should use a smaller workflow.
 license: Apache-2.0
 compatibility: Requires the selat CLI and selat-pay with a funded Circle Agent Wallet for paid runs. All six steps settle through the SELAT Router over MPP on Tempo. `selat skill verify --live-probe` is free and needs no funded wallet.
 metadata:
@@ -133,11 +133,16 @@ Return a source-labelled preparation report, not a raw-data dump:
 - **Pagination is not in this skill.** A continuation needs the first response's
   `billing.requestId` as `parentRequestId` with unchanged filters. Handle that as
   a separately reviewed operation.
-- **Per-step caps are not cumulative.** The manifest limits individual calls;
-  the separately armed session budget is the run-wide ceiling.
-- **Live quote is authoritative.** Preliminary free probes on 2026-08-29 quoted
-  approximately $0.392962 for all six corrected calls. Re-probe before every
-  approval because prices can change.
+- **Per-step caps are not cumulative.** Every step sets its own `maxAmount`
+  (about 1.4–1.6x its live quote). The top-level `maxAmount` (`$0.30`) is only
+  the fallback for a step that declares no cap — it is **not** a full-run cap.
+  The separately armed session budget is the only run-wide ceiling.
+- **Live quote is authoritative.** Free live probes on 2026-10-04 quoted
+  Fiber $0.21 + Hunter domain-search $0.01365 + email-finder $0.01365 +
+  email-verifier $0.0084 + Apollo $0.0399 + Company Enrich $0.012862 ≈
+  **$0.298** for all six calls (sum of per-step caps $0.432). Fiber prices by
+  result count, so it dominates the total. Re-probe before every approval
+  because prices can change.
 - **Paid failure can still cost money.** The runner continues to later steps by
   default. Never retry a charged failure without a fresh quote and approval.
 - **Deliverability is not permission.** A technically valid address does not
@@ -159,8 +164,10 @@ separate approval and an armed session budget.
 
 Useful single-endpoint probes while debugging (free; never settle):
 
-- `selat-pay POST "https://mpp.orthogonal.com/fiber/v1/company-search" --body '{"searchParams":{"industriesV2":{"anyOf":["Software"]},"employeeCountV2":{"lowerBoundExclusive":50,"upperBoundInclusive":500}},"pageSize":10}' --chain base --max-amount 0.25 --probe-only --live-probe`
-- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --max-amount 0.015 --probe-only --live-probe`
+> `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
+- `selat-pay POST "https://mpp.orthogonal.com/fiber/v1/company-search" --body '{"searchParams":{"industriesV2":{"anyOf":["Software"]},"employeeCountV2":{"lowerBoundExclusive":50,"upperBoundInclusive":500}},"pageSize":10}' --chain base --max-amount 0.30 --probe-only --live-probe`
+- `selat-pay POST "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" --body '{"email":"john@stripe.com"}' --chain base --max-amount 0.012 --probe-only --live-probe`
 - `selat-pay GET "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com" --chain base --max-amount 0.02 --probe-only --live-probe`
 
 ## References

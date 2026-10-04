@@ -47,7 +47,7 @@
       "name": "email-campaign",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Fixed six-call, read-only email-campaign preparation pipeline. Discovers 10 companies by industry and 50-500 employee size, retrieves domain-level email patterns, finds and verifies one known target's work email, enriches that person, and adds company firmographics. Requires a complete, internally consistent target. It does not draft or send email. All calls settle through the SELAT Router over MPP on Tempo."
+      "description": "Fixed six-call, read-only email-campaign preparation pipeline. Discovers 10 companies by industry and 50-500 employee size (Fiber), retrieves domain-level email patterns and infers one named target's work email (Hunter), separately verifies the supplied work email (Hunter), enriches that person (Apollo), and adds company firmographics (Company Enrich). Requires a complete, internally consistent target. It does not draft or send email. All calls settle through the SELAT Router over MPP on Tempo."
     },
     {
       "name": "recent-funding-rounds",
