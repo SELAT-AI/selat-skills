@@ -1,8 +1,8 @@
 {
   "schema": "selat-skill/v1",
   "name": "enrich-waterfall",
-  "description": "Fixed 18-call, read-only person and company enrichment bundle across Apollo, Hunter, Clado, Company Enrich, Brave Search, Diffbot KG, and SELAT-native X/Twitter. Requires a complete, coherent target; every step runs independently. Uses MPP on Tempo and x402 through the SELAT Router.",
-  "maxAmount": "0.20",
+  "description": "Fixed 17-call, read-only person and company enrichment bundle across Apollo, Hunter, Scrape Creators (LinkedIn), Company Enrich, Brave Search, Diffbot KG, Clado contacts, and SELAT-native X/Twitter. Requires a complete, coherent target; every step runs independently — no conditional waterfall. Uses MPP on Tempo and x402 through the SELAT Router.",
+  "maxAmount": "0.06",
   "params": {
     "email": {
       "required": true,
@@ -18,7 +18,7 @@
     },
     "domain": {
       "required": true,
-      "description": "Bare employer/company domain, e.g. stripe.com, matching company and email."
+      "description": "Bare employer/company domain, e.g. stripe.com, matching company and email; also filters the Apollo people-search."
     },
     "company": {
       "required": true,
@@ -26,7 +26,7 @@
     },
     "linkedinUrl": {
       "required": true,
-      "description": "LinkedIn person-profile URL for the same target, used by Clado profile, scrape, and contact enrichment."
+      "description": "LinkedIn person-profile URL for the same target, used by Apollo people enrichment, the Scrape Creators profile read, and Clado contact enrichment."
     },
     "organizationId": {
       "required": true,
@@ -49,10 +49,11 @@
         "last_name": "${lastName}",
         "organization_name": "${company}",
         "domain": "${domain}",
-        "linkedin_url": "${linkedinUrl}"
+        "linkedin_url": "${linkedinUrl}",
+        "reveal_personal_emails": false,
+        "reveal_phone_number": false
       },
-      "maxAmount": "0.05",
-      "tier": "person"
+      "maxAmount": "0.06"
     },
     {
       "label": "person by supplied email — Hunter email enrichment (MPP on Tempo)",
@@ -62,19 +63,14 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.02",
-      "tier": "person"
+      "maxAmount": "0.02"
     },
     {
-      "label": "person by supplied LinkedIn URL — Clado LinkedIn profile (MPP on Tempo)",
+      "label": "person by supplied LinkedIn URL — Scrape Creators LinkedIn profile (MPP on Tempo)",
       "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/linkedin-profile",
-      "body": {
-        "linkedin_url": "${linkedinUrl}"
-      },
-      "maxAmount": "0.02",
-      "tier": "person"
+      "method": "GET",
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}",
+      "maxAmount": "0.03"
     },
     {
       "label": "person plus company by supplied email — Hunter combined enrichment (MPP on Tempo)",
@@ -84,11 +80,10 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.03",
-      "tier": "person"
+      "maxAmount": "0.035"
     },
     {
-      "label": "company search by supplied name — Apollo org search (MPP on Tempo)",
+      "label": "company search by supplied name, 5 results — Apollo org search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
@@ -97,16 +92,14 @@
         "per_page": 5,
         "page": 1
       },
-      "maxAmount": "0.01",
-      "tier": "company"
+      "maxAmount": "0.06"
     },
     {
       "label": "company profile by supplied domain — Company Enrich (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "GET",
       "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
-      "maxAmount": "0.02",
-      "tier": "company"
+      "maxAmount": "0.02"
     },
     {
       "label": "company tech and headcount — Apollo org enrichment (MPP on Tempo)",
@@ -116,8 +109,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.05",
-      "tier": "company"
+      "maxAmount": "0.06"
     },
     {
       "label": "company cross-check — Hunter company enrichment (MPP on Tempo)",
@@ -127,8 +119,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.02",
-      "tier": "company"
+      "maxAmount": "0.02"
     },
     {
       "label": "find target work email — Hunter email finder (MPP on Tempo)",
@@ -140,38 +131,26 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "0.02",
-      "tier": "person"
+      "maxAmount": "0.02"
     },
     {
-      "label": "X/Twitter profile by supplied handle — SELAT user info (x402 through Router)",
+      "label": "X/Twitter profile by supplied handle — SELAT user info (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/info?userName=${xHandle}",
-      "maxAmount": "0.002",
-      "tier": "social"
+      "maxAmount": "0.0015"
     },
     {
-      "label": "LinkedIn profile detail — Clado scrape (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/scrape",
-      "body": {
-        "linkedin_url": "${linkedinUrl}"
-      },
-      "maxAmount": "0.03",
-      "tier": "social"
-    },
-    {
-      "label": "job openings by supplied Apollo organization ID (MPP on Tempo)",
+      "label": "job openings (10) by supplied Apollo organization ID — Apollo job postings (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/job-postings",
       "body": {
-        "organization_id": "${organizationId}"
+        "organization_id": "${organizationId}",
+        "per_page": 10,
+        "page": 1
       },
-      "maxAmount": "0.01",
-      "tier": "signals"
+      "maxAmount": "0.06"
     },
     {
       "label": "recent company news — Brave news search (MPP on Tempo)",
@@ -183,8 +162,7 @@
         "count": 10,
         "freshness": "pm"
       },
-      "maxAmount": "0.05",
-      "tier": "signals"
+      "maxAmount": "0.05"
     },
     {
       "label": "recent funding news — Brave news search (MPP on Tempo)",
@@ -196,8 +174,7 @@
         "count": 10,
         "freshness": "py"
       },
-      "maxAmount": "0.05",
-      "tier": "signals"
+      "maxAmount": "0.05"
     },
     {
       "label": "organization knowledge graph — Diffbot KG enhance (MPP on Tempo)",
@@ -215,8 +192,7 @@
         "refresh": false,
         "size": 1
       },
-      "maxAmount": "0.05",
-      "tier": "signals"
+      "maxAmount": "0.05"
     },
     {
       "label": "contact email and phone reveal — Clado contacts (MPP on Tempo)",
@@ -228,24 +204,22 @@
         "email_enrichment": true,
         "phone_enrichment": true
       },
-      "maxAmount": "0.20",
-      "tier": "contact"
+      "maxAmount": "0.20"
     },
     {
-      "label": "five-result person identity search — Clado search (MPP on Tempo)",
+      "label": "five-result person identity search filtered to the supplied domain — Apollo people-search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/search",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
       "body": {
-        "query": "${firstName} ${lastName} ${company}",
-        "companies": [
-          "${company}"
+        "q_keywords": "${firstName} ${lastName}",
+        "q_organization_domains_list": [
+          "${domain}"
         ],
-        "limit": 5,
-        "offset": 0
+        "per_page": 5,
+        "page": 1
       },
-      "maxAmount": "0.06",
-      "tier": "person"
+      "maxAmount": "0.0075"
     },
     {
       "label": "verify supplied work email — Hunter email verifier (MPP on Tempo)",
@@ -255,8 +229,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.015",
-      "tier": "verify"
+      "maxAmount": "0.0125"
     }
   ]
 }

@@ -5,7 +5,7 @@
       "name": "enrich-waterfall",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Fixed 18-call, read-only person and company enrichment bundle across Apollo, Hunter, Clado, Company Enrich, Brave Search, Diffbot KG, and SELAT-native X/Twitter. Requires eight coherent target identifiers; every step runs independently through the SELAT Router over MPP or x402."
+      "description": "Fixed 17-call, read-only person and company enrichment bundle across Apollo, Hunter, Scrape Creators (LinkedIn), Company Enrich, Brave Search, Diffbot KG, Clado contacts, and SELAT-native X/Twitter. Requires eight coherent target identifiers; every step runs on every run (no conditional waterfall) through the SELAT Router over MPP or x402."
     },
     {
       "name": "comprehensive-enrichment",
