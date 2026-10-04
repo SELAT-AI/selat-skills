@@ -83,7 +83,7 @@
       "name": "scrapecreators",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle Gateway), StableSocial (Instagram + TikTok — MPP, via the SELAT Router), and Scrape Creators (LinkedIn — MPP on Tempo): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI."
+      "description": "Fixed 11-call, read-only public social-media research bundle for one coherent target: Twitter/X profile, recent posts, and one supplied tweet; LinkedIn person, post, and company pages; Instagram profile and recent posts; and TikTok profile, hashtag results, and a regional trending feed. Twitter calls use SELAT-native x402; the remaining calls use synchronous Scrape Creators endpoints over MPP. Every call is paid independently through the SELAT Router."
     },
     {
       "name": "self-evolving-agent",
