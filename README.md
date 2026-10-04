@@ -80,7 +80,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | One bounded, read-only Brave News Search for recently published startup-funding coverage. |
 | [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Fixed five-read, read-only B2B prospecting bundle: bounded ICP company search, bounded professional search at… |
 | [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Fixed 11-call, read-only public social-media research bundle for one coherent target: Twitter/X profile… |
-| [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability… |
+| [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Fixed three-call, read-only economic-agent preflight: retrieve a broad crypto KOL sentiment report, market… |
 | [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches… |
 | [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings… |
 | [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit: 9 SELAT-native (catalog.selat.ai) GET reads covering account reads… |

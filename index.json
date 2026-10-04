@@ -89,7 +89,7 @@
       "name": "self-evolving-agent",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability signals before infrastructure, monetization, or trading decisions."
+      "description": "Fixed three-call, read-only economic-agent preflight: retrieve a broad crypto KOL sentiment report, market data for one explicit Hyperliquid asset, and availability/price context for one explicit domain candidate. Every step is paid independently through the SELAT Router; the skill does not create identity, buy infrastructure, fund wallets, or place trades."
     },
     {
       "name": "social-intel",

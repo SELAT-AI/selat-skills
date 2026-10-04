@@ -1,37 +1,47 @@
 # Verification status
 
-Checked on 2026-06-30.
+Last checked 2026-10-04 with free live probes (`selat-pay --probe-only
+--live-probe`). Nothing was signed or paid.
 
 ## Static Validation
 
-`selat skill validate skills/self-evolving-agent` passes.
+`selat skill validate ./skills/self-evolving-agent` passes, as does the
+repository-wide `node scripts/validate-skills.mjs` gate.
 
 ## Live 402 Verification
 
-The current manifest is an unpaid intelligence preflight for the budgeted
-economic-agent definition. It probes social sentiment, market context, and domain
-availability before any infrastructure purchase or trading step.
-
-Current manifest endpoints:
+The manifest is a fixed three-call, read-only preflight:
 
 - `https://x402.ottoai.services/kol-sentiment`
-- `https://x402.ottoai.services/hyperliquid-market`
+- `https://x402.ottoai.services/hyperliquid-market?asset=${asset}`
 - `https://stabledomains.dev/api/check`
 
-`selat skill verify skills/self-evolving-agent` passes in unpaid probe mode.
+The no-param command fails closed before network access because `asset` and
+`domainCandidate` are required. The free gate is:
 
-Latest receipt:
+```bash
+selat skill verify ./skills/self-evolving-agent \
+  --asset BTC \
+  --domainCandidate agent-alpha-research.com \
+  --live-probe
+```
 
-- verified at: `2026-06-30T08:19:01.583Z`
-- step 1: Otto KOL sentiment, x402 on Base, live price `$0.00105`, cap `$0.010`
-- step 2: Otto Hyperliquid market, x402 on Base, live price `$0.00105`, cap `$0.010`
-- step 3: StableDomains availability, MPP on Tempo, live price `$0.0105`, cap `$0.015`
-- receipt file: `skills/self-evolving-agent/.selat/verify-receipt.json`
+Latest probe (2026-10-04):
 
-Run `selat skill verify skills/self-evolving-agent` again after manifest edits.
-Live probe results are authoritative.
+| Step | Mode | Live price | Cap |
+| --- | --- | --- | --- |
+| Otto KOL sentiment | `routed-x402` | $0.00315 | $0.004 |
+| Otto Hyperliquid market (`BTC`) | `routed-x402` | $0.00105 | $0.002 |
+| StableDomains (`agent-alpha-research.com`) | `routed-mpp` | $0.0105 | $0.075 |
 
-This verification is a quote check only. It does not fund Gateway, buy domains,
-purchase compute, or place trades.
+- Expected total: `$0.0147` (`.com`-class domain); `$0.0567` with an
+  `.ai`/`.io`-class domain, which quotes `$0.0525` for step 3.
+- Sum of per-step caps: `$0.081`.
+- A malformed or unsupported domain quotes `$0.105` for step 3 and is refused
+  by the cap before payment.
 
-The guidance portion of the skill remains usable as a local Agent Skill.
+Run `selat skill verify ... --live-probe` again after manifest edits. Live
+probe results are authoritative.
+
+This is a quote and live-schema check only. It does not prove post-payment
+output. No paid verification was run.
