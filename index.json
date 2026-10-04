@@ -53,7 +53,7 @@
       "name": "lead-enrichment",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Multi-source lead enrichment, fully through the SELAT Router (MPP). Finds and verifies a work email (Hunter), enriches the lead (Apollo), discovers a phone number and contact details (Clado), and enriches the company (Hunter). One run chains three paid MPP merchants across five steps."
+      "description": "Fixed five-call, read-only full-contact B2B lead cross-check. Requires a coherent name, company, domain, known work email, and LinkedIn person URL; independently finds an email candidate, verifies the supplied email, enriches professional identity, explicitly requests phone enrichment, and retrieves company firmographics."
     },
     {
       "name": "perplexity-search",
