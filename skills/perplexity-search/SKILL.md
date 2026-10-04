@@ -1,12 +1,12 @@
 ---
 name: perplexity-search
-description: Use this skill when the user wants a grounded web answer or research from Perplexity without an API key — e.g. "search the web for <topic>", "what's the latest on <topic>", "pull cited web context on <X>", "research <topic> with sources", "do a deep-research report on <X>". Runs Perplexity's x402 endpoints (search / sonar answer / async deep-research) paid per call over the SELAT Router (USDC on Base). The agent synthesizes the paid results into a cited brief.
+description: Use this skill when the user wants a grounded web answer or research from Perplexity without an API key — e.g. "search the web for <topic>", "what's the latest on <topic>", "pull cited web context on <X>", "research <topic> with sources", "do a deep-research report on <X>". Runs Perplexity's x402 `/search` endpoint (with agent-answer and async deep-research escalations) paid per call through the SELAT Router from your Circle Gateway balance. The agent synthesizes the paid results into a cited brief.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Gateway balance (settles on whichever supported chain the balance sits on). The routed step needs a reachable SELAT Router (SELAT_ROUTER_URL); `selat skill verify` (without --pay) is free and needs no funded wallet.
+compatibility: Requires the selat CLI, selat-pay >= 0.12.0 (for `--live-probe`), and a funded Circle Gateway balance (settles on whichever supported chain the balance sits on). The routed step needs a reachable SELAT Router (SELAT_ROUTER_URL); `selat skill verify --live-probe` (without --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.0"
-  rail: routed
+  rail: x402 on Base
   kind: single
 ---
 
@@ -14,7 +14,7 @@ metadata:
 
 Grounded web search and research via **Perplexity's x402 endpoints**, fronted by the
 paysponge gateway and **routed through the SELAT Router**. The default paid step is the
-cheap `POST /search` ($0.01) — it returns ranked web results with page content and
+cheap `POST /search` (live quote $0.0105) — it returns ranked web results with page content and
 source URLs, which the agent synthesizes into a cited answer. Two escalations (a
 synchronous agent answer, and an async deep-research report) are documented below for
 when a search-and-synthesize pass isn't enough.
@@ -30,10 +30,14 @@ Do **not** use it for things the model can already answer without live web data.
 
 ## Rails
 
-Single paid step, native x402, **routed** through the SELAT Router (`rail: routed`):
+Single paid step, native x402, routed through the SELAT Router (rail label
+`x402 on Base`):
 
-- **routed x402** — Perplexity `POST /search` (`pplx.x402.paysponge.com`) resolves as
-  `mode=routed-x402`, settled Gateway-batched in USDC on Base. Live quote ≈ $0.0105.
+- **x402 on Base** — Perplexity `POST /search` (`pplx.x402.paysponge.com`) resolves as
+  `mode=routed-x402`. The merchant's 402 accepts plain x402 `exact` (no Circle
+  Gateway batching), so the SELAT Router pays that leg. You pay the router from your
+  funded Circle Gateway balance, on whichever supported chain it sits. The label
+  names the merchant's rail, not your pay chain. Live quote $0.0105 (2026-10-04).
 
 ## Workflow
 
@@ -69,7 +73,7 @@ bodies are in [`references/endpoints.md`](references/endpoints.md).
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `query` | yes | `latest x402 / agentic payments adoption` | The web search query. |
+| `query` | yes | none | The web search query. No default, so a missing query is refused instead of paying for a canned search. |
 | `recency` | no | `month` | Recency filter: `hour` \| `day` \| `week` \| `month` \| `year`. |
 
 Output: JSON with an array of web results (title, URL, page content/snippets) that the
@@ -103,13 +107,16 @@ agent reads and synthesizes into a cited brief.
 > `--chain base` below is only the flag `selat-pay` requires for a probe — probing reads a free, chain-independent quote and never settles. A paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
 
 - Static: `selat skill validate ./skills/perplexity-search`
-- Live probe (no pay): confirms rail + price without settling:
+- Live gate (free, probe-only): `selat skill verify ./skills/perplexity-search --live-probe --query "agentic payments adoption"`
+- Single-step probe (no pay): confirms rail + price without settling:
   ```bash
   selat-pay POST "https://pplx.x402.paysponge.com/search" \
-    --body '{"query":"agent payments","search_recency_filter":"month"}' \
-    --chain base --probe-only
+    --body '{"query":"agentic payments adoption","search_recency_filter":"month"}' \
+    --chain base --probe-only --live-probe
   ```
-  A served endpoint prints `detected x402=yes … mode=routed-x402 price=$0.0105 on eip155:8453`.
+  A served endpoint prints `detected: x402=yes … mode=routed-x402` and `price=$0.010500`.
+  The network printed beside the price echoes the probe's `--chain` token. It is not
+  your settlement chain.
 - Paid run prints `status=200` and the results JSON.
 
 ## References

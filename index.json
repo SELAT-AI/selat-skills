@@ -2,10 +2,10 @@
   "schema": "selat-skills-index/v1",
   "skills": [
     {
-      "name": "enrich-waterfall",
+      "name": "account-intel",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Cheapest-first B2B person+company enrichment waterfall across 14 MPP merchants. Paid per call via x402 + MPP."
+      "description": "Entity-centric footprint & reputation intelligence — profile one specific person, brand, or handle across X/Twitter (SELAT-native), YouTube (Scrape Creators), web news (Brave), and web citations (Exa), with holdings context from a user-supplied associated EVM wallet (Alchemy), into one cross-platform footprint brief. Fixed six-call pipeline over x402 via Circle Gateway and MPP on Tempo, paid per call through the SELAT Router, no API keys."
     },
     {
       "name": "comprehensive-enrichment",
@@ -14,100 +14,88 @@
       "description": "Fixed 12-call, read-only person + company enrichment bundle across Apollo, Hunter, Clado contacts, Orthogonal Company Enrich, Diffbot KG, Exa, and Firecrawl. Requires a complete, internally consistent set of person and company identifiers; every step runs independently through the SELAT Router over MPP on Tempo."
     },
     {
-      "name": "lead-enrichment",
-      "rail": "MPP on Tempo",
-      "kind": "multi",
-      "description": "Lead enrichment via Hunter + Sixtyfour + Fiber. Paid per call via MPP on Tempo."
-    },
-    {
-      "name": "person-lookup",
-      "rail": "MPP on Tempo",
-      "kind": "single",
-      "description": "Person lookup via Nyne. Paid per call via MPP on Tempo."
-    },
-    {
-      "name": "gtm-enrichment-smart",
-      "rail": "mixed",
-      "kind": "multi",
-      "description": "Smart GTM enrichment (Apollo, Tomba, Brand.dev, Sixtyfour, Scrape Creators). Paid per call via x402 + MPP."
-    },
-    {
-      "name": "gtm-enrichment-deep",
-      "rail": "MPP on Tempo",
-      "kind": "multi",
-      "description": "Deep GTM enrichment (Apollo + Sixtyfour). Paid per call via MPP on Tempo."
-    },
-    {
-      "name": "sales-prospecting",
-      "rail": "MPP on Tempo",
-      "kind": "multi",
-      "description": "Sales prospecting list-build + enrich (Fiber, Hunter, Sixtyfour, Brand.dev). Paid per call via MPP on Tempo."
-    },
-    {
       "name": "email-campaign",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Email-campaign prospect + verify pipeline (Fiber, Hunter, Sixtyfour, Brand.dev). Paid per call via MPP on Tempo."
+      "description": "Fixed six-call, read-only email-campaign preparation pipeline. Discovers 10 companies by industry and 50-500 employee size (Fiber), retrieves domain-level email patterns and infers one named target's work email (Hunter), separately verifies the supplied work email (Hunter), enriches that person (Apollo), and adds company firmographics (Company Enrich). Requires a complete, internally consistent target. It does not draft or send email. All calls settle through the SELAT Router over MPP on Tempo."
     },
     {
-      "name": "recent-funding-rounds",
-      "rail": "MPP on Tempo",
-      "kind": "single",
-      "description": "Recent funding rounds via Fundable. Paid per call via MPP on Tempo."
-    },
-    {
-      "name": "find-twitter-influencers",
+      "name": "enrich-waterfall",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Find Twitter/X influencers (Scrape Creators, Fiber, Exa, Brand.dev, Hunter, Tomba). Paid per call via x402 + MPP."
-    },
-    {
-      "name": "scrapecreators",
-      "rail": "mixed",
-      "kind": "multi",
-      "description": "Social data via Scrape Creators (Twitter/IG/LinkedIn). Paid per call via x402 + MPP."
-    },
-    {
-      "name": "social-intel",
-      "rail": "mixed",
-      "kind": "multi",
-      "description": "Cross-platform social intelligence on any topic, brand, or account — fuses Reddit + X/Twitter chatter with grounded web context, paid per call over x402 + MPP, via the SELAT Router (selat-pay, USDC on Base)."
-    },
-    {
-      "name": "self-evolving-agent",
-      "rail": "mixed",
-      "kind": "multi",
-      "description": "Budgeted economic agent preflight for social sentiment, market context, and domain availability before infrastructure, monetization, or trading decisions."
+      "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the SELAT Router. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts) only on gaps, and verifies the email last. Deduplicated steps across Apollo, Hunter, Clado contacts, Brave Search, Diffbot KG, Orthogonal Company Enrich, Scrape Creators LinkedIn, StableSocial (MPP merchant), and SELAT-native (catalog.selat.ai)."
     },
     {
       "name": "financial-intel",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token market data + macro/equities + on-chain smart-money + market news into one brief, paid per call across two rails (Circle Gateway nanopayment + MPP on Tempo) via selat-pay (USDC via Circle Gateway)."
+      "description": "Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and Exa. Requires coherent asset, benchmark, data-chain, and news inputs (no defaults); every step is paid independently through the SELAT Router over x402 or MPP. Not investment advice."
     },
     {
-      "name": "account-intel",
+      "name": "find-twitter-influencers",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans three rails (Circle Gateway nanopayment + MPP + x402 on Base), paid per call over selat-pay (USDC via Circle Gateway), no API keys."
+      "description": "Discover, score, and enrich Twitter/X influencers for a company or niche. Resolves the company (Apollo org search, Orthogonal Company Enrich), discovers curated listicles (Exa), pulls Twitter profiles and engagement (SELAT-native, Circle x402 catalog), and enriches contacts (Hunter, Clado contacts). Mixed rail: most steps are MPP-via the SELAT Router; the SELAT-native Twitter steps are x402 on Base calls via the SELAT Router."
     },
     {
-      "name": "vc-ai-infra-scout",
-      "rail": "mixed",
+      "name": "gtm-enrichment-deep",
+      "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Deal-sourcing scout for a VC running a multi-track thesis: AI infrastructure (inference/serving, GPU & compute, training stacks, vector/data infra, agent infra, model-ops), crypto-AI / decentralized-AI / DePIN-for-AI, robotics / embodied-AI (foundation models, humanoid, sim-to-real, actuation/sensor stacks), and agentic payments (x402/stablecoin agent settlement, agent commerce).\n\nHOW IT WORKS: Runs a 9-step discovery pipeline across Tavily (broad web), Parallel (Product Hunt), Exa (funding context), Twitter/X (founder buzz, fundraising news, investor thesis), LinkedIn (funding posts), and Apollo (people + org enrichment).\n\nIMPORTANT — ROBOTICS / MODEL-LAYER QUERIES: Earlier versions hardcoded step 1 to Hacker News only, which misses robotics foundation-model startups (they surface more on TechCrunch, The Information, arXiv, and Twitter). v1.1 broadens step 1 to a general web search scoped to startup + funding signals. For robotics, still supplement with direct SELAT Twitter/X advanced_search and Tavily keyword queries because the robotics FM layer is earlier and more stealth than infra.\n\nSYNTHESIS EXPECTATION: The agent must synthesize all 9 steps into a tiered intelligence memo — not a bare bullet list. Group findings by funding-tier (mega-round, well-funded early, stealth/seed), identify the live investor thesis from Twitter/X investor chatter, flag geographic and pipeline blindspots, and connect cross-source corroboration. The output should read like a VC associate memo.\n\nPaid per call across mixed rails (x402 via Circle Gateway + MPP on Tempo + x402 on Base) via selat-pay (USDC via Circle Gateway), no API keys."
+      "description": "Fixed three-call, read-only GTM enrichment bundle for one known business lead. Cross-checks Apollo professional identity, Hunter firmographics, and Apollo organization funding/revenue using a coherent work email and matching company domain; personal-email and phone revelation are disabled."
     },
     {
-      "name": "twitter-research",
-      "rail": "x402 via Circle Gateway",
+      "name": "gtm-enrichment-smart",
+      "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Read-only Twitter/X research toolkit: a curated menu of 9 SELAT-native (catalog.selat.ai) GET endpoints covering account reads (profile, recent tweets, mentions, followers), tweet reads (details, replies, retweeters), topic search, and trends. The agent selects only the endpoints a request needs; each call is ~$0.001, x402 via Circle Gateway. No API keys."
+      "description": "Fixed three-call, read-only B2B lead qualification bundle. Uses a known work email and matching company domain to retrieve combined professional/company context, verify work-email deliverability, and cross-check an independent company profile; it does not reveal personal contact data or run outreach."
+    },
+    {
+      "name": "lead-enrichment",
+      "rail": "MPP on Tempo",
+      "kind": "multi",
+      "description": "Multi-source lead enrichment, fully through the SELAT Router (MPP). Finds and verifies a work email (Hunter), enriches the lead (Apollo), discovers a phone number and contact details (Clado), and enriches the company (Hunter). One run chains three paid MPP merchants across five steps."
     },
     {
       "name": "perplexity-search",
-      "rail": "routed",
+      "rail": "x402 on Base",
       "kind": "single",
-      "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key."
+      "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call through the SELAT Router from your Circle Gateway balance, no API key."
+    },
+    {
+      "name": "person-lookup",
+      "rail": "MPP on Tempo",
+      "kind": "single",
+      "description": "Look up a person — work history, title, employer, and public professional profiles — via Apollo people-search through the SELAT Router (MPP via Locus)."
+    },
+    {
+      "name": "recent-funding-rounds",
+      "rail": "MPP on Tempo",
+      "kind": "single",
+      "description": "One bounded, read-only Brave News Search for recently published startup-funding coverage. Requires an explicit funding-news focus and rolling publication-freshness window; returns news evidence rather than verified structured deal records."
+    },
+    {
+      "name": "sales-prospecting",
+      "rail": "MPP on Tempo",
+      "kind": "multi",
+      "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Hunter email finder), verifies deliverability (Hunter email verifier), and enriches with company data (Orthogonal Company Enrich)."
+    },
+    {
+      "name": "scrapecreators",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle Gateway), StableSocial (Instagram + TikTok — MPP, via the SELAT Router), and Scrape Creators (LinkedIn — MPP on Tempo): profiles, tweets, posts, company pages, and hashtag/keyword searches. Mixed rail; each capability is compiled into a selat-pay call by the selat CLI."
+    },
+    {
+      "name": "self-evolving-agent",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability signals before infrastructure, monetization, or trading decisions."
+    },
+    {
+      "name": "social-intel",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches (Exa neural + Tavily advanced) for corroborated results with citations, paid per call over x402, via the SELAT Router (selat-pay, USDC via Circle Gateway)."
     },
     {
       "name": "stock-direction-signals",
@@ -116,10 +104,22 @@
       "description": "Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings, smartmoney-market for 13F fund and insider positioning, SELAT-native Twitter for social chatter, Circle StableEnrich for Reddit, Circle Otto for TradFi macro — fused into a non-advisory bullish/bearish/mixed brief. Paid per call via selat-pay across mixed rails (x402 via Circle Gateway + x402 on Base + MPP on Tempo + MPP on Solana) via the SELAT Router."
     },
     {
+      "name": "twitter-research",
+      "rail": "x402 via Circle Gateway",
+      "kind": "multi",
+      "description": "Read-only Twitter/X research toolkit: 9 SELAT-native (catalog.selat.ai) GET reads covering account reads (profile, recent tweets, mentions, followers), tweet reads (details, replies, retweeters), topic search, and trends. A skill run pays all 9 (~$0.009); for a subset the agent pays individual reads. Each call is ~$0.001, x402 via Circle Gateway. No API keys."
+    },
+    {
+      "name": "vc-ai-infra-scout",
+      "rail": "mixed",
+      "kind": "multi",
+      "description": "Deal-sourcing scout for AI infrastructure, crypto-AI / DePIN, robotics / embodied-AI, and agentic-payments theses: a 9-step discovery pipeline across Tavily (web + LinkedIn posts), Parallel (Product Hunt), Exa, SELAT-native Twitter/X, and Apollo (people search + org enrichment of one required target domain), synthesized into a tiered VC memo. Paid per call across mixed rails (x402 on Base + x402 via Circle Gateway + MPP on Tempo) via the SELAT Router, no API keys."
+    },
+    {
       "name": "wallet-desk-brief",
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
-      "description": "Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway; verify prints routed-x402) plus Arkham intelligence/address attribution (x402 via Circle Gateway; verify prints routed-x402). Read only. Paid per call via selat-pay (USDC via Circle Gateway)."
+      "description": "Fixed two-call, read-only EVM wallet snapshot for one explicit non-zero address: Alchemy token holdings across five named networks plus Arkham's probabilistic address label. It does not prove real-world ownership, cover every chain, or execute a trade. Each step is paid independently through the SELAT Router over x402 via Circle Gateway."
     }
   ]
 }
