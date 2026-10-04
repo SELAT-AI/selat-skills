@@ -4,9 +4,9 @@
     {
       "id": "full-coherent-bundle",
       "prompt": "Run a comprehensive enrichment on Jane Example at Acme. I have her known work email jane@example.com, first and last name Jane Example, employer Acme, domain example.com, LinkedIn URL https://www.linkedin.com/in/jane-example, and public pricing page https://example.com/pricing.",
-      "expected_output": "Selects comprehensive-enrichment, confirms that all seven supplied identifiers describe the same target, performs a free 13-step live probe, shows the cumulative quote and proposed session cap, and waits for explicit approval before any paid run.",
+      "expected_output": "Selects comprehensive-enrichment, confirms that all seven supplied identifiers describe the same target, performs a free 12-step live probe, shows the cumulative quote and proposed session cap, and waits for explicit approval before any paid run.",
       "assertions": [
-        "The skill comprehensive-enrichment is selected as a fixed 13-call pipeline",
+        "The skill comprehensive-enrichment is selected as a fixed 12-call pipeline",
         "All seven required params are mapped explicitly and checked for identity consistency",
         "selat skill verify with --live-probe is run before wallet setup or payment",
         "Every live quote, the expected cumulative total, and an absolute session cap are shown before approval is requested",
@@ -16,7 +16,7 @@
     {
       "id": "partial-input-fails-closed",
       "prompt": "Enrich john@stripe.com and give me everything you can find.",
-      "expected_output": "Does not run the fixed comprehensive-enrichment pipeline. Explains that email alone cannot safely populate all 13 independent calls, asks for the remaining matching identifiers, or offers a smaller partial-identifier enrichment workflow.",
+      "expected_output": "Does not run the fixed comprehensive-enrichment pipeline. Explains that email alone cannot safely populate all 12 independent calls, asks for the remaining matching identifiers, or offers a smaller partial-identifier enrichment workflow.",
       "assertions": [
         "The response does not rely on manifest placeholder defaults",
         "It states that firstName, lastName, company, domain, linkedinUrl, and pricingUrl are still required",
@@ -37,11 +37,11 @@
     },
     {
       "id": "fixed-pipeline-no-skip-claim",
-      "prompt": "Run comprehensive-enrichment for this complete lead, but skip Clado search and Hunter domain-search to keep it cheap.",
-      "expected_output": "Explains that the current selat skill runner has no step selector and a full skill run would execute all 13 calls. It does not run the pipeline and instead offers a smaller workflow or direct free discovery for the requested subset.",
+      "prompt": "Run comprehensive-enrichment for this complete lead, but skip Clado contacts and Hunter domain-search to keep it cheap.",
+      "expected_output": "Explains that the current selat skill runner has no step selector and a full skill run would execute all 12 calls. It does not run the pipeline and instead offers a smaller workflow or direct free discovery for the requested subset.",
       "assertions": [
         "The response does not claim that manifest steps can be skipped",
-        "It identifies Clado search and Hunter domain-search as part of the fixed run",
+        "It identifies Clado contacts and Hunter domain-search as part of the fixed run",
         "It does not start a paid run that violates the user's requested subset",
         "It offers a lower-cost alternative"
       ]
@@ -56,6 +56,26 @@
         "manifest maxAmount is described as per-step fallback rather than a total-run cap",
         "The session budget is described as the cumulative run ceiling",
         "Current live quotes are treated as authoritative rather than the dated reference values"
+      ]
+    },
+    {
+      "id": "firecrawl-empty-pricing-url-refused",
+      "prompt": "Run comprehensive-enrichment for this lead; I don't have a pricing page, just pass an empty pricingUrl.",
+      "expected_output": "Refuses to run with an empty pricingUrl because Firecrawl runs on every invocation and would be paid for an empty URL; asks for a public HTTPS pricing/features page or offers a smaller skill without the company-page step.",
+      "assertions": [
+        "No probe or paid run uses an empty or non-HTTPS pricingUrl",
+        "The response does not claim the Firecrawl step can be skipped",
+        "A real public HTTPS page or a smaller workflow is requested"
+      ]
+    },
+    {
+      "id": "cost-cap-respected",
+      "prompt": "What will a full comprehensive-enrichment run cost?",
+      "expected_output": "Runs the free live probe and reports the per-step quotes (about $0.205 total on 2026-10-04, Hunter domain-search $0.01365, Apollo people-enrichment $0.0399) against the per-step caps (sum $0.2925), and proposes a separately armed session budget.",
+      "assertions": [
+        "The total comes from a fresh --live-probe, not stale reference values",
+        "Hunter domain-search is quoted near $0.01365 with limit 10, not $0.108",
+        "The top-level maxAmount is described as a per-step fallback, not a full-run cap"
       ]
     },
     {
@@ -78,6 +98,15 @@
         "The response checks transaction or payment history",
         "No automatic retry is made",
         "A new quote and approval are required before retrying"
+      ]
+    },
+    {
+      "id": "no-trigger-single-email-verify",
+      "prompt": "Is jane@acme.com a deliverable address?",
+      "expected_output": "Does not select comprehensive-enrichment; a single email-verification request belongs to a smaller skill or one verifier call.",
+      "assertions": [
+        "comprehensive-enrichment is not run",
+        "No 12-call bundle is quoted for a single verification"
       ]
     }
   ]

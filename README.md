@@ -55,7 +55,7 @@ The table below mirrors the current `index.json` catalog.
 | Skill | Rail | Kind | What it does |
 |---|---|---|---|
 | [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B person and company enrichment waterfall. |
-| [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Deep multi-source person and company enrichment. |
+| [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Fixed 12-call person and company enrichment bundle (Apollo, Hunter, Clado contacts, Company Enrich, Diffbot, Exa, Firecrawl); needs seven matching identifiers. |
 | [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Lead enrichment through Hunter, Sixtyfour, and Fiber. |
 | [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Person lookup through Nyne. |
 | [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Cost-conscious GTM enrichment with conditional gap fills. |

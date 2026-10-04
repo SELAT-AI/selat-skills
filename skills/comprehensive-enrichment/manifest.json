@@ -1,8 +1,8 @@
 {
   "schema": "selat-skill/v1",
   "name": "comprehensive-enrichment",
-  "description": "Fixed 13-call, read-only person + company enrichment bundle across Clado, Apollo, Hunter, Company Enrich, Diffbot KG, Exa, and Firecrawl. Requires a complete, internally consistent set of person and company identifiers; every step runs independently through the SELAT Router over MPP on Tempo.",
-  "maxAmount": "0.40",
+  "description": "Fixed 12-call, read-only person + company enrichment bundle across Apollo, Hunter, Clado contacts, Orthogonal Company Enrich, Diffbot KG, Exa, and Firecrawl. Requires a complete, internally consistent set of person and company identifiers; every step runs independently through the SELAT Router over MPP on Tempo.",
+  "maxAmount": "0.06",
   "params": {
     "email": {
       "required": true,
@@ -26,24 +26,14 @@
     },
     "linkedinUrl": {
       "required": true,
-      "description": "LinkedIn person profile URL for the same person; required by Apollo and the Clado phone lookup."
+      "description": "LinkedIn person profile URL for the same person; sent to Apollo people-enrichment and Clado contacts."
     },
     "pricingUrl": {
       "required": true,
-      "description": "Public HTTPS company page to scrape for products/pricing, on the same company domain when possible."
+      "description": "Public HTTPS company pricing/features page (non-empty), on the same company domain when possible. Firecrawl is always called with it."
     }
   },
   "steps": [
-    {
-      "label": "person deep search — Clado search (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://clado.mpp.paywithlocus.com/clado/search",
-      "body": {
-        "query": "${firstName} ${lastName} ${company}"
-      },
-      "maxAmount": "0.40"
-    },
     {
       "label": "person enrichment — Apollo people-enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
@@ -53,9 +43,11 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}",
         "organization_name": "${company}",
-        "linkedin_url": "${linkedinUrl}"
+        "linkedin_url": "${linkedinUrl}",
+        "reveal_personal_emails": false,
+        "reveal_phone_number": false
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.06"
     },
     {
       "label": "email enrich — Hunter email-enrichment (MPP on Tempo)",
@@ -68,7 +60,7 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "find work email — Hunter email-finder",
+      "label": "find work email — Hunter email-finder (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
@@ -80,17 +72,17 @@
       "maxAmount": "0.02"
     },
     {
-      "label": "verify email — Hunter email-verifier",
+      "label": "verify supplied email — Hunter email-verifier (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.015"
+      "maxAmount": "0.0125"
     },
     {
-      "label": "phone — Clado contacts (MPP on Tempo)",
+      "label": "contacts lookup by LinkedIn URL — Clado contacts, no paid enrichment flags (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
@@ -107,24 +99,25 @@
       "body": {
         "query": "${firstName} ${lastName} ${company} recent news interviews talks"
       },
-      "maxAmount": "0.01"
+      "maxAmount": "0.0075"
     },
     {
-      "label": "company overview — Company Enrich lookup by domain (MPP on Tempo)",
+      "label": "company overview — Orthogonal Company Enrich by domain (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "GET",
       "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
       "maxAmount": "0.02"
     },
     {
-      "label": "company emails — Hunter domain-search",
+      "label": "company emails — Hunter domain-search, 10 results (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/domain-search",
       "body": {
-        "domain": "${domain}"
+        "domain": "${domain}",
+        "limit": 10
       },
-      "maxAmount": "0.15"
+      "maxAmount": "0.02"
     },
     {
       "label": "funding + investors — Diffbot KG enhance (MPP on Tempo)",
@@ -133,7 +126,14 @@
       "url": "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance",
       "body": {
         "type": "Organization",
-        "name": "${company}"
+        "name": [
+          "${company}"
+        ],
+        "url": [
+          "https://${domain}"
+        ],
+        "refresh": false,
+        "size": 1
       },
       "maxAmount": "0.05"
     },
@@ -148,10 +148,10 @@
         ],
         "prompt": "Extract all products, pricing tiers, and features"
       },
-      "maxAmount": "0.01"
+      "maxAmount": "0.0075"
     },
     {
-      "label": "competitors — Exa findSimilar",
+      "label": "competitors — Exa findSimilar (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://exa.mpp.tempo.xyz/findSimilar",
@@ -162,7 +162,7 @@
           "text": true
         }
       },
-      "maxAmount": "0.01"
+      "maxAmount": "0.0075"
     },
     {
       "label": "company research — Exa search (MPP on Tempo)",
@@ -172,7 +172,7 @@
       "body": {
         "query": "${company} recent news funding announcements partnerships press releases"
       },
-      "maxAmount": "0.01"
+      "maxAmount": "0.0075"
     }
   ]
 }

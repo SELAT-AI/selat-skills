@@ -1,51 +1,163 @@
-# comprehensive-enrichment — endpoints
+# Endpoints — comprehensive-enrichment
 
-The table records the fixed manifest order and the free routed quote observed by
-`selat skill verify --live-probe` on 2026-08-29. A probe may invoke the declared
-method/body but never settles payment. Live quotes can change and are always the
-price source of truth.
+Use only these endpoint families for `comprehensive-enrichment`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-All 13 calls are read-only MPP services reached through the SELAT Router. The
-manifest cap is a **per-call ceiling**, not the expected price and not a
-cumulative run limit.
+Dead Clado `/clado/search` was removed (no 402; re-checked 2026-10-04). Company
+overview uses Orthogonal Company Enrich GET-by-domain (Abstract is dead). Clado
+`/clado/contacts` is kept as a base lookup.
 
-| # | Merchant | Endpoint | Required input(s) | Live routed quote | Per-step cap |
-|---:|---|---|---|---:|---:|
-| 1 | Clado | `POST clado.mpp.paywithlocus.com/clado/search` | `firstName`, `lastName`, `company` | $0.318150 | $0.40 |
-| 2 | Apollo | `POST apollo.mpp.paywithlocus.com/apollo/people-enrichment` | `firstName`, `lastName`, `company`, `linkedinUrl` | $0.039900 | $0.05 |
-| 3 | Hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-enrichment` | `email` | $0.013650 | $0.02 |
-| 4 | Hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-finder` | `domain`, `firstName`, `lastName` | $0.013650 | $0.02 |
-| 5 | Hunter | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | `email` | $0.008400 | $0.015 |
-| 6 | Clado | `POST clado.mpp.paywithlocus.com/clado/contacts` | `linkedinUrl` | $0.045150 | $0.06 |
-| 7 | Exa | `POST exa.mpp.tempo.xyz/search` (person research) | `firstName`, `lastName`, `company` | $0.005250 | $0.01 |
-| 8 | Company Enrich | `GET mpp.orthogonal.com/company-enrich/companies/enrich?domain=…` | `domain` | $0.012862 | $0.02 |
-| 9 | Hunter | `POST hunter.mpp.paywithlocus.com/hunter/domain-search` | `domain` | $0.108150 | $0.15 |
-| 10 | Diffbot KG | `POST diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance` | `company` | $0.036750 | $0.05 |
-| 11 | Firecrawl | `POST firecrawl.mpp.tempo.xyz/v1/extract` | `pricingUrl` | $0.005250 | $0.01 |
-| 12 | Exa | `POST exa.mpp.tempo.xyz/findSimilar` | `domain` | $0.005250 | $0.01 |
-| 13 | Exa | `POST exa.mpp.tempo.xyz/search` (company research) | `company` | $0.005250 | $0.01 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Person enrichment | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 | $0.06 |
+| 2 — Email enrich | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-enrichment` | MPP on Tempo | $0.01365 | $0.02 |
+| 3 — Find work email | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-finder` | MPP on Tempo | $0.01365 | $0.02 |
+| 4 — Verify supplied email | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 | $0.0125 |
+| 5 — Contacts lookup (LinkedIn URL) | POST | `https://clado.mpp.paywithlocus.com/clado/contacts` | MPP on Tempo | $0.04515 | $0.06 |
+| 6 — Person research | POST | `https://exa.mpp.tempo.xyz/search` | MPP on Tempo | $0.00525 | $0.0075 |
+| 7 — Company overview | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 | $0.02 |
+| 8 — Company emails (10) | POST | `https://hunter.mpp.paywithlocus.com/hunter/domain-search` | MPP on Tempo | $0.01365 | $0.02 |
+| 9 — Funding + investors | POST | `https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance` | MPP on Tempo | $0.03675 | $0.05 |
+| 10 — Pricing / features | POST | `https://firecrawl.mpp.tempo.xyz/v1/extract` | MPP on Tempo | $0.00525 | $0.0075 |
+| 11 — Competitors | POST | `https://exa.mpp.tempo.xyz/findSimilar` | MPP on Tempo | $0.00525 | $0.0075 |
+| 12 — Company research | POST | `https://exa.mpp.tempo.xyz/search` | MPP on Tempo | $0.00525 | $0.0075 |
 
-- **Observed live total:** $0.617662 for all 13 calls.
-- **Sum of per-step caps:** $0.825. This is a worst-case manifest ceiling only;
-  use a separately approved session budget as the cumulative tripwire.
-- **Replacement made during QC:** the old Abstract Company Enrichment endpoint
-  still appeared in the federated catalogue at $0.006 but returned no live
-  x402/MPP challenge. The Company Enrich GET endpoint replaced it after a free
-  probe confirmed `routed-mpp`, a required `domain` query parameter, and a live
-  routed quote of $0.012862.
+This is a fixed 12-call manifest; `selat skill run` executes every step. The step
+table matches `manifest.json` exactly. Live sum ≈ $0.205 (free probe
+2026-10-04, every step `routed-mpp`); sum of per-step caps $0.2925. The
+top-level `maxAmount` ($0.06) is only a per-step fallback, not a run budget.
 
-Operational notes:
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **MPP on Tempo:** Apollo, Hunter, Clado, and Diffbot KG via Locus (`*.mpp.paywithlocus.com`). Exa (`exa.mpp.tempo.xyz`) and Firecrawl (`firecrawl.mpp.tempo.xyz`) are MPP on Tempo but not Locus. Orthogonal Company Enrich via `mpp.orthogonal.com`.
 
-- The manifest is a fixed pipeline. The current CLI runs all 13 entries and has
-  no `--steps` or skip selector.
-- Steps do not pass response fields into later calls. The caller must provide a
-  coherent work email, name, employer/company, domain, LinkedIn person URL, and
-  public pricing/features URL before payment.
-- Clado search is synchronous—natural-language people search returns in one
-  call, with no job polling.
-- Clado contacts requires `linkedin_url`; it is the phone-enrichment call.
-- The Diffbot KG Organization response covers both funding and investors.
-- Hunter email verification validates the supplied `email`; it does not consume
-  the output of the preceding email-finder call.
-- Firecrawl can return a paid application error for an empty, private, or
-  login-gated `pricingUrl`.
+## Apollo MPP — `MPP on Tempo`
+
+serviceUrl: `https://apollo.mpp.paywithlocus.com`
+
+Live-probed price: `$0.0399` per call (`routed-mpp`, 2026-10-04; Locus range
+`$0.038–$0.318`, the upper end only with `reveal_phone_number`). **POST with a
+JSON body**.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Person enrichment | `/apollo/people-enrichment` | `first_name`, `last_name`, `organization_name`, `linkedin_url`; `reveal_personal_emails: false`, `reveal_phone_number: false` (fixed literals) |
+
+```json
+{ "first_name": "Patrick", "last_name": "Collison", "organization_name": "Stripe", "linkedin_url": "https://www.linkedin.com/in/patrickcollison", "reveal_personal_emails": false, "reveal_phone_number": false }
+```
+
+## Hunter MPP — `MPP on Tempo`
+
+serviceUrl: `https://hunter.mpp.paywithlocus.com`
+
+Live-probed prices (`routed-mpp`, 2026-10-04): email-enrichment / email-finder /
+domain-search `$0.01365`, email-verifier `$0.0084`. All endpoints are **POST
+with a JSON body**. Domain-search is dynamically priced by `limit` (`limit: 100`
+quoted `$0.10815`), so `limit: 10` is a fixed numeric literal.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Email enrich | `/hunter/email-enrichment` | `email` (string, required) |
+| Find work email | `/hunter/email-finder` | `domain`, `first_name`, `last_name` |
+| Verify supplied email | `/hunter/email-verifier` | `email` (string, required) |
+| Company emails | `/hunter/domain-search` | `domain` (string, required), `limit` (number, fixed `10`) |
+
+```json
+{ "domain": "stripe.com", "limit": 10 }
+```
+
+## Clado contacts — `MPP on Tempo`
+
+serviceUrl: `https://clado.mpp.paywithlocus.com`
+
+Live-probed price: `$0.04515` (`routed-mpp`, 2026-10-04) for a `linkedin_url`-only
+body. **POST with a JSON body**. The paid `phone_enrichment` flag quotes
+`$0.10815` and both flags `$0.15015`; neither is sent, so report phone/email only
+if the response contains it. Dead Clado `/search`, `/linkedin-profile`, and
+`/scrape` are not used.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Contacts lookup | `/clado/contacts` | `linkedin_url` (string, required) |
+
+```json
+{ "linkedin_url": "https://www.linkedin.com/in/patrickcollison" }
+```
+
+## Orthogonal Company Enrich — `MPP on Tempo`
+
+serviceUrl: `https://mpp.orthogonal.com/company-enrich`
+
+Live-probed price: `$0.012862` (`routed-mpp`, 2026-10-04). Domain lookup is
+**GET with a query-string `domain`**. Replaces the dead Abstract Company
+Enrichment `POST /abstract-company-enrichment/lookup`.
+
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| Company overview | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
+
+```text
+https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com
+```
+
+## Exa MPP — `MPP on Tempo`
+
+serviceUrl: `https://exa.mpp.tempo.xyz`
+
+Live-probed price: `$0.00525` per call (`routed-mpp`, 2026-10-04). All endpoints
+are **POST with a JSON body**.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Person research | `/search` | `query` = `${firstName} ${lastName} ${company} recent news interviews talks` |
+| Competitors | `/findSimilar` | `url` = `https://${domain}`, `numResults` (fixed `10`), `contents.text` (fixed `true`) |
+| Company research | `/search` | `query` = `${company} recent news funding announcements partnerships press releases` |
+
+```json
+{ "url": "https://stripe.com", "numResults": 10, "contents": { "text": true } }
+```
+
+## Diffbot KG — `MPP on Tempo`
+
+serviceUrl: `https://diffbot-kg.mpp.paywithlocus.com`
+
+Live-probed price: `$0.03675` per call (`routed-mpp`, 2026-10-04; Locus lists
+`$0.03`, `$0.12` with `refresh`). **POST with a JSON body**. One Organization
+`enhance` call covers funding rounds and investors.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Funding + investors | `/diffbot-kg/enhance` | `type` (`Organization`), `name` (string array), `url` (string array), `refresh` (fixed `false`), `size` (fixed `1`) |
+
+```json
+{ "type": "Organization", "name": ["Stripe"], "url": ["https://stripe.com"], "refresh": false, "size": 1 }
+```
+
+## Firecrawl — `MPP on Tempo`
+
+serviceUrl: `https://firecrawl.mpp.tempo.xyz`
+
+Live-probed price: `$0.00525` per call (`routed-mpp`, 2026-10-04). **POST with a
+JSON body**. Always called: `pricingUrl` must be a non-empty public HTTPS page
+(the 402 quote does not check the URL, so an empty URL is paid and then errors).
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Pricing / features | `/v1/extract` | `urls` (string array) = `["${pricingUrl}"]`, `prompt` (string) |
+
+```json
+{ "urls": ["https://stripe.com/pricing"], "prompt": "Extract all products, pricing tiers, and features" }
+```
+
+## Free verification
+
+```bash
+SELAT_ROUTER_URL=https://router.selat.ai \
+  selat skill verify ./skills/comprehensive-enrichment \
+  --email <known-work-email> --firstName <first> --lastName <last> \
+  --company "<company>" --domain <bare-domain> \
+  --linkedinUrl <person-linkedin-url> --pricingUrl <public-https-url> \
+  --live-probe
+```
