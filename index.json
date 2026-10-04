@@ -65,7 +65,7 @@
       "name": "person-lookup",
       "rail": "MPP on Tempo",
       "kind": "single",
-      "description": "Look up a person — work history, title, employer, and public professional profiles — via Apollo people-search through the SELAT Router (MPP via Locus)."
+      "description": "Read-only public professional lookup for one named person at a known company via one bounded five-result Apollo people-search through the SELAT Router over MPP on Tempo. Requires a full name and current company; it does not request private contact data or send outreach."
     },
     {
       "name": "recent-funding-rounds",
