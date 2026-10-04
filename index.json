@@ -41,7 +41,7 @@
       "name": "gtm-enrichment-deep",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Deep GTM lead enrichment from an email (+ optional name). Apollo people enrichment is the primary source for person identity + LinkedIn, Hunter for company data, and Apollo organization enrichment is the fallback for funding. All steps are MPP on Tempo."
+      "description": "Fixed three-call, read-only GTM enrichment bundle for one known business lead. Cross-checks Apollo professional identity, Hunter firmographics, and Apollo organization funding/revenue using a coherent work email and matching company domain; personal-email and phone revelation are disabled."
     },
     {
       "name": "gtm-enrichment-smart",

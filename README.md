@@ -72,7 +72,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the… |
 | [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and… |
 | [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Discover, score, and enrich Twitter/X influencers for a company or niche. |
-| [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM lead enrichment from an email (+ optional name). |
+| [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Fixed three-call, read-only GTM enrichment bundle for one known business lead. |
 | [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step… |
 | [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Multi-source lead enrichment, fully through the SELAT Router (MPP). |
 | [perplexity-search](skills/perplexity-search/SKILL.md) | x402 on Base | single | Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. |
