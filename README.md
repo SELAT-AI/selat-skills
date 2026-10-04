@@ -66,7 +66,7 @@ by `npm run catalog`; CI fails if either is out of date.
 
 | Skill | Rail | Kind | What it does |
 |---|---|---|---|
-| [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across… |
+| [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity-centric footprint & reputation intelligence — profile one specific person, brand, or handle across… |
 | [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Comprehensive person + company enrichment across many MPP on Tempo data providers (Apollo, Hunter, Clado… |
 | [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Fixed six-call, read-only email-campaign preparation pipeline. |
 | [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the… |

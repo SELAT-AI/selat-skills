@@ -5,7 +5,7 @@
       "name": "account-intel",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans two rails (Circle Gateway + MPP on Tempo), paid per call over selat-pay (USDC via Circle Gateway), no API keys."
+      "description": "Entity-centric footprint & reputation intelligence — profile one specific person, brand, or handle across X/Twitter (SELAT-native), YouTube (Scrape Creators), web news (Brave), and web citations (Exa), with holdings context from a user-supplied associated EVM wallet (Alchemy), into one cross-platform footprint brief. Fixed six-call pipeline over x402 via Circle Gateway and MPP on Tempo, paid per call through the SELAT Router, no API keys."
     },
     {
       "name": "comprehensive-enrichment",
