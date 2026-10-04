@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "self-evolving-agent",
   "description": "Fixed three-call, read-only economic-agent preflight: retrieve a broad crypto KOL sentiment report, market data for one explicit Hyperliquid asset, and availability/price context for one explicit domain candidate. Every step is paid independently through the SELAT Router; the skill does not create identity, buy infrastructure, fund wallets, or place trades.",
-  "maxAmount": "0.012",
+  "maxAmount": "0.075",
   "params": {
     "asset": {
       "required": true,
@@ -10,7 +10,7 @@
     },
     "domainCandidate": {
       "required": true,
-      "description": "Domain candidate to check before any purchase."
+      "description": "One full domain on a TLD the provider supports (for example agent-alpha-research.com) to check before any purchase. Availability check only, not purchase authorization."
     }
   },
   "steps": [
@@ -36,7 +36,7 @@
       "body": {
         "domain": "${domainCandidate}"
       },
-      "maxAmount": "0.012"
+      "maxAmount": "0.075"
     }
   ]
 }

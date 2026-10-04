@@ -28,7 +28,6 @@ catalogue snapshot and must be re-discovered before use.
   `https://x402.api.agentmail.to/v0/inboxes` at about `$2.00`.
 - AgentMail inbox listing:
   `https://x402.api.agentmail.to/v0/inboxes` at `$0.00`.
-- AgentMail threads and webhooks for receiving operational email and Circle OTPs.
 - StableDomains availability:
   `https://stabledomains.dev/api/check`
 - Modal sandbox execution:
@@ -79,6 +78,6 @@ and one domain check because those map directly to the definition while keeping
 the preflight bounded and read-only. The runner executes all three calls; this
 is not a conditional or cheapest-first workflow.
 
-AgentMail inbox creation is not in the manifest because it is an identity
-bootstrap action, not an intelligence preflight. It should be quoted and run only
-after the user approves the mailbox address, provider, and spend cap.
+AgentMail inbox creation and every trade-capable endpoint are outside this
+skill. They are identity, funding, or execution actions, not a read-only
+preflight, and this skill never calls them.

@@ -8,7 +8,6 @@ Track the agent as a small business, not as a magic trading loop.
 
 Required ledgers:
 
-- agent mailbox address and inbox ID;
 - agent wallet ID/address;
 - Gateway balance;
 - starting capital;
@@ -27,15 +26,12 @@ for reinvestment.
 
 ## Treasury Wallet Model
 
-The default treasury is the agent's Circle Agent Wallet plus funded Gateway
-balance. The agent should authenticate that wallet with its own AgentMail
-address so wallet login, OTPs, payment receipts, and account notices route to the
-agent's operational inbox rather than a human's personal email.
+The default treasury is a Circle Agent Wallet plus funded Gateway balance that
+the user has already set up and funded. This skill does not create, log in to,
+or fund that wallet.
 
 Track these separately:
 
-- mailbox creation cost;
-- wallet setup status;
 - Gateway deposits approved by the user;
 - Gateway spend on SELAT/x402 calls;
 - off-Gateway balances or optional strategy wallets;
@@ -50,7 +46,7 @@ For a conservative default, allocate:
 - 45% cash reserve and runway;
 - 20% data and intelligence experiments;
 - 15% infrastructure, hosting, and domain;
-- 10% operational identity, mailbox, and monetization experiments;
+- 10% monetization experiments;
 - 10% contingency.
 
 Trading allocation starts at 0 until the user approves a paper-trading plan and

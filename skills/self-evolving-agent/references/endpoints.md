@@ -1,78 +1,88 @@
-# Endpoints - self-evolving-agent
+# Endpoints — self-evolving-agent
 
-Free live probes on 2026-08-31 with SELAT CLI 0.16.15 produced the routed prices
-below. Re-probe before payment because quotes and routing can change.
+Use only these endpoint families for `self-evolving-agent`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-| Step | Method and request | Observed SELAT mode | Raw provider price | Routed quote | Per-call cap |
-|---|---|---|---:|---:|---:|
-| KOL sentiment | `GET https://x402.ottoai.services/kol-sentiment` | `routed-x402` | $0.003 | $0.00315 | $0.004 |
-| Hyperliquid market context | `GET https://x402.ottoai.services/hyperliquid-market?asset=${asset}` | `routed-x402` | $0.001 | $0.00105 | $0.002 |
-| Domain availability | `POST https://stabledomains.dev/api/check` with `{"domain":"${domainCandidate}"}` | `routed-mpp` | $0.010 | $0.0105 | $0.012 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Broad crypto social context | GET | `https://x402.ottoai.services/kol-sentiment` | x402 via Circle Gateway | $0.00315 | $0.004 |
+| 2 — Asset market context | GET | `https://x402.ottoai.services/hyperliquid-market?asset=${asset}` | x402 via Circle Gateway | $0.00105 | $0.002 |
+| 3 — Domain availability and price | POST | `https://stabledomains.dev/api/check` | MPP on Tempo | $0.0105–$0.0525 (by TLD) | $0.075 |
 
-Expected total at that probe was **$0.01470**. The sum of the three independent
-per-call caps is **$0.018**. The top-level manifest cap is only a fallback; the
-runner does not treat it as a pooled session budget.
+This is a fixed 3-call manifest. The step table matches `manifest.json`
+exactly, and `selat skill run` pays for every step on every run. Live-probed
+total (2026-10-04): **$0.0147** with a `.com`-class domain, **$0.0567** with an
+`.ai`/`.io`-class domain. Sum of per-step caps: **$0.081**. The top-level
+`maxAmount` (`$0.075`) is only a per-step fallback for a step without its own
+cap. It is not a cumulative run cap.
 
-## Live Request Contracts
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **x402 via Circle Gateway:** Otto AI (`x402.ottoai.services`). The probe reports `routed-x402`. The buyer pays from whichever chain holds the funded Gateway balance. This is not a pay-chain claim.
+- **MPP on Tempo:** StableDomains (`stabledomains.dev`). The probe reports `routed-mpp`.
 
-- **KOL sentiment:** no request parameters. The 402 response advertises Base
-  and Solana x402 options. The report is broad and may expose freshness and
-  degradation metadata; preserve those fields in analysis.
-- **Hyperliquid market:** the live Bazaar input schema requires an `asset` query
-  parameter such as `BTC`. The 402 response advertises Base x402. A bare URL can
-  still return a valid quote, so quote-only verification would not catch the
-  missing business input.
-- **StableDomains:** the live schema requires a JSON body containing only
-  `domain`. The endpoint advertises Base/Solana x402 offers and a Tempo payment
-  challenge; SELAT classified the tested route as `routed-mpp`. The check does
-  not register or reserve the domain.
+## Otto AI — `x402 via Circle Gateway`
 
-## Provenance
+serviceUrl: `https://x402.ottoai.services`
 
-The endpoints came from free SELAT federated-catalogue searches for:
+Live-probed prices (`routed-x402`, 2026-10-04): KOL sentiment `$0.00315`
+(cap `$0.004`), Hyperliquid market `$0.00105` (cap `$0.002`). Both are **GET**.
 
-- `social intelligence sentiment influencers market chatter`
-- `financial intelligence crypto price market data on-chain prediction markets`
-- `compute hosting domain infrastructure deploy website server`
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| Broad crypto social context | `/kol-sentiment` | none. The report is broad, not filtered by asset. Keep its `dataAsOf`, `generatedAt`, `degraded`, and source-health fields. |
+| Asset market context | `/hyperliquid-market` | `asset` (string, required by the live schema — a Hyperliquid ticker such as `BTC`) |
 
-Other useful catalogue candidates found in the 2026-06-30 snapshot (not
-re-verified on 2026-08-31):
+A bare `/hyperliquid-market` URL still returns a valid quote, so a quote-only
+probe would not catch a missing `asset`. The manifest always sends it.
 
-- Alchemy token prices by address.
-- AIsa CoinGecko market chart.
-- AIsa Kalshi markets and trades.
-- Gloria AI 24-hour ticker news summary.
-- BlockRun prediction-market containers and dFlow trade history.
-- Modal sandbox execution.
-- StableUpload and Build With Locus domain/hosting-related endpoints.
+```text
+https://x402.ottoai.services/hyperliquid-market?asset=BTC
+```
 
-## Available But Locked Behind Policy
+## StableDomains — `MPP on Tempo`
 
-The following endpoints appeared capable of moving assets, placing orders, or
-preparing transactions in the 2026-06-30 catalogue snapshot. Their present
-availability and schemas were not re-verified. They are not manifest steps.
-Treat them as unavailable for live execution until they are re-discovered, a
-separate trading policy is approved, and the run has explicit authorization and
-caps.
+serviceUrl: `https://stabledomains.dev`
 
-| Capability | Method | URL | Policy gate |
-|---|---|---|---|
-| Open Hyperliquid perpetual | POST | `https://x402.ottoai.services/trade-perpetuals` | live order approval, asset universe, notional cap, loss cap, leverage policy |
-| Close Hyperliquid position | POST | `https://x402.ottoai.services/close-position` | live order approval, position identifier, max close size |
-| Modify TP/SL or limit order | POST | `https://x402.ottoai.services/modify-hl-order` | approved order types, trigger rules, emergency-stop path |
-| Update position margin | POST | `https://x402.ottoai.services/update-position-margin` | margin and leverage policy, liquidation-loss cap |
-| Hyperliquid deposit/withdraw | POST | `https://x402.ottoai.services/hl-deposit-withdraw` | wallet funding approval, venue approval, transfer cap |
-| Same-chain token swap | POST | `https://x402.ottoai.services/swap` | asset allowlist, slippage cap, notional cap |
-| Otto Safe withdrawal | POST | `https://x402.ottoai.services/withdraw` | destination approval, transfer cap, treasury ledger entry |
-| Yield deposit transaction builder | POST | `https://x402.ottoai.services/deposit` | protocol approval, unsigned-transaction review, treasury cap |
+Live-probed price (`routed-mpp`, 2026-10-04) depends on the TLD of the domain
+in the body:
 
-Supporting read-only endpoints may be used for preflight analysis when they
-quote within cap:
+| TLD class | Upstream | Routed quote |
+| --- | --- | --- |
+| `.com` `.net` `.org` `.co` `.biz` `.info` `.me` `.mobi` `.name` `.tv` `.uk` | $0.01 | $0.0105 |
+| `.ai` `.app` `.cloud` `.dev` `.email` `.io` `.link` `.live` `.online` `.page` `.pro` `.shop` `.site` `.store` `.studio` `.tech` `.xyz` | $0.05 | $0.0525 |
+| malformed or unsupported domain (e.g. `test`, `foo.bar.com`) | $0.10 | $0.105 — refused by the `$0.075` cap |
 
-- `GET https://x402.ottoai.services/hyperliquid-account`
-- `GET https://x402.ottoai.services/transaction-history`
-- `GET https://x402.ottoai.services/supported-tokens`
+**POST with a JSON body** containing only `domain`. The check does not register
+or reserve the domain.
 
-Live 402 probe results are authoritative for payment compatibility, not proof of
-successful post-payment data delivery. A paid smoke test still requires a fresh
-quote, a cumulative cap, an armed session budget, and explicit approval.
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Domain availability and price | `/api/check` | `domain` (string, required — full domain on one of the 28 supported TLDs above) |
+
+```json
+{ "domain": "agent-alpha-research.com" }
+```
+
+## Free probes
+
+Whole skill (reads payment challenges only, never settles):
+
+```bash
+selat skill verify ./skills/self-evolving-agent --asset BTC --domainCandidate agent-alpha-research.com --live-probe
+```
+
+Single step (`--chain base` is only selat-pay's required flag; a probe never
+settles, and paid runs use whichever chain holds your Gateway balance):
+
+```bash
+selat-pay GET "https://x402.ottoai.services/hyperliquid-market?asset=BTC" --chain base --max-amount 0.002 --probe-only --live-probe
+selat-pay POST "https://stabledomains.dev/api/check" --body '{"domain":"agent-alpha-research.com"}' --chain base --max-amount 0.075 --probe-only --live-probe
+```
+
+## Not in this skill
+
+Inbox creation, wallet setup or funding, domain registration, hosting or
+compute purchases, and any trade-capable endpoint are outside this skill. They
+are not manifest steps and the skill never calls them.
