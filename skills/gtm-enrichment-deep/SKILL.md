@@ -120,11 +120,15 @@ it low confidence.
 
 - All three calls currently route as `routed-mpp` over MPP on Tempo through the
   SELAT Router.
-- Free live verification on 2026-08-30 quoted the two Apollo calls at `$0.039900`
-  each and the Hunter call at `$0.013650`, for an expected fixed-run total of
-  `$0.093450`.
-- The three per-step caps are `$0.05`, `$0.02`, and `$0.05`; their sum is
-  `$0.12`. Caps are ceilings, not price estimates, and are not pooled.
+- Free live verification on 2026-10-04 quoted the two Apollo calls at `$0.0399`
+  each and the Hunter call at `$0.01365`, for an expected fixed-run total of
+  `$0.09345` — that is the cost per lead, since one run enriches exactly one
+  lead. Ten leads cost about `$0.93` (ten separate runs).
+- The three per-step caps are `$0.06`, `$0.02`, and `$0.06`; their sum is
+  `$0.14`. Caps are per-call ceilings, not price estimates, and are not pooled.
+  The manifest's top-level `maxAmount` (`$0.06`) is only a fallback for a step
+  without its own cap, not a full-run cap; arm a session budget for the
+  cumulative limit.
 - Re-probe before every paid run because prices, rails, and availability can
   change. The live quote is authoritative.
 

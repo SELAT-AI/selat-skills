@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-deep",
   "description": "Fixed three-call, read-only GTM enrichment bundle for one known business lead. Cross-checks Apollo professional identity, Hunter firmographics, and Apollo organization funding/revenue using a coherent work email and matching company domain; personal-email and phone revelation are disabled.",
-  "maxAmount": "0.05",
+  "maxAmount": "0.06",
   "params": {
     "email": {
       "required": true,
@@ -25,7 +25,7 @@
         "reveal_personal_emails": false,
         "reveal_phone_number": false
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.06"
     },
     {
       "label": "company firmographics — Hunter company enrichment (MPP on Tempo)",
@@ -45,7 +45,7 @@
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.06"
     }
   ]
 }

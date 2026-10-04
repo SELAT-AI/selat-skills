@@ -115,11 +115,11 @@
     {
       "id": "current-cost-and-caps",
       "prompt": "What did the latest free probe quote for the complete run?",
-      "expected_output": "The 2026-08-30 snapshot reports the three live quotes and fixed-run total separately from the three per-step caps and their cumulative sum.",
+      "expected_output": "The 2026-10-04 snapshot reports the three live quotes and fixed-run total separately from the three per-step caps and their cumulative sum.",
       "assertions": [
-        "Recorded expected total is 0.093450 USD",
-        "Per-step caps are 0.05, 0.02, and 0.05 USD",
-        "The cap sum is 0.12 USD",
+        "Recorded expected total is 0.09345 USD per lead (one lead per run)",
+        "Per-step caps are 0.06, 0.02, and 0.06 USD",
+        "The cap sum is 0.14 USD and the top-level maxAmount is described as a per-step fallback, not a full-run cap",
         "The workflow says to re-probe before payment"
       ]
     },

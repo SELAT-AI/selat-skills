@@ -1,97 +1,116 @@
 # Endpoints — gtm-enrichment-deep
 
-This skill is a fixed three-call, read-only GTM enrichment cross-check. Free
-live verification on **2026-08-30** observed three `routed-mpp` calls. All three
-execute during `selat skill run`; none is a conditional fallback.
+Use only these endpoint families for `gtm-enrichment-deep`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-## Endpoint matrix
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Professional person identity | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 | $0.06 |
+| 2 — Company firmographics | POST | `https://hunter.mpp.paywithlocus.com/hunter/company-enrichment` | MPP on Tempo | $0.01365 | $0.02 |
+| 3 — Funding and revenue cross-check | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | MPP on Tempo | $0.0399 | $0.06 |
 
-| # | Purpose | Method and endpoint | Request data | Live quote | Per-step cap |
-|---|---|---|---|---:|---:|
-| 1 | Professional person identity | `POST apollo.mpp.paywithlocus.com/apollo/people-enrichment` | `email`, `domain`, personal-email/phone revelation fixed `false` | $0.039900 | $0.05 |
-| 2 | Company firmographics | `POST hunter.mpp.paywithlocus.com/hunter/company-enrichment` | `domain` | $0.013650 | $0.02 |
-| 3 | Funding and revenue cross-check | `POST apollo.mpp.paywithlocus.com/apollo/org-enrichment` | `domain` | $0.039900 | $0.05 |
+This is a fixed 3-call, read-only manifest. The step table matches
+`manifest.json` exactly. `selat skill run` executes all three steps every time;
+none is a conditional fallback.
 
-Expected fixed-run total at the recorded quotes: **$0.093450**. The independent
-per-step caps sum to **$0.12**. Re-probe before payment; prices and modes can
-change.
+Live-probed 2026-10-04 (free, `--probe-only --live-probe`): expected total
+**$0.09345** per run, which is the cost per lead (one run = one lead). Per-step
+caps are $0.06 / $0.02 / $0.06 (sum **$0.14**). The manifest's top-level
+`maxAmount` (`$0.06`) is only a per-step fallback for a step without its own
+cap — it is not a full-run cap. Arm a session budget for the cumulative limit.
 
-## Live schema and interpretation notes
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **MPP on Tempo:** Apollo and Hunter via Locus (`*.mpp.paywithlocus.com`). Verify prints `routed-mpp` for all three steps.
 
-### Apollo people enrichment
+## Apollo MPP — `MPP on Tempo`
 
-- Public OpenAPI accepts any combination of `first_name`, `last_name`, `email`,
-  `linkedin_url`, `organization_name`, `domain`, and Apollo person `id`.
-- This recipe uses only the known work `email` and matching `domain`.
-- `reveal_personal_emails` and `reveal_phone_number` are explicitly `false`.
-  The workflow does not need private contact data to produce a GTM brief.
-- Returned professional identity fields can still be absent or stale. Preserve
-  the provider and confidence for every claimed field.
+serviceUrl: `https://apollo.mpp.paywithlocus.com`
 
-### Hunter company enrichment
+Live-probed price: `$0.0399` per call (`routed-mpp`, 2026-10-04). All endpoints
+are **POST with a JSON body**. Per-step cap `$0.06` each.
 
-- Public OpenAPI requires a company `domain`.
-- Its documented result covers description, industry, employee count, location,
-  technology, and social profiles.
-- Funding is not part of the documented endpoint contract. Do not attribute a
-  funding field to Hunter unless the live response actually supplies it.
+- `people-enrichment` accepts any combination of `first_name`, `last_name`,
+  `email`, `linkedin_url`, `organization_name`, `domain`, and Apollo person
+  `id`; this recipe sends only the known work `email` and matching `domain`.
+  `reveal_personal_emails` and `reveal_phone_number` are fixed `false`.
+- `org-enrichment` accepts `domain`, `organization_name`, or Apollo
+  organization `id`; this recipe sends the same `domain`. Its result covers
+  industry, employee count, funding, revenue, and technology stack.
+- Returned fields can be absent or stale. Preserve the provider and confidence
+  for every claimed field. Neither Apollo nor Hunter returns an AI/B2B-SaaS
+  classification; infer it from description/keywords and mark it low
+  confidence.
 
-### Apollo organization enrichment
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Professional person identity | `/apollo/people-enrichment` | `email` (string, required), `domain` (string, required), `reveal_personal_emails` (fixed `false`), `reveal_phone_number` (fixed `false`) |
+| Funding and revenue cross-check | `/apollo/org-enrichment` | `domain` (string, required) |
 
-- Public OpenAPI accepts `domain`, `organization_name`, or Apollo organization
-  `id`; this recipe uses the same required `domain` as the Hunter call.
-- Its documented result covers industry, employee count, funding, revenue, and
-  technology stack.
-- This is always the third cross-check. The SELAT manifest schema and runner do
-  not support result-dependent skipping.
+```json
+{ "email": "jane.doe@acme.com", "domain": "acme.com", "reveal_personal_emails": false, "reveal_phone_number": false }
+```
+
+## Hunter MPP — `MPP on Tempo`
+
+serviceUrl: `https://hunter.mpp.paywithlocus.com`
+
+Live-probed price: `$0.01365` per call (`routed-mpp`, 2026-10-04). **POST with a
+JSON body.** Per-step cap `$0.02`. The documented result covers description,
+industry, employee count, location, technology, and social profiles. Funding
+is not part of the documented contract — do not attribute a funding field to
+Hunter unless the live response actually supplies it.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Company firmographics | `/hunter/company-enrichment` | `domain` (string, required) |
+
+```json
+{ "domain": "acme.com" }
+```
 
 ## Input and privacy gate
 
-- `email` and `domain` are both required because the manifest runner does not
-  derive one parameter from another.
+- `email` and `domain` are both required; the runner does not derive one
+  parameter from another.
 - Lowercase both and require the email suffix to equal the domain.
 - Stop on Gmail, Yahoo, Outlook, or another consumer free-mail domain.
 - Use only for a user-stated legitimate B2B purpose. Do not infer sensitive
   traits, expose personal contact data, or execute outreach.
 
-## Free live probe
+## Free live probes
 
-This command reads payment challenges and does not sign or settle:
+These commands read payment challenges and never sign or settle:
 
 ```bash
 selat skill verify ./skills/gtm-enrichment-deep \
-  --email "research@example.com" \
-  --domain example.com \
+  --email "jane.doe@acme.com" \
+  --domain acme.com \
   --live-probe
-```
 
-Equivalent single-endpoint probes:
-
-```bash
 selat-pay POST \
   "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment" \
-  --body '{"email":"research@example.com","domain":"example.com","reveal_personal_emails":false,"reveal_phone_number":false}' \
-  --chain base --max-amount 0.05 --probe-only --live-probe
+  --body '{"email":"jane.doe@acme.com","domain":"acme.com","reveal_personal_emails":false,"reveal_phone_number":false}' \
+  --chain base --max-amount 0.06 --probe-only --live-probe
 
 selat-pay POST \
   "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment" \
-  --body '{"domain":"example.com"}' \
+  --body '{"domain":"acme.com"}' \
   --chain base --max-amount 0.02 --probe-only --live-probe
 
 selat-pay POST \
   "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment" \
-  --body '{"domain":"example.com"}' \
-  --chain base --max-amount 0.05 --probe-only --live-probe
+  --body '{"domain":"acme.com"}' \
+  --chain base --max-amount 0.06 --probe-only --live-probe
 ```
 
-`--chain base` is the settlement-chain argument required by `selat-pay`. It
-does not turn a probe into a payment. A paid application error may still charge,
-so inspect history before retrying.
+`--chain base` above is only selat-pay's required flag; a probe never settles
+and the CLI resolves the funded Gateway chain for paid runs. A paid application
+error may still charge, so inspect history before retrying.
 
-Public schemas inspected on 2026-08-30:
-
-- `https://apollo.mpp.paywithlocus.com/openapi.json`
-- `https://hunter.mpp.paywithlocus.com/openapi.json`
+Public schemas: `https://apollo.mpp.paywithlocus.com/openapi.json`,
+`https://hunter.mpp.paywithlocus.com/openapi.json`.
 
 Provider names and trademarks belong to their respective owners and are used
 only for endpoint identification.
