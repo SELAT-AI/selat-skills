@@ -8,9 +8,10 @@
       "assertions": [
         "social-intel is selected",
         "requires an explicit topic and passes it unchanged to both engines",
-        "shows the two live quotes and maximum fixed-run exposure before payment",
+        "shows the two live quotes, their expected total, and the sum of per-step caps before payment",
         "does not pay without explicit approval",
-        "after an approved run, cites underlying page URLs and separates cross-engine agreement from independent factual corroboration"
+        "after an approved run, cites underlying page URLs and separates cross-engine agreement from independent factual corroboration",
+        "states that both searches run and are paid on every run"
       ]
     },
     {
@@ -59,6 +60,16 @@
         "warns that a failed paid response may still be charged",
         "does not duplicate the successful step",
         "requires fresh approval before any retry"
+      ]
+    },
+    {
+      "id": "notrigger-reddit-sentiment",
+      "prompt": "What is Reddit saying about the new Base app this week? Give me subreddit sentiment.",
+      "expected_output": "social-intel does not trigger because it has no Reddit or other social-platform endpoint; the agent does not present web-search results as Reddit sentiment.",
+      "assertions": [
+        "social-intel is not selected",
+        "no Reddit data is claimed",
+        "no payment occurs for this skill"
       ]
     }
   ]

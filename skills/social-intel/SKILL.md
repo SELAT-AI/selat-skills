@@ -2,11 +2,11 @@
 name: social-intel
 description: "Use this skill when the user wants a grounded web brief on one explicit topic, brand, or product and wants two search engines cross-checked rather than a single-source lookup. It runs a fixed two-call, read-only bundle: Exa semantic search plus Tavily advanced search. Require a free live quote and explicit cost approval before paying. It does not query Reddit, X/Twitter, or other social-platform APIs, measure platform sentiment, or prove that a topic is trending."
 license: Apache-2.0
-compatibility: "Requires the selat CLI and selat-pay. Paid runs need a funded Circle Agent Wallet. Both calls currently traverse a reachable SELAT Router: Exa as routed MPP and Tavily as routed x402. `selat skill verify --live-probe` without `--pay` is free and needs no funded wallet."
+compatibility: "Requires the selat CLI and selat-pay. Paid runs need a funded Circle Agent Wallet. Both calls currently traverse a reachable SELAT Router as routed x402. `selat skill verify --live-probe` without `--pay` is free and needs no funded wallet."
 metadata:
   author: SELAT-AI
   version: "1.1"
-  rail: mixed
+  rail: x402 via Circle Gateway
   kind: multi
 ---
 
@@ -32,13 +32,15 @@ sentiment-measurement endpoint. It also cannot establish that something is
 
 ## Rails
 
-The two provider-facing payment challenges use different rails:
+Both provider-facing payment challenges currently resolve to the same rail:
 
-- **Exa** (`api.exa.ai/search`): currently selected by SELAT as routed MPP on
-  Tempo. The provider challenge may advertise additional payment options, but
-  the free live quote is authoritative for the route SELAT will use.
-- **Tavily** (`x402.tavily.com/search`): currently selected as routed x402 via
-  Circle Gateway.
+- **Exa** (`api.exa.ai/search`): the live probe resolves routed x402 via Circle
+  Gateway (2026-10-04). It used to resolve routed MPP on Tempo. The provider
+  challenge advertises several payment options. The free live quote is
+  authoritative for the route SELAT will use.
+- **Tavily** (`x402.tavily.com/search`): routed x402 via Circle Gateway.
+
+Either way, you pay from whichever chain holds your funded Gateway balance.
 
 Protocol, route, and price can change. Always run a fresh free live probe before
 approval; do not infer the active route from the hostname.
@@ -51,8 +53,10 @@ approval; do not infer the active route from the hostname.
    `selat skill validate ./skills/social-intel`
 3. Obtain a fresh free quote:
    `selat skill verify ./skills/social-intel --topic "<topic>" --live-probe`
-4. Show the user every step, route, expected total, and maximum total. Obtain
-   explicit approval before adding `--pay` or running the installed skill.
+4. Show the user every step, route, expected total, and the sum of per-step
+   caps. Obtain explicit approval before adding `--pay` or running the
+   installed skill. Paid runs need an armed session budget
+   (`selat budget start --amount <approved-amount>`, then `selat budget stop`).
 5. Execute exactly once. The CLI runs both independently capped calls in order
    and may continue after one step fails.
 6. Inspect every per-step success or failure and payment history before any
@@ -96,9 +100,12 @@ A defensible brief should:
 - **Both steps are POST.** The query belongs in the JSON body.
 - **Required means required.** There is no fallback topic; missing input must fail
   before any network call.
-- **Caps are not prices.** Live verification on 2026-08-31 quoted `$0.00735` for
-  Exa and `$0.0105` for Tavily. Step caps are `$0.010` and `$0.015`, for a maximum
-  fixed-run exposure of `$0.025`. Re-quote before every paid run.
+- **Caps are not prices.** Live verification on 2026-10-04 quoted `$0.007` for
+  Exa and `$0.0105` for Tavily (expected total `$0.0175`). Step caps are `$0.01`
+  and `$0.02`, summing to `$0.03`. The top-level `maxAmount` is only a per-step
+  fallback, not a run cap. Tavily's cap sits above the `0.016` second offer in
+  its 402 challenge (see `references/endpoints.md`). Re-quote before every paid
+  run.
 - **Free verification is limited.** A successful 402 probe verifies the payment
   challenge, route, quote, and cap compatibility; it does not prove that the
   post-payment business response will succeed or contain useful evidence.
@@ -115,7 +122,7 @@ A defensible brief should:
 - Missing-input gate: `selat skill verify ./skills/social-intel --live-probe`
   must fail before probing either endpoint.
 - Live gate (free):
-  `selat skill verify ./skills/social-intel --topic "agent payments August 2026" --live-probe`
+  `selat skill verify ./skills/social-intel --topic "stablecoin payments for AI agents October 2026" --live-probe`
 - Single-step probes (free): see `references/endpoints.md`.
 - Paid confirmation: only after showing a fresh quote and receiving explicit
   approval, add `--pay` to the verified command. Never reuse approval after a
@@ -125,7 +132,7 @@ A defensible brief should:
 
 - `manifest.json` — the machine-readable payment recipe this skill runs.
 - [`references/endpoints.md`](references/endpoints.md) — the catalogue endpoints, rails, and live prices.
-- [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
+- [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md) — authoring standard.
 - selat-pay — https://github.com/SELAT-AI/selat-pay
 
 Exa and Tavily are third-party services. Their names and trademarks belong to
