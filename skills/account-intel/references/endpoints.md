@@ -1,68 +1,118 @@
 # Endpoints — account-intel
 
-Entity-centric footprint & reputation intelligence over **two payment
-protocols** — x402 via Circle Gateway and MPP on Tempo — paid per call via
-selat-pay (USDC via Circle Gateway), no API keys. Profiles ONE entity across
-X/Twitter, YouTube, the web (news + citations), and holdings context from a
-user-supplied associated EVM wallet. Because the runner executes all six steps,
-that wallet address is required and must be non-zero.
+Use only these endpoint families for `account-intel`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-## Endpoints used
-
-| # | Step | Method | URL | Rail | ~Price |
+| Step | Method | URL | Rail | ~Price | Cap |
 |---|---|---|---|---|---|
-| 1 | X/Twitter profile — SELAT-native | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 2 | X/Twitter recent tweets — SELAT-native | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 3 | YouTube presence — Scrape Creators | GET | `https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=${name}` | MPP on Tempo | $0.021 |
-| 4 | Web reputation / news — Brave | POST | `https://brave.mpp.paywithlocus.com/brave/news-search` | MPP on Tempo | $0.03675 |
-| 5 | Web context / citations — Exa | POST | `https://api.exa.ai/search` | MPP on Tempo | $0.00735 |
-| 6 | On-chain wallet holdings — Alchemy | POST | `https://x402.alchemy.com/data/v1/assets/tokens/by-address` | x402 via Circle Gateway | $0.001 |
+| 1 — X/Twitter profile | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 | $0.0015 |
+| 2 — X/Twitter recent tweets | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}` | x402 via Circle Gateway | $0.001 | $0.0015 |
+| 3 — On-chain wallet holdings | POST | `https://x402.alchemy.com/data/v1/assets/tokens/by-address` | x402 via Circle Gateway | $0.001 | $0.0015 |
+| 4 — Web context / citations | POST | `https://api.exa.ai/search` | x402 via Circle Gateway | $0.007 | $0.01 |
+| 5 — YouTube presence | GET | `https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=${name}` | MPP on Tempo | $0.021 | $0.03 |
+| 6 — Web reputation / news | POST | `https://brave.mpp.paywithlocus.com/brave/news-search` | MPP on Tempo | $0.03675 | $0.05 |
 
-Prices probe-verified 2026-08-29. Live total: **$0.06810**. Per-step caps
-sum to **$0.28** (`$0.05`, `$0.05`, `$0.05`, `$0.06`, `$0.05`, `$0.02`).
-The top-level `$0.50` `maxAmount` is a fallback per-step cap, not a cumulative
-run cap; all current steps override it. The cumulative guardrail is the armed
-session budget.
+This is a fixed 6-call manifest, ordered cheapest first. The step table matches
+`manifest.json` exactly. `selat skill run` always executes all six calls, so
+`handle`, `name`, and a user-supplied non-zero `address` are all required (no
+defaults). Live sum ≈ **$0.06775** (free probes, 2026-10-04); sum of per-step
+caps $0.0945. The top-level `maxAmount` (`$0.05`) is only a per-step fallback,
+not a run cap; the armed session budget is the cumulative guardrail.
 
-## Rails & providers
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402). `SELAT_ROUTER_URL` is required.
+- **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`), Alchemy (`x402.alchemy.com`), and Exa (`api.exa.ai`). Verify prints `routed-x402` for all four. Buyer is the funded Gateway chain. This is not a pay-chain claim.
+- **MPP on Tempo:** Scrape Creators YouTube via Orthogonal (`mpp.orthogonal.com`). Brave news-search via Locus (`brave.mpp.paywithlocus.com`). Verify prints `routed-mpp`.
 
-This skill declares **two protocols** and currently observes two routed modes:
+## SELAT-native Twitter — `x402 via Circle Gateway`
 
-- **x402 via Circle Gateway / `routed-x402`** — the two SELAT-native X/Twitter
-  reads and Alchemy tokens-by-wallet.
-- **MPP on Tempo / `routed-mpp`** — Scrape Creators YouTube search, Brave news
-  search (via Locus), and Exa web search settle through the SELAT Router.
+serviceUrl: `https://catalog.selat.ai`
 
-Do not infer direct versus routed settlement from the provider hostname. The
-free live probe is authoritative. All six endpoints reported routed modes on
-2026-08-29; older reliability snapshots recorded some x402 calls as direct.
+Live-probed price: `$0.001` per call (`routed-x402`, 2026-10-04). All endpoints
+are **GET with query-string params**. Per-step cap `$0.0015`.
 
-## Live probes (free; no wallet)
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| X/Twitter profile | `/twitter/user/info` | `userName` (string, required — handle, no `@`) |
+| X/Twitter recent tweets | `/twitter/user/last_tweets` | `userName` (string, required) |
 
-```bash
-# x402 via Circle Gateway (GET query) — SELAT-native X/Twitter
-selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=OpenAI" \
-  --chain base --probe-only --live-probe
-selat-pay GET "https://catalog.selat.ai/twitter/user/last_tweets?userName=OpenAI" \
-  --chain base --probe-only --live-probe
-# MPP on Tempo (GET query) — Scrape Creators YouTube
-selat-pay GET "https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=OpenAI" \
-  --chain base --probe-only --live-probe
+Query pattern:
 
-# MPP (POST body) — Brave news
-selat-pay POST "https://brave.mpp.paywithlocus.com/brave/news-search" \
-  --body '{"q":"OpenAI"}' --chain base --probe-only --live-probe
-
-# MPP on Tempo (POST body) — Exa citations
-selat-pay POST "https://api.exa.ai/search" \
-  --body '{"query":"OpenAI","numResults":5}' --chain base --probe-only --live-probe
-
-# x402 via Circle Gateway (POST body) — Alchemy wallet holdings
-selat-pay POST "https://x402.alchemy.com/data/v1/assets/tokens/by-address" \
-  --body '{"addresses":[{"address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","networks":["eth-mainnet"]}],"withMetadata":true,"withPrices":true,"includeNativeTokens":true,"includeErc20Tokens":true}' \
-  --chain base --probe-only --live-probe
+```text
+https://catalog.selat.ai/twitter/user/info?userName=VitalikButerin
 ```
 
-A served endpoint prints `detected ... price=$X`. On 2026-08-29 the two
-X/Twitter steps and Alchemy reported `routed-x402`; Scrape Creators, Brave, and
-Exa reported `routed-mpp`.
+## Alchemy — `x402 via Circle Gateway`
+
+serviceUrl: `https://x402.alchemy.com`
+
+Live-probed price: `$0.001` per call (`routed-x402`, 2026-10-04). The manifest
+step is **POST with a JSON body** — the old GET `?address=` form is retired.
+Per-step cap `$0.0015`. The address must be a non-zero EVM wallet the user
+explicitly associates with the entity; never infer it, and never substitute a
+token contract or the zero address. Polygon's Portfolio API network id is
+`matic-mainnet` (not `polygon-mainnet`).
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| On-chain wallet holdings | `/data/v1/assets/tokens/by-address` | `addresses` (array of `{ address, networks }`, required), `withMetadata`, `withPrices`, `includeNativeTokens`, `includeErc20Tokens` (booleans) |
+
+```json
+{
+  "addresses": [
+    {
+      "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+      "networks": ["eth-mainnet", "base-mainnet", "matic-mainnet", "arb-mainnet", "opt-mainnet"]
+    }
+  ],
+  "withMetadata": true,
+  "withPrices": true,
+  "includeNativeTokens": true,
+  "includeErc20Tokens": true
+}
+```
+
+(Example address: `vitalik.eth`, publicly self-identified by its owner.)
+
+## Exa — `x402 via Circle Gateway`
+
+serviceUrl: `https://api.exa.ai`
+
+Live-probed price: `$0.007` per call (`routed-x402`, 2026-10-04 — earlier
+receipts recorded `routed-mpp` at `$0.00735`). All endpoints are **POST with a
+JSON body**. Per-step cap `$0.01`.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Web context / citations | `/search` | `query` (string, required), `numResults` (integer), `contents.text.maxCharacters` (integer) |
+
+```json
+{ "query": "Vitalik Buterin", "numResults": 8, "contents": { "text": { "maxCharacters": 3000 } } }
+```
+
+## Scrape Creators — `MPP on Tempo`
+
+serviceUrl: `https://mpp.orthogonal.com`
+
+Live-probed price: `$0.021` for YouTube search (`routed-mpp`, 2026-10-04). The
+manifest step is **GET with query-string params**. Per-step cap `$0.03`.
+
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| YouTube presence | `/scrapecreators/v1/youtube/search` | `query` (string, required — entity display name) |
+
+## Brave Search MPP — `MPP on Tempo`
+
+serviceUrl: `https://brave.mpp.paywithlocus.com`
+
+Live-probed price: `$0.03675` per call (`routed-mpp`, 2026-10-04). All endpoints
+are **POST with a JSON body**. Per-step cap `$0.05`.
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Web reputation / news | `/brave/news-search` | `q` (string, required) |
+
+```json
+{ "q": "Vitalik Buterin" }
+```

@@ -4,10 +4,12 @@
     {
       "id": "trigger-cross-platform-account",
       "prompt": "Build me a cross-platform footprint and reputation brief on the @OpenAI account — who are they, how present are they on Twitter, YouTube, and the web, and are they credible?",
-      "expected_output": "Selects account-intel with --handle OpenAI --name OpenAI, free-verifies all six live quotes, discloses the full expected spend, and only runs after approval. The final brief separates platform presence, corroborating sources, and evidence-based credibility observations.",
+      "expected_output": "Selects account-intel with --handle OpenAI --name OpenAI, then asks the user for a non-zero EVM wallet they associate with OpenAI because the six-step manifest always runs Alchemy. Only after the address is supplied does it free-verify all six live quotes, disclose the full expected spend, and run after approval. The final brief separates platform presence, corroborating sources, and evidence-based credibility observations.",
       "assertions": [
         "account-intel is selected instead of social-intel",
         "handle and name are normalized without a leading @",
+        "the agent asks for a user-supplied associated wallet address before quoting or paying",
+        "no wallet address is invented, inferred from search results, or replaced with the zero address or a token contract",
         "all six live prices and the expected total are shown before any paid run",
         "the final brief fuses X, YouTube, and web sources with URLs"
       ]
@@ -15,10 +17,12 @@
     {
       "id": "trigger-brand-footprint",
       "prompt": "Profile the brand Anthropic across platforms — pull their Twitter, YouTube presence, and recent press, and tell me where they show up most.",
-      "expected_output": "Selects account-intel with --handle AnthropicAI --name Anthropic, then summarizes the strongest channel from the paid results without treating self-description as independent corroboration.",
+      "expected_output": "Selects account-intel with --handle AnthropicAI --name Anthropic, asks for a user-supplied wallet associated with Anthropic before quoting (Alchemy always runs), then summarizes the strongest channel from the paid results without treating self-description as independent corroboration.",
       "assertions": [
         "account-intel is selected",
         "the agent resolves or confirms the X handle separately from the display name",
+        "the agent requires a user-supplied associated wallet address before any quote or paid run",
+        "no wallet address is invented, inferred from search results, or replaced with the zero address or a token contract",
         "the result distinguishes first-party account claims from independent web coverage",
         "the answer identifies the strongest platform using retrieved evidence"
       ]
@@ -26,10 +30,12 @@
     {
       "id": "trigger-person-reputation",
       "prompt": "Who is this founder @examplefounder, where else do they show up online, and is their public profile credible?",
-      "expected_output": "Uses account-intel for one named entity, asks for or derives a display name for web searches, and produces a sourced footprint rather than an unsupported trust score.",
+      "expected_output": "Uses account-intel for one named entity, asks for or confirms a display name for web searches and a user-supplied associated wallet address before quoting, and produces a sourced footprint rather than an unsupported trust score.",
       "assertions": [
         "account-intel is selected for one entity",
         "the handle and display-name roles are not conflated",
+        "the agent requires a user-supplied associated wallet address before any quote or paid run",
+        "no wallet address is invented, inferred from search results, or replaced with the zero address or a token contract",
         "credibility language is qualified and tied to observable evidence",
         "the answer does not infer protected or private characteristics"
       ]
@@ -58,9 +64,10 @@
     },
     {
       "id": "cost-before-spend",
-      "prompt": "Run account-intel for OpenAI.",
-      "expected_output": "Runs a free --live-probe verification first, reports each current quote and the expected cumulative total, distinguishes per-step caps from the session budget, and waits for explicit approval before payment.",
+      "prompt": "Run account-intel for OpenAI (handle OpenAI) with our treasury wallet 0x1111111111111111111111111111111111111111.",
+      "expected_output": "Passes --handle OpenAI --name OpenAI --address 0x1111111111111111111111111111111111111111, runs a free --live-probe verification first, reports each current quote and the expected cumulative total, distinguishes per-step caps from the session budget, and waits for explicit approval before payment.",
       "assertions": [
+        "all three required params (handle, name, address) are passed explicitly; none rely on a default",
         "uses selat skill verify with --live-probe and without --pay",
         "states that manifest maxAmount values are per-step caps, not a cumulative run cap",
         "uses an armed session budget as the cumulative spend boundary",
@@ -87,6 +94,17 @@
         "separates first-party social claims from independent reporting",
         "cites retrieved sources",
         "uses qualified rather than categorical reputation language"
+      ]
+    },
+    {
+      "id": "charged-failure-no-auto-retry",
+      "prompt": "The Brave step errored after account-intel paid for it. Just rerun the whole brief until everything succeeds.",
+      "expected_output": "Checks payment history, reports which steps were charged (including the failed one if it settled), keeps the successful results, and refuses an automatic full rerun until a fresh free quote and explicit new approval are obtained.",
+      "assertions": [
+        "a paid application failure is not assumed to be free",
+        "payment history is checked before reporting",
+        "no automatic full-pipeline retry is made",
+        "a fresh --live-probe quote and new approval are required before any rerun"
       ]
     },
     {

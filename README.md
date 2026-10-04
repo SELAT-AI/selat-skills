@@ -68,7 +68,7 @@ The table below mirrors the current `index.json` catalog.
 | [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Cross-platform social intelligence with web grounding. |
 | [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Economic-agent preflight for market, social, and domain context. |
 | [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Multi-signal market intelligence for assets and tickers. |
-| [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity footprint and reputation intelligence. |
+| [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity footprint and reputation brief across X/Twitter, YouTube, web news and citations, plus holdings for a user-supplied wallet. |
 | [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | VC deal-sourcing scout for AI infrastructure theses. |
 | [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit. |
 | [perplexity-search](skills/perplexity-search/SKILL.md) | routed | single | Perplexity-backed web search through x402. |
