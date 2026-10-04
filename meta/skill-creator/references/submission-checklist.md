@@ -10,7 +10,7 @@ is a quick-reference pointer to it.
 selat skill new my-skill --dir skills          # 1. scaffold
 #   …edit the files (replace every TODO)…       # 2. author
 selat skill validate ./skills/my-skill         # 3. static SOP check
-selat skill verify   ./skills/my-skill [--pay] # 4. live-402 check (the gate)
+selat skill verify   ./skills/my-skill --live-probe [--pay] # 4. live-402 check (the gate)
 selat skill register ./skills/my-skill         # 5. add index.json entry
 npm run validate                               # 6. whole-repo check (what CI runs)
 selat skill submit   ./skills/my-skill         # 7. open the PR
@@ -25,7 +25,7 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
    from `selat search` (not the provider host); POST params in `body`; `maxAmount` with headroom.
 3. **`selat skill validate ./skills/my-skill`** — static SOP check (schema, name ==
    folder, no `TODO`, evals present). Same check CI runs per skill.
-4. **`selat skill verify ./skills/my-skill`** — **the gate.** Probes each step's
+4. **`selat skill verify ./skills/my-skill --live-probe`** — **the gate.** Probes each step's
    real 402 price/rail (free, no wallet) and checks it ≤ `maxAmount`. Add `--pay`
    to make a capped real call confirming a settled 200. Pass required params as
    flags (e.g. `--symbols ETH`). Writes `skills/my-skill/.selat/verify-receipt.json`
@@ -58,7 +58,7 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
 - [ ] POST/PUT params in `body`; GET params in the query string.
 - [ ] Params have real defaults; `maxAmount` set as a generous filter.
 - [ ] First-party provider chosen over a proxy where equivalent.
-- [ ] `selat skill validate` passes; `selat skill verify` produces a passing receipt.
+- [ ] `selat skill validate` passes; `selat skill verify --live-probe` produces a passing receipt.
 - [ ] `npm run validate` → 0 errors.
 - [ ] No `TODO`, secrets, or `orth`/CLI/`subprocess` calls.
 - [ ] Did **not** copy the authoring SOP into the skill's `references/`.

@@ -35,7 +35,14 @@ skills/<name>/
 
 - **direct** — Circle nanopayment / Gateway-batched, paid straight to the upstream (no router hop).
 - **routed** — erc-3009 or tempo-native **MPP**, paid via the SELAT Router, which translates the agent's inbound Gateway-batched payment to the upstream's scheme.
-- **mixed** — a multi-rail skill that uses both in one run (see `market-snapshot`).
+- **mixed** — a multi-step skill whose steps settle on more than one rail in one run (e.g. `stock-direction-signals`, which mixes x402 and MPP steps).
+
+In the manifests, each step's `rail` is a descriptive label read from the live
+probe (`x402 via Circle Gateway`, `x402 on Base`, `MPP on Tempo`,
+`MPP on Solana`). A skill whose steps all share one label lists that label in
+the table below; otherwise it lists `mixed`. A label names the merchant's rail,
+not the chain you pay from: the CLI settles from your funded Circle Gateway
+balance.
 
 ## Current coverage
 
@@ -71,7 +78,7 @@ The table below mirrors the current `index.json` catalog.
 | [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity footprint and reputation intelligence. |
 | [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | VC deal-sourcing scout for AI infrastructure theses. |
 | [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit. |
-| [perplexity-search](skills/perplexity-search/SKILL.md) | routed | single | Perplexity-backed web search through x402. |
+| [perplexity-search](skills/perplexity-search/SKILL.md) | x402 on Base | single | Perplexity-backed web search through x402. |
 | [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Non-advisory bullish/bearish/mixed stock signal brief. |
 | [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Read-only EVM wallet attribution and holdings brief. |
 
@@ -115,7 +122,7 @@ npm run probe                      # writes reliability.json
   // chain is NOT declared here — the settlement chain is resolved at runtime
   // from your funded Circle Gateway balance. Pin "chain": "<key>" only if the
   // skill must settle on a fixed chain.
-  "maxAmount": "0.03",        // default USD cap for all steps
+  "maxAmount": "0.03",        // per-step fallback cap for steps without their own; NOT a run total
   "params": {                  // user inputs, substituted as ${name}
     "<key>": { "required": true, "default": "...", "description": "..." }
   },
@@ -126,7 +133,7 @@ npm run probe                      # writes reliability.json
       "method": "GET|POST|...",
       "url": "https://... with ${param}",
       "body": { },             // optional; object/array is JSON-encoded, ${param} substituted
-      "maxAmount": "0.005"     // optional per-step cap override
+      "maxAmount": "0.005"     // optional per-step cap (overrides the top-level fallback)
     }
   ]
 }

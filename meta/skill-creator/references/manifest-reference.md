@@ -8,7 +8,7 @@ The manifest is the **inert payment recipe** the `selat` CLI compiles into
   "schema": "selat-skill/v1",
   "name": "my-skill",                 // MUST equal the folder name (kebab-case)
   "description": "One line; what it does and which rail.",
-  "maxAmount": "5.00",                // full-run spending cap (a filter, not a price)
+  "maxAmount": "5.00",                // per-step fallback cap (a filter, not a price; NOT a run total)
   "params": {
     "email":  { "required": false, "default": "test@stripe.com", "description": "Person email" },
     "domain": { "required": false, "default": "stripe.com",      "description": "Company domain" }
@@ -40,8 +40,15 @@ The manifest is the **inert payment recipe** the `selat` CLI compiles into
   params in the query string; put POST/PUT/PATCH/DELETE params in `body`.
 - **`${param}`** — substituted from `params` (with the caller's overrides or the
   `default`). Use the same names in `url`/`body` and `params`.
-- **`maxAmount`** — string USD. Top-level is the full-run cap; per-step overrides
-  it for that call. Treat as a guardrail; set with headroom over the live quote.
+- **`maxAmount`** — string USD, a per-call cap. The CLI applies
+  `step.maxAmount ?? manifest.maxAmount` to each call, so the top-level value is
+  only a **fallback for steps that declare no cap of their own**. It is **not** a
+  full-run cap: nothing enforces a total across steps, and a run can spend up to
+  the sum of its step caps. Give every step its own cap, and quote the run's
+  cost as the sum of the live step prices. Keep the top-level value no higher
+  than the largest step cap: `selat skill install --max-amount <usd>` refuses a
+  manifest whose declared caps (top-level included) exceed that value. Treat
+  caps as guardrails and set them with headroom over the live quote.
 - **`rail`** — a descriptive label: `direct` (Circle nanopayment, paid to the
   upstream), `routed` (via the SELAT Router), or `mixed` (a multi-step skill using
   both). It feeds `index.json` and the listing; it does not choose how the step

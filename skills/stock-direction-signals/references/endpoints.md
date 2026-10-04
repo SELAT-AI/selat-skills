@@ -18,6 +18,10 @@ is authoritative — `selat skill verify` probes it free.
 | 9 — Smart money | GET | `https://pay.smartmoney.market/api/ticker/${ticker}` | MPP on Solana | $0.0105 |
 | 10 — Reddit | POST | `https://stableenrich.dev/api/reddit/search` | MPP on Tempo | $0.021 |
 
+This is a fixed 10-call manifest. The step table matches `manifest.json` exactly,
+and `selat skill run` pays every step. Live prices (probed 2026-10-04) sum to
+$0.086 per run; the per-step caps sum to $0.21.
+
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 on Base / Polygon:** Settles via Circle Gateway batched nanopayments. Buyer is the funded Gateway chain. This is not a pay-chain claim.
 - **MPP on Solana:** smartmoney-market's Pay / MPP gateway (`pay.smartmoney.market`), paid in Solana USDC by the router.

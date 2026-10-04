@@ -17,9 +17,10 @@ is authoritative — `selat skill verify` probes it free.
 | 8 — Tweet replies | GET | `https://catalog.selat.ai/twitter/tweet/replies?tweetId=${tweetId}` | x402 via Circle Gateway | $0.001 |
 | 9 — Tweet retweeters | GET | `https://catalog.selat.ai/twitter/tweet/retweeters?tweetId=${tweetId}` | x402 via Circle Gateway | $0.001 |
 
-This is a fixed 9-call menu in `manifest.json` — not a cheapest-first pipeline.
-The agent selects only the endpoints a request needs. A selected 1–3 endpoint
-run costs $0.001–$0.003; the full 9-step smoke test is ~$0.009.
+This is a fixed 9-call manifest. The step table matches `manifest.json` exactly.
+`selat skill run` pays all 9 steps (~$0.009, live prices probed 2026-10-04).
+To pay only 1–3 reads ($0.001–$0.003), the agent makes individual `selat-pay`
+calls against the URLs above. Each step's cap is `$0.01`.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`) serves a native x402 (`GatewayWalletBatched`) challenge. Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim.

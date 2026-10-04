@@ -9,7 +9,7 @@ is authoritative — `selat skill verify` probes it free.
 |---|---|---|---|---|
 | 1 — Broad web discovery | POST | `https://x402.tavily.com/search` | x402 on Base | $0.0105 |
 | 2 — Product Hunt discovery | POST | `https://parallelmpp.dev/api/search` | MPP on Tempo | $0.0105 |
-| 3 — Launch + funding context | POST | `https://api.exa.ai/search` | MPP on Tempo | $0.00735 |
+| 3 — Launch + funding context | POST | `https://api.exa.ai/search` | x402 via Circle Gateway | $0.007 |
 | 4 — Twitter/X founder buzz | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitterQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
 | 5 — Twitter/X fundraising news | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${fundraisingQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
 | 6 — LinkedIn fundraising news | POST | `https://x402.tavily.com/search` | x402 on Base | $0.0105 |
@@ -17,12 +17,14 @@ is authoritative — `selat skill verify` probes it free.
 | 8 — Founder shortlist | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-search` | MPP on Tempo | $0.00525 |
 | 9 — Company enrichment | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | MPP on Tempo | $0.0399 |
 
-This is a fixed 9-call manifest. The step table matches `manifest.json` exactly.
+This is a fixed 9-call manifest. The step table matches `manifest.json` exactly,
+and `selat skill run` pays every step. Live prices (probed 2026-10-04) sum to
+about $0.087 per run; the per-step caps sum to $0.40.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
-- **x402 on Base / Polygon:** Tavily (`x402.tavily.com`) settles via Circle Gateway batched nanopayments. Buyer is the funded Gateway chain. This is not a pay-chain claim.
-- **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). Verify prints `routed-x402`.
-- **MPP on Tempo:** Apollo via Locus (`apollo.mpp.paywithlocus.com`). Parallel (`parallelmpp.dev`) and Exa (`api.exa.ai`) are MPP on Tempo but not Locus.
+- **x402 on Base:** Tavily (`x402.tavily.com`) serves a plain x402 `exact` challenge; the router pays that leg (`routed-x402`). Buyer is the funded Gateway chain. This is not a pay-chain claim.
+- **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`) and Exa (`api.exa.ai`) offer Circle Gateway batched x402. Verify prints `routed-x402`. Exa also serves an MPP challenge, but the router selects x402.
+- **MPP on Tempo:** Apollo via Locus (`apollo.mpp.paywithlocus.com`). Parallel (`parallelmpp.dev`) is MPP on Tempo but not Locus.
 
 ## Tavily — `x402 on Base`
 
@@ -55,11 +57,12 @@ with a JSON body**.
 { "objective": "AI infrastructure Product Hunt launches", "search_queries": ["AI infrastructure site:producthunt.com"], "max_results": 10 }
 ```
 
-## Exa — `MPP on Tempo`
+## Exa — `x402 via Circle Gateway`
 
 serviceUrl: `https://api.exa.ai`
 
-Live-probed price: `$0.00735` per call (`routed-mpp`). All endpoints are **POST
+Live-probed price: `$0.007` per call (`routed-x402`, 2026-10-04; it resolved
+`routed-mpp` at $0.00735 in July). All endpoints are **POST
 with a JSON body**.
 
 | Capability/Step | Endpoint | Body params |
