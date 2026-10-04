@@ -83,7 +83,7 @@
       "name": "financial-intel",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and Exa. Requires coherent asset, benchmark, chain, and news inputs; every step is paid independently through the SELAT Router over x402 or MPP."
+      "description": "Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and Exa. Requires coherent asset, benchmark, data-chain, and news inputs (no defaults); every step is paid independently through the SELAT Router over x402 or MPP. Not investment advice."
     },
     {
       "name": "account-intel",

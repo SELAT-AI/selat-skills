@@ -1,8 +1,8 @@
 {
   "schema": "selat-skill/v1",
   "name": "financial-intel",
-  "description": "Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and Exa. Requires coherent asset, benchmark, chain, and news inputs; every step is paid independently through the SELAT Router over x402 or MPP.",
-  "maxAmount": "0.08",
+  "description": "Fixed five-call, read-only crypto market-research bundle across Alchemy, CoinGecko, Alpha Vantage, Nansen, and Exa. Requires coherent asset, benchmark, data-chain, and news inputs (no defaults); every step is paid independently through the SELAT Router over x402 or MPP. Not investment advice.",
+  "maxAmount": "0.09",
   "params": {
     "symbol": {
       "required": true,
@@ -31,7 +31,7 @@
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://x402.alchemy.com/prices/v1/tokens/by-symbol?symbols=${symbol}",
-      "maxAmount": "0.002"
+      "maxAmount": "0.0015"
     },
     {
       "label": "token market data — CoinGecko coins-markets (MPP on Tempo)",
@@ -46,7 +46,7 @@
         "sparkline": true,
         "price_change_percentage": "1h,24h,7d"
       },
-      "maxAmount": "0.08"
+      "maxAmount": "0.09"
     },
     {
       "label": "equity benchmark quote — Alpha Vantage global-quote (MPP on Tempo)",
@@ -56,7 +56,7 @@
       "body": {
         "symbol": "${ticker}"
       },
-      "maxAmount": "0.015"
+      "maxAmount": "0.012"
     },
     {
       "label": "chain-level smart-money holdings — Nansen (MPP on Tempo)",
@@ -71,8 +71,8 @@
       "maxAmount": "0.07"
     },
     {
-      "label": "news and market context — Exa search (MPP on Tempo)",
-      "rail": "MPP on Tempo",
+      "label": "news and market context — Exa search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "POST",
       "url": "https://api.exa.ai/search",
       "body": {
@@ -84,7 +84,7 @@
           }
         }
       },
-      "maxAmount": "0.02"
+      "maxAmount": "0.01"
     }
   ]
 }

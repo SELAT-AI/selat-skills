@@ -2,7 +2,7 @@
 name: financial-intel
 description: Use this skill when the user wants one fixed, read-only, multi-source market-research brief for a crypto asset and can provide a matching token symbol, CoinGecko coin ID, equity or ETF benchmark ticker, Nansen-supported data chain, and asset-specific news query. It retrieves spot price, token-market metrics, one benchmark quote, chain-level smart-money holdings, and current web context. Before payment, free-verify all five calls and obtain approval for the live total and a cumulative session cap. Do not use for equity-only research, a single price/news lookup, personalized investment advice, price predictions, or trade execution.
 license: Apache-2.0
-compatibility: "Requires the selat CLI and selat-pay with a funded Circle Agent Wallet for paid runs. All five calls currently traverse the SELAT Router: Alchemy as routed x402 and the other four as routed MPP. `selat skill verify --live-probe` is free and needs no funded wallet."
+compatibility: "Requires the selat CLI and selat-pay >= 0.12.0 with a funded Circle Agent Wallet for paid runs. All five calls traversed the SELAT Router on the 2026-10-04 live probe: Alchemy and Exa as routed x402, CoinGecko, Alpha Vantage, and Nansen as routed MPP. `selat skill verify --live-probe` is free and needs no funded wallet."
 metadata:
   author: SELAT-AI
   version: "1.4"
@@ -61,7 +61,7 @@ skill or free endpoint discovery instead of paying for all five calls.
      --coin ethereum \
      --ticker QQQ \
      --assetChain ethereum \
-     --query "Ethereum ETH ETF flows regulation August 2026" \
+     --query "Ethereum ETH ETF flows regulation latest news" \
      --live-probe
    ```
 
@@ -79,7 +79,7 @@ skill or free endpoint discovery instead of paying for all five calls.
      --coin ethereum \
      --ticker QQQ \
      --assetChain ethereum \
-     --query "Ethereum ETH ETF flows regulation August 2026"
+     --query "Ethereum ETH ETF flows regulation latest news"
    selat budget stop
    ```
 
@@ -130,25 +130,30 @@ or silently selecting one provider.
 
 ## Rails And Costs
 
-The manifest declares two payment-protocol categories and the current live
+The manifest declares two payment-protocol categories and the 2026-10-04 live
 verification observes two routed modes:
 
-- Alchemy: `x402 via Circle Gateway`, currently `routed-x402`.
-- CoinGecko, Alpha Vantage, Nansen, and Exa: `MPP on Tempo`, currently
-  `routed-mpp`.
+- Alchemy and Exa: `x402 via Circle Gateway`, currently `routed-x402`. (Exa
+  previously quoted `routed-mpp`; it now resolves x402.)
+- CoinGecko, Alpha Vantage, and Nansen: `MPP on Tempo`, currently
+  `routed-mpp`. Nansen is dual-protocol: its MPP challenge appears only behind
+  the probe's `Authorization: Payment` retry, and the router has been observed
+  settling Nansen over x402. The rail label follows the probe `mode`; check
+  `selat history` for the settled rail.
 
 All five calls currently require a reachable `SELAT_ROUTER_URL`. Do not infer
 direct versus routed execution from the provider hostname; the free live probe
 is authoritative.
 
 `maxAmount` values are per-call ceilings, not price estimates and not a pooled
-run cap. Current per-step caps are `$0.002`, `$0.08`, `$0.015`, `$0.07`, and
-`$0.02`, totaling **$0.187**. The manifest's top-level `$0.08` is only a fallback
-for a step without an override; every current step has an override. A separately
+run cap. Current per-step caps are `$0.0015`, `$0.09`, `$0.012`, `$0.07`, and
+`$0.01` (~1.3–1.5x each live quote), totaling **$0.1835**. The manifest's
+top-level `$0.09` is only a fallback for a step without an override — it is
+**not** a full-run cap, and every current step has an override. A separately
 armed session budget supplies the cumulative limit.
 
-The free live probe on 2026-08-30 quoted `$0.001`, `$0.063`, `$0.0084`, `$0.0525`,
-and `$0.00735`, for an expected total of **$0.13225**. Re-probe before every paid
+The free live probe on 2026-10-04 quoted `$0.001`, `$0.063`, `$0.0084`, `$0.0525`,
+and `$0.007`, for an expected total of **$0.1319**. Re-probe before every paid
 run because live prices and modes can change.
 
 ## Gotchas
@@ -175,11 +180,15 @@ run because live prices and modes can change.
 - Static:
   `selat skill validate ./skills/financial-intel`
 - Live gate, free:
-  `selat skill verify ./skills/financial-intel --symbol ETH --coin ethereum --ticker QQQ --assetChain ethereum --query "Ethereum ETH ETF flows regulation August 2026" --live-probe`
+  `selat skill verify ./skills/financial-intel --symbol ETH --coin ethereum --ticker QQQ --assetChain ethereum --query "Ethereum ETH ETF flows regulation latest news" --live-probe`
 - Paid verification: only after fresh quotes, explicit approval, and an armed
   cumulative session budget, add `--pay`; each paid call can settle independently.
 - Single-step probe, free:
-  `selat-pay GET "https://x402.alchemy.com/prices/v1/tokens/by-symbol?symbols=ETH" --chain base --probe-only --live-probe`
+
+  > `--chain base` in the probe commands below is only the flag `selat-pay` requires today — a probe reads a free, chain-independent quote and never settles. A real paid run resolves the settlement chain from your funded Circle Gateway balance, not the manifest.
+
+  `selat-pay GET "https://x402.alchemy.com/prices/v1/tokens/by-symbol?symbols=ETH" --chain base --max-amount 0.0015 --probe-only --live-probe`
+  `selat-pay POST "https://api.nansen.ai/api/v1/smart-money/holdings" --body '{"chains":["ethereum"]}' --chain base --max-amount 0.07 --probe-only --live-probe`
 
 ## References
 

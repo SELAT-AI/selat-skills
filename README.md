@@ -67,7 +67,7 @@ The table below mirrors the current `index.json` catalog.
 | [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Social data reads across Twitter/X, Instagram, and LinkedIn. |
 | [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Cross-platform social intelligence with web grounding. |
 | [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Economic-agent preflight for market, social, and domain context. |
-| [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Multi-signal market intelligence for assets and tickers. |
+| [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Fixed five-call crypto market-research bundle (spot, token market data, one equity/ETF benchmark, chain-level smart money, news); crypto assets only, not advice. |
 | [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity footprint and reputation intelligence. |
 | [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | VC deal-sourcing scout for AI infrastructure theses. |
 | [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit. |
