@@ -78,7 +78,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [perplexity-search](skills/perplexity-search/SKILL.md) | x402 on Base | single | Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. |
 | [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Read-only public professional lookup for one named person at a known company via one bounded five-result… |
 | [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | One bounded, read-only Brave News Search for recently published startup-funding coverage. |
-| [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. |
+| [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Fixed five-read, read-only B2B prospecting bundle: bounded ICP company search, bounded professional search at… |
 | [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle… |
 | [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability… |
 | [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches… |

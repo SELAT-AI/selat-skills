@@ -77,7 +77,7 @@
       "name": "sales-prospecting",
       "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. Searches companies (Fiber), finds decision-makers (Fiber), pulls all domain emails (Hunter), finds a specific contact's email (Hunter email finder), verifies deliverability (Hunter email verifier), and enriches with company data (Orthogonal Company Enrich)."
+      "description": "Fixed five-read, read-only B2B prospecting bundle: bounded ICP company search, bounded professional search at one known company, privacy-limited enrichment of one known professional, independent verification of a supplied work email, and company enrichment. Requires nine coherent inputs, reveals no personal emails or phone numbers, and sends no outreach."
     },
     {
       "name": "scrapecreators",
