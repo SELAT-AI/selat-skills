@@ -60,9 +60,9 @@ const manifest = {
   schema: "selat-skill/v1",
   name: o.name,
   description: `TODO one line — what ${o.name} does (${railNote}).`,
-  maxAmount: "5.00",
+  maxAmount: "0.05",
   params: {
-    example: { required: false, default: "stripe.com", description: "TODO describe this input" },
+    example: { required: true, description: "TODO describe this input (no default naming a real person/company)" },
   },
   steps: [
     {
@@ -71,7 +71,7 @@ const manifest = {
       method: "GET",
       // IMPORTANT: use the catalogue serviceUrl, not the provider url.
       url: "https://mpp.orthogonal.com/<merchant>/<path>?key=${example}",
-      maxAmount: "5.00",
+      maxAmount: "0.05", // TODO set to the live probe quote + ~25-50% headroom
     },
   ],
 };
@@ -80,7 +80,7 @@ const skillMd = `---
 name: ${o.name}
 description: Use this skill when the user wants TODO — include trigger phrases, keywords, and adjacent wording (under 1024 chars). ${railNote}.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0${o.rail === "direct" ? "" : ", and a reachable SELAT Router (SELAT_ROUTER_URL)"}.
+compatibility: Requires the selat CLI, selat-pay >= 0.12.0${o.rail === "direct" ? "" : ", and a reachable SELAT Router (SELAT_ROUTER_URL)"}.
 metadata:
   author: ${o.author}
   version: "1.0"

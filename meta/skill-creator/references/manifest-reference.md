@@ -8,30 +8,35 @@ The manifest is the **inert payment recipe** the `selat` CLI compiles into
   "schema": "selat-skill/v1",
   "name": "my-skill",                 // MUST equal the folder name (kebab-case)
   "description": "One line; what it does and which rail.",
-  "maxAmount": "5.00",                // per-step fallback cap (a filter, not a price; NOT a run total)
+  "maxAmount": "0.05",                // per-step fallback cap (a filter, not a price; NOT a run total)
   "params": {
-    "email":  { "required": false, "default": "test@stripe.com", "description": "Person email" },
-    "domain": { "required": false, "default": "stripe.com",      "description": "Company domain" }
+    "domain":  { "required": true, "description": "Company domain the user supplied, e.g. acme.com" },
+    "company": { "required": true, "description": "Company name the user supplied" }
   },
   "steps": [
     {
-      "label": "person resolve — Tomba enrich by email",
-      "rail": "routed",                                   // direct | routed | mixed
+      "label": "company overview — Orthogonal Company Enrich by domain (MPP on Tempo)",
+      "rail": "MPP on Tempo",                             // descriptive label from the live probe
       "method": "GET",
-      "url": "https://mpp.orthogonal.com/tomba/v1/enrich?email=${email}",
-      "maxAmount": "5.00"
+      "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
+      "maxAmount": "0.02"                                 // live quote ~$0.0129 + headroom
     },
     {
-      "label": "company search — Nyne",
-      "rail": "routed",
+      "label": "people at company — Apollo people-search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "POST",
-      "url": "https://mpp.orthogonal.com/nyne/company/search",
-      "body": { "query": "${company}" },                  // POST params go in the BODY
-      "maxAmount": "5.00"
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
+      "body": { "q_keywords": "${company}" },             // POST params go in the BODY
+      "maxAmount": "0.008"                                // live quote ~$0.00525 + headroom
     }
   ]
 }
 ```
+
+Don't give a param a `default` that names a real person or company: `required: true`
+is not enforced when a default exists, so a missing input silently pays for the
+default entity. Set each step's `maxAmount` from the live probe quote plus ~25–50%
+headroom, never a blanket `5.00`.
 
 ## Field rules
 
@@ -65,10 +70,12 @@ The manifest is the **inert payment recipe** the `selat` CLI compiles into
 
 ## Multi-step / waterfall skills
 
-The manifest `steps` array is **linear** — the CLI runs them in order. Conditional
-logic (cheapest-first, escalate-on-gap, stop-when-found) belongs in `SKILL.md`
-**Workflow** as the procedure the agent follows; the manifest just lists the
-available steps with their costs. Order steps cheapest-first.
+The manifest `steps` array is **linear** — `selat skill run` pays for and runs
+**every** step, in order, every time. There is no step selection, skipping, or
+stop-when-found. So don't document a waterfall, menu, or "only if X" step in
+`SKILL.md`: either the step is worth paying for on every run (keep it), or it isn't
+(drop it, or tell the agent to make that single call with `selat-pay` directly).
+Order steps cheapest-first.
 
 ## SKILL.md frontmatter that must match the manifest
 
@@ -77,7 +84,7 @@ available steps with their costs. Order steps cheapest-first.
 name: my-skill                        # == folder == manifest.name
 description: Use this skill when ...   # trigger-rich, < 1024 chars
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and (for routed) a reachable SELAT Router.
+compatibility: Requires the selat CLI, selat-pay >= 0.12.0, and (for routed) a reachable SELAT Router.
 metadata:
   author: your-org
   version: "1.0"

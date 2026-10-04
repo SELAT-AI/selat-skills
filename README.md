@@ -105,7 +105,7 @@ proves a skill once at submit time; this re-verifies the whole catalogue on a cr
 so reliability reflects current reality, not the day it was merged — uptime/price
 from real calls, not vanity stars.
 
-Run it locally (needs `selat-pay >= 0.3.2` on PATH; set `SELAT_ROUTER_URL` for
+Run it locally (needs `selat-pay >= 0.12.0` on PATH; set `SELAT_ROUTER_URL` for
 routed steps):
 
 ```bash
