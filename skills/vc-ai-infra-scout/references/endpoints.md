@@ -5,17 +5,17 @@ the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
 is authoritative — `selat skill verify` probes it free.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Broad web discovery | POST | `https://x402.tavily.com/search` | x402 on Base | $0.0105 |
-| 2 — Product Hunt discovery | POST | `https://parallelmpp.dev/api/search` | MPP on Tempo | $0.0105 |
-| 3 — Launch + funding context | POST | `https://api.exa.ai/search` | x402 via Circle Gateway | $0.007 |
-| 4 — Twitter/X founder buzz | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitterQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
-| 5 — Twitter/X fundraising news | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${fundraisingQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
-| 6 — LinkedIn fundraising news | POST | `https://x402.tavily.com/search` | x402 on Base | $0.0105 |
-| 7 — Investor thesis tweets | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${investorQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
-| 8 — Founder shortlist | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-search` | MPP on Tempo | $0.00525 |
-| 9 — Company enrichment | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | MPP on Tempo | $0.0399 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Broad web discovery | POST | `https://x402.tavily.com/search` | x402 on Base | $0.0105 | $0.02 |
+| 2 — Product Hunt discovery | POST | `https://parallelmpp.dev/api/search` | MPP on Tempo | $0.0105 | $0.05 |
+| 3 — Launch + funding context | POST | `https://api.exa.ai/search` | x402 via Circle Gateway | $0.007 | $0.05 |
+| 4 — Twitter/X founder buzz | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitterQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 | $0.05 |
+| 5 — Twitter/X fundraising news | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${fundraisingQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 | $0.05 |
+| 6 — LinkedIn fundraising news | POST | `https://x402.tavily.com/search` | x402 on Base | $0.0105 | $0.02 |
+| 7 — Investor thesis tweets | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${investorQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 | $0.05 |
+| 8 — Founder shortlist | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-search` | MPP on Tempo | $0.00525 | $0.05 |
+| 9 — Company enrichment | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | MPP on Tempo | $0.0399 | $0.06 |
 
 This is a fixed 9-call manifest. The step table matches `manifest.json` exactly,
 and `selat skill run` pays every step. Live prices (probed 2026-10-04) sum to

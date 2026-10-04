@@ -5,9 +5,9 @@ the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
 is authoritative — `selat skill verify` probes it free.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Web search | POST | `https://pplx.x402.paysponge.com/search` | x402 on Base | $0.0105 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Web search | POST | `https://pplx.x402.paysponge.com/search` | x402 on Base | $0.0105 | $0.03 |
 
 This is a fixed 1-call manifest. The step table matches `manifest.json` exactly.
 The manifest `rail` field is `x402 on Base`; live verify prints `routed-x402`.
