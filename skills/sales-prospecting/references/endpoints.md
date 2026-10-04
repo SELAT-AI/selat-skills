@@ -1,95 +1,92 @@
 # Endpoints — sales-prospecting
 
-The repaired skill is a fixed five-read bundle. Every call is read-only, routed
-through the SELAT Router over MPP on Tempo, and independently compiled from the
-same nine user-supplied inputs. Nothing is chained from one response into the
-next request.
+Use only these endpoint families for `sales-prospecting`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-Free live probes on 2026-08-30 confirmed all five payment challenges within the
-tightened caps:
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Bounded ICP company search | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-search` | MPP on Tempo | $0.0399 | $0.050 |
+| 2 — Bounded professionals at known company | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-search` | MPP on Tempo | $0.00525 | $0.008 |
+| 3 — Privacy-limited known-professional enrichment | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 | $0.050 |
+| 4 — Supplied work-email deliverability check | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 | $0.012 |
+| 5 — Known-company firmographics | POST | `https://hunter.mpp.paywithlocus.com/hunter/company-enrichment` | MPP on Tempo | $0.01365 | $0.020 |
 
-| Step | Purpose | Endpoint | Fixed request controls | Live routed quote | Per-call cap |
-|---:|---|---|---|---:|---:|
-| 1 | ICP company candidates | `POST apollo.mpp.paywithlocus.com/apollo/org-search` | one keyword string, one location, one employee range, `per_page=10`, `page=1` | $0.005250 | $0.008 |
-| 2 | Professional candidates at a known company | `POST apollo.mpp.paywithlocus.com/apollo/people-search` | one title, location, domain, and seniority; `per_page=10`, `page=1` | $0.005250 | $0.008 |
-| 3 | Known-professional cross-check | `POST apollo.mpp.paywithlocus.com/apollo/people-enrichment` | first name, last name, domain; personal-email and phone revelation fixed `false` | $0.039900 | $0.050 |
-| 4 | Supplied work-email verification | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | one `workEmail` | $0.008400 | $0.012 |
-| 5 | Known-company firmographics | `POST hunter.mpp.paywithlocus.com/hunter/company-enrichment` | one `companyDomain` | $0.013650 | $0.020 |
+This is a fixed 5-call manifest. The step table matches `manifest.json` exactly;
+`selat skill run` always executes all five steps, and no step consumes another
+step's output.
 
-Current expected total: **$0.072450**. Absolute cumulative cap: **$0.098**.
-The live quote is authoritative; prices and availability can change.
+- **Live-probed 2026-10-04** (`selat-pay --probe-only --live-probe`, free, never
+  signs): every step returned a 402, mode `routed-mpp`, within its step cap.
+  Org search now quotes $0.0399 (it quoted $0.00525 on 2026-08-30); its cap was
+  raised from $0.008 to $0.050 accordingly.
+- **Expected fixed-run total:** $0.1071. **Sum of step caps:** $0.140.
+- **Top-level `maxAmount` ($0.050)** is only the per-step fallback for a step that
+  omits its own cap. It is not a full-run cap; arm a separately approved
+  `selat budget` for the cumulative run.
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **MPP on Tempo:** Apollo and Hunter via Locus (`*.mpp.paywithlocus.com`).
 
-## Why the old recipe was replaced
+## Apollo MPP — `MPP on Tempo`
 
-The previous SKILL and evals claimed a six-step pipeline containing two Fiber
-searches, while its manifest contained only four different calls and no Fiber
-steps. Direct free requests to the documented Fiber operations currently require
-Fiber's own API key and credit system; they do not expose SELAT-payable 402/MPP
-challenges. They therefore cannot be part of a keyless SELAT recipe.
+serviceUrl: `https://apollo.mpp.paywithlocus.com`
 
-The old manifest also had two additional blockers:
+Live-probed prices (`routed-mpp`): org-search / people-enrichment `$0.0399`,
+people-search `$0.00525`. All endpoints are **POST with a JSON body**.
 
-- its domain search and email-finder endpoints currently show captured-payment
-  delivery cautions, with the observed network sample returning 0% 2xx and the
-  last captured responses reported as 502;
-- its company-enrichment endpoint no longer returns a payment challenge.
+| Step | Endpoint | Body params |
+| --- | --- | --- |
+| 1 — company search | `/apollo/org-search` | `q_keywords` ← `${companyKeywords}`; `organization_locations` ← `["${location}"]`; `organization_num_employees_ranges` ← `["${employeeRange}"]` (`lower,upper` string); `per_page` fixed `10`; `page` fixed `1` |
+| 2 — people search | `/apollo/people-search` | `person_titles` ← `["${jobTitle}"]`; `person_locations` ← `["${location}"]`; `q_organization_domains` ← `["${companyDomain}"]`; `person_seniorities` ← `["${seniority}"]`; `per_page` fixed `10`; `page` fixed `1` |
+| 3 — people enrichment | `/apollo/people-enrichment` | `first_name` ← `${firstName}`; `last_name` ← `${lastName}`; `domain` ← `${companyDomain}`; `reveal_personal_emails` fixed `false`; `reveal_phone_number` fixed `false` |
 
-The repaired bundle uses live-payable search and enrichment operations whose
-current network signal reports successful 2xx delivery. Some search and company
-samples remain small, so treat those signals as limited evidence rather than a
-guarantee.
+```json
+{ "q_keywords": "B2B SaaS", "organization_locations": ["Austin"], "organization_num_employees_ranges": ["51,200"], "per_page": 10, "page": 1 }
+```
 
-## Request schemas
+- Org search validates the body before it challenges: a body with only
+  `q_keywords` returns no 402. The manifest always sends location and employee
+  range, so it quotes normally.
+- Supported `person_seniorities`: `founder`, `c_suite`, `partner`, `vp`, `head`,
+  `director`, `manager`, `senior`, `entry`, `intern`. Validate enum and range
+  format before paying; a free probe checks price, not the application body.
+- People search returns professional profile data and does not promise contact
+  details. Agents must not override the two `reveal_*` literals.
 
-### 1. Organization search
+## Hunter MPP — `MPP on Tempo`
 
-The public OpenAPI documents `q_keywords`, `organization_locations`,
-`organization_num_employees_ranges`, `per_page`, and `page`. The skill fixes
-the first page to ten results. `employeeRange` must use the documented
-`lower,upper` string form.
+serviceUrl: `https://hunter.mpp.paywithlocus.com`
 
-### 2. People search
+Live-probed prices (`routed-mpp`): email-verifier `$0.0084`, company-enrichment
+`$0.01365`. All endpoints are **POST with a JSON body**.
 
-The public OpenAPI documents arrays for `person_titles`, `person_locations`,
-`q_organization_domains`, and `person_seniorities`. The skill uses one value in
-each array and fixes the first page to ten results. Supported seniorities are:
-`founder`, `c_suite`, `partner`, `vp`, `head`, `director`, `manager`, `senior`,
-`entry`, and `intern`.
+| Step | Endpoint | Body params |
+| --- | --- | --- |
+| 4 — verify email | `/hunter/email-verifier` | `email` (string, required) ← `${workEmail}` |
+| 5 — enrich company | `/hunter/company-enrichment` | `domain` (string, required) ← `${companyDomain}` |
 
-This operation returns professional profile data but does not promise contact
-details. Do not claim otherwise.
+```json
+{ "email": "dana.whitfield@acmecorp.com" }
+```
 
-### 3. People enrichment
+The verifier receives exactly the user-supplied `workEmail`; it never verifies a
+value returned by step 3. If the two disagree, report the conflict rather than
+paying for another call.
 
-The request uses `first_name`, `last_name`, and `domain`. It fixes
-`reveal_personal_emails=false` and `reveal_phone_number=false`; agents must not
-override those literals. Report only professional fields actually returned.
+The 2026-10-04 probe's transactability reading for `/hunter/company-enrichment`
+showed 1 of 4 captured network payments answered 2xx (last status 200). The
+sample is small, but a free probe proves payability, not delivery.
 
-### 4. Email verifier
+## Why Fiber, Abstract, and Hunter domain-search are gone
 
-The verifier receives exactly the user-supplied `workEmail`. It does not receive
-or automatically verify any value returned by the people-enrichment response.
-If the two sources disagree, report the conflict and stop rather than paying for
-another call.
-
-### 5. Company enrichment
-
-The operation accepts one company domain and may return industry, description,
-employee count, location, technology, and public social profiles. Do not promise
-a field the paid response does not contain.
-
-## Scope and payment safety
-
-- All nine parameters are required and have no defaults.
-- Before payment, validate domain/email coherence, `employeeRange`, and the
-  seniority enum. A free 402 probe establishes price and reachability before the
-  upstream validates the application body.
-- Every run executes all five independent calls. A partial intent should use a
-  narrower reviewed skill or free discovery instead.
-- A paid application error may still charge. Never auto-retry; inspect history,
-  re-probe, and obtain a new approval first.
-- The free probe verifies the payment layer only. It does not prove paid output
-  quality or guarantee delivery.
+The previous recipe documented two Fiber searches that were never in the
+manifest; Fiber's own API requires its key and credits and serves no
+SELAT-payable 402, so it cannot be part of a keyless recipe. The Abstract
+company-enrichment host no longer returns a payment challenge (main replaced it
+with Orthogonal Company Enrich in #113); this skill uses Hunter company
+enrichment instead. Hunter domain-search and email-finder were dropped after
+captured-payment readings showed 0% 2xx delivery.
 
 ## Free verification
 
@@ -97,16 +94,25 @@ a field the paid response does not contain.
 SELAT_ROUTER_URL=https://router.selat.ai \
   selat skill verify ./skills/sales-prospecting \
   --companyKeywords "B2B SaaS" \
-  --location "San Francisco" \
+  --location "Austin" \
   --employeeRange "51,200" \
   --jobTitle "VP Sales" \
   --seniority "vp" \
-  --companyDomain "example.com" \
-  --firstName "Research" \
-  --lastName "Lead" \
-  --workEmail "research@example.com" \
+  --companyDomain "acmecorp.com" \
+  --firstName "Dana" \
+  --lastName "Whitfield" \
+  --workEmail "dana.whitfield@acmecorp.com" \
   --live-probe
 ```
 
-Expected gate: five reachable `routed-mpp` challenges at or below their
-manifest caps, with no payment signed or settled.
+Single-step probe (the `--chain base` token is only selat-pay's required flag;
+a probe never settles and the router quotes every Gateway chain identically):
+
+```bash
+selat-pay POST https://apollo.mpp.paywithlocus.com/apollo/org-search \
+  --chain base --max-amount 0.050 --probe-only --live-probe \
+  --body '{"q_keywords":"B2B SaaS","organization_locations":["Austin"],"organization_num_employees_ranges":["51,200"],"per_page":10,"page":1}'
+```
+
+A free probe proves the payment layer only, not paid output quality. A paid
+application error may still charge; never auto-retry.

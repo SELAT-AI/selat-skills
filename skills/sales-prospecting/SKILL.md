@@ -73,7 +73,13 @@ discovery, bulk harvesting, automated outreach, or CRM mutation.
    ```
 
 4. Show the user each live quote, the expected total, every underlying per-call
-   cap, and the proposed session cap. Explain that all five independent steps
+   cap, and the proposed session cap. Live quotes on 2026-10-04 (free probe,
+   `routed-mpp`): Apollo org search $0.0399, Apollo people search $0.00525,
+   Apollo people enrichment $0.0399, Hunter email verifier $0.0084, Hunter
+   company enrichment $0.01365; expected total $0.1071, sum of step caps
+   $0.140. The top-level `maxAmount` ($0.050) is only the fallback cap for a
+   step that omits its own; it is not a full-run cap, so propose a session
+   budget from the step quotes, no higher than the $0.140 cap sum. Explain that all five independent steps
    execute and that a paid application error may still charge. Wait for explicit
    approval.
 
@@ -154,6 +160,8 @@ outreach. Keep raw JSON and endpoint URLs out of the user-facing answer.
 - **Bounded scope:** both searches request only the first ten results. A larger
   list or another page is a separate workflow and needs a fresh scope review.
 - **Candidate search is not identity proof:** preserve ambiguity and provenance.
+- **Top-level `maxAmount` is not a session cap:** it is a per-step fallback
+  only. The cumulative tripwire is the separately approved `selat budget`.
 - **Paid failures may charge:** never auto-retry. Inspect history, re-probe, and
   obtain fresh approval first.
 

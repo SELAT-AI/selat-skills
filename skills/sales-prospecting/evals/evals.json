@@ -3,12 +3,13 @@
   "evals": [
     {
       "id": "bounded-coherent-bundle",
-      "prompt": "Find up to ten B2B SaaS companies with 51-200 employees in San Francisco, research VP Sales prospects at example.com, cross-check Research Lead there, and verify research@example.com for legitimate outreach planning.",
+      "prompt": "Find up to ten B2B SaaS companies with 51-200 employees in San Francisco, research VP Sales prospects at example.com, cross-check Research Lead there, and verify research@example.com for a legitimate account-research brief.",
       "expected_output": "A five-read MPP bundle with two bounded searches, privacy-limited professional enrichment, independent verification of the supplied work email, and company context.",
       "assertions": [
         "All five steps use rail 'MPP on Tempo'",
         "Both search steps fix per_page=10 and page=1",
-        "The work email, company domain, name, ICP, location, employee range, title, and seniority are all explicit coherent inputs"
+        "The work email, company domain, name, ICP, location, employee range, title, and seniority are all explicit coherent inputs",
+        "No outreach, sequence, or CRM step is planned or executed"
       ]
     },
     {
@@ -74,11 +75,12 @@
     {
       "id": "free-probe-and-caps",
       "prompt": "Check all sales-prospecting endpoints and prices without spending.",
-      "expected_output": "A free selat skill verify --live-probe run with all nine parameters, reporting five routed-MPP quotes within their tightened per-step caps.",
+      "expected_output": "A free selat skill verify --live-probe run with all nine parameters, reporting five routed-MPP quotes within their per-step caps.",
       "assertions": [
         "The verification command invokes five steps without signing payment",
-        "The expected routed total is 0.072450 at the recorded probe snapshot",
-        "The cumulative cap is 0.098 and is presented as a ceiling rather than an expected price"
+        "The expected routed total is about $0.107 at the 2026-10-04 probe (org search $0.0399, people search $0.00525, people enrichment $0.0399, verifier $0.0084, company enrichment $0.01365)",
+        "The worst case is the $0.140 sum of step caps, presented as a ceiling rather than an expected price",
+        "The top-level maxAmount ($0.050) is described as a per-step fallback, not a full-run cap"
       ]
     },
     {
@@ -99,6 +101,25 @@
         "No CRM mutation step exists",
         "No email-send step exists",
         "The answer separates research results from any later outreach decision"
+      ]
+    },
+    {
+      "id": "non-trigger-unrelated",
+      "prompt": "Rewrite this LinkedIn post about our product launch so it sounds less salesy.",
+      "expected_output": "Does not trigger sales-prospecting and spends nothing; edits the supplied text directly.",
+      "assertions": [
+        "sales-prospecting is not verified or run",
+        "No paid endpoint is probed or called"
+      ]
+    },
+    {
+      "id": "non-trigger-single-email-check",
+      "prompt": "Is jordan.price@acmecorp.com a deliverable address? That's all I need.",
+      "expected_output": "Does not run the five-read prospecting bundle for a single email check, because every step would execute and charge (about $0.107). Points to a narrower email-verification capability via free discovery, quoted before any payment.",
+      "assertions": [
+        "The five-step bundle is not run",
+        "The response explains that all five steps execute and charge",
+        "Any narrower alternative is quoted before payment"
       ]
     }
   ]
