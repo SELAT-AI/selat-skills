@@ -14,7 +14,7 @@ parameter schema** — so authors guess, and a guess costs real money.
   body. A step can pass free-verify and still `400` on every paid call.
 
 So: resolve the exact request shape from a **free** source first, then confirm with a
-single paid `verify --pay`.
+single paid `verify --live-probe --pay`.
 
 ## Free schema sources (in order of preference)
 
@@ -50,7 +50,7 @@ The OpenAPI is a starting point, **not** the source of truth. Observed drift:
   `model` / `models` / `preset`: `400 "validation failed: model, models, or preset is
   required"`.
 
-Always confirm the pinned schema settles `200` with a real `selat skill verify --pay`
+Always confirm the pinned schema settles `200` with a real `selat skill verify --live-probe --pay`
 before submitting. The live 402 / a paid call wins over any spec.
 
 ## Record it in `references/endpoints.md`

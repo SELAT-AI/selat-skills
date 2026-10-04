@@ -49,6 +49,7 @@ function placeholderFor(key, nowSec) {
   const k = key.toLowerCase();
   if (k.includes("start_time") || k === "from" || k === "since") return String(nowSec - 2 * 86400);
   if (k.includes("end_time") || k === "to" || k === "until") return String(nowSec);
+  if (k.includes("domain")) return "example.com"; // a bare "test" is not a valid domain; some merchants quote it at a different tier
   if (k.includes("address")) return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"; // USDC (Ethereum)
   if (k.includes("chain")) return "ethereum";
   if (k === "symbols" || k === "symbol" || k === "token" || k === "tokens") return "ETH";

@@ -1,25 +1,30 @@
 {
   "schema": "selat-skill/v1",
   "name": "person-lookup",
-  "description": "Look up a person — work history, title, employer, and public professional profiles — via Apollo people-search through the SELAT Router (MPP via Locus).",
-  "maxAmount": "0.02",
+  "description": "Read-only public professional lookup for one named person at a known company via one bounded five-result Apollo people-search through the SELAT Router over MPP on Tempo. Requires a full name and current company; it does not request private contact data or send outreach.",
+  "maxAmount": "0.0075",
   "params": {
-    "query": {
+    "name": {
       "required": true,
-      "default": "Dario Amodei Anthropic CEO",
-      "description": "Search query combining person name with company, role, or geography for disambiguation, e.g. \"Dario Amodei Anthropic CEO\"."
+      "description": "Full professional name of the target person."
+    },
+    "company": {
+      "required": true,
+      "description": "Known current employer or organization, added to the search keywords to disambiguate the person."
     }
   },
   "steps": [
     {
-      "label": "person search — Apollo people-search (MPP on Tempo)",
+      "label": "five-result public professional search — Apollo people-search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
       "body": {
-        "q_keywords": "${query}"
+        "q_keywords": "${name} ${company}",
+        "per_page": 5,
+        "page": 1
       },
-      "maxAmount": "0.02"
+      "maxAmount": "0.0075"
     }
   ]
 }
