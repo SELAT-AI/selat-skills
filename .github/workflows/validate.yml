@@ -1,6 +1,7 @@
 name: Validate skills
 
-# Validates every skill against the Agent Skill SOP + index.json consistency.
+# Validates every skill against the Agent Skill SOP, manifest consistency, and that
+# index.json + the README skills table match `npm run catalog`.
 # No dependencies — the validator is self-contained.
 
 on:
@@ -17,3 +18,9 @@ jobs:
           node-version: '22'
       - name: Validate skills
         run: node scripts/validate-skills.mjs
+      # Content checks (params <-> templates, reserved param names, rail/kind
+      # frontmatter, --live-probe in documented commands) are advisory until the
+      # open skill-repair PRs land; then flip STRICT_DEFAULT in the validator.
+      - name: Validate skills (strict, advisory)
+        continue-on-error: true
+        run: node scripts/validate-skills.mjs --strict

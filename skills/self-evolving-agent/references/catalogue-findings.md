@@ -1,7 +1,9 @@
 # Catalogue Findings
 
 Free SELAT federated-catalogue searches on 2026-06-30 found candidate endpoints
-for the budgeted economic-agent definition.
+for the budgeted economic-agent definition. The three selected manifest
+endpoints were re-probed on 2026-08-31; other entries below remain a historical
+catalogue snapshot and must be re-discovered before use.
 
 ## Social Intelligence
 
@@ -26,7 +28,6 @@ for the budgeted economic-agent definition.
   `https://x402.api.agentmail.to/v0/inboxes` at about `$2.00`.
 - AgentMail inbox listing:
   `https://x402.api.agentmail.to/v0/inboxes` at `$0.00`.
-- AgentMail threads and webhooks for receiving operational email and Circle OTPs.
 - StableDomains availability:
   `https://stabledomains.dev/api/check`
 - Modal sandbox execution:
@@ -72,10 +73,11 @@ Useful supporting read-only candidates:
 
 ## Manifest Choice
 
-The manifest uses one social signal, one financial signal, and one domain quote
-because those map directly to the user's definition while keeping the preflight
-cheap and reversible.
+The manifest uses one broad social report, one asset-specific financial query,
+and one domain check because those map directly to the definition while keeping
+the preflight bounded and read-only. The runner executes all three calls; this
+is not a conditional or cheapest-first workflow.
 
-AgentMail inbox creation is not in the manifest because it is an identity
-bootstrap action, not an intelligence preflight. It should be quoted and run only
-after the user approves the mailbox address, provider, and spend cap.
+AgentMail inbox creation and every trade-capable endpoint are outside this
+skill. They are identity, funding, or execution actions, not a read-only
+preflight, and this skill never calls them.
