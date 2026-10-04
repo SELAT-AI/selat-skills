@@ -5,18 +5,22 @@ the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
 is authoritative — `selat skill verify` probes it free.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Twitter chatter | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest` | x402 via Circle Gateway | $0.001 |
-| 2 — Macro regime | GET | `https://x402.ottoai.services/tradfi-data?symbol=${ticker}` | x402 on Base | $0.00315 |
-| 3 — Quote | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote` | MPP on Tempo | $0.0084 |
-| 4 — Daily chart | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/time-series-daily` | MPP on Tempo | $0.0084 |
-| 5 — RSI | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/rsi` | MPP on Tempo | $0.0084 |
-| 6 — MACD | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/macd` | MPP on Tempo | $0.0084 |
-| 7 — News | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/news-sentiment` | MPP on Tempo | $0.0084 |
-| 8 — Earnings | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/earnings` | MPP on Tempo | $0.0084 |
-| 9 — Smart money | GET | `https://pay.smartmoney.market/api/ticker/${ticker}` | MPP on Solana | $0.0105 |
-| 10 — Reddit | POST | `https://stableenrich.dev/api/reddit/search` | MPP on Tempo | $0.021 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Twitter chatter | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${twitter_query}&queryType=Latest` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 2 — Macro regime | GET | `https://x402.ottoai.services/tradfi-data?symbol=${ticker}` | x402 on Base | $0.00315 | $0.02 |
+| 3 — Quote | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote` | MPP on Tempo | $0.0084 | $0.02 |
+| 4 — Daily chart | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/time-series-daily` | MPP on Tempo | $0.0084 | $0.02 |
+| 5 — RSI | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/rsi` | MPP on Tempo | $0.0084 | $0.02 |
+| 6 — MACD | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/macd` | MPP on Tempo | $0.0084 | $0.02 |
+| 7 — News | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/news-sentiment` | MPP on Tempo | $0.0084 | $0.02 |
+| 8 — Earnings | POST | `https://alphavantage.mpp.paywithlocus.com/alphavantage/earnings` | MPP on Tempo | $0.0084 | $0.02 |
+| 9 — Smart money | GET | `https://pay.smartmoney.market/api/ticker/${ticker}` | MPP on Solana | $0.0105 | $0.02 |
+| 10 — Reddit | POST | `https://stableenrich.dev/api/reddit/search` | MPP on Tempo | $0.021 | $0.04 |
+
+This is a fixed 10-call manifest. The step table matches `manifest.json` exactly,
+and `selat skill run` pays every step. Live prices (probed 2026-10-04) sum to
+$0.086 per run; the per-step caps sum to $0.21.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 on Base / Polygon:** Settles via Circle Gateway batched nanopayments. Buyer is the funded Gateway chain. This is not a pay-chain claim.

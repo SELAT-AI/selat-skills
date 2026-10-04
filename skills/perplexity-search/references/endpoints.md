@@ -5,19 +5,20 @@ the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
 is authoritative — `selat skill verify` probes it free.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Web search | POST | `https://pplx.x402.paysponge.com/search` | routed x402 | $0.0105 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Web search | POST | `https://pplx.x402.paysponge.com/search` | x402 on Base | $0.0105 | $0.03 |
 
 This is a fixed 1-call manifest. The step table matches `manifest.json` exactly.
-The manifest `rail` field is `routed`; live verify prints `routed-x402`.
-Catalogue list price is `$0.01`; the live routed quote is ≈ `$0.0105`.
+The manifest `rail` field is `x402 on Base`; live verify prints `routed-x402`.
+Catalogue list price is `$0.01`; the live routed quote is `$0.0105` (probed
+2026-10-04). The step cap is `$0.03`.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
-- **routed x402:** Paysponge (`pplx.x402.paysponge.com`) serves a native x402 challenge. The router settles it (`routed-x402`, `GatewayWalletBatched`, USDC on Base `eip155:8453`). This is not a pay-chain claim. There is no MPP/Tempo route for this host.
+- **x402 on Base:** Paysponge (`pplx.x402.paysponge.com`) serves a native x402 `exact` challenge with no Circle Gateway batching. The router pays that leg (`routed-x402`); you pay the router from your funded Circle Gateway balance. This is not a pay-chain claim. There is no MPP/Tempo route for this host.
 - **MPP on Tempo:** Not used.
 
-## Perplexity / paysponge — `routed x402`
+## Perplexity / paysponge — `x402 on Base`
 
 serviceUrl: `https://pplx.x402.paysponge.com`
 

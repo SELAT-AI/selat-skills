@@ -3,193 +3,197 @@
 Use only these endpoint families for `enrich-waterfall`. Hosts below are
 the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
-is authoritative — `selat skill verify` probes it free.
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-Removed dead Clado `/linkedin-profile`, `/scrape`, and `/search` (no 402).
-LinkedIn public-page read uses Scrape Creators sync profile. Company overview
-uses Orthogonal Company Enrich GET-by-domain. Clado `/clado/contacts` is kept.
+Dead Clado `/linkedin-profile`, `/scrape`, and `/search` serve no 402 (re-checked
+2026-10-04). The LinkedIn public-profile read uses Scrape Creators sync profile;
+the former Clado `/scrape` step was dropped rather than duplicated (same person
+URL already read in step 3); the five-result person search uses Apollo
+people-search. Company overview uses Orthogonal Company Enrich GET-by-domain.
+Clado `/clado/contacts` is kept. The StableSocial Instagram/TikTok async job
+routes are not used.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Person resolve (Apollo) | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 |
-| 2 — Person resolve by email (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-enrichment` | MPP on Tempo | $0.01365 |
-| 3 — Person resolve by LinkedIn | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}` | MPP on Tempo | $0.021 |
-| 4 — Person+company resolve (Hunter combined) | POST | `https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment` | MPP on Tempo | $0.02415 |
-| 5 — Company anchor by name (Apollo org-search) | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-search` | MPP on Tempo | $0.00525 |
-| 6 — Company anchor by domain | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 |
-| 7 — Company anchor + tech + headcount (Apollo) | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | MPP on Tempo | $0.0399 |
-| 8 — Company anchor (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/company-enrichment` | MPP on Tempo | $0.01365 |
-| 9 — Email find by name (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-finder` | MPP on Tempo | $0.01365 |
-| 10 — X/Twitter profile | GET | `https://catalog.selat.ai/twitter/user/info?userName=${name}` | x402 via Circle Gateway | $0.001 |
-| 11 — Instagram profile | POST | `https://stablesocial.dev/api/instagram/profile` | MPP on Tempo | $0.063 |
-| 12 — TikTok profile | POST | `https://stablesocial.dev/api/tiktok/profile` | MPP on Tempo | $0.063 |
-| 13 — Job openings (Apollo) | POST | `https://apollo.mpp.paywithlocus.com/apollo/job-postings` | MPP on Tempo | $0.00525 |
-| 14 — News events (Brave) | POST | `https://brave.mpp.paywithlocus.com/brave/news-search` | MPP on Tempo | $0.03675 |
-| 15 — Financing events (Brave) | POST | `https://brave.mpp.paywithlocus.com/brave/news-search` | MPP on Tempo | $0.03675 |
-| 16 — Business connections (Diffbot KG) | POST | `https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance` | MPP on Tempo | $0.03675 |
-| 17 — Contact reveal (Clado contacts) | POST | `https://clado.mpp.paywithlocus.com/clado/contacts` | MPP on Tempo | $0.04515 |
-| 18 — Email verify (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Person cross-check (Apollo) | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-enrichment` | MPP on Tempo | $0.0399 | $0.06 |
+| 2 — Person by supplied email (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-enrichment` | MPP on Tempo | $0.01365 | $0.02 |
+| 3 — Person by supplied LinkedIn URL | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}` | MPP on Tempo | $0.021 | $0.03 |
+| 4 — Person + company by email (Hunter combined) | POST | `https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment` | MPP on Tempo | $0.02415 | $0.035 |
+| 5 — Company search by name (Apollo org-search) | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-search` | MPP on Tempo | $0.0399 | $0.06 |
+| 6 — Company profile by domain | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 | $0.02 |
+| 7 — Company tech + headcount (Apollo) | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-enrichment` | MPP on Tempo | $0.0399 | $0.06 |
+| 8 — Company cross-check (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/company-enrichment` | MPP on Tempo | $0.01365 | $0.02 |
+| 9 — Find target work email (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-finder` | MPP on Tempo | $0.01365 | $0.02 |
+| 10 — X/Twitter profile by handle | GET | `https://catalog.selat.ai/twitter/user/info?userName=${xHandle}` | x402 via Circle Gateway | $0.001 | $0.0015 |
+| 11 — Job openings (Apollo) | POST | `https://apollo.mpp.paywithlocus.com/apollo/job-postings` | MPP on Tempo | $0.0399 | $0.06 |
+| 12 — Recent company news (Brave) | POST | `https://brave.mpp.paywithlocus.com/brave/news-search` | MPP on Tempo | $0.03675 | $0.05 |
+| 13 — Recent funding news (Brave) | POST | `https://brave.mpp.paywithlocus.com/brave/news-search` | MPP on Tempo | $0.03675 | $0.05 |
+| 14 — Organization knowledge graph (Diffbot KG) | POST | `https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance` | MPP on Tempo | $0.03675 | $0.05 |
+| 15 — Contact email + phone reveal (Clado contacts) | POST | `https://clado.mpp.paywithlocus.com/clado/contacts` | MPP on Tempo | $0.15015 | $0.20 |
+| 16 — Five-result person search (Apollo people-search) | POST | `https://apollo.mpp.paywithlocus.com/apollo/people-search` | MPP on Tempo | $0.00525 | $0.0075 |
+| 17 — Verify supplied email (Hunter) | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 | $0.0125 |
 
-This is a fixed 18-call manifest (resolve → anchor → social → signals →
-escalate → verify). The step table matches `manifest.json` exactly.
+This is a fixed 17-call manifest; `selat skill run` executes every step on every
+run (there are no tiers, menus, or stop conditions). The step table matches
+`manifest.json` exactly. Live sum ≈ $0.534 (free probe 2026-10-04); sum of
+per-step caps $0.7565. The top-level `maxAmount` ($0.06) is only a per-step
+fallback, not a run budget.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim.
-- **MPP on Tempo:** Apollo, Hunter, Clado, Brave, and Diffbot KG via Locus (`*.mpp.paywithlocus.com`). StableSocial (`stablesocial.dev`) is MPP on Tempo but not Locus. Orthogonal Company Enrich and Scrape Creators via `mpp.orthogonal.com`.
+- **MPP on Tempo:** Apollo, Hunter, Clado, Brave, and Diffbot KG via Locus (`*.mpp.paywithlocus.com`). Orthogonal Company Enrich and Scrape Creators via `mpp.orthogonal.com`. Verify prints `routed-mpp`.
 
 ## Apollo MPP — `MPP on Tempo`
 
 serviceUrl: `https://apollo.mpp.paywithlocus.com`
 
-Live-probed prices (`routed-mpp`): people-enrichment / org-enrichment `$0.0399`,
-org-search / job-postings `$0.00525`. All endpoints are **POST with a JSON
-body**. `job-postings` needs `organization_id` from org-enrichment or
-org-search — run an anchor step first.
+Live-probed prices (`routed-mpp`, 2026-10-04): people-enrichment /
+org-enrichment / org-search / job-postings `$0.0399` (Locus `$0.038` flat;
+people-enrichment rises to `$0.318` only with `reveal_phone_number`),
+people-search `$0.00525`. All endpoints are **POST with a JSON body**.
+`job-postings` takes the supplied `organizationId`; the runner cannot pass an
+earlier step's id into it.
 
 | Capability/Step | Endpoint | Body params |
 | --- | --- | --- |
-| Person resolve | `/apollo/people-enrichment` | `email`, `first_name`, `last_name`, `organization_name`, `domain`, `linkedin_url` |
-| Company anchor by name | `/apollo/org-search` | `q_organization_name` (string) |
-| Company anchor + tech + headcount | `/apollo/org-enrichment` | `domain` (string) |
-| Job openings | `/apollo/job-postings` | `organization_id` (string, required) |
+| Person cross-check | `/apollo/people-enrichment` | `email`, `first_name`, `last_name`, `organization_name`, `domain`, `linkedin_url`; `reveal_personal_emails: false`, `reveal_phone_number: false` |
+| Company search by name | `/apollo/org-search` | `q_organization_name` (string), `per_page` (fixed `5`), `page` (fixed `1`) |
+| Company tech + headcount | `/apollo/org-enrichment` | `domain` (string) |
+| Job openings | `/apollo/job-postings` | `organization_id` (string, required), `per_page` (fixed `10`), `page` (fixed `1`) |
+| Five-result person search | `/apollo/people-search` | `q_keywords` = `${firstName} ${lastName}`, `q_organization_domains_list` = `["${domain}"]`, `per_page` (fixed `5`), `page` (fixed `1`) |
 
 ```json
-{ "email": "test@stripe.com", "first_name": "John", "last_name": "Doe", "organization_name": "Stripe", "domain": "stripe.com", "linkedin_url": "https://linkedin.com/in/williamhgates" }
+{ "q_keywords": "Patrick Collison", "q_organization_domains_list": ["stripe.com"], "per_page": 5, "page": 1 }
 ```
 
 ## Hunter MPP — `MPP on Tempo`
 
 serviceUrl: `https://hunter.mpp.paywithlocus.com`
 
-Live-probed prices (`routed-mpp`): email-enrichment / company-enrichment /
-email-finder `$0.01365`, combined-enrichment `$0.02415`, email-verifier
-`$0.0084`. All endpoints are **POST with a JSON body**.
+Live-probed prices (`routed-mpp`, 2026-10-04): email-enrichment /
+company-enrichment / email-finder `$0.01365`, combined-enrichment `$0.02415`,
+email-verifier `$0.0084`. All endpoints are **POST with a JSON body**.
 
 | Capability/Step | Endpoint | Body params |
 | --- | --- | --- |
-| Person resolve by email | `/hunter/email-enrichment` | `email` (string, required) |
-| Person+company resolve | `/hunter/combined-enrichment` | `email` (string, required) |
-| Company anchor | `/hunter/company-enrichment` | `domain` (string, required) |
-| Email find by name | `/hunter/email-finder` | `domain`, `first_name`, `last_name` |
-| Email verify | `/hunter/email-verifier` | `email` (string, required) |
+| Person by supplied email | `/hunter/email-enrichment` | `email` (string, required) |
+| Person + company by email | `/hunter/combined-enrichment` | `email` (string, required) |
+| Company cross-check | `/hunter/company-enrichment` | `domain` (string, required) |
+| Find target work email | `/hunter/email-finder` | `domain`, `first_name`, `last_name` |
+| Verify supplied email | `/hunter/email-verifier` | `email` (string, required) — the supplied email, not the finder output |
 
 ```json
-{ "email": "test@stripe.com" }
+{ "domain": "stripe.com", "first_name": "Patrick", "last_name": "Collison" }
+```
+
+
+**Paid smoke (2026-10-04):** paid `email-finder` and `domain-search` calls
+through the router both returned 200 with real data ($0.01365 each), so the
+transactability index's 0% readings (last 502s, Aug 12–14) were stale, not
+current. On an accept-all domain, the finder returned `source_type: "generated"`
+with `verification.status: "valid"`: a pattern guess, not a published address.
+`email-enrichment` has not been re-tested since its August 502s.
+
+## Scrape Creators LinkedIn — `MPP on Tempo`
+
+serviceUrl: `https://mpp.orthogonal.com/scrapecreators`
+
+Live-probed price: `$0.021` (`routed-mpp`, 2026-10-04) for `/v1/linkedin/profile`.
+**GET with a query-string `url`** (the CLI URL-encodes it). Synchronous; no job
+id. Replaces dead Clado `/linkedin-profile`.
+
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| Person by supplied LinkedIn URL | `/v1/linkedin/profile` | `url` (public person-profile URL) |
+
+```text
+https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fpatrickcollison
 ```
 
 ## Orthogonal Company Enrich — `MPP on Tempo`
 
 serviceUrl: `https://mpp.orthogonal.com/company-enrich`
 
-Live-probed price: `$0.012862` (`routed-mpp`, 2026-09-12). Domain lookup is
-**GET with a query-string `domain`**. Replaces the dead Abstract Company
-Enrichment `POST /abstract-company-enrichment/lookup`. Per-step cap `$0.02`.
+Live-probed price: `$0.012862` (`routed-mpp`, 2026-10-04). **GET with a
+query-string `domain`.** Replaces the dead Abstract Company Enrichment lookup.
 
 | Capability/Step | Endpoint | Query params |
 | --- | --- | --- |
-| Company anchor by domain | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
+| Company profile by domain | `/companies/enrich` | `domain` (string, required) — bare host |
 
 ```text
 https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=stripe.com
-```
-
-## Scrape Creators LinkedIn — `MPP on Tempo`
-
-serviceUrl: `https://mpp.orthogonal.com/scrapecreators`
-
-Live-probed price: `$0.021` (`routed-mpp`, 2026-09-12) for `/v1/linkedin/profile`.
-**GET with a query-string `url`.** Replaces dead Clado `/linkedin-profile`.
-The former Clado `/scrape` social step was dropped rather than duplicated
-(same person URL already read in resolve). Per-step cap `$0.03`.
-
-| Capability/Step | Endpoint | Query params |
-| --- | --- | --- |
-| Person resolve by LinkedIn | `/v1/linkedin/profile` | `url` (public person-profile URL) |
-
-```text
-https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=https://linkedin.com/in/williamhgates
-```
-
-## Clado contacts — `MPP on Tempo`
-
-serviceUrl: `https://clado.mpp.paywithlocus.com`
-
-Live-probed price: `$0.04515` (`routed-mpp`, re-probed 2026-09-12). All
-endpoints are **POST with a JSON body**. Keep this route. Do not call
-`/clado/search`, `/clado/linkedin-profile`, or `/clado/scrape`.
-
-Escalate-tier step 17 is still **in the default manifest** (not an optional
-add-on). Gate it on gaps if you are running the waterfall by hand.
-
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Contact reveal | `/clado/contacts` | `linkedin_url` (string, required) |
-
-```json
-{ "linkedin_url": "https://linkedin.com/in/williamhgates" }
 ```
 
 ## SELAT-native Twitter — `x402 via Circle Gateway`
 
 serviceUrl: `https://catalog.selat.ai`
 
-Live-probed price: `$0.001` per call (`routed-x402`). All endpoints are **GET
-with query-string params**. The manifest passes `${name}` as `userName`.
+Live-probed price: `$0.001` per call (`routed-x402`, 2026-10-04). **GET with a
+query-string `userName`** — an X username without `@`, not a full name.
 
 | Capability/Step | Endpoint | Query params |
 | --- | --- | --- |
-| X/Twitter profile | `/twitter/user/info` | `userName` (string, required) |
-
-Query pattern:
+| X/Twitter profile by handle | `/twitter/user/info` | `userName` = `${xHandle}` |
 
 ```text
-https://catalog.selat.ai/twitter/user/info?userName=John%20Doe
+https://catalog.selat.ai/twitter/user/info?userName=patrickc
 ```
 
-## StableSocial — `MPP on Tempo`
-
-serviceUrl: `https://stablesocial.dev`
-
-Live-probed price: `$0.063` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**. Profile-level Instagram/TikTok lookups go by handle.
-
-| Capability/Step | Endpoint | Body params |
-| --- | --- | --- |
-| Instagram profile | `/api/instagram/profile` | `handle` (string, required) |
-| TikTok profile | `/api/tiktok/profile` | `handle` (string, required) |
-
-```json
-{ "handle": "John Doe" }
-```
-
-## Brave Search MPP — `MPP on Tempo`
+## Brave Search — `MPP on Tempo`
 
 serviceUrl: `https://brave.mpp.paywithlocus.com`
 
-Live-probed price: `$0.03675` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**. Steps 14 and 15 hit the same path with different queries.
+Live-probed price: `$0.03675` per call (`routed-mpp`, 2026-10-04). **POST with a
+JSON body.**
 
 | Capability/Step | Endpoint | Body params |
 | --- | --- | --- |
-| News events | `/brave/news-search` | `q` (string — `${company} news`) |
-| Financing events | `/brave/news-search` | `q` (string — `${company} funding round`) |
+| Recent company news | `/brave/news-search` | `q` = `${company} news`, `count` (fixed `10`), `freshness` (`pm`) |
+| Recent funding news | `/brave/news-search` | `q` = `${company} funding round`, `count` (fixed `10`), `freshness` (`py`) |
 
 ```json
-{ "q": "Stripe funding round" }
+{ "q": "Stripe funding round", "count": 10, "freshness": "py" }
 ```
 
 ## Diffbot KG — `MPP on Tempo`
 
 serviceUrl: `https://diffbot-kg.mpp.paywithlocus.com`
 
-Live-probed price: `$0.03675` per call (`routed-mpp`). All endpoints are **POST
-with a JSON body**. Funding rounds and investors are in the same Organization
-`enhance` response.
+Live-probed price: `$0.03675` per call (`routed-mpp`, 2026-10-04; Locus lists
+`$0.03`, `$0.12` with `refresh`). **POST with a JSON body.**
 
 | Capability/Step | Endpoint | Body params |
 | --- | --- | --- |
-| Business connections / KG record | `/diffbot-kg/enhance` | `type` (string, `Organization`), `name` (string) |
+| Organization knowledge graph | `/diffbot-kg/enhance` | `type` (`Organization`), `name` (string array), `url` (string array), `refresh` (fixed `false`), `size` (fixed `1`) |
 
 ```json
-{ "type": "Organization", "name": "Stripe" }
+{ "type": "Organization", "name": ["Stripe"], "url": ["https://stripe.com"], "refresh": false, "size": 1 }
+```
+
+## Clado contacts — `MPP on Tempo`
+
+serviceUrl: `https://clado.mpp.paywithlocus.com`
+
+Live-probed price: `$0.15015` (`routed-mpp`, 2026-10-04) with both enrichment
+flags (`linkedin_url` only quotes `$0.04515`). **POST with a JSON body.**
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Contact email + phone reveal | `/clado/contacts` | `linkedin_url` (string, required), `email_enrichment: true`, `phone_enrichment: true` |
+
+```json
+{ "linkedin_url": "https://www.linkedin.com/in/patrickcollison", "email_enrichment": true, "phone_enrichment": true }
+```
+
+## Free verification
+
+```bash
+SELAT_ROUTER_URL=https://router.selat.ai \
+  selat skill verify ./skills/enrich-waterfall \
+  --email <known-work-email> --firstName <first> --lastName <last> \
+  --domain <bare-domain> --company "<company>" \
+  --linkedinUrl <person-linkedin-url> \
+  --organizationId <apollo-organization-id> --xHandle <x-username> \
+  --live-probe
 ```

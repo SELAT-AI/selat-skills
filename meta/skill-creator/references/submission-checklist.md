@@ -10,8 +10,8 @@ is a quick-reference pointer to it.
 selat skill new my-skill --dir skills          # 1. scaffold
 #   …edit the files (replace every TODO)…       # 2. author
 selat skill validate ./skills/my-skill         # 3. static SOP check
-selat skill verify   ./skills/my-skill [--pay] # 4. live-402 check (the gate)
-selat skill register ./skills/my-skill         # 5. add index.json entry
+selat skill verify   ./skills/my-skill --live-probe [--pay] # 4. live-402 check (the gate)
+npm run catalog                                # 5. regenerate index.json + README table
 npm run validate                               # 6. whole-repo check (what CI runs)
 selat skill submit   ./skills/my-skill         # 7. open the PR
 ```
@@ -25,14 +25,15 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
    from `selat search` (not the provider host); POST params in `body`; `maxAmount` with headroom.
 3. **`selat skill validate ./skills/my-skill`** — static SOP check (schema, name ==
    folder, no `TODO`, evals present). Same check CI runs per skill.
-4. **`selat skill verify ./skills/my-skill`** — **the gate.** Probes each step's
+4. **`selat skill verify ./skills/my-skill --live-probe`** — **the gate.** Probes each step's
    real 402 price/rail (free, no wallet) and checks it ≤ `maxAmount`. Add `--pay`
    to make a capped real call confirming a settled 200. Pass required params as
    flags (e.g. `--symbols ETH`). Writes `skills/my-skill/.selat/verify-receipt.json`
    — the provenance that `submit` attaches and that gates merge. Fix unreachable or
    over-cap steps; prefer first-party providers over proxies.
-5. **`selat skill register ./skills/my-skill`** — auto-adds/updates the
-   `index.json` entry (name, rail, kind, description derived from the manifest).
+5. **`npm run catalog`** — regenerates `index.json` and the README skills table
+   from every manifest (name, rail, kind, description; `summary` if set). Don't
+   hand-edit either file; CI fails if they drift from the manifests.
 6. **`npm run validate`** — whole-repo SOP + `index.json` consistency (exactly what
    CI runs).
 7. **`selat skill submit ./skills/my-skill`** — preview with `--dry-run` first.
@@ -58,7 +59,7 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
 - [ ] POST/PUT params in `body`; GET params in the query string.
 - [ ] Params have real defaults; `maxAmount` set as a generous filter.
 - [ ] First-party provider chosen over a proxy where equivalent.
-- [ ] `selat skill validate` passes; `selat skill verify` produces a passing receipt.
+- [ ] `selat skill validate` passes; `selat skill verify --live-probe` produces a passing receipt.
 - [ ] `npm run validate` → 0 errors.
 - [ ] No `TODO`, secrets, or `orth`/CLI/`subprocess` calls.
 - [ ] Did **not** copy the authoring SOP into the skill's `references/`.
