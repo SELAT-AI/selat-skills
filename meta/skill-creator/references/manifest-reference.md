@@ -77,6 +77,12 @@ stop-when-found. So don't document a waterfall, menu, or "only if X" step in
 (drop it, or tell the agent to make that single call with `selat-pay` directly).
 Order steps cheapest-first.
 
+## Optional `summary`
+
+`"summary": "One line, <= 110 chars"` sets the skill's row in the README table.
+Without it, the README uses the description's first sentence, shortened.
+`index.json` always carries the full `description`.
+
 ## SKILL.md frontmatter that must match the manifest
 
 ```yaml
