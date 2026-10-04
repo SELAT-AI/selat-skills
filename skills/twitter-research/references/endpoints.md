@@ -5,21 +5,22 @@ the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
 descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
 is authoritative — `selat skill verify` probes it free.
 
-| Step | Method | URL | Rail | ~Price |
-|---|---|---|---|---|
-| 1 — Account profile | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 2 — Recent tweets | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 3 — Mentions | GET | `https://catalog.selat.ai/twitter/user/mentions?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 4 — Followers | GET | `https://catalog.selat.ai/twitter/user/followers?userName=${handle}` | x402 via Circle Gateway | $0.001 |
-| 5 — Topic search | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${query}` | x402 via Circle Gateway | $0.001 |
-| 6 — Trends | GET | `https://catalog.selat.ai/twitter/trends?woeid=${woeid}` | x402 via Circle Gateway | $0.001 |
-| 7 — Tweet details | GET | `https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}` | x402 via Circle Gateway | $0.001 |
-| 8 — Tweet replies | GET | `https://catalog.selat.ai/twitter/tweet/replies?tweetId=${tweetId}` | x402 via Circle Gateway | $0.001 |
-| 9 — Tweet retweeters | GET | `https://catalog.selat.ai/twitter/tweet/retweeters?tweetId=${tweetId}` | x402 via Circle Gateway | $0.001 |
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Account profile | GET | `https://catalog.selat.ai/twitter/user/info?userName=${handle}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 2 — Recent tweets | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 3 — Mentions | GET | `https://catalog.selat.ai/twitter/user/mentions?userName=${handle}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 4 — Followers | GET | `https://catalog.selat.ai/twitter/user/followers?userName=${handle}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 5 — Topic search | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${query}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 6 — Trends | GET | `https://catalog.selat.ai/twitter/trends?woeid=${woeid}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 7 — Tweet details | GET | `https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 8 — Tweet replies | GET | `https://catalog.selat.ai/twitter/tweet/replies?tweetId=${tweetId}` | x402 via Circle Gateway | $0.001 | $0.01 |
+| 9 — Tweet retweeters | GET | `https://catalog.selat.ai/twitter/tweet/retweeters?tweetId=${tweetId}` | x402 via Circle Gateway | $0.001 | $0.01 |
 
-This is a fixed 9-call menu in `manifest.json` — not a cheapest-first pipeline.
-The agent selects only the endpoints a request needs. A selected 1–3 endpoint
-run costs $0.001–$0.003; the full 9-step smoke test is ~$0.009.
+This is a fixed 9-call manifest. The step table matches `manifest.json` exactly.
+`selat skill run` pays all 9 steps (~$0.009, live prices probed 2026-10-04).
+To pay only 1–3 reads ($0.001–$0.003), the agent makes individual `selat-pay`
+calls against the URLs above. Each step's cap is `$0.01`.
 
 - **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
 - **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`) serves a native x402 (`GatewayWalletBatched`) challenge. Verify prints `routed-x402`. Buyer is the funded Gateway chain. This is not a pay-chain claim.
