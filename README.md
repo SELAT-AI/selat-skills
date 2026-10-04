@@ -77,7 +77,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Multi-source lead enrichment, fully through the SELAT Router (MPP). |
 | [perplexity-search](skills/perplexity-search/SKILL.md) | x402 on Base | single | Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. |
 | [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Look up a person — work history, title, employer, and public professional profiles — via Apollo people-search… |
-| [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | Find recent funding rounds via Brave Search news-search (MPP on Tempo). |
+| [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | One bounded, read-only Brave News Search for recently published startup-funding coverage. |
 | [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. |
 | [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle… |
 | [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability… |
