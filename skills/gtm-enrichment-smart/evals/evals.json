@@ -132,11 +132,11 @@
     {
       "id": "current-cost-and-caps",
       "prompt": "What did the latest free probe quote for the complete smart run?",
-      "expected_output": "The 2026-08-30 snapshot reports each live quote and the fixed-run total separately from the per-step caps and their cumulative sum.",
+      "expected_output": "The 2026-10-04 snapshot reports each live quote and the fixed-run total separately from the per-step caps and their cumulative sum.",
       "assertions": [
         "Recorded expected total is 0.045412 USD",
-        "Per-step caps are 0.03, 0.015, and 0.02 USD",
-        "The cap sum is 0.065 USD",
+        "Per-step caps are 0.035, 0.0125, and 0.02 USD",
+        "The cap sum is 0.0675 USD and the top-level maxAmount is described as a per-step fallback, not a full-run cap",
         "The workflow says to re-probe before payment"
       ]
     },

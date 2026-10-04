@@ -124,11 +124,15 @@ confidence.
 
 - All three calls currently route as `routed-mpp` over MPP on Tempo through the
   SELAT Router.
-- Free live verification on 2026-08-30 quoted `$0.024150` for combined
-  enrichment, `$0.008400` for email verification, and `$0.012862` for the
-  independent company profile, for an expected fixed-run total of `$0.045412`.
-- The three per-step caps are `$0.03`, `$0.015`, and `$0.02`; their sum is
-  `$0.065`. Caps are ceilings, not price estimates, and are not pooled.
+- Free live verification on 2026-10-04 quoted `$0.02415` for combined
+  enrichment, `$0.0084` for email verification, and `$0.012862` for the
+  independent company profile, for an expected fixed-run total of `$0.045412`
+  per lead (one run = one lead).
+- The three per-step caps are `$0.035`, `$0.0125`, and `$0.02`; their sum is
+  `$0.0675`. Caps are per-call ceilings, not price estimates, and are not
+  pooled. The manifest's top-level `maxAmount` (`$0.035`) is only a fallback for
+  a step without its own cap, not a full-run cap; arm a session budget for the
+  cumulative limit.
 - Re-probe before every paid run because prices, rails, and availability can
   change. The live quote is authoritative.
 

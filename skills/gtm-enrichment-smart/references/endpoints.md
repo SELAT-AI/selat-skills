@@ -1,50 +1,76 @@
 # Endpoints — gtm-enrichment-smart
 
-This skill is a fixed three-call, read-only B2B lead qualification core. Free
-live verification on **2026-08-30** observed three `routed-mpp` calls. Every
-step executes during `selat skill run`; none is a conditional fallback.
+Use only these endpoint families for `gtm-enrichment-smart`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-## Endpoint matrix
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Person and company core | POST | `https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment` | MPP on Tempo | $0.02415 | $0.035 |
+| 2 — Work-email deliverability | POST | `https://hunter.mpp.paywithlocus.com/hunter/email-verifier` | MPP on Tempo | $0.0084 | $0.0125 |
+| 3 — Independent company profile | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 | $0.02 |
 
-| # | Purpose | Method and endpoint | Required request data | Live quote | Per-step cap |
-|---|---|---|---|---:|---:|
-| 1 | Combined professional and company context | `POST hunter.mpp.paywithlocus.com/hunter/combined-enrichment` | JSON: `email` | $0.024150 | $0.03 |
-| 2 | Work-email deliverability | `POST hunter.mpp.paywithlocus.com/hunter/email-verifier` | JSON: `email` | $0.008400 | $0.015 |
-| 3 | Independent company profile | `GET mpp.orthogonal.com/company-enrich/companies/enrich?domain=…` | Query: `domain` | $0.012862 | $0.02 |
+This is a fixed 3-call, read-only manifest. The step table matches
+`manifest.json` exactly. `selat skill run` executes all three steps every time;
+none is conditional or skippable.
 
-Expected fixed-run total at the recorded quotes: **$0.045412**. The independent
-per-step caps sum to **$0.065**. Re-probe before payment; prices and modes can
-change.
+Live-probed 2026-10-04 (free, `--probe-only --live-probe`): expected total
+**$0.045412** per run (one run = one lead). Per-step caps are $0.035 / $0.0125 /
+$0.02 (sum **$0.0675**). The manifest's top-level `maxAmount` (`$0.035`) is only
+a per-step fallback for a step without its own cap — it is not a full-run cap.
+Arm a session budget for the cumulative limit.
 
-## Live schema and interpretation notes
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **MPP on Tempo:** Hunter via Locus (`hunter.mpp.paywithlocus.com`) and Orthogonal Company Enrich (`mpp.orthogonal.com`). Verify prints `routed-mpp` for all three steps.
 
-### Combined enrichment
+## Hunter MPP — `MPP on Tempo`
 
-- Public OpenAPI requires `email` and describes the response as both person and
-  company data from that address.
-- Use returned names, titles, locations, and public profiles as evidence, not as
-  guaranteed current facts.
-- The recipe does not ask for personal-email or phone revelation.
+serviceUrl: `https://hunter.mpp.paywithlocus.com`
 
-### Email verifier
+Live-probed prices (`routed-mpp`, 2026-10-04): combined-enrichment `$0.02415`
+(cap `$0.035`), email-verifier `$0.0084` (cap `$0.0125`). All endpoints are
+**POST with a JSON body**.
 
-- Public OpenAPI requires `email` and documents MX/SMTP checks plus a confidence
-  score.
-- Deliverability is a technical observation. It is not proof of identity,
-  employer relationship, recipient interest, or consent to outreach.
+- `combined-enrichment` returns person and company data for the address. Use
+  returned names, titles, locations, and public profiles as evidence, not as
+  guaranteed current facts. The recipe does not request personal-email or
+  phone revelation.
+- `email-verifier` documents MX/SMTP checks plus a confidence score.
+  Deliverability is a technical observation — not proof of identity, employer
+  relationship, recipient interest, or consent to outreach.
 
-### Company Enrich
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Person and company core | `/hunter/combined-enrichment` | `email` (string, required) |
+| Work-email deliverability | `/hunter/email-verifier` | `email` (string, required) |
 
-- The domain variant is a GET request with `domain` in the query string.
-- Public OpenAPI describes company name, domain, industry, employee count,
-  revenue, location, funding, technology, and social links.
-- A not-found result is evidence of a coverage gap, not proof that the company
-  does not exist.
+```json
+{ "email": "jane.doe@acme.com" }
+```
+
+## Orthogonal Company Enrich — `MPP on Tempo`
+
+serviceUrl: `https://mpp.orthogonal.com/company-enrich`
+
+Live-probed price: `$0.012862` per call (`routed-mpp`, 2026-10-04). **GET with a
+query-string `domain`.** Per-step cap `$0.02`. Returns company name, domain,
+industry, employee count, revenue, location, funding, technology, and social
+links; 404 when the domain is unknown, which is a coverage gap, not proof the
+company does not exist. Replaces the dead Abstract Company Enrichment route.
+
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| Independent company profile | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
+
+```text
+https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=acme.com
+```
 
 ## Input and privacy gate
 
-- `email` and `domain` are both required because the manifest runner does not
-  derive one parameter from another.
+- `email` and `domain` are both required; the runner does not derive one
+  parameter from another.
 - Lowercase both and require the email suffix to equal the domain.
 - Stop on Gmail, Yahoo, Outlook, or another consumer free-mail domain.
 - Use only for a user-stated legitimate B2B purpose. Do not infer sensitive
@@ -52,59 +78,43 @@ change.
 
 ## Removed calls
 
-- **Abstract Company Enrichment:** removed because the live host no longer
-  returns a detectable x402 or MPP challenge.
-- **Apollo people enrichment:** removed from the cost-conscious core because the
-  combined-enrichment call already supplies person and company context. Use
-  `gtm-enrichment-deep` when a second person source is worth the added spend.
-- **Apollo organization enrichment:** removed from the smart core because the
-  independent company profile already includes funding and revenue. Use the
-  deep skill when an additional organization-level cross-check is required.
-- **Hunter email and company fallback calls:** removed because the manifest
-  runner cannot gate them on missing or conflicting fields; they always charged.
-- **Twitter social proof:** removed because the runner cannot derive a handle
-  from an earlier response, and the old default could query an unrelated account.
-- **Job postings:** not a manifest step because the runner cannot receive an
-  organization ID from an earlier call. Treat hiring signals as a separate
-  quoted follow-up after a real ID is obtained.
+- **Abstract Company Enrichment:** the host no longer returns a payment challenge; replaced by Orthogonal Company Enrich.
+- **Apollo people enrichment and organization enrichment:** removed from the cost-conscious core; combined enrichment and the company profile already cover person, funding, and revenue. Use `gtm-enrichment-deep` for the extra cross-check.
+- **Hunter email and company "fallback" calls:** removed because the runner cannot gate a step on earlier results; they always charged.
+- **Twitter social proof:** removed because the runner cannot derive a handle from an earlier response, and the old default (`elonmusk`) queried an unrelated account.
+- **Job postings / buying signals:** not a manifest step (no `organizationId` param) because the runner cannot pass an organization ID from an earlier call. Treat hiring signals as a separately quoted follow-up.
 
-## Free live probe
+## Free live probes
 
-This command reads payment challenges and does not sign or settle:
+These commands read payment challenges and never sign or settle:
 
 ```bash
 selat skill verify ./skills/gtm-enrichment-smart \
-  --email "research@example.com" \
-  --domain example.com \
+  --email "jane.doe@acme.com" \
+  --domain acme.com \
   --live-probe
-```
 
-Equivalent single-endpoint probes:
-
-```bash
 selat-pay POST \
   "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment" \
-  --body '{"email":"research@example.com"}' \
-  --chain base --max-amount 0.03 --probe-only --live-probe
+  --body '{"email":"jane.doe@acme.com"}' \
+  --chain base --max-amount 0.035 --probe-only --live-probe
 
 selat-pay POST \
   "https://hunter.mpp.paywithlocus.com/hunter/email-verifier" \
-  --body '{"email":"research@example.com"}' \
-  --chain base --max-amount 0.015 --probe-only --live-probe
+  --body '{"email":"jane.doe@acme.com"}' \
+  --chain base --max-amount 0.0125 --probe-only --live-probe
 
 selat-pay GET \
-  "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=example.com" \
+  "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=acme.com" \
   --chain base --max-amount 0.02 --probe-only --live-probe
 ```
 
-`--chain base` is the settlement-chain argument required by `selat-pay`. It
-does not turn a probe into a payment. A paid application error may still charge,
-so inspect history before retrying.
+`--chain base` above is only selat-pay's required flag; a probe never settles
+and the CLI resolves the funded Gateway chain for paid runs. A paid application
+error may still charge, so inspect history before retrying.
 
-Public schemas inspected on 2026-08-30:
-
-- `https://hunter.mpp.paywithlocus.com/openapi.json`
-- `https://mpp.orthogonal.com/company-enrich/openapi.json`
+Public schemas: `https://hunter.mpp.paywithlocus.com/openapi.json`,
+`https://mpp.orthogonal.com/company-enrich/openapi.json`.
 
 Provider names and trademarks belong to their respective owners and are used
 only for endpoint identification.

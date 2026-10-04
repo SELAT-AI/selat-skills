@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "gtm-enrichment-smart",
   "description": "Fixed three-call, read-only B2B lead qualification bundle. Uses a known work email and matching company domain to retrieve combined professional/company context, verify work-email deliverability, and cross-check an independent company profile; it does not reveal personal contact data or run outreach.",
-  "maxAmount": "0.03",
+  "maxAmount": "0.035",
   "params": {
     "email": {
       "required": true,
@@ -22,7 +22,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.03"
+      "maxAmount": "0.035"
     },
     {
       "label": "work-email deliverability — Hunter email verifier (MPP on Tempo)",
@@ -32,7 +32,7 @@
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.015"
+      "maxAmount": "0.0125"
     },
     {
       "label": "independent company profile — Company Enrich by domain (MPP on Tempo)",
