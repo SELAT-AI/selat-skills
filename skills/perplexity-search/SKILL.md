@@ -73,7 +73,7 @@ bodies are in [`references/endpoints.md`](references/endpoints.md).
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `query` | yes | `latest x402 / agentic payments adoption` | The web search query. |
+| `query` | yes | none | The web search query. No default, so a missing query is refused instead of paying for a canned search. |
 | `recency` | no | `month` | Recency filter: `hour` \| `day` \| `week` \| `month` \| `year`. |
 
 Output: JSON with an array of web results (title, URL, page content/snippets) that the

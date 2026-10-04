@@ -65,8 +65,7 @@ before spending. Afterwards, report what was actually spent. `selat skill run`
 always pays all ten steps; there is no total-run cap, only per-step caps.
 
 Recommended agent procedure (manifest steps are ordered cheapest-first; retarget
-all three params to the user's ticker — never let the NVDA defaults run for a
-different company):
+all three params to the user's ticker; all three are required):
 
 1. **Normalize the request** into `ticker`, `twitter_query`, `reddit_query`, and
    a horizon (intraday / week / month / quarter). Preserve the user's ticker
@@ -108,9 +107,12 @@ tweet replies, Reddit post comments, Otto derivatives context) — see `referenc
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `ticker` | yes | `NVDA` | US equity ticker or index proxy. Always pass explicitly. |
-| `twitter_query` | no | `$NVDA OR NVIDIA` | Twitter advanced-search query; widen with company/product terms. |
-| `reddit_query` | no | `NVDA stock` | StableEnrich Reddit query; add company/product terms. |
+| `ticker` | yes | none | US equity ticker or index proxy, e.g. `NVDA`. |
+| `twitter_query` | yes | none | Twitter advanced-search query for the same ticker, e.g. `$NVDA OR NVIDIA`; widen with company/product terms. |
+| `reddit_query` | yes | none | StableEnrich Reddit query for the same ticker, e.g. `NVDA stock`; add company/product terms. |
+
+None of the three has a default, so a run can't silently pay for another
+company's chatter.
 
 Output: per-step JSON (tweets, macro data, quote, OHLCV series, RSI, MACD, news
 sentiment, earnings history, smart-money ticker summary, Reddit posts) that the agent fuses into a

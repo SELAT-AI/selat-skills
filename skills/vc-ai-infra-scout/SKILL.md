@@ -63,7 +63,7 @@ For robotics, avoid the phrase "embodied AI" in Twitter queries (see Gotchas).
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `thesis` | yes | `AI infrastructure` | Core search term. Try: `robotics foundation model`, `humanoid robotics`, `decentralized AI compute`, `agentic payment rails` |
+| `thesis` | no | `AI infrastructure` | Core search term. Try: `robotics foundation model`, `humanoid robotics`, `decentralized AI compute`, `agentic payment rails` |
 | `twitterQuery` | no | `AI infra founder` | Twitter/X search for founder buzz. Override for your thesis: e.g. `robotics foundation model` |
 | `fundraisingQuery` | no | `startup raised seed pre-seed funding round` | Fundraising news query. Override: `robotics startup raised seed funding` |
 | `investorQuery` | no | `seed fund partner thesis` | Investor/partner chatter. Override: `robotics seed fund partner` |

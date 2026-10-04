@@ -6,7 +6,6 @@
   "params": {
     "query": {
       "required": true,
-      "default": "latest x402 / agentic payments adoption",
       "description": "The web search query (maps to Perplexity /search `query`)."
     },
     "recency": {

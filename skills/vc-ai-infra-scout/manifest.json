@@ -5,7 +5,7 @@
   "maxAmount": "0.06",
   "params": {
     "thesis": {
-      "required": true,
+      "required": false,
       "default": "AI infrastructure",
       "description": "The core search term for web discovery (Tavily, Exa, Apollo). For robotics/embodied-AI use 'robotics foundation model' or 'humanoid robotics'. For crypto-AI use 'decentralized AI compute'. For agentic payments use 'agentic payment rails'. This term is used as ${thesis}."
     },
