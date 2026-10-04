@@ -1,28 +1,20 @@
 {
   "schema": "selat-skill/v1",
   "name": "account-intel",
-  "description": "Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across X/Twitter + YouTube + the web (news + citations) into one cross-platform footprint brief. Spans two rails (Circle Gateway + MPP on Tempo), paid per call over selat-pay (USDC via Circle Gateway), no API keys.",
-  "maxAmount": "0.50",
+  "description": "Entity-centric footprint & reputation intelligence — profile one specific person, brand, or handle across X/Twitter (SELAT-native), YouTube (Scrape Creators), web news (Brave), and web citations (Exa), with holdings context from a user-supplied associated EVM wallet (Alchemy), into one cross-platform footprint brief. Fixed six-call pipeline over x402 via Circle Gateway and MPP on Tempo, paid per call through the SELAT Router, no API keys.",
+  "maxAmount": "0.05",
   "params": {
     "handle": {
-      "required": false,
-      "default": "OpenAI",
-      "description": "X/Twitter handle (no @) to pull a profile and recent tweets for (used as ${handle})."
+      "required": true,
+      "description": "X/Twitter handle (no @) of the entity to pull a profile and recent tweets for (used as ${handle}). Confirm it belongs to the entity named in name."
     },
     "name": {
       "required": true,
-      "default": "OpenAI",
       "description": "Display name of the person/brand/entity to search YouTube + web news + citations for (used as ${name})."
     },
-    "query": {
-      "required": false,
-      "default": "OpenAI",
-      "description": "Free-text query reserved for additional entity searches (used as ${query})."
-    },
     "address": {
-      "required": false,
-      "default": "0x0000000000000000000000000000000000000000",
-      "description": "EVM contract/token address to pull on-chain asset footprint for any token associated with the entity (used as ${address})."
+      "required": true,
+      "description": "Non-zero EVM wallet or treasury address supplied by the user and associated with the entity, used to retrieve cross-chain token holdings (used as ${address})."
     }
   },
   "steps": [
@@ -31,35 +23,43 @@
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/info?userName=${handle}",
-      "maxAmount": "0.05"
+      "maxAmount": "0.0015"
     },
     {
       "label": "X/Twitter recent tweets — SELAT Twitter API (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/last_tweets?userName=${handle}",
-      "maxAmount": "0.05"
+      "maxAmount": "0.0015"
     },
     {
-      "label": "YouTube presence — Scrape Creators (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "GET",
-      "url": "https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=${name}",
-      "maxAmount": "0.05"
-    },
-    {
-      "label": "Web reputation / news — Brave news-search (MPP on Tempo)",
-      "rail": "MPP on Tempo",
+      "label": "On-chain wallet holdings — Alchemy tokens-by-wallet (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "POST",
-      "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
+      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address",
       "body": {
-        "q": "${name}"
+        "addresses": [
+          {
+            "address": "${address}",
+            "networks": [
+              "eth-mainnet",
+              "base-mainnet",
+              "matic-mainnet",
+              "arb-mainnet",
+              "opt-mainnet"
+            ]
+          }
+        ],
+        "withMetadata": true,
+        "withPrices": true,
+        "includeNativeTokens": true,
+        "includeErc20Tokens": true
       },
-      "maxAmount": "0.06"
+      "maxAmount": "0.0015"
     },
     {
-      "label": "Web context / citations — Exa search (MPP on Tempo)",
-      "rail": "MPP on Tempo",
+      "label": "Web context / citations — Exa search (x402 via Circle Gateway)",
+      "rail": "x402 via Circle Gateway",
       "method": "POST",
       "url": "https://api.exa.ai/search",
       "body": {
@@ -71,14 +71,24 @@
           }
         }
       },
-      "maxAmount": "0.05"
+      "maxAmount": "0.01"
     },
     {
-      "label": "On-chain token footprint — Alchemy token-by-address (x402 via Circle Gateway)",
-      "rail": "x402 via Circle Gateway",
+      "label": "YouTube presence — Scrape Creators (MPP on Tempo)",
+      "rail": "MPP on Tempo",
       "method": "GET",
-      "url": "https://x402.alchemy.com/data/v1/assets/tokens/by-address?address=${address}",
-      "maxAmount": "0.02"
+      "url": "https://mpp.orthogonal.com/scrapecreators/v1/youtube/search?query=${name}",
+      "maxAmount": "0.03"
+    },
+    {
+      "label": "Web reputation / news — Brave news-search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
+      "body": {
+        "q": "${name}"
+      },
+      "maxAmount": "0.05"
     }
   ]
 }
