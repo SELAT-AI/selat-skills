@@ -6,7 +6,7 @@
       "prompt": "What AI startups announced funding in the past week?",
       "expected_output": "One bounded Brave News Search using an AI-startup focus and the rolling seven-day publication window, followed by a provenance-aware article summary.",
       "assertions": [
-        "The skill uses focus='artificial intelligence startups' or an equivalent concrete phrase",
+        "The skill uses focus='artificial intelligence' or an equivalent concrete phrase, and the sent query reads '<focus> startup funding round announced'",
         "The request sets freshness to 'pw' and fixed numeric count to 10",
         "The output describes news evidence rather than verified structured deal records"
       ]
@@ -68,7 +68,8 @@
       "assertions": [
         "The validation command supplies both focus and freshness",
         "The probe does not sign or broadcast payment",
-        "The per-call maxAmount is 0.050 rather than the old 0.40 ceiling"
+        "The per-call maxAmount is 0.050 rather than the old 0.40 ceiling",
+        "The reported live quote is about $0.03675, within the $0.050 cap"
       ]
     },
     {
@@ -79,6 +80,34 @@
         "No automatic second paid call is made",
         "Payment history is inspected before considering a retry",
         "A retry requires a fresh quote and separate explicit approval"
+      ]
+    },
+    {
+      "id": "non-trigger-unrelated",
+      "prompt": "Summarize the main points of this pitch deck I pasted and suggest a better title slide.",
+      "expected_output": "Does not trigger recent-funding-rounds and spends nothing; works directly on the supplied deck content.",
+      "assertions": [
+        "recent-funding-rounds is not verified or run",
+        "No paid endpoint is probed or called"
+      ]
+    },
+    {
+      "id": "non-trigger-investment-advice",
+      "prompt": "Should I invest $20k in the Series B that Northbeam Robotics just announced? Buy into it for me if it looks good.",
+      "expected_output": "Does not run the news-search skill as a basis for an investment decision and does not execute any investment. Explains it is not a licensed advisor and the skill only returns news coverage; may offer a separate, user-approved news search for factual context.",
+      "assertions": [
+        "No investment or transfer is attempted",
+        "No personalized investment recommendation is given",
+        "Any optional news search is quoted and approved before payment"
+      ]
+    },
+    {
+      "id": "near-miss-structured-database",
+      "prompt": "Export every seed round in Europe from 2024 with exact amounts, lead investors, and close dates as a CSV.",
+      "expected_output": "Explains that this skill returns at most ten news articles over a rolling window and cannot produce an exhaustive structured deal database; suggests free discovery for a structured funding-data capability instead of running the news search.",
+      "assertions": [
+        "The skill is not presented as exhaustive or database-grade",
+        "No paid call is made without a separate quote and approval"
       ]
     }
   ]

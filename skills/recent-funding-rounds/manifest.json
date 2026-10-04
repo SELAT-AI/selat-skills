@@ -6,7 +6,7 @@
   "params": {
     "focus": {
       "required": true,
-      "description": "Concrete funding-news focus, such as 'artificial intelligence startups', 'fintech Series A', or 'startup rounds over $10M'."
+      "description": "Concrete funding-news focus, such as 'artificial intelligence', 'fintech Series A', or 'rounds over $10M'. The query appends 'startup funding round announced'."
     },
     "freshness": {
       "required": true,
@@ -20,7 +20,7 @@
       "method": "POST",
       "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
       "body": {
-        "q": "${focus} funding round announced",
+        "q": "${focus} startup funding round announced",
         "count": 10,
         "freshness": "${freshness}"
       },

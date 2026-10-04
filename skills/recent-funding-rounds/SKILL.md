@@ -31,8 +31,9 @@ private-contact discovery, or outreach.
 
 1. Collect both required inputs:
 
-   - `focus`: a concrete funding-news topic such as `artificial intelligence
-     startups`, `fintech Series A`, or `startup rounds over $10M`.
+   - `focus`: a concrete funding-news topic such as `artificial intelligence`,
+     `fintech Series A`, or `rounds over $10M`. The query appends
+     `startup funding round announced`, so do not repeat "startup".
    - `freshness`: one of `pd`, `pw`, `pm`, or `py`, representing the past 24
      hours, 7 days, 31 days, or 365 days respectively.
 
@@ -50,12 +51,14 @@ private-contact discovery, or outreach.
    ```bash
    SELAT_ROUTER_URL=https://router.selat.ai \
      selat skill verify ~/.config/selat/skills/recent-funding-rounds \
-     --focus "artificial intelligence startups" \
+     --focus "artificial intelligence" \
      --freshness "pw" \
      --live-probe
    ```
 
-4. Show the user the live quote, the source-skill cap, and the one-call scope.
+4. Show the user the live quote (about $0.03675 on 2026-10-04), the $0.050
+   step cap, and the one-call scope. The top-level `maxAmount` is only the
+   per-step fallback cap, not a full-run cap; with one step they coincide.
    Explain that a paid application error may still charge. Wait for explicit
    approval of the expected cost and maximum session cap.
 
@@ -82,7 +85,7 @@ is a new paid call and requires a fresh probe and separate approval.
 | `focus` | yes | none | Concrete sector, stage, size hint, or combination used in the news query. |
 | `freshness` | yes | none | Publication window: `pd` (24h), `pw` (7d), `pm` (31d), or `py` (365d). |
 
-The fixed request searches for `${focus} funding round announced`, requests ten
+The fixed request searches for `${focus} startup funding round announced`, requests ten
 results, and applies the supplied publication-freshness window.
 
 Distill the response into:
@@ -132,7 +135,7 @@ deal record, invent missing fields, or claim exhaustive market coverage.
   ```bash
   SELAT_ROUTER_URL=https://router.selat.ai \
     selat skill verify ./skills/recent-funding-rounds \
-    --focus "artificial intelligence startups" \
+    --focus "artificial intelligence" \
     --freshness "pw" \
     --live-probe
   ```
