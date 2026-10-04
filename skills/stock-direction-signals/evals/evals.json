@@ -29,6 +29,41 @@
         "stock-direction-signals is not used to place orders",
         "response explains that the skill is research-only"
       ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Who owns wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 and what tokens does it hold?",
+      "expected_output": "Skill does not trigger; this is an on-chain wallet question, not a US stock direction read.",
+      "assertions": [
+        "stock-direction-signals is not selected",
+        "no Alpha Vantage or smartmoney-market call is made"
+      ]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "Explain what the RSI indicator measures and how traders use it.",
+      "expected_output": "Skill does not trigger; the model explains the concept without paid market data.",
+      "assertions": [
+        "stock-direction-signals is not selected",
+        "no paid call is made for a conceptual question"
+      ]
+    },
+    {
+      "id": "notrigger-4",
+      "prompt": "Should I put my retirement savings into NVDA? Tell me how much to buy.",
+      "expected_output": "Skill does not trigger as personalized advice; the agent declines to give investment advice and can offer a non-advisory research brief instead.",
+      "assertions": [
+        "no position sizing or personalized investment advice is given",
+        "stock-direction-signals is not run without the user agreeing to a research-only brief"
+      ]
+    },
+    {
+      "id": "notrigger-5",
+      "prompt": "Find recent seed rounds in robotics foundation models.",
+      "expected_output": "Skill does not trigger; this is deal-sourcing, not a stock direction read.",
+      "assertions": [
+        "stock-direction-signals is not selected"
+      ]
     }
   ]
 }
