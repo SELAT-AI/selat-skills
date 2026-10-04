@@ -1,12 +1,11 @@
 {
   "schema": "selat-skill/v1",
   "name": "perplexity-search",
-  "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call (USDC on Base), no API key.",
+  "description": "Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. Returns ranked web results with page content and source URLs for the agent to synthesize into a cited answer. Paid per call through the SELAT Router from your Circle Gateway balance, no API key.",
   "maxAmount": "0.03",
   "params": {
     "query": {
       "required": true,
-      "default": "latest x402 / agentic payments adoption",
       "description": "The web search query (maps to Perplexity /search `query`)."
     },
     "recency": {
@@ -17,8 +16,8 @@
   },
   "steps": [
     {
-      "label": "web search — Perplexity /search (routed x402 via SELAT Router)",
-      "rail": "routed",
+      "label": "web search — Perplexity /search (x402 on Base)",
+      "rail": "x402 on Base",
       "method": "POST",
       "url": "https://pplx.x402.paysponge.com/search",
       "body": {
