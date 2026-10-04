@@ -28,6 +28,42 @@
         "perplexity-search is not selected",
         "no paid call is made for a question answerable without live web data"
       ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Summarize the article I pasted above in three bullets.",
+      "expected_output": "Skill does not trigger; the agent summarizes the supplied text itself.",
+      "assertions": [
+        "perplexity-search is not selected",
+        "no paid call is made for content the user already supplied"
+      ]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "Is NVDA looking bullish or bearish this week based on the chart, news, and Reddit?",
+      "expected_output": "Skill does not trigger; this is a directional stock read that stock-direction-signals covers.",
+      "assertions": [
+        "perplexity-search is not selected",
+        "stock-direction-signals is the better match"
+      ]
+    },
+    {
+      "id": "notrigger-4",
+      "prompt": "Who is @sama on Twitter and what has he posted lately?",
+      "expected_output": "Skill does not trigger; this is a Twitter/X account read that twitter-research covers.",
+      "assertions": [
+        "perplexity-search is not selected",
+        "twitter-research is the better match"
+      ]
+    },
+    {
+      "id": "notrigger-5",
+      "prompt": "Explain how a hash map works.",
+      "expected_output": "Skill does not trigger; the model answers from its own knowledge.",
+      "assertions": [
+        "perplexity-search is not selected",
+        "no paid call is made"
+      ]
     }
   ]
 }

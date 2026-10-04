@@ -2,7 +2,7 @@
 name: stock-direction-signals
 description: Use this skill when the user wants a bullish, bearish, or mixed directional read on a US stock — e.g. "is NVDA bullish or bearish right now", "give me a directional read on AAPL", "is MAG7 sentiment turning", "what do the chart, news, and social say about AMD", "signal brief on SPY". Covers MAG7 names, semiconductor and AI-infrastructure stocks, tokenized-stock watchlists, and index proxies like SPY/QQQ. Composes only Alpha Vantage MPP (price, technicals, news, earnings), smartmoney-market (13F fund and insider positioning), SELAT-native Twitter (social chatter), Circle StableEnrich (Reddit), and Circle Otto (TradFi macro) into a non-advisory signal brief. Pays per call via selat-pay (USDC via Circle Gateway), no API keys.
 license: Apache-2.0
-compatibility: Requires the selat CLI, selat-pay >= 0.7.0, and a funded Circle Agent Wallet (the runner pays on whichever chain holds Gateway USDC). Every step routes through the SELAT Router across four rails (`x402 via Circle Gateway`, `x402 on Base`, `MPP on Tempo`, `MPP on Solana`), so a reachable SELAT Router is required. `selat skill verify` (no --pay) is free and needs no funded wallet.
+compatibility: Requires the selat CLI, selat-pay >= 0.12.0 (for `--live-probe`), and a funded Circle Agent Wallet (the runner pays on whichever chain holds Gateway USDC). Every step routes through the SELAT Router across four rails (`x402 via Circle Gateway`, `x402 on Base`, `MPP on Tempo`, `MPP on Solana`), so a reachable SELAT Router is required. `selat skill verify --live-probe` (no --pay) is free and needs no funded wallet.
 metadata:
   author: SELAT-AI
   version: "1.1"
@@ -59,13 +59,13 @@ not a pay-chain claim. A reachable SELAT Router is required.
 3. The CLI compiles each step into a `selat-pay` call and prints each result.
 
 Before running, tell the user what it costs: a full run quotes at roughly
-**$0.09** live (ten paid calls, capped at $0.25 total) — say "this pulls ten
-paid data feeds for about nine cents — proceed?" and wait for a yes before
-spending. Afterwards, report what was actually spent.
+**$0.09** live (ten paid calls summing to $0.086 on 2026-10-04) — say "this
+pulls ten paid data feeds for about nine cents — proceed?" and wait for a yes
+before spending. Afterwards, report what was actually spent. `selat skill run`
+always pays all ten steps; there is no total-run cap, only per-step caps.
 
 Recommended agent procedure (manifest steps are ordered cheapest-first; retarget
-all three params to the user's ticker — never let the NVDA defaults run for a
-different company):
+all three params to the user's ticker; all three are required):
 
 1. **Normalize the request** into `ticker`, `twitter_query`, `reddit_query`, and
    a horizon (intraday / week / month / quarter). Preserve the user's ticker
@@ -107,9 +107,12 @@ tweet replies, Reddit post comments, Otto derivatives context) — see `referenc
 
 | Param | Required | Default | Description |
 |---|---|---|---|
-| `ticker` | yes | `NVDA` | US equity ticker or index proxy. Always pass explicitly. |
-| `twitter_query` | no | `$NVDA OR NVIDIA` | Twitter advanced-search query; widen with company/product terms. |
-| `reddit_query` | no | `NVDA stock` | StableEnrich Reddit query; add company/product terms. |
+| `ticker` | yes | none | US equity ticker or index proxy, e.g. `NVDA`. |
+| `twitter_query` | yes | none | Twitter advanced-search query for the same ticker, e.g. `$NVDA OR NVIDIA`; widen with company/product terms. |
+| `reddit_query` | yes | none | StableEnrich Reddit query for the same ticker, e.g. `NVDA stock`; add company/product terms. |
+
+None of the three has a default, so a run can't silently pay for another
+company's chatter.
 
 Output: per-step JSON (tweets, macro data, quote, OHLCV series, RSI, MACD, news
 sentiment, earnings history, smart-money ticker summary, Reddit posts) that the agent fuses into a
@@ -144,9 +147,12 @@ it, and which paid endpoints were used.
 - **Otto is macro-first here.** `tradfi-data` is the default; use Otto's
   crypto/perp endpoints only when the user explicitly connects the stock to
   tokenized equity, crypto beta, or derivatives spillover.
-- **`maxAmount` is a guardrail, not the price.** Per-step caps ($0.01–$0.04,
-  $0.25 full-run) sit well above live quotes (measured full run ≈ $0.0861);
-  gateway prices can run above the catalogue listing.
+- **`maxAmount` is a guardrail, not the price.** Each call is capped by its own
+  step `maxAmount` ($0.01–$0.04), set above the live quotes (full run measured
+  at $0.086 on 2026-10-04). The top-level `maxAmount` ($0.04) is only a fallback
+  for a step with no cap of its own. It is not a total-run cap: nothing stops a
+  run at a sum, so the worst case is the sum of the step caps ($0.21). Gateway
+  prices can run above the catalogue listing.
 - **The live 402 is the source of truth.** If a step stops serving a challenge
   or the live price drifts, `selat skill verify` flags it — report the live
   response and adapt within the provider filter only.
@@ -161,10 +167,10 @@ it, and which paid endpoints were used.
 > Gateway balance, not the manifest.
 
 - Static: `selat skill validate ./skills/stock-direction-signals`
-- Live gate (free): `selat skill verify ./skills/stock-direction-signals --ticker NVDA --twitter_query "\$NVDA OR NVIDIA" --reddit_query "NVDA stock"`
+- Live gate (free, probe-only): `selat skill verify ./skills/stock-direction-signals --live-probe --ticker NVDA --twitter_query "\$NVDA OR NVIDIA" --reddit_query "NVDA stock"`
 - Paid confirm (settles real 200s): add `--pay` to the verify command.
 - Single-step probe (no pay):
-  `selat-pay POST "https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote" --body '{"symbol":"NVDA"}' --chain base --probe-only`
+  `selat-pay POST "https://alphavantage.mpp.paywithlocus.com/alphavantage/global-quote" --body '{"symbol":"NVDA"}' --chain base --probe-only --live-probe`
 
 ## References
 
