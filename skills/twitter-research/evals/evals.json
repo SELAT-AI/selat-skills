@@ -6,9 +6,9 @@
       "prompt": "Who is @openai on Twitter?",
       "expected_output": "A profile summary for openai (bio, follower/following, verified) from a single read.",
       "assertions": [
-        "Only the user/info endpoint is called with userName=openai",
-        "The other 8 endpoints are NOT called",
-        "The agent selects a subset rather than running all steps"
+        "Only the user/info endpoint is paid, with userName=openai, via a single selat-pay call",
+        "The agent does NOT use `selat skill run twitter-research`, which would pay all 9 reads",
+        "The other 8 endpoints are NOT called"
       ]
     },
     {
@@ -16,9 +16,9 @@
       "prompt": "How did tweet 1234567890123456789 do — who replied and who retweeted it?",
       "expected_output": "The tweet's counts plus a reply-sentiment and retweeter/amplification read.",
       "assertions": [
-        "Calls tweets (tweet_ids=), tweet/replies (tweet_id=), and tweet/retweeters (tweet_id=) for the given id",
+        "Calls tweets (tweet_ids=), tweet/replies (tweetId=), and tweet/retweeters (tweetId=) for the given id, as individual selat-pay calls",
         "Does not call the account or trends endpoints",
-        "tweets uses tweet_ids while replies/retweeters use tweet_id"
+        "tweets uses tweet_ids while replies/retweeters use tweetId (not the OpenAPI's tweet_id)"
       ]
     },
     {
@@ -26,18 +26,19 @@
       "prompt": "What are people saying about agentic payments on X, and is it trending in the US?",
       "expected_output": "Recent chatter on the topic with engagement plus a US trending verdict.",
       "assertions": [
-        "Calls tweet/advanced_search with query=agentic payments and trends with woeid=23424977",
+        "Calls tweet/advanced_search with query=agentic payments and trends with woeid=23424977, as individual selat-pay calls (not a full skill run)",
         "Does not call the account-read or tweet-id endpoints",
         "The output states whether the topic is trending in the region"
       ]
     },
     {
-      "id": "menu-not-pipeline",
+      "id": "full-run-all-nine",
       "prompt": "Run every twitter-research endpoint for openai.",
-      "expected_output": "The agent explains this is a menu of 9 independent reads costing ~$0.009 to run all, confirms the cost before spending, and only proceeds if the user confirms.",
+      "expected_output": "The agent states that `selat skill run twitter-research --handle openai` pays all 9 reads (~$0.009), confirms the cost before spending, and passes the other params explicitly or notes that omitted ones fall back to their defaults.",
       "assertions": [
-        "The agent surfaces that running all 9 costs about $0.009 and is usually unnecessary",
-        "The agent asks to confirm before paying for all steps"
+        "The agent surfaces that a full run pays all 9 reads for about $0.009",
+        "The agent asks to confirm before paying",
+        "The agent uses `selat skill run twitter-research`, not nine hand-built calls"
       ]
     },
     {
@@ -46,8 +47,8 @@
       "expected_output": "The agent states the run is two SELAT-native reads (~$0.002) and asks to proceed, then calls last_tweets and mentions.",
       "assertions": [
         "The agent surfaces the approximate dollar cost before paying",
-        "Calls user/last_tweets and user/mentions with userName=openai",
-        "Per-step and full-run maxAmount are 0.10; each live price is $0.001"
+        "Calls user/last_tweets and user/mentions with userName=openai as individual selat-pay calls",
+        "Each step's maxAmount is 0.01 and each live price is $0.001"
       ]
     },
     {
@@ -55,9 +56,45 @@
       "prompt": "Do a free 402 probe of the twitter user info endpoint without paying.",
       "expected_output": "A selat-pay --probe-only command against the SELAT-native user/info endpoint that returns 402 details without settling payment.",
       "assertions": [
-        "The command uses selat-pay GET with --probe-only",
+        "The command uses selat-pay GET with --probe-only --live-probe",
         "The probed URL is https://catalog.selat.ai/twitter/user/info",
         "No payment is settled during the probe"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Post a tweet from my account saying we just shipped v2.",
+      "expected_output": "Skill does not trigger; it is read-only and cannot post.",
+      "assertions": [
+        "twitter-research is not selected",
+        "no paid call is made",
+        "the agent says the skill cannot post, like, or follow"
+      ]
+    },
+    {
+      "id": "notrigger-2",
+      "prompt": "Search the web for the latest x402 adoption news, with sources.",
+      "expected_output": "Skill does not trigger; this is a grounded web search that perplexity-search covers.",
+      "assertions": [
+        "twitter-research is not selected",
+        "perplexity-search is the better match"
+      ]
+    },
+    {
+      "id": "notrigger-3",
+      "prompt": "Is AMD bullish or bearish right now based on the chart and news?",
+      "expected_output": "Skill does not trigger; this is a stock direction read that stock-direction-signals covers.",
+      "assertions": [
+        "twitter-research is not selected"
+      ]
+    },
+    {
+      "id": "notrigger-4",
+      "prompt": "Pull the TikTok and Instagram profiles for @openai.",
+      "expected_output": "Skill does not trigger; it covers Twitter/X only.",
+      "assertions": [
+        "twitter-research is not selected",
+        "no catalog.selat.ai Twitter read is paid for a non-Twitter platform"
       ]
     }
   ]
