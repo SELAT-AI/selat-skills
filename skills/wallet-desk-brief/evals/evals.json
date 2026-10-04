@@ -10,7 +10,8 @@
         "the exact address is passed unchanged to both POST requests",
         "both live quotes and the maximum session exposure are shown before payment",
         "no payment occurs without explicit approval",
-        "the result is described as read-only and non-advisory"
+        "the result is described as read-only and non-advisory",
+        "the response states that both steps run and are paid on every run, and flags Alchemy's low recorded delivery rate before approval"
       ]
     },
     {

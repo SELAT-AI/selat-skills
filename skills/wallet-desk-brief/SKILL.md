@@ -43,7 +43,12 @@ address from a label or token balance alone.
 
 ## Rails And Fixed Pipeline
 
-Both calls currently quote as `routed-x402` through the SELAT Router:
+On 2026-10-04 the free probe of both exact manifest POSTs reported
+`mode: routed-x402` through the SELAT Router: Alchemy at `$0.001` (cap `$0.002`)
+and Arkham at `$0.21` (cap `$0.30`). The expected total is `$0.211`, and the
+per-step caps sum to `$0.302`. Alchemy's 402 also lists a
+`GatewayWalletBatched` offer, so report the mode that verify prints instead of
+assuming one:
 
 1. **Alchemy token holdings** — one POST request across Ethereum, Base, Polygon
    PoS, Arbitrum, and Optimism mainnets. Metadata, available USD prices, native
@@ -145,7 +150,12 @@ appropriate public evidence where available.
 - **A 200 can contain partial errors.** Inspect Alchemy's top-level network errors
   and individual token errors before calling the snapshot complete.
 - **Caps are not prices.** Re-quote before each paid run and use the step-cap sum
-  as the absolute maximum session exposure.
+  (`$0.302`) as the absolute maximum session exposure. The top-level
+  `maxAmount` is only a per-step fallback, not a run cap.
+- **Alchemy delivery is weak.** The live quote's transactability extension
+  reports 7% all-time delivery over 15 captured payments, mostly upstream 5xx
+  after capture. Say so before approval, and rehearse one paid Alchemy call
+  before any live demo. Arkham's 100% comes from one sample.
 - **Paid failures may charge.** The runner may continue. Never auto-retry.
 - **No default address.** Missing or malformed input must fail before any probe.
 
@@ -155,7 +165,7 @@ appropriate public evidence where available.
 - Missing-input gate: `selat skill verify ./skills/wallet-desk-brief --live-probe`
   must fail before probing either endpoint.
 - Free live gate:
-  `selat skill verify ./skills/wallet-desk-brief --address 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 --live-probe`
+  `selat skill verify ./skills/wallet-desk-brief --address 0x28C6c06298d514Db089934071355E5743bf21d60 --live-probe`
 - Single-step free probes: see `references/endpoints.md`.
 - Paid confirmation: add `--pay` only after a fresh quote, explicit approval, and
   an armed session budget. Never reuse approval after an address, route, quote,
@@ -166,7 +176,7 @@ appropriate public evidence where available.
 - `manifest.json` — the machine-readable fixed payment recipe.
 - [`references/endpoints.md`](references/endpoints.md) — request contracts,
   current routes, quotes, and interpretation limits.
-- [`references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md)
+- [`../../references/agent-skill-authoring-sop.md`](../../references/agent-skill-authoring-sop.md)
   — authoring standard.
 - Alchemy Tokens By Wallet documentation —
   https://www.alchemy.com/docs/data/portfolio-apis/portfolio-api-endpoints/portfolio-api-endpoints/get-tokens-by-address

@@ -2,7 +2,7 @@
   "schema": "selat-skill/v1",
   "name": "wallet-desk-brief",
   "description": "Fixed two-call, read-only EVM wallet snapshot for one explicit non-zero address: Alchemy token holdings across five named networks plus Arkham's probabilistic address label. It does not prove real-world ownership, cover every chain, or execute a trade. Each step is paid independently through the SELAT Router over x402 via Circle Gateway.",
-  "maxAmount": "0.25",
+  "maxAmount": "0.30",
   "params": {
     "address": {
       "required": true,
@@ -43,7 +43,7 @@
       "body": {
         "address": "${address}"
       },
-      "maxAmount": "0.25"
+      "maxAmount": "0.30"
     }
   ]
 }
