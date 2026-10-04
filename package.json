@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "validate": "node scripts/validate-skills.mjs",
-    "probe": "node scripts/probe-skills.mjs"
+    "probe": "node scripts/probe-skills.mjs",
+    "catalog": "node scripts/build-catalog.mjs"
   },
   "license": "Apache-2.0",
   "repository": {

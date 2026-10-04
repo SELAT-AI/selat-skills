@@ -63,6 +63,12 @@ logic (cheapest-first, escalate-on-gap, stop-when-found) belongs in `SKILL.md`
 **Workflow** as the procedure the agent follows; the manifest just lists the
 available steps with their costs. Order steps cheapest-first.
 
+## Optional `summary`
+
+`"summary": "One line, <= 110 chars"` sets the skill's row in the README table.
+Without it, the README uses the description's first sentence, shortened.
+`index.json` always carries the full `description`.
+
 ## SKILL.md frontmatter that must match the manifest
 
 ```yaml
