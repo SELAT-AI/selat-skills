@@ -1,92 +1,100 @@
-# scrapecreators — endpoint reference
+# Endpoints — scrapecreators
 
-This skill is a fixed 11-call, read-only bundle across two provider groups:
+Use only these endpoint families for `scrapecreators`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-- three SELAT-native Twitter/X reads from `catalog.selat.ai`, settling as
-  `routed-x402` via Circle Gateway; and
-- eight synchronous Scrape Creators reads from `mpp.orthogonal.com`, settling
-  as `routed-mpp` over MPP on Tempo.
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — X/Twitter profile | GET | `https://catalog.selat.ai/twitter/user/info?userName=${twitterHandle}` | x402 via Circle Gateway | $0.001 | $0.002 |
+| 2 — X/Twitter recent posts | GET | `https://catalog.selat.ai/twitter/user/last_tweets?userName=${twitterHandle}` | x402 via Circle Gateway | $0.001 | $0.002 |
+| 3 — X/Twitter supplied tweet | GET | `https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}` | x402 via Circle Gateway | $0.001 | $0.002 |
+| 4 — LinkedIn person profile | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinProfileUrl}` | MPP on Tempo | $0.021 | $0.03 |
+| 5 — LinkedIn post or article | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/post?url=${linkedinPostUrl}` | MPP on Tempo | $0.021 | $0.03 |
+| 6 — LinkedIn company page | GET | `https://mpp.orthogonal.com/scrapecreators/v1/linkedin/company?url=${linkedinCompanyUrl}` | MPP on Tempo | $0.021 | $0.03 |
+| 7 — Instagram profile | GET | `https://mpp.orthogonal.com/scrapecreators/v1/instagram/profile?handle=${instagramHandle}&trim=true` | MPP on Tempo | $0.021 | $0.03 |
+| 8 — Instagram recent posts | GET | `https://mpp.orthogonal.com/scrapecreators/v2/instagram/user/posts?handle=${instagramHandle}&trim=true` | MPP on Tempo | $0.021 | $0.03 |
+| 9 — TikTok profile | GET | `https://mpp.orthogonal.com/scrapecreators/v1/tiktok/profile?handle=${tiktokHandle}` | MPP on Tempo | $0.021 | $0.03 |
+| 10 — TikTok hashtag results | GET | `https://mpp.orthogonal.com/scrapecreators/v1/tiktok/search/hashtag?hashtag=${tiktokHashtag}&region=${region}&trim=true` | MPP on Tempo | $0.021 | $0.03 |
+| 11 — TikTok regional trending feed | GET | `https://mpp.orthogonal.com/scrapecreators/v1/tiktok/get-trending-feed?region=${region}&trim=true` | MPP on Tempo | $0.021 | $0.03 |
 
-Every endpoint below was checked against its provider OpenAPI document and
-free-probed on 2026-08-31. A free probe validates the payment challenge, input
-schema exposed by the Router, current routing mode, and price. It does not prove
-that a particular identity is public, valid, or guaranteed to return data.
+This is a fixed 11-call manifest. The step table matches `manifest.json`
+exactly, and `selat skill run` pays for every step on every run. Live-probed
+total (2026-10-04): **$0.171** (3 × $0.001 + 8 × $0.021). Sum of per-step caps:
+**$0.246**. The top-level `maxAmount` (`$0.03`) is only a per-step fallback for
+a step without its own cap; it is not a cumulative run cap. Each step is its own
+payment, so there is no duplicate call: the two Instagram steps hit different
+endpoints (profile vs. posts).
 
-## Endpoint inventory
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). The probe reports `routed-x402`. The buyer pays from whichever chain holds the funded Gateway balance. This is not a pay-chain claim.
+- **MPP on Tempo:** Scrape Creators sync endpoints (`mpp.orthogonal.com/scrapecreators`). The probe reports `routed-mpp`.
 
-| # | Capability | Request | Required input | Live mode | Live quote | Cap |
-|---|---|---|---|---|---:|---:|
-| 1 | Twitter/X profile | `GET https://catalog.selat.ai/twitter/user/info?userName=${twitterHandle}` | `twitterHandle` | `routed-x402` | $0.001 | $0.002 |
-| 2 | Twitter/X recent posts | `GET https://catalog.selat.ai/twitter/user/last_tweets?userName=${twitterHandle}` | `twitterHandle` | `routed-x402` | $0.001 | $0.002 |
-| 3 | Twitter/X supplied tweet | `GET https://catalog.selat.ai/twitter/tweets?tweet_ids=${tweetId}` | `tweetId` | `routed-x402` | $0.001 | $0.002 |
-| 4 | LinkedIn person profile | `GET https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinProfileUrl}` | person-profile URL | `routed-mpp` | $0.021 | $0.030 |
-| 5 | LinkedIn post/article | `GET https://mpp.orthogonal.com/scrapecreators/v1/linkedin/post?url=${linkedinPostUrl}` | post/article URL | `routed-mpp` | $0.021 | $0.030 |
-| 6 | LinkedIn company page | `GET https://mpp.orthogonal.com/scrapecreators/v1/linkedin/company?url=${linkedinCompanyUrl}` | company-page URL | `routed-mpp` | $0.021 | $0.030 |
-| 7 | Instagram profile | `GET https://mpp.orthogonal.com/scrapecreators/v1/instagram/profile?handle=${instagramHandle}&trim=true` | `instagramHandle` | `routed-mpp` | $0.021 | $0.030 |
-| 8 | Instagram recent posts | `GET https://mpp.orthogonal.com/scrapecreators/v2/instagram/user/posts?handle=${instagramHandle}&trim=true` | `instagramHandle` | `routed-mpp` | $0.021 | $0.030 |
-| 9 | TikTok profile | `GET https://mpp.orthogonal.com/scrapecreators/v1/tiktok/profile?handle=${tiktokHandle}` | `tiktokHandle` | `routed-mpp` | $0.021 | $0.030 |
-| 10 | TikTok hashtag results | `GET https://mpp.orthogonal.com/scrapecreators/v1/tiktok/search/hashtag?hashtag=${tiktokHashtag}&region=${region}&trim=true` | hashtag; optional provider region | `routed-mpp` | $0.021 | $0.030 |
-| 11 | TikTok trending feed | `GET https://mpp.orthogonal.com/scrapecreators/v1/tiktok/get-trending-feed?region=${region}&trim=true` | `region` | `routed-mpp` | $0.021 | $0.030 |
+## SELAT-native Twitter — `x402 via Circle Gateway`
 
-Expected total at the 2026-08-31 quotes: **$0.171**. The sum of all per-step
-caps is **$0.246**. The top-level `$0.03` is only a fallback cap and is not a
-cumulative budget.
+serviceUrl: `https://catalog.selat.ai`
 
-## Request and response contracts
+Live-probed price: `$0.001` per call (`routed-x402`, 2026-10-04). Per-step cap
+`$0.002`. All endpoints are **GET with query-string params**. Strip a leading
+`@`. Do not pass a profile URL where a handle is required, or a tweet URL where
+a numeric ID is required.
 
-### Twitter/X
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| X/Twitter profile | `/twitter/user/info` | `userName` (string, required — handle, no `@`) |
+| X/Twitter recent posts | `/twitter/user/last_tweets` | `userName` (string, required). Returns one page; a returned cursor is not followed automatically. |
+| X/Twitter supplied tweet | `/twitter/tweets` | `tweet_ids` (comma-separated numeric IDs; this manifest supplies one) |
 
-- `user/info` requires `userName` and returns public profile data.
-- `user/last_tweets` accepts `userName` and returns one page of recent public
-  posts. A returned cursor is not followed automatically.
-- `tweets` requires `tweet_ids`, a comma-separated list of numeric tweet IDs.
-  This manifest intentionally supplies one numeric ID.
+Query pattern:
 
-All three are GET requests. Strip a leading `@`; do not pass a profile URL or a
-tweet URL where a handle or numeric ID is required.
+```text
+https://catalog.selat.ai/twitter/tweets?tweet_ids=20
+```
 
-### LinkedIn via Scrape Creators
+## Scrape Creators — `MPP on Tempo`
 
-The three endpoints use the query key `url`, but each expects a different URL
-type:
+serviceUrl: `https://mpp.orthogonal.com/scrapecreators`
 
-- `/v1/linkedin/profile`: public person-profile URL;
-- `/v1/linkedin/post`: public post or article URL; and
-- `/v1/linkedin/company`: public company-page URL.
+Live-probed price: `$0.021` per call (`routed-mpp`, 2026-10-04). Per-step cap
+`$0.03`. All endpoints are **GET with query-string params** and are
+synchronous: they return the requested data directly, not a
+`{jobId, status: "pending"}` job. This is checked against the provider's
+OpenAPI, not yet against a paid 200.
 
-The profile response can include public experience, education, activity, and
-recent-post context. The post endpoint returns the selected post/article and
-available public engagement/comment fields. The company endpoint returns public
-firmographics and recent-page context. Only information visible publicly is in
-scope.
+### LinkedIn
 
-### Instagram via Scrape Creators
+All three endpoints use the query key `url`, but each expects a different URL
+type. Only publicly visible information is in scope.
 
-- `/v1/instagram/profile` requires `handle` and returns public profile data plus
-  recent timeline context.
-- `/v2/instagram/user/posts` requires `handle` and returns one paginated page of
-  public posts. `next_max_id` from the result would require a separate approved
-  continuation call.
-- `trim=true` reduces oversized provider payloads; it does not change the
-  target or expand access.
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| LinkedIn person profile | `/v1/linkedin/profile` | `url` (public person-profile URL, required) |
+| LinkedIn post or article | `/v1/linkedin/post` | `url` (public post or article URL, required) |
+| LinkedIn company page | `/v1/linkedin/company` | `url` (public company-page URL, required) |
 
-### TikTok via Scrape Creators
+### Instagram
 
-- `/v1/tiktok/profile` accepts `handle` and returns public profile metadata; it
-  does not return the account's videos.
-- `/v1/tiktok/search/hashtag` requires `hashtag` without `#`. `region` selects
-  proxy context and `cursor` would paginate a later call.
-- `/v1/tiktok/get-trending-feed` requires a two-letter `region`. The provider
-  explicitly states that this does not restrict returned creators to that
-  geographic region; it affects the feed/proxy context.
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| Instagram profile | `/v1/instagram/profile` | `handle` (string, required), `trim` (`true`) |
+| Instagram recent posts | `/v2/instagram/user/posts` | `handle` (string, required), `trim` (`true`). Returns one page; `next_max_id` would need a separate approved call. |
 
-Hashtag and trending results provide topical context. Do not attribute every
-returned post to the researched account.
+### TikTok
 
-## Free verification
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| TikTok profile | `/v1/tiktok/profile` | `handle` (string, required). Returns profile metadata, not videos. |
+| TikTok hashtag results | `/v1/tiktok/search/hashtag` | `hashtag` (string, required, no `#`), `region` (two-letter proxy region), `trim` (`true`) |
+| TikTok regional trending feed | `/v1/tiktok/get-trending-feed` | `region` (two-letter, required), `trim` (`true`) |
 
-Use coherent public inputs. This command reads payment challenges only and does
-not settle funds:
+The provider says `region` sets the proxy/feed context. It does not limit
+results to creators located in that region. Hashtag and trending results are
+topical context. Do not attribute them to the researched account.
+
+## Free probes
+
+Whole skill (reads payment challenges only, never settles):
 
 ```bash
 selat skill verify ./skills/scrapecreators \
@@ -102,60 +110,43 @@ selat skill verify ./skills/scrapecreators \
   --live-probe
 ```
 
-The generated `.selat/verify-receipt.json` should have `ok: true`,
-`paidMode: false`, `paid: null` for every step, and 11 reachable quotes within
-their caps.
+Single step (`--chain base` is only selat-pay's required flag; a probe never
+settles, and paid runs use whichever chain holds your Gateway balance):
+
+```bash
+selat-pay GET "https://catalog.selat.ai/twitter/user/info?userName=jack" --chain base --max-amount 0.002 --probe-only --live-probe
+selat-pay GET "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fsatyanadella%2F" --chain base --max-amount 0.03 --probe-only --live-probe
+```
 
 ## Corrections made during QC
 
-1. **Removed unrelated defaults.** The previous manifest could spend across all
-   platforms using unrelated identities plus a fabricated tweet ID and a
-   placeholder LinkedIn post URL. All nine identifiers are now required and
-   must describe one coherent target.
-2. **Documented fixed-run behavior.** The installed SELAT CLI executes every
-   manifest step. It has no platform selector, conditional branch, or
-   output-to-input dataflow, so the skill no longer implies that users can run
-   only selected manifest steps.
-3. **Replaced five incomplete async jobs.** The former StableSocial Instagram
-   and TikTok endpoints return `{jobId, status: "pending", pollUrl, token}`.
-   Their job results require later SIWX wallet-authenticated polling, which this
-   manifest cannot chain. They were replaced with synchronous Scrape Creators
-   endpoints that return the requested data directly.
-4. **Corrected the TikTok search contract.** The removed StableSocial keyword
-   request sent `query`, while the live OpenAPI requires `keywords`. The fixed
-   bundle now uses Scrape Creators' dedicated regional trending-feed endpoint,
-   so it no longer labels keyword search for `trending` as a true trending feed.
-5. **Replaced misused LinkedIn routes.** The former Clado `/clado/scrape`
-   endpoint is documented for LinkedIn person profiles, yet the manifest sent
-   post and company URLs to it. Dedicated Scrape Creators person, post, and
-   company endpoints now receive the matching URL types.
+1. **Removed unrelated defaults.** All nine identifiers are required, with no
+   default, and must describe one coherent target. There is no fabricated tweet
+   ID or placeholder LinkedIn post URL.
+2. **Fixed-run behavior.** The CLI runs every manifest step. It has no platform
+   selector, conditional branch, or step-to-step dataflow.
+3. **Replaced async StableSocial jobs.** The former Instagram/TikTok endpoints
+   returned `{jobId, status: "pending", pollUrl, token}` and needed SIWX polling
+   that a manifest cannot chain. They are now synchronous Scrape Creators reads.
+4. **Real trending feed.** Keyword search for `trending` was replaced with the
+   dedicated regional trending-feed endpoint.
+5. **Matching LinkedIn routes.** The dead Clado routes were replaced on `main`
+   (#113). Person, post, and company URLs now go to their matching Scrape
+   Creators endpoint.
 6. **Removed a duplicate paid call.** Two former Instagram profile steps called
-   the same StableSocial endpoint and defaulted to the same handle.
-7. **Separated platform handles.** Twitter/X, Instagram, and TikTok now have
-   distinct required handle parameters; the skill no longer assumes the same
-   username exists on all three platforms.
-8. **Tightened caps.** The former per-step caps summed to `$5.60` for a live
-   total of `$0.45295`. The repaired caps sum to `$0.246` for a current live
-   total of `$0.171`.
+   the same endpoint with the same default handle.
+7. **Separate platform handles.** Twitter/X, Instagram, and TikTok each have
+   their own required handle.
+8. **Tightened caps.** Caps were $4.89 summed for a $0.444 live run. They are
+   now $0.246 for $0.171.
 
 ## Provider schema sources
 
-Request shapes were checked against current provider-owned OpenAPI documents on
-2026-08-31, then corroborated with free live payment probes:
-
 - Twitter: `https://catalog.selat.ai/twitter/openapi.json`
-- Scrape Creators payment wrapper:
-  `https://mpp.orthogonal.com/scrapecreators/openapi.json`
-- LinkedIn profile: `https://docs.scrapecreators.com/v1/linkedin/profile/openapi.json`
-- LinkedIn post: `https://docs.scrapecreators.com/v1/linkedin/post/openapi.json`
-- LinkedIn company: `https://docs.scrapecreators.com/v1/linkedin/company/openapi.json`
-- Instagram profile: `https://docs.scrapecreators.com/v1/instagram/profile/openapi.json`
-- Instagram posts: `https://docs.scrapecreators.com/v2/instagram/user/posts/openapi.json`
-- TikTok profile: `https://docs.scrapecreators.com/v1/tiktok/profile/openapi.json`
-- TikTok hashtag: `https://docs.scrapecreators.com/v1/tiktok/search/hashtag/openapi.json`
-- TikTok trending feed:
-  `https://docs.scrapecreators.com/v1/tiktok/get-trending-feed/openapi.json`
+- Scrape Creators payment wrapper: `https://mpp.orthogonal.com/scrapecreators/openapi.json`
+- Per-endpoint docs: `https://docs.scrapecreators.com/<version>/<platform>/<endpoint>/openapi.json`
+  (e.g. `/v1/linkedin/profile`, `/v2/instagram/user/posts`, `/v1/tiktok/get-trending-feed`)
 
-The live payment challenge remains authoritative for reachability, routing
-mode, and price. The upstream OpenAPI is authoritative for request and response
-shape. Neither guarantees that a specific public identity will be available.
+The live payment challenge is authoritative for reachability, routing mode,
+and price. The upstream OpenAPI is authoritative for request and response shape.
+Neither guarantees that a specific public identity will return data.

@@ -1,6 +1,6 @@
 ---
 name: scrapecreators
-description: Use this skill for a comprehensive, read-only public social-media dossier on one coherent target across Twitter/X, LinkedIn, Instagram, and TikTok. It runs a fixed 11-call bundle covering account profiles, recent posts, one supplied Twitter post, one supplied LinkedIn post, a LinkedIn company page, a relevant TikTok hashtag, and a regional TikTok trending feed. Before payment, require all nine target identifiers, free-verify every call, disclose the live total and cumulative cap, and obtain explicit approval. Do not use for a one-platform lookup, private or protected content, contact enrichment, outreach, posting, following, or engagement manipulation.
+description: Use this skill for a comprehensive, read-only public social-media dossier on one coherent target across Twitter/X, LinkedIn, Instagram, and TikTok. It runs a fixed 11-call bundle covering account profiles, recent posts, one supplied Twitter post, one supplied LinkedIn post, a LinkedIn company page, a relevant TikTok hashtag, and a regional TikTok trending feed. Before payment, require all nine target identifiers, free-verify every call, disclose the live total and the sum of per-step caps, and obtain explicit approval. Do not use for a one-platform lookup, private or protected content, contact enrichment, outreach, posting, following, or engagement manipulation.
 license: Apache-2.0
 compatibility: "Requires the selat CLI and selat-pay with a funded Circle Agent Wallet for paid runs. All 11 calls currently traverse the SELAT Router: three as routed x402 and eight as routed MPP. `selat skill verify --live-probe` is free and needs no funded wallet."
 metadata:
@@ -65,9 +65,10 @@ details, send messages, post, follow, like, or otherwise mutate an account.
    budget no higher than the cap sum. A free verification is not evidence that
    a particular public identity will return useful provider data.
 
-5. After approval and a spendable Gateway balance, arm only the approved
-   cumulative budget, run the fixed bundle once, and disarm the budget after
-   success or failure:
+5. After approval and a spendable Gateway balance, arm a session budget equal
+   to the approved amount, run the fixed bundle once, and disarm the budget
+   after success or failure. The session budget is a selat-pay spending
+   tripwire across the session. It does not select or skip steps:
 
    ```bash
    selat budget start --amount <approved-cumulative-cap>
@@ -148,13 +149,19 @@ Twitter caps are `$0.002` each and the eight Scrape Creators caps are `$0.03`
 each, for a cumulative cap sum of **$0.246**. The top-level `$0.03` is only a
 fallback for a future step without its own override.
 
-The free live probe on 2026-08-31 quoted an expected total of **$0.171**. Always
-re-probe before payment because prices, rails, and endpoint health can change.
+The free live probe on 2026-10-04 quoted an expected total of **$0.171**
+(3 × $0.001 + 8 × $0.021). Always re-probe before payment because prices,
+rails, and endpoint health can change.
 
 ## Gotchas
 
-- **Fixed pipeline.** `selat skill run` executes all 11 calls; there is no
-  platform selector or conditional branch in the current manifest runner.
+- **Fixed pipeline.** `selat skill run` executes and pays for all 11 calls on
+  every run. There is no platform selector, step filter, or conditional branch,
+  so a run cannot be scoped to a subset of platforms. For a one-platform need,
+  hand-build the single `selat-pay` call instead (see `references/endpoints.md`).
+- **No duplicate calls.** Each step hits a distinct endpoint. The two Instagram
+  steps are profile and posts; the three LinkedIn steps take three different
+  URL types.
 - **No inter-step dataflow.** Returned user IDs, cursors, and URLs are not
   automatically inserted into later calls.
 - **Only the first page is included.** Additional Instagram/TikTok pages are
@@ -165,7 +172,9 @@ re-probe before payment because prices, rails, and endpoint health can change.
   require their matching URL type.
 - **Public, read-only scope.** Protected/private records and account mutations
   are out of scope.
-- **A paid application error may still charge.** Check history before retrying.
+- **A paid application error may still charge.** A step can settle and still
+  return a provider error or empty payload. Check `selat history` before any
+  retry, and never re-run the whole bundle to repair one failed step.
 
 ## Validation
 

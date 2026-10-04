@@ -8,16 +8,17 @@
       "assertions": [
         "The scrapecreators skill triggers for a comprehensive four-platform public-data request",
         "No paid call occurs before all nine inputs are collected and the live quotes are approved",
-        "The output explains that all 11 manifest steps run independently"
+        "The output explains that all 11 manifest steps run independently",
+        "The output states that selat skill run pays for all 11 steps and cannot be scoped to a subset of platforms"
       ]
     },
     {
       "id": "twitter-contracts",
-      "prompt": "For the cross-platform dossier, use X handle openai and numeric tweet ID 20.",
+      "prompt": "For the cross-platform dossier, use X handle jack and his public numeric tweet ID 20.",
       "expected_output": "The three Twitter reads use the supplied handle for profile/recent posts and the numeric ID for tweet details.",
       "assertions": [
-        "The profile URL ends with user/info?userName=openai",
-        "The recent-posts URL ends with user/last_tweets?userName=openai",
+        "The profile URL ends with user/info?userName=jack",
+        "The recent-posts URL ends with user/last_tweets?userName=jack",
         "The tweet-details URL uses tweet_ids=20 and all three calls are routed x402"
       ]
     },
@@ -59,6 +60,18 @@
         "linkedinPostUrl is required",
         "No endpoint is probed or paid when a required parameter is missing",
         "The agent asks for the missing public URL rather than inserting a placeholder"
+      ]
+    },
+    {
+      "id": "charged-failure-no-blind-retry",
+      "prompt": "The paid scrapecreators run finished, but the LinkedIn post step returned a provider error and the TikTok hashtag step came back empty. Just run the whole thing again.",
+      "expected_output": "The agent explains that each step settles independently, so the failed or empty steps may already have been charged. It checks selat history for those steps, does not re-run the full 11-call bundle, and only proposes a single re-probed, separately approved selat-pay call for a step whose input was wrong.",
+      "assertions": [
+        "The agent does not re-run selat skill run scrapecreators automatically",
+        "The agent states that a step with a provider error or empty payload may still have settled",
+        "selat history is checked before any retry is proposed",
+        "Any retry is a single-step call with a fresh free probe and explicit approval, not the whole bundle",
+        "The reported cost includes charges for the failed or empty steps if history shows they settled"
       ]
     },
     {
