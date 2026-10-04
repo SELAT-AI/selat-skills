@@ -45,9 +45,9 @@
     },
     {
       "name": "gtm-enrichment-smart",
-      "rail": "mixed",
+      "rail": "MPP on Tempo",
       "kind": "multi",
-      "description": "Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step (via the SELAT Router). Takes an email (+ optional name) and returns person + company data by cross-referencing cheap MPP-on-Tempo APIs first (Apollo, Hunter, Orthogonal Company Enrich), with buying-signal and SELAT-native Twitter (x402 via Circle Gateway) social-proof gap-fills."
+      "description": "Fixed three-call, read-only B2B lead qualification bundle. Uses a known work email and matching company domain to retrieve combined professional/company context, verify work-email deliverability, and cross-check an independent company profile; it does not reveal personal contact data or run outreach."
     },
     {
       "name": "lead-enrichment",
