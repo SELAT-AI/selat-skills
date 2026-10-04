@@ -157,6 +157,12 @@ data only for the requester-approved purpose.
 
 ## Gotchas
 
+- **A found email can be a pattern guess.** On accept-all (catch-all) domains,
+  Hunter's email finder returns `source_type: "generated"` (built from the
+  domain's email pattern, with no published source) yet still marks it
+  `verification.status: "valid"`. If `source_type` is `generated` or
+  `accept_all` is true, report the address as an unconfirmed pattern guess, not
+  a verified contact.
 - **No step chaining:** the email finder does not feed the verifier. `email` is
   a required caller input, and the two results are an independent cross-check.
 - **No optional paid placeholders:** all six inputs are required and have no

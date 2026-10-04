@@ -46,10 +46,16 @@ Step 2 verifies the caller-supplied `email`; it never consumes step 1's
 candidate (the runner has no inter-step dataflow). Compare the two during
 synthesis.
 
-The 2026-10-04 probe's transactability reading for `/hunter/email-finder` showed
-0 of 7 captured network payments answered 2xx (last status 502), and
-`/hunter/company-enrichment` showed 1 of 4 (last status 200). A free probe
-proves payability, not delivery; a paid failure can still charge.
+The 2026-10-04 probe's transactability reading for `/hunter/company-enrichment`
+showed 1 of 4 captured network payments answered 2xx (last status 200). A free
+probe proves payability, not delivery; a paid failure can still charge.
+
+**Paid smoke (2026-10-04):** paid `email-finder` and `domain-search` calls
+through the router both returned 200 with real data ($0.01365 each), so the
+transactability index's 0% readings (last 502s, Aug 12–14) were stale, not
+current. On an accept-all domain, the finder returned `source_type: "generated"`
+with `verification.status: "valid"`: a pattern guess, not a published address.
+`email-enrichment` has not been re-tested since its August 502s.
 
 ## Apollo MPP — `MPP on Tempo`
 
