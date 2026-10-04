@@ -39,7 +39,7 @@ skills/<name>/
 
 ## Current coverage
 
-This catalog currently has 20 vetted skills. Coverage is concentrated in two
+This catalog's vetted skills are listed below. Coverage is concentrated in two
 families:
 
 - **B2B / GTM enrichment** — lead, person, company, email, prospecting, funding,
@@ -48,32 +48,39 @@ families:
   stock-direction research, Twitter/X research, social listening, Perplexity web
   search, and entity reputation briefs.
 
-The table below mirrors the current `index.json` catalog.
+The table below and `index.json` are generated from each skill's `manifest.json`
+by `npm run catalog`; CI fails if either is out of date.
 
 ## Skills
 
+<!-- BEGIN GENERATED SKILLS TABLE: edit skills/<name>/manifest.json, then run `npm run catalog` -->
+
+20 skills. Generated from each skill's `manifest.json` (rail and kind are derived from its steps).
+
 | Skill | Rail | Kind | What it does |
 |---|---|---|---|
-| [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B person and company enrichment waterfall. |
-| [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Deep multi-source person and company enrichment. |
-| [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Lead enrichment through Hunter, Sixtyfour, and Fiber. |
-| [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Person lookup through Nyne. |
-| [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Cost-conscious GTM enrichment with conditional gap fills. |
-| [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM enrichment through Apollo and Sixtyfour. |
-| [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Prospect-list building, contact lookup, and verification. |
-| [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Email-campaign prospecting and deliverability pipeline. |
-| [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | Recent funding-round discovery. |
-| [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Twitter/X influencer discovery with enrichment. |
-| [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Social data reads across Twitter/X, Instagram, and LinkedIn. |
-| [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Cross-platform social intelligence with web grounding. |
-| [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Economic-agent preflight for market, social, and domain context. |
-| [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Multi-signal market intelligence for assets and tickers. |
-| [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity footprint and reputation intelligence. |
-| [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | VC deal-sourcing scout for AI infrastructure theses. |
-| [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit. |
-| [perplexity-search](skills/perplexity-search/SKILL.md) | routed | single | Perplexity-backed web search through x402. |
-| [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Non-advisory bullish/bearish/mixed stock signal brief. |
-| [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Read-only EVM wallet attribution and holdings brief. |
+| [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity-centric footprint & reputation intelligence — profile a specific person, brand, or handle across… |
+| [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Comprehensive person + company enrichment across many MPP on Tempo data providers (Apollo, Hunter, Clado… |
+| [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Build verified outreach lists: find target companies, pull domain emails, find a specific person's email… |
+| [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the… |
+| [financial-intel](skills/financial-intel/SKILL.md) | mixed | multi | Multi-signal financial intelligence on a crypto asset, token, or equity ticker — fuses spot price + token… |
+| [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Discover, score, and enrich Twitter/X influencers for a company or niche. |
+| [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM lead enrichment from an email (+ optional name). |
+| [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step… |
+| [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Multi-source lead enrichment, fully through the SELAT Router (MPP). |
+| [perplexity-search](skills/perplexity-search/SKILL.md) | routed | single | Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. |
+| [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Look up a person — work history, title, employer, and public professional profiles — via Apollo people-search… |
+| [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | Find recent funding rounds via Brave Search news-search (MPP on Tempo). |
+| [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. |
+| [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Multi-merchant social media scraping across SELAT-native (X/Twitter — catalog.selat.ai, x402 via Circle… |
+| [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability… |
+| [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches… |
+| [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings… |
+| [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit: a curated menu of 9 SELAT-native (catalog.selat.ai) GET endpoints… |
+| [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | Deal-sourcing scout for a VC running a multi-track thesis: AI infrastructure (inference/serving, GPU &… |
+| [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway… |
+
+<!-- END GENERATED SKILLS TABLE -->
 
 The `index.json` catalog at the repo root backs `selat skill list --available`.
 

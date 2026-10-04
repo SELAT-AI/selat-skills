@@ -34,7 +34,7 @@ selat skill new my-skill --dir skills           # 1. scaffold
 #   …edit the files (replace every TODO)…        # 2. author
 selat skill validate ./skills/my-skill          # 3. static SOP check
 selat skill verify   ./skills/my-skill [--pay]  # 4. live-402 check (THE GATE)
-selat skill register ./skills/my-skill          # 5. add index.json entry
+npm run catalog                                 # 5. regenerate index.json + README table
 npm run validate                                # 6. whole-repo check (what CI runs)
 selat skill submit   ./skills/my-skill          # 7. open the PR
 ```
@@ -77,8 +77,8 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
    `skills/<name>/.selat/verify-receipt.json` — the provenance `submit` attaches to
    the PR and that **gates merge**. Fix any step that's unreachable or over cap;
    prefer **first-party** providers over proxies.
-7. **Register:** `selat skill register ./skills/<name>` auto-adds/updates the
-   `index.json` entry from the manifest.
+7. **Register:** `npm run catalog` regenerates `index.json` and the README skills
+   table from the manifests. Never hand-edit either file.
 8. **Whole-repo check:** `npm run validate` (exactly what CI runs).
 9. **Submit:** `selat skill submit ./skills/<name>` (use `--dry-run` first). It
    requires a passing verify receipt, then branches, commits `skills/<name>` + the
