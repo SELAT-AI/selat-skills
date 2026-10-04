@@ -63,7 +63,7 @@ The table below mirrors the current `index.json` catalog.
 | [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Prospect-list building, contact lookup, and verification. |
 | [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Email-campaign prospecting and deliverability pipeline. |
 | [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | Recent funding-round discovery. |
-| [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Twitter/X influencer discovery with enrichment. |
+| [find-twitter-influencers](skills/find-twitter-influencers/SKILL.md) | mixed | multi | Read-only Twitter/X influencer discovery (brand context, web roundups, Twitter user + topic search); no contact-data purchase. |
 | [scrapecreators](skills/scrapecreators/SKILL.md) | mixed | multi | Social data reads across Twitter/X, Instagram, and LinkedIn. |
 | [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Cross-platform social intelligence with web grounding. |
 | [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Economic-agent preflight for market, social, and domain context. |

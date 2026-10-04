@@ -150,13 +150,15 @@ approval.
 - Every current step requires a reachable `SELAT_ROUTER_URL`.
 
 `maxAmount` is a per-call ceiling, not a price or cumulative run cap. The
-manifest's five per-step caps total **$0.044**; the top-level `$0.02` is only a
-fallback for a step without its own override. A separately armed session budget
-provides the cumulative limit.
+manifest's five per-step caps ($0.05, $0.02, $0.0075, $0.0015, $0.0015) total
+**$0.0805**; the top-level `$0.02` is only a fallback for a step without its own
+override, not a full-run cap. A separately armed session budget provides the
+cumulative limit.
 
-The free live probe on 2026-08-30 quoted `$0.00525`, `$0.012862`, `$0.00525`,
-`$0.001`, and `$0.001`, for an expected total of **$0.025362**. Re-probe before
-every paid run because prices and modes can change.
+The free live probe on 2026-10-04 quoted `$0.0399` (Apollo org search),
+`$0.012862` (Company Enrich), `$0.00525` (Exa search), `$0.001`, and `$0.001`
+(Twitter user and topic search), for an expected total of **$0.060262**.
+Re-probe before every paid run because prices and modes can change.
 
 ## Gotchas
 

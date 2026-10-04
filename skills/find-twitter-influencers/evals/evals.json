@@ -43,7 +43,8 @@
         "the verify command includes --live-probe",
         "the verify command does not include --pay",
         "no wallet signature or settlement is attempted",
-        "all five modes and prices are reported"
+        "all five modes and prices are reported",
+        "Apollo org search, Company Enrich, and Exa search report routed-mpp (MPP on Tempo); both Twitter searches report routed-x402 (x402 via Circle Gateway)"
       ]
     },
     {

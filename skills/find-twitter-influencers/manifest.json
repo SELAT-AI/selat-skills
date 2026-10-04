@@ -36,7 +36,7 @@
         "per_page": 5,
         "page": 1
       },
-      "maxAmount": "0.01"
+      "maxAmount": "0.05"
     },
     {
       "label": "brand context by domain — Company Enrich (MPP on Tempo)",
@@ -59,21 +59,21 @@
           }
         }
       },
-      "maxAmount": "0.01"
+      "maxAmount": "0.0075"
     },
     {
       "label": "candidate account search — SELAT Twitter user search (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/user/search?query=${userQuery}",
-      "maxAmount": "0.002"
+      "maxAmount": "0.0015"
     },
     {
       "label": "current niche authors — SELAT Twitter advanced search (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
       "url": "https://catalog.selat.ai/twitter/tweet/advanced_search?query=${tweetQuery}&queryType=Latest",
-      "maxAmount": "0.002"
+      "maxAmount": "0.0015"
     }
   ]
 }

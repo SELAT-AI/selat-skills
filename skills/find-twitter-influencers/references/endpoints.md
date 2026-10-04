@@ -1,79 +1,116 @@
 # Endpoints — find-twitter-influencers
 
-This skill is a fixed five-call, read-only discovery bundle. Free live
-verification on **2026-08-30** observed three `routed-mpp` calls and two
-`routed-x402` calls. It contains no contact-data purchase.
+Use only these endpoint families for `find-twitter-influencers`. Hosts below are
+the catalogue **`serviceUrl`s** (the payable hosts that serve the 402), not
+descriptive provider URLs. Catalogue prices are indicative; the live 402 quote
+is authoritative — `selat skill verify --live-probe` probes it free.
 
-## Endpoint matrix
+| Step | Method | URL | Rail | ~Price | Cap |
+|---|---|---|---|---|---|
+| 1 — Brand context by name | POST | `https://apollo.mpp.paywithlocus.com/apollo/org-search` | MPP on Tempo | $0.0399 | $0.05 |
+| 2 — Brand context by domain | GET | `https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}` | MPP on Tempo | $0.012862 | $0.02 |
+| 3 — Curated web roundups | POST | `https://exa.mpp.tempo.xyz/search` | MPP on Tempo | $0.00525 | $0.0075 |
+| 4 — Twitter account search | GET | `https://catalog.selat.ai/twitter/user/search?query=${userQuery}` | x402 via Circle Gateway | $0.001 | $0.0015 |
+| 5 — Current Twitter topic search | GET | `https://catalog.selat.ai/twitter/tweet/advanced_search?query=${tweetQuery}&queryType=Latest` | x402 via Circle Gateway | $0.001 | $0.0015 |
 
-| # | Purpose | Method and endpoint | Required request data | Declared rail / observed mode | Live quote | Per-step cap |
-|---|---|---|---|---|---:|---:|
-| 1 | Brand context by name | `POST apollo.mpp.paywithlocus.com/apollo/org-search` | JSON: `q_organization_name`; bounded `per_page`, `page` | MPP on Tempo / `routed-mpp` | $0.00525 | $0.01 |
-| 2 | Brand context by domain | `GET mpp.orthogonal.com/company-enrich/companies/enrich?domain=…` | Query: `domain` | MPP on Tempo / `routed-mpp` | $0.012862 | $0.02 |
-| 3 | Curated web roundups | `POST exa.mpp.tempo.xyz/search` | JSON: `query`, bounded `numResults` and text | MPP on Tempo / `routed-mpp` | $0.00525 | $0.01 |
-| 4 | Twitter account search | `GET catalog.selat.ai/twitter/user/search?query=…` | Query: `query` | x402 via Circle Gateway / `routed-x402` | $0.001 | $0.002 |
-| 5 | Current Twitter topic search | `GET catalog.selat.ai/twitter/tweet/advanced_search?query=…&queryType=Latest` | Query: `query`; fixed `queryType=Latest` | x402 via Circle Gateway / `routed-x402` | $0.001 | $0.002 |
+This is a fixed 5-call, read-only manifest. The step table matches
+`manifest.json` exactly. `selat skill run` executes all five steps every time;
+none is conditional. There is no contact-data purchase.
 
-Expected total at the recorded quotes: **$0.025362**. The five independent
-per-step caps sum to **$0.044**. The manifest's top-level `$0.02` is only a
-fallback for a step without an override, not a cumulative cap.
+Live-probed 2026-10-04 (free, `--probe-only --live-probe`): expected total
+**$0.060262** per run. Per-step caps are $0.05 / $0.02 / $0.0075 / $0.0015 /
+$0.0015 (sum **$0.0805**). The manifest's top-level `maxAmount` (`$0.02`) is
+only a per-step fallback for a step without its own cap — it is not a full-run
+cap. Arm a session budget for the cumulative limit.
 
-## Request and interpretation notes
+- **SELAT Router:** All calls route via `https://router.selat.ai` with protocol detection (MPP ↔ x402).
+- **MPP on Tempo:** Apollo via Locus (`apollo.mpp.paywithlocus.com`), Orthogonal Company Enrich (`mpp.orthogonal.com`), and Exa (`exa.mpp.tempo.xyz`, MPP on Tempo but not Locus). Verify prints `routed-mpp`.
+- **x402 via Circle Gateway:** SELAT-native Twitter (`catalog.selat.ai`). Verify prints `routed-x402`. The buyer pays from the funded Gateway chain; this is not a pay-chain claim.
 
-### Apollo organization search
+## Apollo MPP — `MPP on Tempo`
 
-- Public OpenAPI accepts `q_organization_name`, `per_page`, and `page` in a JSON
-  POST body.
-- The skill bounds the first page to five records. Match the returned domain to
-  the user-supplied `domain`; a similar company name is not enough.
+serviceUrl: `https://apollo.mpp.paywithlocus.com`
 
-### Company Enrich
+Live-probed price: `$0.0399` per call (`routed-mpp`, 2026-10-04). **POST with a
+JSON body.** Per-step cap `$0.05`. The skill bounds the first page to five
+records. Match the returned domain to the user-supplied `domain`; a similar
+company name is not enough.
 
-- The replacement endpoint is a GET lookup by bare domain and returns company
-  industry, employee, revenue, location, funding, technology, and social fields
-  when found.
-- It replaces the former Abstract Company Enrichment route, which returned no
-  x402 or MPP challenge during the 2026-08-30 live gate.
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Brand context by name | `/apollo/org-search` | `q_organization_name` (string, required), `per_page` (integer, fixed 5), `page` (integer, fixed 1) |
 
-### Exa search
+```json
+{ "q_organization_name": "Acme Pay", "per_page": 5, "page": 1 }
+```
 
-- `query` is required; the skill requests ten results and bounded text for
-  independent list/roundup evidence.
-- Exa does not reliably index x.com/twitter.com profiles. A handle parsed from a
-  roundup is an unverified lead until corroborated by Twitter output.
-- The former `findSimilar` step was removed because Exa's current public OpenAPI
-  marks that operation deprecated and recommends search with a descriptive
-  query instead.
+## Orthogonal Company Enrich — `MPP on Tempo`
 
-### SELAT Twitter user search
+serviceUrl: `https://mpp.orthogonal.com/company-enrich`
 
-- Public OpenAPI requires `query` and optionally accepts a pagination `cursor`.
-- It searches public accounts by keyword. Normalize returned handles without
-  `@`; do not infer private or sensitive characteristics from profile text.
+Live-probed price: `$0.012862` per call (`routed-mpp`, 2026-10-04). **GET with a
+query-string `domain`.** Per-step cap `$0.02`. Returns industry, employee count,
+revenue, location, funding, technologies, and social links when found; 404 if
+the domain is unknown. Replaces the dead Abstract Company Enrichment route.
 
-### SELAT Twitter advanced search
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| Brand context by domain | `/companies/enrich` | `domain` (string, required) — bare host, no protocol or path |
 
-- Public OpenAPI requires `query` and accepts `queryType` and `cursor`.
-- The manifest fixes `queryType=Latest` to emphasize current activity. This can
-  underrepresent established creators who have not posted recently.
-- `tweetQuery` can use supported X operators such as `lang:en`, `min_faves:`,
-  `since:`, hashtags, cashtags, and `from:`.
+```text
+https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=acme.com
+```
+
+## Exa MPP — `MPP on Tempo`
+
+serviceUrl: `https://exa.mpp.tempo.xyz`
+
+Live-probed price: `$0.00525` per call (`routed-mpp`, 2026-10-04). **POST with a
+JSON body.** Per-step cap `$0.0075`. x.com / twitter.com profiles are not
+reliably in Exa's index — search for independent roundup pages. A handle parsed
+from a roundup is an unverified lead until a Twitter result corroborates it.
+The former `findSimilar` step was removed (deprecated upstream).
+
+| Capability/Step | Endpoint | Body params |
+| --- | --- | --- |
+| Curated web roundups | `/search` | `query` (string, required), `numResults` (integer, fixed 10), `contents.text.maxCharacters` (integer, fixed 5000) |
+
+```json
+{ "query": "best fintech payments Twitter X creators to follow", "numResults": 10, "contents": { "text": { "maxCharacters": 5000 } } }
+```
+
+## SELAT-native Twitter — `x402 via Circle Gateway`
+
+serviceUrl: `https://catalog.selat.ai`
+
+Live-probed price: `$0.001` per call (`routed-x402`, 2026-10-04). **GET with
+query-string params.** Per-step cap `$0.0015` each.
+
+| Capability/Step | Endpoint | Query params |
+| --- | --- | --- |
+| Twitter account search | `/twitter/user/search` | `query` (string, required — concise keywords), optional `cursor` (not used) |
+| Current Twitter topic search | `/twitter/tweet/advanced_search` | `query` (string, required — supports X operators such as `lang:en`, `min_faves:`, `since:`, hashtags, `from:`), `queryType` (fixed `Latest`), optional `cursor` (not used) |
+
+```text
+https://catalog.selat.ai/twitter/user/search?query=fintech%20payments
+https://catalog.selat.ai/twitter/tweet/advanced_search?query=%28fintech%20OR%20payments%29%20min_faves%3A50%20lang%3Aen&queryType=Latest
+```
+
+`queryType=Latest` emphasizes current activity and can underrepresent
+established creators who have not posted recently. Normalize returned handles
+without `@`; do not infer private or sensitive characteristics from profile
+text.
 
 ## Removed calls
 
-- **Abstract Company Enrichment:** removed because its live host stopped serving
-  a detectable payment challenge.
-- **Exa findSimilar:** removed because the current public operation is
-  deprecated.
-- **Hunter and Clado contact enrichment:** removed from mandatory discovery to
-  avoid buying email/phone data before the user selects a candidate. Contact
-  enrichment is a separately quoted follow-up.
-- **Single-handle profile and tweet reads:** replaced with multi-candidate user
-  and topic searches. Use `twitter-research` for a selected-candidate deep dive.
+- **Abstract Company Enrichment:** the host stopped serving a payment challenge; replaced by Orthogonal Company Enrich.
+- **Exa findSimilar:** deprecated upstream.
+- **Hunter email-finder and Clado contacts:** removed so the discovery run never buys email/phone data. Contact enrichment for a selected candidate is a separately quoted, separately approved follow-up.
+- **Single-handle profile and last-tweets reads:** replaced with multi-candidate user and topic search. Use `twitter-research` for a selected-candidate deep dive.
 
 ## Free live probes
 
-These commands read payment challenges and do not sign or settle:
+These commands read payment challenges and never sign or settle:
 
 ```bash
 selat skill verify ./skills/find-twitter-influencers \
@@ -86,7 +123,7 @@ selat skill verify ./skills/find-twitter-influencers \
 
 selat-pay POST "https://apollo.mpp.paywithlocus.com/apollo/org-search" \
   --body '{"q_organization_name":"Acme Pay","per_page":5,"page":1}' \
-  --chain base --max-amount 0.01 --probe-only --live-probe
+  --chain base --max-amount 0.05 --probe-only --live-probe
 
 selat-pay GET \
   "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=acme.com" \
@@ -94,19 +131,19 @@ selat-pay GET \
 
 selat-pay POST "https://exa.mpp.tempo.xyz/search" \
   --body '{"query":"best fintech payments Twitter X creators to follow","numResults":10,"contents":{"text":{"maxCharacters":5000}}}' \
-  --chain base --max-amount 0.01 --probe-only --live-probe
+  --chain base --max-amount 0.0075 --probe-only --live-probe
 
 selat-pay GET \
   "https://catalog.selat.ai/twitter/user/search?query=fintech%20payments" \
-  --chain base --max-amount 0.002 --probe-only --live-probe
+  --chain base --max-amount 0.0015 --probe-only --live-probe
 
 selat-pay GET \
   "https://catalog.selat.ai/twitter/tweet/advanced_search?query=%28fintech%20OR%20payments%29%20min_faves%3A50%20lang%3Aen&queryType=Latest" \
-  --chain base --max-amount 0.002 --probe-only --live-probe
+  --chain base --max-amount 0.0015 --probe-only --live-probe
 ```
 
-`--chain base` above is the settlement-chain argument required by `selat-pay`.
-It has no effect on free, chain-independent challenge probing. Re-probe before
+`--chain base` above is only selat-pay's required flag; a probe never settles
+and the CLI resolves the funded Gateway chain for paid runs. Re-probe before
 payment because prices and modes can change.
 
 Provider names and trademarks belong to their respective owners and are used
