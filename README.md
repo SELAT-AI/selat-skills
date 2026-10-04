@@ -85,7 +85,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings… |
 | [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit: 9 SELAT-native (catalog.selat.ai) GET reads covering account reads… |
 | [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | Deal-sourcing scout for AI infrastructure, crypto-AI / DePIN, robotics / embodied-AI, and agentic-payments… |
-| [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway… |
+| [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Fixed two-call, read-only EVM wallet snapshot for one explicit non-zero address: Alchemy token holdings across… |
 
 <!-- END GENERATED SKILLS TABLE -->
 
