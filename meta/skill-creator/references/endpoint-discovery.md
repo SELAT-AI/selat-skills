@@ -54,7 +54,7 @@ challenge" and a `down` skill. This is the single most common authoring mistake.
 - **Apify Actors** (`payments[].scheme` = `prepaid-token`, URL on
   `api.apify.com`). They are paid by a prepaid token bought once and drawn down,
   not per call at the Actor URL, so a manifest step that `selat-pay`s the Actor
-  URL won't work. `selat skill verify --pay` skips them. Use a per-call endpoint
+  URL won't work. `selat skill verify --live-probe --pay` skips them. Use a per-call endpoint
   instead, or leave the capability to `selat run`.
 - **Endpoints with no price in the catalogue** (`priceUnknown: true`) — wire
   them only after a probe shows a live price you can cap.
@@ -62,18 +62,18 @@ challenge" and a `down` skill. This is the single most common authoring mistake.
 ## Confirm an endpoint is live before you wire it
 
 The catalogue can list endpoints the gateway no longer serves (drift). Once the
-skill exists, `selat skill verify ./skills/<name>` runs this probe across every
+skill exists, `selat skill verify ./skills/<name> --live-probe` runs this probe across every
 step and gates submission. While discovering, probe a single candidate
 directly — free, no wallet:
 
 ```bash
 # GET endpoint: params in the query
 selat-pay GET "https://mpp.orthogonal.com/tomba/v1/enrich?email=test@stripe.com" \
-  --chain base --probe-only
+  --chain base --probe-only --live-probe
 
 # POST endpoint: params in the BODY (query params often yield no challenge)
 selat-pay POST "https://mpp.orthogonal.com/nyne/company/search" \
-  --body '{"query":"Stripe"}' --chain base --probe-only
+  --body '{"query":"Stripe"}' --chain base --probe-only --live-probe
 ```
 
 `--chain base` is just the flag the probe requires — probing is free and

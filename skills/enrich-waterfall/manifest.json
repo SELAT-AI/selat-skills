@@ -1,53 +1,45 @@
 {
   "schema": "selat-skill/v1",
   "name": "enrich-waterfall",
-  "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the SELAT Router. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts) only on gaps, and verifies the email last. Deduplicated steps across Apollo, Hunter, Clado contacts, Brave Search, Diffbot KG, Orthogonal Company Enrich, Scrape Creators LinkedIn, StableSocial (MPP merchant), and SELAT-native (catalog.selat.ai).",
-  "maxAmount": "1.00",
+  "description": "Fixed 17-call, read-only person and company enrichment bundle across Apollo, Hunter, Scrape Creators (LinkedIn), Company Enrich, Brave Search, Diffbot KG, Clado contacts, and SELAT-native X/Twitter. Requires a complete, coherent target; every step runs independently — no conditional waterfall. Uses MPP on Tempo and x402 through the SELAT Router.",
+  "maxAmount": "0.06",
   "params": {
     "email": {
-      "required": false,
-      "default": "test@stripe.com",
-      "description": "Person work email (primary resolve key for Hunter email/combined enrichment and Apollo people enrichment)."
-    },
-    "name": {
-      "required": false,
-      "default": "John Doe",
-      "description": "Full name; also used as the social handle for the SELAT-native X/Twitter profile and StableSocial Instagram/TikTok profile steps."
+      "required": true,
+      "description": "Known work email for the same person identified by firstName, lastName, linkedinUrl, company, and domain. The final verifier checks this supplied email."
     },
     "firstName": {
-      "required": false,
-      "default": "John",
-      "description": "First name; used by the Hunter email-finder and Apollo people-enrichment calls."
+      "required": true,
+      "description": "Target person's first name, matching email and linkedinUrl."
     },
     "lastName": {
-      "required": false,
-      "default": "Doe",
-      "description": "Last name; paired with firstName + domain for the email-finder and people-enrichment calls."
+      "required": true,
+      "description": "Target person's last name, matching email and linkedinUrl."
     },
     "domain": {
-      "required": false,
-      "default": "stripe.com",
-      "description": "Company domain (e.g. stripe.com); primary key for the Orthogonal Company Enrich lookup, Apollo org-enrichment, Hunter company-enrichment and email-finder calls."
+      "required": true,
+      "description": "Bare employer/company domain, e.g. stripe.com, matching company and email; also filters the Apollo people-search."
     },
     "company": {
-      "required": false,
-      "default": "Stripe",
-      "description": "Company name; fallback anchor via Apollo org-search when no domain, and the query seed for Brave news/funding search and Diffbot KG enhance."
+      "required": true,
+      "description": "Employer/company name corresponding to domain and organizationId."
     },
     "linkedinUrl": {
-      "required": false,
-      "default": "https://linkedin.com/in/williamhgates",
-      "description": "Person LinkedIn URL; used by Scrape Creators public-profile read and Clado contacts (JSON body for contacts)."
+      "required": true,
+      "description": "LinkedIn person-profile URL for the same target, used by Apollo people enrichment, the Scrape Creators profile read, and Clado contact enrichment."
     },
     "organizationId": {
-      "required": false,
-      "default": "5e66b6381e05b4008c8331b8",
-      "description": "Apollo organization id for the job-postings signals step; replace the placeholder default with the id returned by the Apollo org-enrichment / org-search anchor steps (the gateway serves no 402 challenge for an empty id)."
+      "required": true,
+      "description": "Apollo organization ID for the same company. The runner cannot derive it from an earlier step, so supply it before the run."
+    },
+    "xHandle": {
+      "required": true,
+      "description": "Target person's X/Twitter username without @, matching the same identity."
     }
   },
   "steps": [
     {
-      "label": "person resolve — Apollo people enrichment (MPP on Tempo)",
+      "label": "person cross-check — Apollo people enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/people-enrichment",
@@ -57,84 +49,80 @@
         "last_name": "${lastName}",
         "organization_name": "${company}",
         "domain": "${domain}",
-        "linkedin_url": "${linkedinUrl}"
+        "linkedin_url": "${linkedinUrl}",
+        "reveal_personal_emails": false,
+        "reveal_phone_number": false
       },
-      "maxAmount": "0.10",
-      "tier": "resolve"
+      "maxAmount": "0.06"
     },
     {
-      "label": "person resolve by email — Hunter email enrichment (MPP on Tempo)",
+      "label": "person by supplied email — Hunter email enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-enrichment",
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.15",
-      "tier": "resolve"
+      "maxAmount": "0.02"
     },
     {
-      "label": "person resolve by LinkedIn URL — Scrape Creators LinkedIn profile (MPP on Tempo)",
+      "label": "person by supplied LinkedIn URL — Scrape Creators LinkedIn profile (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "GET",
       "url": "https://mpp.orthogonal.com/scrapecreators/v1/linkedin/profile?url=${linkedinUrl}",
-      "maxAmount": "0.03",
-      "tier": "resolve"
+      "maxAmount": "0.03"
     },
     {
-      "label": "person+company resolve by email — Hunter combined enrichment (MPP on Tempo)",
+      "label": "person plus company by supplied email — Hunter combined enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/combined-enrichment",
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.25",
-      "tier": "resolve"
+      "maxAmount": "0.035"
     },
     {
-      "label": "company anchor (no domain) — Apollo org search by name (MPP on Tempo)",
+      "label": "company search by supplied name, 5 results — Apollo org search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/org-search",
       "body": {
-        "q_organization_name": "${company}"
+        "q_organization_name": "${company}",
+        "per_page": 5,
+        "page": 1
       },
-      "maxAmount": "0.10",
-      "tier": "anchor"
+      "maxAmount": "0.06"
     },
     {
-      "label": "company anchor — Orthogonal Company Enrich by domain (MPP on Tempo)",
+      "label": "company profile by supplied domain — Company Enrich (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "GET",
       "url": "https://mpp.orthogonal.com/company-enrich/companies/enrich?domain=${domain}",
-      "maxAmount": "0.02",
-      "tier": "anchor"
+      "maxAmount": "0.02"
     },
     {
-      "label": "company anchor + tech + headcount — Apollo org enrichment by domain (MPP on Tempo)",
+      "label": "company tech and headcount — Apollo org enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/org-enrichment",
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.10",
-      "tier": "anchor"
+      "maxAmount": "0.06"
     },
     {
-      "label": "company anchor — Hunter company enrichment by domain (MPP on Tempo)",
+      "label": "company cross-check — Hunter company enrichment (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/company-enrichment",
       "body": {
         "domain": "${domain}"
       },
-      "maxAmount": "0.15",
-      "tier": "anchor"
+      "maxAmount": "0.02"
     },
     {
-      "label": "email find by name — Hunter email-finder (MPP on Tempo)",
+      "label": "find target work email — Hunter email finder (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-finder",
@@ -143,105 +131,105 @@
         "first_name": "${firstName}",
         "last_name": "${lastName}"
       },
-      "maxAmount": "0.15",
-      "tier": "anchor"
+      "maxAmount": "0.02"
     },
     {
-      "label": "X/Twitter profile — SELAT user info (x402 via Circle Gateway)",
+      "label": "X/Twitter profile by supplied handle — SELAT user info (x402 via Circle Gateway)",
       "rail": "x402 via Circle Gateway",
       "method": "GET",
-      "url": "https://catalog.selat.ai/twitter/user/info?userName=${name}",
-      "maxAmount": "0.10",
-      "tier": "social"
+      "url": "https://catalog.selat.ai/twitter/user/info?userName=${xHandle}",
+      "maxAmount": "0.0015"
     },
     {
-      "label": "Instagram profile — StableSocial (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/instagram/profile",
-      "body": {
-        "handle": "${name}"
-      },
-      "maxAmount": "0.75",
-      "tier": "social"
-    },
-    {
-      "label": "TikTok profile — StableSocial (MPP on Tempo)",
-      "rail": "MPP on Tempo",
-      "method": "POST",
-      "url": "https://stablesocial.dev/api/tiktok/profile",
-      "body": {
-        "handle": "${name}"
-      },
-      "maxAmount": "0.75",
-      "tier": "social"
-    },
-    {
-      "label": "job openings / hiring signals — Apollo job postings by org id (MPP on Tempo)",
+      "label": "job openings (10) by supplied Apollo organization ID — Apollo job postings (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://apollo.mpp.paywithlocus.com/apollo/job-postings",
       "body": {
-        "organization_id": "${organizationId}"
+        "organization_id": "${organizationId}",
+        "per_page": 10,
+        "page": 1
       },
-      "maxAmount": "0.10",
-      "tier": "signals"
+      "maxAmount": "0.06"
     },
     {
-      "label": "news events — Brave news search for company (MPP on Tempo)",
+      "label": "recent company news — Brave news search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
       "body": {
-        "q": "${company} news"
+        "q": "${company} news",
+        "count": 10,
+        "freshness": "pm"
       },
-      "maxAmount": "0.40",
-      "tier": "signals"
+      "maxAmount": "0.05"
     },
     {
-      "label": "financing events — Brave news search for funding rounds (MPP on Tempo)",
+      "label": "recent funding news — Brave news search (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://brave.mpp.paywithlocus.com/brave/news-search",
       "body": {
-        "q": "${company} funding round"
+        "q": "${company} funding round",
+        "count": 10,
+        "freshness": "py"
       },
-      "maxAmount": "0.40",
-      "tier": "signals"
+      "maxAmount": "0.05"
     },
     {
-      "label": "business connections / KG record — Diffbot Knowledge Graph enhance (MPP on Tempo)",
+      "label": "organization knowledge graph — Diffbot KG enhance (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://diffbot-kg.mpp.paywithlocus.com/diffbot-kg/enhance",
       "body": {
         "type": "Organization",
-        "name": "${company}"
+        "name": [
+          "${company}"
+        ],
+        "url": [
+          "https://${domain}"
+        ],
+        "refresh": false,
+        "size": 1
       },
-      "maxAmount": "0.40",
-      "tier": "signals"
+      "maxAmount": "0.05"
     },
     {
-      "label": "contact reveal (email + phone) from LinkedIn — Clado contacts (MPP on Tempo)",
+      "label": "contact email and phone reveal — Clado contacts (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://clado.mpp.paywithlocus.com/clado/contacts",
       "body": {
-        "linkedin_url": "${linkedinUrl}"
+        "linkedin_url": "${linkedinUrl}",
+        "email_enrichment": true,
+        "phone_enrichment": true
       },
-      "maxAmount": "0.50",
-      "tier": "escalate"
+      "maxAmount": "0.20"
     },
     {
-      "label": "email verify — Hunter email-verifier (MPP on Tempo)",
+      "label": "five-result person identity search filtered to the supplied domain — Apollo people-search (MPP on Tempo)",
+      "rail": "MPP on Tempo",
+      "method": "POST",
+      "url": "https://apollo.mpp.paywithlocus.com/apollo/people-search",
+      "body": {
+        "q_keywords": "${firstName} ${lastName}",
+        "q_organization_domains_list": [
+          "${domain}"
+        ],
+        "per_page": 5,
+        "page": 1
+      },
+      "maxAmount": "0.0075"
+    },
+    {
+      "label": "verify supplied work email — Hunter email verifier (MPP on Tempo)",
       "rail": "MPP on Tempo",
       "method": "POST",
       "url": "https://hunter.mpp.paywithlocus.com/hunter/email-verifier",
       "body": {
         "email": "${email}"
       },
-      "maxAmount": "0.10",
-      "tier": "verify"
+      "maxAmount": "0.0125"
     }
   ]
 }
