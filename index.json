@@ -23,7 +23,7 @@
       "name": "enrich-waterfall",
       "rail": "mixed",
       "kind": "multi",
-      "description": "Cheapest-first B2B enrichment waterfall via the SELAT Router (MPP) plus one SELAT-native x402 call via the SELAT Router. Resolves a person and anchors their company with sub-cent calls first, layers in company signals / social, escalates to premium contact reveals (Clado contacts) only on gaps, and verifies the email last. Deduplicated steps across Apollo, Hunter, Clado contacts, Brave Search, Diffbot KG, Orthogonal Company Enrich, Scrape Creators LinkedIn, StableSocial (MPP merchant), and SELAT-native (catalog.selat.ai)."
+      "description": "Fixed 17-call, read-only person and company enrichment bundle across Apollo, Hunter, Scrape Creators (LinkedIn), Company Enrich, Brave Search, Diffbot KG, Clado contacts, and SELAT-native X/Twitter. Requires a complete, coherent target; every step runs independently — no conditional waterfall. Uses MPP on Tempo and x402 through the SELAT Router."
     },
     {
       "name": "financial-intel",
