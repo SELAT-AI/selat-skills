@@ -35,7 +35,14 @@ skills/<name>/
 
 - **direct** — Circle nanopayment / Gateway-batched, paid straight to the upstream (no router hop).
 - **routed** — erc-3009 or tempo-native **MPP**, paid via the SELAT Router, which translates the agent's inbound Gateway-batched payment to the upstream's scheme.
-- **mixed** — a multi-rail skill that uses both in one run (see `market-snapshot`).
+- **mixed** — a multi-step skill whose steps settle on more than one rail in one run (e.g. `stock-direction-signals`, which mixes x402 and MPP steps).
+
+In the manifests, each step's `rail` is a descriptive label read from the live
+probe (`x402 via Circle Gateway`, `x402 on Base`, `MPP on Tempo`,
+`MPP on Solana`). A skill whose steps all share one label lists that label in
+the table below; otherwise it lists `mixed`. A label names the merchant's rail,
+not the chain you pay from: the CLI settles from your funded Circle Gateway
+balance.
 
 ## Current coverage
 
@@ -68,7 +75,7 @@ by `npm run catalog`; CI fails if either is out of date.
 | [gtm-enrichment-deep](skills/gtm-enrichment-deep/SKILL.md) | MPP on Tempo | multi | Deep GTM lead enrichment from an email (+ optional name). |
 | [gtm-enrichment-smart](skills/gtm-enrichment-smart/SKILL.md) | mixed | multi | Multi-provider waterfall lead enrichment, via the SELAT Router (MPP) with one SELAT-native Twitter x402 step… |
 | [lead-enrichment](skills/lead-enrichment/SKILL.md) | MPP on Tempo | multi | Multi-source lead enrichment, fully through the SELAT Router (MPP). |
-| [perplexity-search](skills/perplexity-search/SKILL.md) | routed | single | Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. |
+| [perplexity-search](skills/perplexity-search/SKILL.md) | x402 on Base | single | Web search via Perplexity's x402 endpoint (paysponge gateway), routed through the SELAT Router. |
 | [person-lookup](skills/person-lookup/SKILL.md) | MPP on Tempo | single | Look up a person — work history, title, employer, and public professional profiles — via Apollo people-search… |
 | [recent-funding-rounds](skills/recent-funding-rounds/SKILL.md) | MPP on Tempo | single | Find recent funding rounds via Brave Search news-search (MPP on Tempo). |
 | [sales-prospecting](skills/sales-prospecting/SKILL.md) | MPP on Tempo | multi | Build targeted B2B prospect lists with verified contact information, fully MPP-via the SELAT Router. |
@@ -76,8 +83,8 @@ by `npm run catalog`; CI fails if either is out of date.
 | [self-evolving-agent](skills/self-evolving-agent/SKILL.md) | mixed | multi | Budgeted economic agent preflight: gather social sentiment, financial market context, and domain availability… |
 | [social-intel](skills/social-intel/SKILL.md) | mixed | multi | Grounded web-context intelligence on any topic, brand, or account — cross-checks two independent web searches… |
 | [stock-direction-signals](skills/stock-direction-signals/SKILL.md) | mixed | multi | Provider-filtered stock direction research — Alpha Vantage MPP for quote/chart/technicals/news/earnings… |
-| [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit: a curated menu of 9 SELAT-native (catalog.selat.ai) GET endpoints… |
-| [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | Deal-sourcing scout for a VC running a multi-track thesis: AI infrastructure (inference/serving, GPU &… |
+| [twitter-research](skills/twitter-research/SKILL.md) | x402 via Circle Gateway | multi | Read-only Twitter/X research toolkit: 9 SELAT-native (catalog.selat.ai) GET reads covering account reads… |
+| [vc-ai-infra-scout](skills/vc-ai-infra-scout/SKILL.md) | mixed | multi | Deal-sourcing scout for AI infrastructure, crypto-AI / DePIN, robotics / embodied-AI, and agentic-payments… |
 | [wallet-desk-brief](skills/wallet-desk-brief/SKILL.md) | x402 via Circle Gateway | multi | Who-is-this-wallet brief for one EVM address — Alchemy token-by-address holdings (x402 via Circle Gateway… |
 
 <!-- END GENERATED SKILLS TABLE -->
@@ -105,7 +112,7 @@ proves a skill once at submit time; this re-verifies the whole catalogue on a cr
 so reliability reflects current reality, not the day it was merged — uptime/price
 from real calls, not vanity stars.
 
-Run it locally (needs `selat-pay >= 0.3.2` on PATH; set `SELAT_ROUTER_URL` for
+Run it locally (needs `selat-pay >= 0.12.0` on PATH; set `SELAT_ROUTER_URL` for
 routed steps):
 
 ```bash
@@ -122,7 +129,7 @@ npm run probe                      # writes reliability.json
   // chain is NOT declared here — the settlement chain is resolved at runtime
   // from your funded Circle Gateway balance. Pin "chain": "<key>" only if the
   // skill must settle on a fixed chain.
-  "maxAmount": "0.03",        // default USD cap for all steps
+  "maxAmount": "0.03",        // per-step fallback cap for steps without their own; NOT a run total
   "params": {                  // user inputs, substituted as ${name}
     "<key>": { "required": true, "default": "...", "description": "..." }
   },
@@ -133,7 +140,7 @@ npm run probe                      # writes reliability.json
       "method": "GET|POST|...",
       "url": "https://... with ${param}",
       "body": { },             // optional; object/array is JSON-encoded, ${param} substituted
-      "maxAmount": "0.005"     // optional per-step cap override
+      "maxAmount": "0.005"     // optional per-step cap (overrides the top-level fallback)
     }
   ]
 }
