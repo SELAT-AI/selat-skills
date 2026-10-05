@@ -29,7 +29,7 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
    real 402 price/rail (free, no wallet) and checks it ≤ `maxAmount`. Add `--pay`
    to make a capped real call confirming a settled 200. Pass required params as
    flags (e.g. `--symbols ETH`). Writes `skills/my-skill/.selat/verify-receipt.json`
-   — the provenance that `submit` attaches and that gates merge. Fix unreachable or
+   — the provenance that `submit` attaches and that gates submit. Fix unreachable or
    over-cap steps; prefer first-party providers over proxies.
 5. **`npm run catalog`** — regenerates `index.json` and the README skills table
    from every manifest (name, rail, kind, description; `summary` if set). Don't
@@ -39,8 +39,12 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
 7. **`selat skill submit ./skills/my-skill`** — preview with `--dry-run` first.
    Requires a passing verify receipt; then branches, commits `skills/my-skill` + the
    `index.json` entry, pushes, and opens a PR with the receipt in the body. No write
-   access? It prints the fork-and-PR commands. CI re-runs the validator; a
-   maintainer paid-re-verifies before merge.
+   access? It prints the fork-and-PR commands. CI re-runs the validator.
+8. **Paid call before merge (maintainer).** A SELAT maintainer runs
+   `selat skill verify ./skills/my-skill --live-probe --pay`; every step must
+   settle a `200`. No skill is merged into the registry without it — this is what
+   *vetted* means. The free probe proves payability; only a paid call proves the
+   request shape actually delivers.
 
 ## CI errors that block merge
 
