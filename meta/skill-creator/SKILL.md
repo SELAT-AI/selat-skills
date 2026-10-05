@@ -75,16 +75,22 @@ selat skill submit   ./skills/my-skill          # 7. open the PR
    real 402 price/rail (free) and checks it ≤ `maxAmount`; `--pay` makes a capped
    real call to confirm it settles 200. Pass required params as flags. This writes
    `skills/<name>/.selat/verify-receipt.json` — the provenance `submit` attaches to
-   the PR and that **gates merge**. Fix any step that's unreachable or over cap;
-   prefer **first-party** providers over proxies.
+   the PR and that **gates submit**. Fix any step that's unreachable or over cap;
+   prefer **first-party** providers over proxies. The free probe proves a step is
+   payable, not that it delivers — that is what the paid call before merge is for
+   (step 9).
 7. **Register:** `npm run catalog` regenerates `index.json` and the README skills
    table from the manifests. Never hand-edit either file.
 8. **Whole-repo check:** `npm run validate` (exactly what CI runs).
 9. **Submit:** `selat skill submit ./skills/<name>` (use `--dry-run` first). It
    requires a passing verify receipt, then branches, commits `skills/<name>` + the
    `index.json` entry, pushes, and opens a PR with the receipt as provenance. No
-   write access? It prints fork-and-PR commands. A maintainer paid-re-verifies
-   before merge.
+   write access? It prints fork-and-PR commands.
+   **Before merge, a SELAT maintainer makes a real paid call** (`verify --live-probe
+   --pay`) and every step must settle a `200`. No skill enters the registry without
+   it — that paid call is what makes a hub skill *vetted*. Running `--pay`
+   yourself first is optional (it spends from your wallet) but catches param bugs
+   before review.
 10. **After merge:** a scheduled CI job re-probes every skill (free) and records
    its status in `reliability.json` (`ok` / `degraded` / `down`), which
    `selat skill list --available` shows as a badge. A step that stops being
@@ -162,7 +168,8 @@ Before `submit`, all must hold:
 
 - `selat skill validate ./skills/<name>` → passes (also the per-skill CI check).
 - `selat skill verify ./skills/<name> --live-probe` → every step reachable and ≤ `maxAmount`
-  (writes the verify receipt). `--pay` confirms a real settled 200.
+  (writes the verify receipt). `--pay` confirms a real settled 200 — optional for
+  you, required by the maintainer before merge.
 - `npm run validate` → 0 errors (whole-repo + `index.json` consistency).
 - No `TODO`, secrets, or `orth`/CLI/`subprocess` calls — the skill is declarative.
 

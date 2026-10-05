@@ -29,5 +29,7 @@ selat skill submit   ./skills/my-skill         # 7. open the PR
 ```
 
 `verify` writes a `.selat/verify-receipt.json` that `submit` attaches to the PR
-and that gates merge — the live 402 is the source of truth, not the catalogue. See
+and that gates submit — the live 402 is the source of truth, not the catalogue.
+Before merge, a SELAT maintainer makes a real paid call (`verify --pay`) and every
+step must settle a `200`; no skill enters the registry without it. See
 [`meta/skill-creator`](meta/skill-creator/SKILL.md) for the detailed steps.

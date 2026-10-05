@@ -53,10 +53,10 @@
     {
       "id": "verify-is-the-gate",
       "prompt": "What does `selat skill verify` do and why does it matter?",
-      "expected_output": "Explains verify probes each step's live 402 (free; --pay for a real settled call), checks price <= maxAmount, and writes a verify-receipt.json that submit attaches to the PR and that gates merge — the live 402 is the source of truth over the catalogue.",
+      "expected_output": "Explains verify probes each step's live 402 (free; --pay for a real settled call), checks price <= maxAmount, and writes a verify-receipt.json that submit attaches to the PR and that gates submit; a maintainer's paid call (every step settles 200) is required before merge — the live 402 is the source of truth over the catalogue.",
       "assertions": [
         "Says verify checks the live 402 price/rail per step",
-        "Says it writes a receipt that gates submit/merge",
+        "Says it writes a receipt that gates submit, and a maintainer paid call is required before merge",
         "Notes the live 402 is authoritative over catalogue prices"
       ]
     },

@@ -108,7 +108,8 @@ no secrets — and records per step:
 Each skill rolls up to a status: **ok** (all steps reachable and within cap),
 **degraded** (some steps failing), or **down** (no steps reachable). This is the
 scheduled half of the contribution gate: [`selat skill verify`](CONTRIBUTING.md)
-proves a skill once at submit time; this re-verifies the whole catalogue on a cron
+probes a skill at submit time and a maintainer's paid call proves it settles a
+`200` before merge; this re-verifies the whole catalogue on a cron
 so reliability reflects current reality, not the day it was merged — uptime/price
 from real calls, not vanity stars.
 
