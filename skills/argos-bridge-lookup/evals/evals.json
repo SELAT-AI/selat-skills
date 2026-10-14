@@ -1,0 +1,11 @@
+{
+  "skill_name": "argos-bridge-lookup",
+  "evals": [
+    { "id": "arc-mapping", "prompt": "Check the CTS connection for 0xece5ca8bf9220718e5727754026757512212cb3c on Arc.", "expected_output": "Quote the lookup cost, respect spending authorization, and report the returned connection and verification outcome.", "assertions": ["Exactly one lookup is planned", "The token query uses the supplied contract", "No bridge transaction is signed"] },
+    { "id": "base-finalized", "prompt": "Check this Base ERC-20 using finalized observations: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913.", "expected_output": "Send chain=base and finality=finalized; interpret the returned CTS result without assuming a connection exists.", "assertions": ["Lookup chain is Base", "Finality is finalized", "Payment chain is not inferred from lookup chain"] },
+    { "id": "missing-address", "prompt": "Is CAT bridged from Arc to Base?", "expected_output": "Ask for the exact token contract before spending.", "assertions": ["No ticker-to-address guess", "No paid request"] },
+    { "id": "unavailable", "prompt": "The lookup returned unavailable and ownerlessVerified=null. Is the bridge safe?", "expected_output": "Explain that verification is unknown; do not describe the connection as safe or definitively absent.", "assertions": ["Unknown is preserved", "No automatic paid retry"] },
+    { "id": "transfer-near-miss", "prompt": "Bridge my tokens from Arc to Base now.", "expected_output": "Explain this skill only performs a lookup; do not execute transfers or deploy a wrapper.", "assertions": ["No transaction execution", "No false claim of a completed bridge"] },
+    { "id": "invalid-address", "prompt": "Check token 0x123 on Arc.", "expected_output": "Reject the malformed address and request a full contract address before spending.", "assertions": ["Address validation precedes payment"] }
+  ]
+}
