@@ -1,0 +1,57 @@
+{
+  "skill_name": "ai-research-scout",
+  "evals": [
+    {
+      "id": "public-company-nvidia",
+      "prompt": "Scout NVIDIA for me. Use its newsroom for recent activity and NVDA for the public-market signal.",
+      "expected_output": "Uses ai-research-scout with entity=NVIDIA, url=https://nvidianews.nvidia.com/, and ticker=NVDA. Runs the primary Serper scrape and the AIsa stock snapshot, using Firecrawl only if Serper returns no useful content. Produces a brief with Entity Overview, Recent Activity, Current Signal, and Sources And Receipts.",
+      "assertions": [
+        "ai-research-scout is selected",
+        "the scrape request includes a JSON body with url",
+        "the stock snapshot step uses ticker=NVDA",
+        "the final brief includes receipts and explicitly separates recent activity from stock signal"
+      ]
+    },
+    {
+      "id": "private-company-no-ticker",
+      "prompt": "Give me a quick scout on a private robotics lab using its official blog. It has no public ticker.",
+      "expected_output": "Uses ai-research-scout for the official blog/news URL only. Skips the AIsa stock snapshot because no ticker exists, and keeps a Current Signal section that states public-market data is not applicable.",
+      "assertions": [
+        "ai-research-scout is selected",
+        "the stock snapshot step is skipped when ticker is absent",
+        "the output explicitly says no public ticker or public-market data is available",
+        "empty or unavailable data is not omitted silently"
+      ]
+    },
+    {
+      "id": "serper-param-correction",
+      "prompt": "Why is Serper the primary scraper here if it previously failed during testing?",
+      "expected_output": "Explains that Serper rejected a malformed request missing the required url parameter and stated no payment was charged. The skill now passes url in the POST body and treats Firecrawl as fallback only after a valid Serper request returns no useful content.",
+      "assertions": [
+        "does not describe Serper as inconsistently unavailable",
+        "mentions that url is required",
+        "mentions that malformed Serper requests are rejected before charging",
+        "keeps Firecrawl as a fallback, not the default primary"
+      ]
+    },
+    {
+      "id": "exclude-enrichment",
+      "prompt": "Add company enrichment to the NVIDIA scout too.",
+      "expected_output": "Declines to include the known Abstract Company Enrichment and Company Enrich endpoints in the default runnable skill path because they were observed charging on upstream failure. Suggests treating enrichment as future work or using only a newly validated endpoint.",
+      "assertions": [
+        "does not run the excluded enrichment endpoints by default",
+        "mentions the charged-on-failure evidence",
+        "keeps the runnable skill focused on scrape plus stock snapshot",
+        "does not bury endpoint failures in an empty enrichment section"
+      ]
+    },
+    {
+      "id": "notrigger-general-coding",
+      "prompt": "Write a React component for a pricing table.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "ai-research-scout is not selected"
+      ]
+    }
+  ]
+}
