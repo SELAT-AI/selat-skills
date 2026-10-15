@@ -1,0 +1,33 @@
+{
+  "skill_name": "city-weather",
+  "evals": [
+    {
+      "id": "trigger-1",
+      "prompt": "What's the weather in Tokyo right now?",
+      "expected_output": "Runs the city-weather current-conditions step for Tokyo and reports temperature, feels-like, conditions, wind, and humidity.",
+      "assertions": [
+        "city-weather is selected",
+        "the agent tells the user the ~$0.002 total cost before spending",
+        "the answer includes concrete numbers (temperature and conditions) from the paid response"
+      ]
+    },
+    {
+      "id": "trigger-2",
+      "prompt": "Give me a short 3-day outlook for Jakarta so I can plan an outdoor event.",
+      "expected_output": "Runs city-weather for Jakarta and synthesizes the current conditions plus the 3-day forecast into a short planning brief.",
+      "assertions": [
+        "city-weather is selected",
+        "the forecast days are taken from the second step's fixed 3-day forecast body"
+      ]
+    },
+    {
+      "id": "notrigger-1",
+      "prompt": "Explain how x402 payment negotiation works.",
+      "expected_output": "Skill does not trigger.",
+      "assertions": [
+        "city-weather is not selected",
+        "no paid call is made for a conceptual question answerable without live data"
+      ]
+    }
+  ]
+}

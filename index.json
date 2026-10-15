@@ -116,6 +116,12 @@
       "description": "Deal-sourcing scout for AI infrastructure, crypto-AI / DePIN, robotics / embodied-AI, and agentic-payments theses: a 9-step discovery pipeline across Tavily (web + LinkedIn posts), Parallel (Product Hunt), Exa, SELAT-native Twitter/X, and Apollo (people search + org enrichment of one required target domain), synthesized into a tiered VC memo. Paid per call across mixed rails (x402 on Base + x402 via Circle Gateway + MPP on Tempo) via the SELAT Router, no API keys."
     },
     {
+      "name": "city-weather",
+      "rail": "routed",
+      "kind": "multi",
+      "description": "Current conditions + 3-day forecast for any city via weather.payapi.market's x402 endpoints, routed through the SELAT Router. Paid per call (USDC), no API key."
+    },
+    {
       "name": "wallet-desk-brief",
       "rail": "x402 via Circle Gateway",
       "kind": "multi",
