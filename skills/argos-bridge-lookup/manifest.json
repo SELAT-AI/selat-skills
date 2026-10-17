@@ -1,0 +1,30 @@
+{
+  "schema": "selat-skill/v1",
+  "name": "argos-bridge-lookup",
+  "description": "Check Arc/Base CTS token connections, ownerless verification and wrapped supply through Argos Bot (x402 via SELAT Router).",
+  "summary": "Check Arc/Base CTS token mappings, ownerless verification and wrapped supply.",
+  "maxAmount": "0.0075",
+  "params": {
+    "tokenAddress": {
+      "required": true,
+      "description": "Original or wrapped ERC-20 contract address: 0x followed by 40 hexadecimal characters."
+    },
+    "finality": {
+      "default": "latest",
+      "description": "Lookup block finality: latest or finalized."
+    },
+    "lookupChain": {
+      "default": "arc",
+      "description": "Chain containing the supplied token: arc or base."
+    }
+  },
+  "steps": [
+    {
+      "label": "Argos Bot CTS bridge lookup",
+      "rail": "routed",
+      "method": "GET",
+      "url": "https://bridge-api.argosbot.io/v1/lookup?token=${tokenAddress}&chain=${lookupChain}&finality=${finality}",
+      "maxAmount": "0.0075"
+    }
+  ]
+}
