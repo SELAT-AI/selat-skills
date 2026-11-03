@@ -62,11 +62,12 @@ by `npm run catalog`; CI fails if either is out of date.
 
 <!-- BEGIN GENERATED SKILLS TABLE: edit skills/<name>/manifest.json, then run `npm run catalog` -->
 
-20 skills. Generated from each skill's `manifest.json` (rail and kind are derived from its steps).
+21 skills. Generated from each skill's `manifest.json` (rail and kind are derived from its steps).
 
 | Skill | Rail | Kind | What it does |
 |---|---|---|---|
 | [account-intel](skills/account-intel/SKILL.md) | mixed | multi | Entity-centric footprint & reputation intelligence — profile one specific person, brand, or handle across… |
+| [argos-bridge-lookup](skills/argos-bridge-lookup/SKILL.md) | routed | single | Check Arc/Base CTS token mappings, ownerless verification and wrapped supply. |
 | [comprehensive-enrichment](skills/comprehensive-enrichment/SKILL.md) | MPP on Tempo | multi | Fixed 12-call, read-only person + company enrichment bundle across Apollo, Hunter, Clado contacts, Orthogonal… |
 | [email-campaign](skills/email-campaign/SKILL.md) | MPP on Tempo | multi | Fixed six-call, read-only email-campaign preparation pipeline. |
 | [enrich-waterfall](skills/enrich-waterfall/SKILL.md) | mixed | multi | Fixed 17-call, read-only person and company enrichment bundle across Apollo, Hunter, Scrape Creators… |
